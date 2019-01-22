@@ -1,0 +1,12 @@
+# Default line-ending is automatic (git decides)
+* text=auto
+
+# Line endings in header and source files are LF
+*.c text eol=LF
+*.cpp text eol=LF
+*.h text eol=LF
+*.hpp text eol=LF
+
+# Line endings in .sln and .vcxproj are CRLF
+*.vcxproj text eol=CRLF
+*.sln text eol=CRLF
