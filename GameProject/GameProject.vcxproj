@@ -28,6 +28,9 @@
     <ClCompile Include="Engine\Entity\Entity.cpp" />
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\States\GameState.cpp" />
+    <ClCompile Include="Game\States\MenuState.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -38,6 +41,8 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\GameState.h" />
+    <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
