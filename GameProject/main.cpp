@@ -21,6 +21,8 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
 
+#include "Utils/Logger.h"
+
 int main() {
 	//INIT
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -43,8 +45,12 @@ int main() {
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	Logger::init();
+	Logger::logToFile();
 
-
+	LOG_PRINT("Hej %f", 0.5f);
+	LOG_ERROR("-------------");
+	LOG_WARNING("-----------dsada-------ds");
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
@@ -63,5 +69,6 @@ int main() {
 	//Delete
 	glfwDestroyWindow(window);
 	glfwTerminate();	
+	Logger::destroy();
 	return 0;
 }
