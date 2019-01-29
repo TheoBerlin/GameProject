@@ -1,0 +1,101 @@
+#include "EntityManager.h"
+
+
+
+EntityManager::EntityManager()
+	: reservedEntities(20)
+{
+	this->entities.reserve(this->reservedEntities);
+
+}
+
+
+EntityManager::~EntityManager()
+{
+	this->removeEntities();
+}
+
+
+void EntityManager::update(const float dt)
+{
+	for (int i = 0; i < this->entities.size(); i++) {
+		try {
+			this->entities[i]->update(dt);
+		}
+		catch (...) {
+			//Log no entities to update
+		}
+	}
+		
+}
+
+Entity* EntityManager::addEntity()
+{
+	Entity* newEntity = new Entity();
+
+	this->entities.push_back(newEntity);
+
+	return newEntity;
+}
+
+Entity * EntityManager::addTracedEntity(const std::string & name)
+{
+	auto trace = this->tracedEntities.find(name);
+	if (trace == this->tracedEntities.end()) {
+
+		Entity* newEntity = addEntity();
+		newEntity->setName(name);
+
+		this->tracedEntities[name] = this->entities.size() - 1;
+
+		return newEntity;
+	} 
+	else {
+		return this->entities[trace->second];
+	}
+
+
+}
+
+// Returns nullptr if entity dosen't exist
+Entity * EntityManager::getTracedEntity(const std::string & name)
+{
+	auto trace = this->tracedEntities.find(name);
+	if (trace == this->tracedEntities.end()) {
+		return nullptr;
+	}
+	else {
+		return this->entities[trace->second];
+	}
+}
+
+bool EntityManager::removeTracedEntity(const std::string & name)
+{
+	auto trace = this->tracedEntities.find(name);
+
+	if (trace != this->tracedEntities.end()) {
+		delete this->entities[trace->second];
+
+		if (trace->second != this->entities.size() - 1) {
+			this->entities[trace->second] = this->entities.back(); //swap with last
+			this->tracedEntities[this->entities[trace->second]->getName()] = trace->second;
+			this->tracedEntities.erase(trace);
+		}
+		else {
+			this->tracedEntities.erase(trace);
+		}
+		this->entities.pop_back();
+
+		return true;
+	}
+
+	return false;
+}
+
+void EntityManager::removeEntities()
+{
+	for (int i = this->entities.size() - 1; i >= 0; i--) {
+		delete this->entities[i];
+	}
+	this->entities.clear();
+}

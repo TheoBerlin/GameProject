@@ -1,5 +1,6 @@
 #include "Game/Game.h"
 
+#include "Engine/Entity/EntityManager.h"
 #include <crtdbg.h>
 
 int main() 
@@ -9,5 +10,7 @@ int main()
 	Game game;
 	game.start();
 
-    return 0;
+
+
+	return 0;
 }
