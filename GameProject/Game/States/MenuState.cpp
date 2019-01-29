@@ -1,7 +1,6 @@
 #include "MenuState.h"
 
 #include "../../Engine/States/StateManager.h"
-#include "GameState.h"
 
 MenuState::MenuState(StateManager& stateManager) : State(stateManager)
 {
