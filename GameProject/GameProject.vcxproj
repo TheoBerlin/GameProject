@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Events\EventBus.cpp" />
+    <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="main.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">include/GLFW</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">include/GLFW</AdditionalIncludeDirectories>
@@ -30,10 +32,14 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Events\Events.h" />
+    <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
+    <ClInclude Include="Engine\Events\EventBus.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -94,7 +100,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>
