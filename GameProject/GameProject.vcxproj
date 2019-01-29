@@ -23,6 +23,18 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">include/GLFW</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">include/GLFW</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="Engine\IGame.cpp" />
+    <ClCompile Include="Engine\States\State.cpp" />
+    <ClCompile Include="Engine\States\StateManager.cpp" />
+    <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Utils\Timer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\States\State.h" />
+    <ClInclude Include="Engine\States\StateManager.h" />
+    <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
