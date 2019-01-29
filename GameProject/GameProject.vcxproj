@@ -23,6 +23,8 @@
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\States\GameState.cpp" />
+    <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
@@ -31,6 +33,8 @@
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\GameState.h" />
+    <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
