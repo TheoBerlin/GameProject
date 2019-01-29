@@ -8,6 +8,9 @@
 
 #include "Game/Game.h"
 
+//Testing please remove
+#include "Level.h"
+
 //Error Handling
 void error_callback(int error, const char* description)
 {
@@ -22,14 +25,13 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 int main() {
-	//INIT
+	//INIT GLFW
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	glfwSetErrorCallback(error_callback);
 
-	//Only test of library please remove
-	glm::mat4 testMatrix;
+	glm::mat4 testMatrix;	//Only test of library please remove
 
 	if (!glfwInit())
 	{
@@ -44,6 +46,10 @@ int main() {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
+	//LEVEL TESTING
+	Level level;
+	//level.writeObject(glm::vec3(1, 2, 3), glm::vec3(5, 5, 12));
+	std::cout << level.read("level.json");
 
 
 	//Main loop
