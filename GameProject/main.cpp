@@ -1,6 +1,7 @@
 #include <Windows.h>
 #include <gl/GLU.h>
 #include <glfw3.h>
+#include "glm/glm.hpp"
 
 #include <iostream>
 #include <crtdbg.h>
@@ -27,6 +28,9 @@ int main() {
 
 	glfwSetErrorCallback(error_callback);
 
+	//Only test of library please remove
+	glm::mat4 testMatrix;
+
 	if (!glfwInit())
 	{
 		// Initialization failed
@@ -40,13 +44,18 @@ int main() {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
-	Game game;
-	game.start();
+
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwSetKeyCallback(window, key_callback);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		/*
+		Game game;
+		game.start();
+		*/
+
 		glfwSwapBuffers(window);
 		glfwWaitEvents();
 	}
@@ -54,5 +63,5 @@ int main() {
 	//Delete
 	glfwDestroyWindow(window);
 	glfwTerminate();	
-  return 0;
+	return 0;
 }
