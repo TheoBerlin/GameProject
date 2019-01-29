@@ -8,6 +8,9 @@
 
 #include "Game/Game.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "Utils/stb_image.h" //Single library for img loader
+
 //Error Handling
 void error_callback(int error, const char* description)
 {
@@ -43,7 +46,6 @@ int main() {
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
 
 
 	//Main loop

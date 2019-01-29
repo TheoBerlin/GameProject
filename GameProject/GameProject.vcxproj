@@ -38,6 +38,7 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
