@@ -19,12 +19,7 @@ EntityManager::~EntityManager()
 void EntityManager::update(const float dt)
 {
 	for (int i = 0; i < this->entities.size(); i++) {
-		try {
-			this->entities[i]->update(dt);
-		}
-		catch (...) {
-			//Log no entities to update
-		}
+		this->entities[i]->update(dt);
 	}
 		
 }
@@ -96,6 +91,7 @@ void EntityManager::removeEntities()
 {
 	for (int i = this->entities.size() - 1; i >= 0; i--) {
 		delete this->entities[i];
+		this->entities[i] = nullptr;
 	}
 	this->entities.clear();
 }
