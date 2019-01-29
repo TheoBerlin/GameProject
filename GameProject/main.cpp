@@ -43,7 +43,6 @@ int main() {
 	Game game;
 	game.start();
 
-
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwSetKeyCallback(window, key_callback);
@@ -55,5 +54,5 @@ int main() {
 	//Delete
 	glfwDestroyWindow(window);
 	glfwTerminate();	
-    return 0;
+  return 0;
 }

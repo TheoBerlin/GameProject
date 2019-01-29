@@ -23,6 +23,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">include/GLFW</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">include/GLFW</AdditionalIncludeDirectories>
     </ClCompile>
+
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
