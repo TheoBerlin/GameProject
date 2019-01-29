@@ -1,11 +1,8 @@
 #include "Entity.h"
 
-int Entity::num = 0;
-
 Entity::Entity()
 {
-	myNum = num;
-	num++;
+
 }
 
 
