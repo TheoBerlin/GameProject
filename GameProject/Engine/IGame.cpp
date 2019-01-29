@@ -12,6 +12,7 @@ IGame::~IGame()
 void IGame::start()
 {
 	this->isRunning = true;
+	gameLoop();
 }
 
 void IGame::gameLoop()
@@ -25,21 +26,23 @@ void IGame::gameLoop()
 	{
 		dtTimer.restart();
 
-		// Update state
-		this->stateManager.update(dt);
-		onUpdate(dt);
+		if (this->stateManager.isEmpty() == false)
+		{
+			// Update state
+			this->stateManager.update(dt);
+			onUpdate(dt);
 
-		// Update logic in a fixed interval
-		if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
-			totalTime = 0;
-			this->stateManager.updateLogic();
-			onUpdateLogic();
+			// Update logic in a fixed interval
+			if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
+				totalTime = 0;
+				this->stateManager.updateLogic();
+				onUpdateLogic();
+			}
+
+			// Render state
+			this->stateManager.render();
+			onRender();
 		}
-
-		// Render state
-		this->stateManager.render();
-		onRender();
-
 
 		// Restart dtTimer
 		dtTimer.stop();

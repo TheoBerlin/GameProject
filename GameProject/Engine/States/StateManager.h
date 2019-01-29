@@ -16,6 +16,7 @@ public:
 
 	State* pop();
 	void push(State* state);
+	bool isEmpty() const;
 
 private:
 	std::stack<State*> stack;

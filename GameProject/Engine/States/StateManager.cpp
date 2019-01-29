@@ -10,6 +10,7 @@ StateManager::~StateManager()
 
 void StateManager::update(float dt)
 {
+
 	this->stack.top()->update(dt);
 }
 
@@ -33,4 +34,9 @@ State* StateManager::pop()
 void StateManager::push(State * state)
 {
 	this->stack.push(state);
+}
+
+bool StateManager::isEmpty() const
+{
+	return this->stack.empty();
 }
