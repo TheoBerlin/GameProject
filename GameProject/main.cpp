@@ -3,7 +3,9 @@
 #include <glfw3.h>
 
 #include <iostream>
+#include <crtdbg.h>
 
+#include "Game/Game.h"
 
 //Error Handling
 void error_callback(int error, const char* description)
@@ -36,6 +38,11 @@ int main() {
 		// Window or context creation failed
 	}
 
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
+	Game game;
+	game.start();
+
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwSetKeyCallback(window, key_callback);
@@ -47,4 +54,5 @@ int main() {
 	//Delete
 	glfwDestroyWindow(window);
 	glfwTerminate();	
+  return 0;
 }
