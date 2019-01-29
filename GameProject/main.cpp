@@ -1,6 +1,6 @@
 #include <Windows.h>
-#include "GL/glew.h"
-#include "GLFW/glfw3.h"
+#include <gl/GLU.h>
+#include <glfw3.h>
 #include "glm/glm.hpp"
 
 #include <iostream>
@@ -10,8 +10,6 @@
 
 //Testing please remove
 #include "Level.h"
-#define STB_IMAGE_IMPLEMENTATION
-#include "Utils/stb_image.h" //Single library for img loader
 
 //Error Handling
 void error_callback(int error, const char* description)
@@ -52,6 +50,7 @@ int main() {
 	Level level;
 	//level.writeObject(glm::vec3(1, 2, 3), glm::vec3(5, 5, 12));
 	std::cout << level.read("level.json");
+
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
