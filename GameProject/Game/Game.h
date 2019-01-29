@@ -2,6 +2,8 @@
 
 #include "../Engine/IGame.h"
 
+#include "States/MenuState.h"
+
 class Game : public IGame
 {
 public:
@@ -13,5 +15,5 @@ public:
 	void onRender() override;
 
 private:
-
+	MenuState* menuState;
 };

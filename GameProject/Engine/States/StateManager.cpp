@@ -6,34 +6,48 @@ StateManager::StateManager()
 
 StateManager::~StateManager()
 {
+	while (isEmpty() == false) {
+		pop();
+	}
 }
 
-void StateManager::update(float dt)
+void StateManager::update(const float dt)
 {
-
-	this->stack.top()->update(dt);
+	if(!isEmpty())
+		this->stack.top().first->update(dt);
 }
 
 void StateManager::updateLogic()
 {
-	this->stack.top()->updateLogic();
+	if (!isEmpty())
+		this->stack.top().first->updateLogic();
 }
 
 void StateManager::render()
 {
-	this->stack.top()->render();
+	if (!isEmpty())
+		this->stack.top().first->render();
 }
 
-State* StateManager::pop()
+void StateManager::pop()
 {
-	State* state = this->stack.top();
+	std::pair<State*, bool>& top = this->stack.top();
+	State* state = top.first;
+	state->end();
+	if (top.second) {
+		delete state;
+	}
 	this->stack.pop();
-	return state;
 }
 
-void StateManager::push(State * state)
+void StateManager::push(State * state, bool shouldSelfDelete)
 {
-	this->stack.push(state);
+	if (isEmpty() == false) {
+		this->stack.top().first->end();
+	}
+
+	this->stack.push(std::pair<State*, bool>(state, shouldSelfDelete));
+	state->start();
 }
 
 bool StateManager::isEmpty() const
