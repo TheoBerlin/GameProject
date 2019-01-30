@@ -9,6 +9,7 @@
 #include <iostream>
 #include <crtdbg.h>
 
+#include "Utils/Logger.h"
 #include "Game/Game.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -67,7 +68,7 @@ int main() {
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
+	Logger::init();
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
@@ -86,5 +87,6 @@ int main() {
 	//Delete
 	glfwDestroyWindow(window);
 	glfwTerminate();	
+	Logger::destroy();
 	return 0;
 }
