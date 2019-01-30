@@ -6,6 +6,7 @@
 #include <iostream>
 #include <crtdbg.h>
 
+#include "Utils/Logger.h"
 #include "Game/Game.h"
 
 //Error Handling
@@ -20,8 +21,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
-
-#include "Utils/Logger.h"
 
 int main() {
 	//INIT
@@ -46,11 +45,6 @@ int main() {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
-	Logger::logToFile();
-
-	LOG_PRINT("Hej %f", 0.5f);
-	LOG_ERROR("-------------");
-	LOG_WARNING("-----------dsada-------ds");
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {

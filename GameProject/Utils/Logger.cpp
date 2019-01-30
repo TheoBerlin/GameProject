@@ -8,7 +8,7 @@ HANDLE Logger::hstdout = (void*)0;
 CONSOLE_SCREEN_BUFFER_INFO Logger::csbi = {};
 unsigned int Logger::filter = 0;
 std::ofstream Logger::file;
-bool Logger::writeToFile = false;
+bool Logger::writeToFile = true;
 
 void Logger::init()
 {
@@ -51,30 +51,11 @@ bool Logger::shouldPrint(TYPE type)
 
 std::string Logger::getCurrentTime()
 {
-	
-	auto t = std::chrono::system_clock::now();
-	std::time_t t2 = std::chrono::system_clock::to_time_t(t);
-	char buff[255] = {0};
-	ctime_s(buff, 255, &t2);
-	int i = 0;
-	while (i < 255 && buff[i] != '\0')
-	{
-		if (buff[i] == '\n')
-		{
-			buff[i] = '\0';
-			i = 256;
-		}
-		i++;
-	}
-	return std::string(buff);
-	
-	/*
 	std::time_t t = std::time(0);
-	struct tm buff;
+	struct tm now;
 	char str[255] = { 0 };
-	asctime_s(str, sizeof str, localtime_s(&buff, &t));
-	std::tm* now = ;
-	return std::to_string(now->tm_hour) + ":" + std::to_string(now->tm_min) + ":" + std::to_string(now->tm_sec);
-	*/
+	localtime_s(&now, &t);
+	return std::to_string(now.tm_hour) + ":" + std::to_string(now.tm_min) + ":" + std::to_string(now.tm_sec) + ":";
+	
 	
 }

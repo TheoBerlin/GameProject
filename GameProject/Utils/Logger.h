@@ -33,17 +33,55 @@ To only print warnings and errors:
 class Logger
 {
 public:
+	/*
+	Initialize the logger.
+	*/
 	static void init();
+	
+	/*
+	Clean up the logger.
+	*/
 	static void destroy();
 
+	/*
+	Print a formatted white string with [INFO] as a prefix.
+	Arguments:
+		str: The formatted string. Eg. "Test: %d"
+		args: List of corresponding formateted specifier. Eg. %03.5ld
+	*/
 	template<typename ...Args>
 	static void printInfo(const std::string& str, Args ...args);
+
+	/*
+	Print a formatted yellow string with [WARNING] as a prefix.
+	Arguments:
+		str: The formatted string. Eg. "Test: %d"
+		args: List of corresponding formateted specifier. Eg. %03.5ld
+	*/
 	template<typename ...Args>
 	static void printWarning(const std::string& str, Args ...args);
+
+	/*
+	Print a formatted red string with [ERROR] as a prefix.
+	Arguments:
+		str: The formatted string. Eg. "Test: %d"
+		args: List of corresponding formateted specifier. Eg. %03.5ld
+	*/
 	template<typename ...Args>
 	static void printError(const std::string& str, Args ...args);
 
+	/*
+	Show certain information and prevent others to be printed.
+	Arguments:
+		filterTypes: Flags for the information to be shown. Eg. LOG_TYPE_INFO | LOG_TYPE_ERROR to only print info and error messages.
+	*/
 	static void setFilter(unsigned int filterTypes);
+
+	/*
+	If true, print all messages to the log.txt file also.
+	Arguments:
+		toFile: If true, print to file, else print only to console.
+	*/
 	static void logToFile(bool toFile = true);
 
 	enum TYPE
@@ -152,7 +190,7 @@ inline void Logger::printToFile(TYPE type, const std::string & str, Args ...args
 		{
 		case TYPE_ERROR:
 		{
-			const std::string s = "[ERROR] " + currTime + ": " + str + "\n";
+			const std::string s = "[ERROR]   " + currTime + ": " + str + "\n";
 			formattedStr = formatString(s.c_str(), args...);
 		}
 		break;
@@ -164,7 +202,7 @@ inline void Logger::printToFile(TYPE type, const std::string & str, Args ...args
 		break;
 		default:
 		{
-			const std::string s = "[INFO] " + currTime + ": " + str + "\n";
+			const std::string s = "[INFO]    " + currTime + ": " + str + "\n";
 			formattedStr = formatString(s.c_str(), args...);
 		}
 		break;
