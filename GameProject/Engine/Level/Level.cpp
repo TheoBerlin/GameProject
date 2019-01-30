@@ -1,4 +1,4 @@
-#include "Level.h"
+#pragma once
 
 void Level::writePosition(int index, glm::vec3 position)
 {
