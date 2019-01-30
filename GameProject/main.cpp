@@ -1,6 +1,6 @@
 #include <Windows.h>
-#include <gl/GLU.h>
-#include <glfw3.h>
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
 #include <iostream>
@@ -8,6 +8,9 @@
 
 #include "Utils/Logger.h"
 #include "Game/Game.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "Utils/stb_image.h" //Single library for img loader
 
 //Error Handling
 void error_callback(int error, const char* description)
