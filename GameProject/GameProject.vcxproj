@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Components\Component.cpp" />
+    <ClCompile Include="EntityMatrix.cpp" />
     <ClCompile Include="main.cpp">
     </ClCompile>
     <ClCompile Include="Engine\IGame.cpp" />
@@ -38,6 +39,7 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="EntityMatrix.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
