@@ -34,6 +34,7 @@
   <ItemGroup>
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Vao.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
