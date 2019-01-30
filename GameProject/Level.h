@@ -11,13 +11,13 @@ namespace json = nlohmann;
 
 class Level {
 private:
-	//Testing
-	std::string workingFile = "level.json";
+	json::json j;
 
 	void writePosition(int index, glm::vec3 position);
+	void writeName(int index, std::string name);
 
 public:
-	void writeToFile(glm::vec3 position, glm::vec3 scale);
+	void writeToFile(std::string file, glm::vec3 position, glm::vec3 scale);
 	std::string read(std::string file);
 
 };

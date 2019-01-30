@@ -8,9 +8,6 @@
 
 #include "Game/Game.h"
 
-//Testing please remove
-#include "Level.h"
-
 //Error Handling
 void error_callback(int error, const char* description)
 {
@@ -45,12 +42,6 @@ int main() {
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-
-	//LEVEL TESTING
-	Level level;
-	//level.writeObject(glm::vec3(1, 2, 3), glm::vec3(5, 5, 12));
-	std::cout << level.read("level.json");
-
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {

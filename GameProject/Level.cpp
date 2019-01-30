@@ -2,14 +2,14 @@
 
 void Level::writePosition(int index, glm::vec3 position)
 {
-	json::json j;
-	std::ifstream i(workingFile);
-	i >> j;
-
 	j[index]["X"] = position.x;
 	j[index]["Y"] = position.y;
 	j[index]["Z"] = position.z;
+}
 
+void Level::writeName(int index, std::string name)
+{
+	j[index]["Name"] = name;
 }
 
 
@@ -19,9 +19,6 @@ void Level::writeToFile(glm::vec3 position, glm::vec3 scale)
 	std::ifstream i(workingFile);
 	i >> j;
 
-	//{position.x, position.y, position.z }
-	j.push_back({"X", position.x});
-
 	std::ofstream file(workingFile);
 	file << std::setw(4) << j << std::endl;
 }
@@ -29,11 +26,15 @@ void Level::writeToFile(glm::vec3 position, glm::vec3 scale)
 
 std::string Level::read(std::string file)
 {
-	json::json j;
 	std::ifstream i(file);
 	i >> j;
+	std::string string = "";
 
+	for (int i = 0; i < j.size(); i++) {
+		string += "Index " + std::to_string(i) + ":\n";
+		string += j[i]["Name"].dump();
+		string += "\n";
+	}
 	
-
-	return std::to_string(j.size());
+	return string;
 }
