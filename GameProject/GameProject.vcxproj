@@ -22,7 +22,7 @@
     <ClCompile Include="Engine\Events\EventBus.cpp" />
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
