@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Vao.cpp" />
+    <ClCompile Include="Engine\Rendering\GLAbstraction\Vbo.cpp" />
     <ClCompile Include="main.cpp">
     </ClCompile>
     <ClCompile Include="Engine\IGame.cpp" />
@@ -32,12 +33,12 @@
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
-    <ClCompile Include="Vbo.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Vao.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Vbo.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
@@ -47,7 +48,6 @@
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
-    <ClInclude Include="Vbo.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
