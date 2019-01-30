@@ -9,8 +9,12 @@
 #include "Utils/Logger.h"
 #include "Game/Game.h"
 
+#include "ft2build.h" //DO NOT MOVE HEADER FILE FROM ROOT DIRECTORY OF INCLUDE
+#include FT_FREETYPE_H  
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "Utils/stb_image.h" //Single library for img loader
+
 
 //Error Handling
 void error_callback(int error, const char* description)
