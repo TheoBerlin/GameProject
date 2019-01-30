@@ -19,7 +19,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Events\EventBus.cpp" />
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="main.cpp" />
