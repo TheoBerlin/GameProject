@@ -1,5 +1,4 @@
-#ifndef LEVEL_H
-#define LEVEL_H
+#pragma once
 #include "glm/glm.hpp"
 #include "nlohmann/json.hpp"
 
@@ -21,5 +20,3 @@ public:
 	std::string read(std::string file);
 
 };
-
-#endif //LEVEL_H
