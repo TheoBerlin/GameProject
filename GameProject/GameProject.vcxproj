@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Components\Component.cpp" />
+    <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="main.cpp">
     </ClCompile>
     <ClCompile Include="Engine\IGame.cpp" />
@@ -34,6 +35,7 @@
   <ItemGroup>
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />

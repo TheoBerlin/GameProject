@@ -18,5 +18,5 @@ private:
 public:
 	void writeToFile(std::string file, glm::vec3 position, glm::vec3 scale);
 	std::string read(std::string file);
-
 };
+
