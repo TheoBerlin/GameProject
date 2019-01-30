@@ -3,9 +3,6 @@
 #include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
-//Testing please remove
-#include "EntityMatrix.h"
-
 #include <iostream>
 #include <crtdbg.h>
 
@@ -34,27 +31,6 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	glfwSetErrorCallback(error_callback);
-
-	EntityMatrix eMatrix;
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			std::cout << eMatrix.getMatrix()[i][j] << " : ";
-		}
-		std::cout << std::endl;
-	}
-
-	eMatrix.translate(glm::vec3(2, 0, 0));
-	eMatrix.rotate(glm::vec3(1, -2, 1), glm::vec3(0, 0, 0));
-	std::cout << std::endl;
-
-	for (int i = 0; i < 4; i++) {
-		for (int j = 0; j < 4; j++) {
-			std::cout << eMatrix.getMatrix()[i][j] << " : ";
-		}
-		std::cout << std::endl;
-	}
-
-	std::cout << std::endl << eMatrix.getPosition().x << " " << eMatrix.getPosition().y << " " << eMatrix.getPosition().z;
 
 	if (!glfwInit())
 	{
