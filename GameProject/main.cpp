@@ -6,6 +6,10 @@
 #include <iostream>
 #include <crtdbg.h>
 
+//TESTING DO REMOVE
+#include "Engine/Entity/EntityManager.h"
+#include "Engine/Level/Level.h"
+
 #include "Utils/Logger.h"
 #include "Game/Game.h"
 
@@ -45,6 +49,13 @@ int main() {
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
+
+
+	EntityManager entityManger;
+	Level level;
+
+	level.read("level.json", &entityManger);
+
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {

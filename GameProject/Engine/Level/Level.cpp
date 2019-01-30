@@ -20,17 +20,25 @@ void Level::writeToFile(std::string file, glm::vec3 position, glm::vec3 scale)
 }
 
 
-std::string Level::read(std::string file)
+void Level::read(std::string file, EntityManager *entityManager)
 {
-	std::ifstream i(file);
-	i >> jsonFile;
-	std::string string = "";
+	//Read file
+	//std::ifstream iFile(file);
+	//iFile >> jsonFile;
 
-	for (int i = 0; i < jsonFile.size(); i++) {
-		string += "Index " + std::to_string(i) + ":\n";
-		string += jsonFile[i]["Name"].dump();
-		string += "\n";
+	std::ifstream i("level.json");
+	json::json j;
+	i >> j;
+
+	//Get amount of arrays to know how many entities to be made
+	int size = jsonFile.size();
+
+	for (int i = 0; i < size; i++) 
+	{
+		Entity entity;
+		//Value for "Name" should be string so we dump content
+		entity.setName(jsonFile[i]["Name"].dump());
+		glm::vec3 position = glm::vec3(jsonFile[i]["X"], jsonFile[i]["X"], jsonFile[i]["X"]);
+		std::cout << position.x << " : " << position.y << " : " << position.z << std::endl;
 	}
-	
-	return string;
 }
