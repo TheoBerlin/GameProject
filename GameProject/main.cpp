@@ -1,12 +1,15 @@
 #include <Windows.h>
-#include <gl/GLU.h>
-#include <glfw3.h>
+#include "GL/glew.h"
+#include "GLFW/glfw3.h"
 #include "glm/glm.hpp"
 
 #include <iostream>
 #include <crtdbg.h>
 
 #include "Game/Game.h"
+
+#define STB_IMAGE_IMPLEMENTATION
+#include "Utils/stb_image.h" //Single library for img loader
 
 //Error Handling
 void error_callback(int error, const char* description)
@@ -22,13 +25,14 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 }
 
 int main() {
-	//INIT GLFW
+	//INIT
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
 
 	glfwSetErrorCallback(error_callback);
 
-	glm::mat4 testMatrix;	//Only test of library please remove
+	//Only test of library please remove
+	glm::mat4 testMatrix;
 
 	if (!glfwInit())
 	{
@@ -42,6 +46,7 @@ int main() {
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {

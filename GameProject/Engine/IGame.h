@@ -13,6 +13,8 @@ public:
 	virtual void onUpdateLogic() {};
 	virtual void onRender() {};
 
+	StateManager& getStateManager();
+
 private:
 	void gameLoop();
 	

@@ -15,34 +15,36 @@ void IGame::start()
 	gameLoop();
 }
 
+StateManager& IGame::getStateManager()
+{
+	return this->stateManager;
+}
+
 void IGame::gameLoop()
 {
-	const unsigned int FRAMES_PER_SECOND = 60;
+	const unsigned int FRAMES_PER_SECOND = 30;
 
 	float totalTime = 0.0f;
 	float dt = 0.0f;
 	Timer dtTimer;
-	while (this->isRunning)
+	while (this->isRunning && !this->stateManager.isEmpty())
 	{
 		dtTimer.restart();
 
-		if (this->stateManager.isEmpty() == false)
-		{
-			// Update state
-			this->stateManager.update(dt);
-			onUpdate(dt);
+		// Update state
+		this->stateManager.update(dt);
+		onUpdate(dt);
 
-			// Update logic in a fixed interval
-			if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
-				totalTime = 0;
-				this->stateManager.updateLogic();
-				onUpdateLogic();
-			}
-
-			// Render state
-			this->stateManager.render();
-			onRender();
+		// Update logic in a fixed interval
+		if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
+			this->stateManager.updateLogic();
+			onUpdateLogic();
+			totalTime = 0;
 		}
+
+		// Render state
+		this->stateManager.render();
+		onRender();
 
 		// Restart dtTimer
 		dtTimer.stop();
