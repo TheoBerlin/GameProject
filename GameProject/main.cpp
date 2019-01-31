@@ -11,6 +11,7 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Utils/stb_image.h" //Single library for img loader
+#include "Engine/Rendering/GLAbstraction/Shader.h"
 
 //Error Handling
 void error_callback(int error, const char* description)
@@ -38,16 +39,29 @@ int main() {
 	if (!glfwInit())
 	{
 		// Initialization failed
+		exit(EXIT_FAILURE);
 	}
 
 	GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 	if (!window)
 	{
 		// Window or context creation failed
+		exit(EXIT_FAILURE);
+	}
+
+	glfwMakeContextCurrent(window);
+	glewExperimental = true; // Needed in core profile
+	if (glewInit() != GLEW_OK)
+	{
+		exit(EXIT_FAILURE);
+
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
+
+	Shader shaderTest("./../test.vert", "./../test.frag");
+	shaderTest.setUniform1f("Test", 0.5f);
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
