@@ -8,8 +8,6 @@
 
 #include "Utils/Logger.h"
 #include "Game/Game.h"
-#include "Engine/Events/EventBus.h"
-#include "Engine/InputHandler.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Utils/stb_image.h" //Single library for img loader
@@ -26,22 +24,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
 }
-
-class Test
-{
-public:
-	Test() { EventBus::get().subscribe(this, &Test::test); };
-	void test(KeyEvent * evnt)
-	{
-		if (evnt->action == GLFW_PRESS) {
-			printf("%d\n", evnt->key);
-		}
-	}
-	void unsubscribe()
-	{
-		EventBus::get().unsubscribe(this, &Test::test);
-	}
-};
 
 int main() {
 	//INIT
@@ -67,12 +49,9 @@ int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
 
-	InputHandler ih(window);
-	Test test;
-
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
-		//glfwSetKeyCallback(window, key_callback);
+		glfwSetKeyCallback(window, key_callback);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		/*
