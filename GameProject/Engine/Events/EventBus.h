@@ -11,7 +11,7 @@
 // functionName(EventType * evnt)
 
 // TO PUBLISH TO THE EVENTBUS
-// EventBus::get().publish(new EventType(param1, param2));
+// EventBus::get().publish(&EventType(param1, param2));
 
 // UNSUBSCRIBE IS THE SAME AS SUBCRIBE
 
@@ -43,7 +43,6 @@ private:
 	static unsigned getID(T* instance);
 
 	std::map<std::type_index, HandlerList*> subscribers;
-	std::map<unsigned, HandlerFunctionBase*> IDs;
 };
 
 
@@ -124,5 +123,15 @@ inline EventBus& EventBus::get()
 
 inline EventBus::~EventBus()
 {
-
+	for (auto const& i : subscribers)
+	{
+		HandlerList* handlers = i.second;
+		
+		std::list<HandlerFunctionBase*>::iterator it;
+		for (it = handlers->begin(); it != handlers->end(); ++it)
+		{
+			delete *it;
+		}
+		delete handlers;
+	}
 }
