@@ -1,8 +1,7 @@
 #pragma once
 
 #include <vector>
-
-#include "ModelResources.h"
+#include "../Rendering/GLAbstraction/RenderingResources.h"
 
 class Mesh
 {

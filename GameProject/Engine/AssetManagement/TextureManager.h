@@ -4,7 +4,7 @@
 #include "GL/glew.h"
 
 #include "../../Utils/stb_image.h"
-#include "ModelResources.h"
+#include "../Rendering/GLAbstraction/RenderingResources.h"
 #include <map>
 
 class TextureManager

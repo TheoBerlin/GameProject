@@ -38,11 +38,190 @@ const GLuint Shader::getID() const
 	return this->id;
 }
 
+void Shader::setUniform1b(const std::string & name, bool value)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform1i(location, (int)value);
+}
+
+void Shader::setUniform1i(const std::string & name, int value)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform1i(location, value);
+}
+
+void Shader::setUniform2i(const std::string & name, int v1, int v2)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform2i(location, v1, v2);
+}
+
+void Shader::setUniform2iv(const std::string & name, unsigned int count, const int * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform2iv(location, count, values);
+}
+
+void Shader::setUniform3i(const std::string & name, int v1, int v2, int v3)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform3i(location, v1, v2, v3);
+}
+
+void Shader::setUniform3iv(const std::string & name, unsigned int count, const int * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform3iv(location, count, values);
+}
+
+void Shader::setUniform4i(const std::string & name, int v1, int v2, int v3, int v4)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform4i(location, v1, v2, v3, v4);
+}
+
+void Shader::setUniform4iv(const std::string & name, unsigned int count, const int * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform4iv(location, count, values);
+}
+
+void Shader::setUniform1ui(const std::string & name, unsigned int value)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform1ui(location, value);
+}
+
+void Shader::setUniform2ui(const std::string & name, unsigned int v1, unsigned int v2)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform2ui(location, v1, v2);
+}
+
+void Shader::setUniform2uiv(const std::string & name, unsigned int count, const unsigned int * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform2uiv(location, count, values);
+}
+
+void Shader::setUniform3ui(const std::string & name, int v1, int v2, int v3)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform3ui(location, v1, v2, v3);
+}
+
+void Shader::setUniform3uiv(const std::string & name, unsigned int count, const unsigned int * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform3uiv(location, count, values);
+}
+
+void Shader::setUniform4ui(const std::string & name, int v1, int v2, int v3, int v4)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform4ui(location, v1, v2, v3, v4);
+}
+
+void Shader::setUniform4uiv(const std::string & name, unsigned int count, const unsigned int * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform4uiv(location, count, values);
+}
+
 void Shader::setUniform1f(const std::string & name, float f)
 {
 	GLint location = addUniform(name);
-	if(location != -1)
-		glUniform1f(location, f);
+	if(location != -1) glUniform1f(location, f);
+}
+
+void Shader::setUniform2f(const std::string & name, float v1, float v2)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform2f(location, v1, v2);
+}
+
+void Shader::setUniform2fv(const std::string & name, unsigned int count, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform2fv(location, count, values);
+}
+
+void Shader::setUniform3f(const std::string & name, float v1, float v2, float v3)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform3f(location, v1, v2, v3);
+}
+
+void Shader::setUniform3fv(const std::string & name, unsigned int count, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform3fv(location, count, values);
+}
+
+void Shader::setUniform4f(const std::string & name, float v1, float v2, float v3, float v4)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform4f(location, v1, v2, v3, v4);
+}
+
+void Shader::setUniform4fv(const std::string & name, unsigned int count, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniform4fv(location, count, values);
+}
+
+void Shader::setUniformMatrix2fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix2fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix3fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix3fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix4fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix4fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix2x3fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix2x3fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix3x2fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix3x2fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix2x4fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix2x4fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix4x2fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix4x2fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix3x4fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix3x4fv(location, count, transpose, values);
+}
+
+void Shader::setUniformMatrix4x3fv(const std::string & name, unsigned int count, bool transpose, const float * values)
+{
+	GLint location = addUniform(name);
+	if (location != -1) glUniformMatrix4x3fv(location, count, transpose, values);
 }
 
 void Shader::init(const std::string& vertex, const std::string& fragment)
