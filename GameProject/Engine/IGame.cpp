@@ -39,7 +39,7 @@ void IGame::gameLoop()
 		if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
 			this->stateManager.updateLogic();
 			onUpdateLogic();
-			totalTime = 0;
+			totalTime = 0.0f;
 		}
 
 		// Render state
