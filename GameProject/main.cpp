@@ -72,7 +72,7 @@ int main() {
 		glfwSwapBuffers(window);
 		glfwWaitEvents();
 	}
-	
+
 	//Delete
 	glfwDestroyWindow(window);
 	glfwTerminate();	
