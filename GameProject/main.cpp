@@ -38,12 +38,22 @@ int main() {
 	if (!glfwInit())
 	{
 		// Initialization failed
+		exit(EXIT_FAILURE);
 	}
 
 	GLFWwindow* window = glfwCreateWindow(640, 480, "My Title", NULL, NULL);
 	if (!window)
 	{
 		// Window or context creation failed
+		exit(EXIT_FAILURE);
+	}
+
+	glfwMakeContextCurrent(window);
+	glewExperimental = true; // Needed in core profile
+	if (glewInit() != GLEW_OK)
+	{
+		exit(EXIT_FAILURE);
+
 	}
 
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
