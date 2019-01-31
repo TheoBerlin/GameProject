@@ -10,6 +10,7 @@ public:
 		call(evnt);
 	}
 
+	unsigned int id;
 private:
 	virtual void call(Event * evnt) = 0;
 };
