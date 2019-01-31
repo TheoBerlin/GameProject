@@ -54,7 +54,8 @@ int main() {
 	EntityManager entityManger;
 	Level level;
 
-	level.read("level.json", &entityManger);
+	//level.writeToFile("Engine/Level/level.json", glm::vec3(1, 2, 3), glm::vec3(1));
+	level.read("Engine/Level/level.json", &entityManger);
 
 
 	//Main loop
