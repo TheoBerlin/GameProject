@@ -4,6 +4,7 @@
 #include "GL/glew.h"
 #include <glm/glm.hpp>
 #include <string>
+#include <vector>
 
 struct Vertex {
     glm::vec3 Position;
@@ -12,12 +13,18 @@ struct Vertex {
 };
 
 enum TextureType {
-    DIFFUSE = 0,
-    SPECULAR = 1,
+    TXTYPE_DIFFUSE = 0,
+    TXTYPE_SPECULAR = 1,
 };
 
 struct Texture {
     GLuint id;
     TextureType type;
     std::string path;
+};
+
+struct Material {
+    glm::vec3 Ka;
+    glm::vec3 Ks;
+    std::vector<Texture> Textures;
 };

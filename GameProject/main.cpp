@@ -8,6 +8,7 @@
 
 #include "Utils/Logger.h"
 #include "Game/Game.h"
+#include "Engine/AssetManagement/ModelLoader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "Utils/stb_image.h" //Single library for img loader
@@ -32,8 +33,6 @@ int main() {
 
 	glfwSetErrorCallback(error_callback);
 
-	//Only test of library please remove
-	glm::mat4 testMatrix;
 
 	if (!glfwInit())
 	{
@@ -56,13 +55,23 @@ int main() {
 
 	}
 
+	glfwMakeContextCurrent(window);
+	glewExperimental = true; // Needed in core profile
+	if (glewInit() != GLEW_OK)
+	{
+		exit(EXIT_FAILURE);
+
+	}
+
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
+	Logger::logToFile(false);
 
 	//Main loop
 	while (!glfwWindowShouldClose(window)) {
 		glfwSetKeyCallback(window, key_callback);
 		glClear(GL_COLOR_BUFFER_BIT);
+
 
 		/*
 		Game game;
@@ -77,5 +86,9 @@ int main() {
 	glfwDestroyWindow(window);
 	glfwTerminate();	
 	Logger::destroy();
+
+	ModelLoader::unloadModels();
+	TextureManager::unloadTextures();
+
 	return 0;
 }
