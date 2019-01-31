@@ -2,6 +2,7 @@
 
 #include "Utils/Logger.h"
 #include "Game/Game.h"
+#include "Engine/AssetManagement/ModelLoader.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../Utils/stb_image.h" //Single library for img loader
@@ -14,5 +15,9 @@ int main() {
 	game.start();
 
 	Logger::destroy();
+
+	ModelLoader::unloadModels();
+	TextureManager::unloadTextures();
+
 	return 0;
 }
