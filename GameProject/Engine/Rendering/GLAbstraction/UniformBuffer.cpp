@@ -2,6 +2,8 @@
 
 #include "GL/glew.h"<
 
+#include "../../../Utils/Logger.h"
+
 UniformBuffer::UniformBuffer(unsigned shaderID, const std::string & blockName, unsigned bindingPoint)
 {
 	glGenBuffers(1, &this->id);
@@ -37,6 +39,7 @@ bool UniformBuffer::setSubData(const std::vector<float>& data, unsigned offset)
 		return true;
 	}
 
+	LOG_WARNING("Data don't fit in uniform buffer! Data size: %d Free Data from offset: %d", data.size() * sizeof(float), this->currentSize - offset);
 	return false;
 }
 
