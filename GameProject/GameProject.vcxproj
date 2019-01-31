@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
@@ -38,6 +39,10 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Events\Events.h" />
+    <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
+    <ClInclude Include="Engine\Events\EventBus.h" />
+    <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
