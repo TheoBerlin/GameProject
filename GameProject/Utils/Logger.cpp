@@ -55,7 +55,5 @@ std::string Logger::getCurrentTime()
 	struct tm now;
 	char str[255] = { 0 };
 	localtime_s(&now, &t);
-	return std::to_string(now.tm_hour) + ":" + std::to_string(now.tm_min) + ":" + std::to_string(now.tm_sec) + ":";
-	
-	
+	return std::to_string(now.tm_hour) + ":" + std::to_string(now.tm_min) + ":" + std::to_string(now.tm_sec);
 }
