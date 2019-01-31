@@ -1,5 +1,7 @@
 #include "IGame.h"
 #include "../Utils/Timer.h"
+#include "Config.h"
+#include "Rendering/Display.h"
 
 IGame::IGame()
 {
@@ -22,14 +24,16 @@ StateManager& IGame::getStateManager()
 
 void IGame::gameLoop()
 {
-	const unsigned int FRAMES_PER_SECOND = 30;
+	Display& display = Display::get();
 
 	float totalTime = 0.0f;
 	float dt = 0.0f;
 	Timer dtTimer;
-	while (this->isRunning && !this->stateManager.isEmpty())
+	while (this->isRunning && !this->stateManager.isEmpty() && display.isOpen())
 	{
 		dtTimer.restart();
+		
+		display.startFrame();
 
 		// Update state
 		this->stateManager.update(dt);
@@ -39,7 +43,7 @@ void IGame::gameLoop()
 		if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
 			this->stateManager.updateLogic();
 			onUpdateLogic();
-			totalTime = 0;
+			totalTime = 0.0f;
 		}
 
 		// Render state
@@ -50,5 +54,7 @@ void IGame::gameLoop()
 		dtTimer.stop();
 		dt = dtTimer.getTime();
 		totalTime += dt;
+
+		display.endFrame();
 	}
 }
