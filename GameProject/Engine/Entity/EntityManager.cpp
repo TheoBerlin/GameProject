@@ -33,6 +33,28 @@ Entity* EntityManager::addEntity()
 	return newEntity;
 }
 
+void EntityManager::addEntity(Entity* entity)
+{
+	this->entities.push_back(entity);
+}
+
+Entity* EntityManager::getEntity(int index)
+{
+	Entity* entity = nullptr;
+	if (index < entities.size()) {
+		entity = entities[index];
+	}
+	else {
+		LOG_ERROR("Entity Manager entity array out of range");
+	}
+	return entity;
+}
+
+int EntityManager::getEntitySize() const
+{
+	return entities.size();
+}
+
 Entity * EntityManager::addTracedEntity(const std::string & name)
 {
 	auto trace = this->tracedEntities.find(name);

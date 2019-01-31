@@ -64,8 +64,10 @@ int main() {
 	EntityManager entityManger;
 	Level level;
 
-	//level.writeToFile("Engine/Level/level.json", glm::vec3(1, 2, 3), glm::vec3(1));
 	level.read("Engine/Level/level.json", &entityManger);
+	for (int i = 0; i < entityManger.getEntitySize(); i++) {
+		std::cout << entityManger.getEntity(i)->getName() << " : " << entityManger.getEntity(i)->getMatrix()->getPosition().x << " : " << entityManger.getEntity(i)->getMatrix()->getPosition().y << " : " << entityManger.getEntity(i)->getMatrix()->getPosition().z <<  std::endl;
+	}
 
 
 	//Main loop
