@@ -2,7 +2,7 @@
 
 #include "../../Engine/States/StateManager.h"
 
-MenuState::MenuState(StateManager& stateManager) : State(stateManager)
+MenuState::MenuState() : State()
 {
 }
 
