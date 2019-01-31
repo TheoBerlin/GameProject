@@ -153,7 +153,7 @@ template<typename ...Args>
 inline void Logger::printError(const std::string & str, Args&& ...args)
 {
 	if(writeToFile)
-		printToFile(TYPE_ERROR, str, CONSOLE_COLOR::RED, std::forward<Args>(args)...);
+		printToFile(TYPE_ERROR, str, std::forward<Args>(args)...);
 	print(TYPE_ERROR, str, CONSOLE_COLOR::RED, std::forward<Args>(args)...);
 }
 
