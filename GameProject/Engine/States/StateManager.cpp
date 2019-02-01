@@ -14,39 +14,39 @@ StateManager::~StateManager()
 void StateManager::update(const float dt)
 {
 	if(!isEmpty())
-		this->stack.top().first->update(dt);
+		this->stack.top()->update(dt);
 }
 
 void StateManager::updateLogic()
 {
 	if (!isEmpty())
-		this->stack.top().first->updateLogic();
+		this->stack.top()->updateLogic();
 }
 
 void StateManager::render()
 {
 	if (!isEmpty())
-		this->stack.top().first->render();
+		this->stack.top()->render();
 }
 
 void StateManager::pop()
 {
-	std::pair<State*, bool>& top = this->stack.top();
-	State* state = top.first;
+	State* top = this->stack.top();
+	State* state = top;
 	state->end();
-	if (top.second) {
-		delete state;
-	}
+	delete state;
 	this->stack.pop();
 }
 
-void StateManager::push(State * state, bool shouldSelfDelete)
+void StateManager::push(State * state)
 {
+	state->setStateManager(this);
+
 	if (isEmpty() == false) {
-		this->stack.top().first->end();
+		this->stack.top()->end();
 	}
 
-	this->stack.push(std::pair<State*, bool>(state, shouldSelfDelete));
+	this->stack.push(state);
 	state->start();
 }
 
