@@ -44,7 +44,7 @@ Model* ModelLoader::loadModel(std::string fileName)
     return loadedModel;
 }
 
-void ModelLoader::unloadModels()
+void ModelLoader::unloadAllModels()
 {
     for (std::map<std::string, Model*>::iterator itr = loadedModels.begin(); itr != loadedModels.end(); itr++) {
         delete itr->second;

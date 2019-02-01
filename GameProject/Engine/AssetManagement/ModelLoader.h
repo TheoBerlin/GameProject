@@ -13,7 +13,7 @@ class ModelLoader
 public:
     static Model* loadModel(std::string fileName);
 
-    static void unloadModels();
+    static void unloadAllModels();
 
 private:
     static std::map<std::string, Model*> loadedModels;

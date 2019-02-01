@@ -13,7 +13,7 @@ public:
     // Loads a texture from file or finds the already loaded texture
     static Texture* loadTexture(std::string fileName, TextureType type);
 
-    static void unloadTextures();
+    static void unloadAllTextures();
 
 private:
     static std::map<std::string, Texture*> loadedTextures;
