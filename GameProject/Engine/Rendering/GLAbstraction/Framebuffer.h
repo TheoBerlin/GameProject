@@ -15,9 +15,7 @@ public:
 	void bind() const;
 	void unbind() const;
 
-
 private:
 	unsigned id;
-	
-};
 
+};

@@ -112,7 +112,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, Model* model)
 {
     // Data for the mesh
     std::vector<Vertex>* vertices = new std::vector<Vertex>;
-    std::vector<unsigned short>* indices = new std::vector<unsigned short>;
+    std::vector<unsigned int>* indices = new std::vector<unsigned int>;
 
     // Process vertices
     for (unsigned int i = 0; i < assimpMesh->mNumVertices; i += 1) {
