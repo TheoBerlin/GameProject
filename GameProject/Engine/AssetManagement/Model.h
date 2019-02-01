@@ -12,6 +12,7 @@ class Model
 
         void addMesh(Mesh* mesh);
 		void addMaterial(Material material);
+        Material getMaterial(unsigned short index);
 
         // Returns the amount of meshes comprising the model
         size_t meshCount();
