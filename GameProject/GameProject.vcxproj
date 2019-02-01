@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
@@ -38,6 +39,7 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
