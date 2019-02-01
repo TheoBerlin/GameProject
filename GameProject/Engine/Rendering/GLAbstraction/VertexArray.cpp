@@ -8,6 +8,13 @@ VertexArray::VertexArray()
 
 VertexArray::~VertexArray()
 {
+	// Delete VBOs
+	for (unsigned int i = 0; i < vbos.size(); i += 1) {
+		delete vbos.at(i);
+	}
+
+	delete indexBuffer;
+
 	glDeleteVertexArrays(1, &this->id);
 }
 
@@ -29,6 +36,11 @@ void VertexArray::addBuffer(VertexBuffer * vbo, const AttributeLayout& attribute
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	vbo->setAttribCount(attributes.attribs.size());
+}
+
+void VertexArray::setIndexBuffer(IndexBuffer* indexBuffer)
+{
+	this->indexBuffer = indexBuffer;
 }
 
 void VertexArray::bind()

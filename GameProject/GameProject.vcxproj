@@ -22,6 +22,7 @@
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
+    <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
@@ -51,6 +52,7 @@
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
     <ClInclude Include="Engine\AssetManagement\Model.h" />
