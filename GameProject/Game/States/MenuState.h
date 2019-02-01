@@ -5,7 +5,7 @@
 class MenuState : public State
 {
 public:
-	MenuState(StateManager& stateManager);
+	MenuState();
 	virtual ~MenuState();
 
 	void start() override;

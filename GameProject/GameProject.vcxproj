@@ -21,12 +21,16 @@
   <ItemGroup>
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
+    <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Shader.cpp" />
-    <ClCompile Include="main.cpp">
-    </ClCompile>
+    <ClCompile Include="Engine\AssetManagement\Mesh.cpp" />
+    <ClCompile Include="Engine\AssetManagement\Model.cpp" />
+    <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
+    <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
@@ -39,23 +43,29 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\Events\EventBus.h" />
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Rendering\Display.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
+    <ClInclude Include="Engine\AssetManagement\Mesh.h" />
+    <ClInclude Include="Engine\AssetManagement\Model.h" />
+    <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
+    <ClInclude Include="Engine\AssetManagement\TextureManager.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\RenderingResources.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexArray.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
     <ClInclude Include="Game\Game.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />

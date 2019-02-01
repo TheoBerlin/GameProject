@@ -20,3 +20,10 @@ struct KeyEvent : public Event
 	int key;
 	int action;
 };
+
+struct WindowResizeEvent : public Event
+{
+	WindowResizeEvent(int width, int height) : width{ width }, height{ height } {};
+	int width;
+	int height;
+};
