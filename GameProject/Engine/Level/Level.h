@@ -11,6 +11,7 @@
 
 namespace json = nlohmann;
 
+//Startning line of error messages
 #define CLASS_NAME "LEVEL"
 
 /*
@@ -40,7 +41,8 @@ private:
 	void writeName(int index, std::string name);
 
 public:
-	void writeToFile(std::string file, glm::vec3 position, glm::vec3 scale);
+	//Takes JSON file path and pointer of entityManager. OBS! make sure level has correct path relative main.cpp location.
+	void writeToFile(std::string file, EntityManager *entityManager);
 	//Takes JSON file path and pointer of entityManager. OBS! make sure level has correct path relative main.cpp location.
 	void read(std::string file, EntityManager *entityManager);
 };

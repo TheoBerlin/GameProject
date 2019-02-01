@@ -14,7 +14,7 @@ private:
 	glm::vec3 rotation;
 	glm::vec3 scaleFactor;
 
-	// Fixes the rotation to always be between 0 to 2π radians. No more no less.
+	// Fixes the rotation to always be between 0 to 2π radians
 	glm::vec3 modulusRotation(glm::vec3 rotation);
 
 public:
@@ -30,9 +30,8 @@ public:
 	glm::vec3 getScale() const;
 
 	/*
-	Any function with set transformation will override previous of same transformations. Meaning if you setPosition(5, 5.5, 5.05) you get that
-	exact position in the world. While any function with just the transformation in its name will add too it. So if you have position (1,2,3) and
-	translate by (3, 2, 1) you will get position (4, 4, 4).
+	Any function with the 'set' prefix applies an absolute transformation
+	Any function without the 'set' prefix applies a relative transformation
 	*/
 
 	//Rotate model matrix (x,y,z) radians around its position.
@@ -47,10 +46,10 @@ public:
 	void setPosition(glm::vec3 position);
 	//Scale by (x,y,z) times
 	void scale(glm::vec3 scale);
-	//Scale all axis by x
+	//Uniform scale
 	void scale(float scale);
 	//Set Scale by (x,y,z)
 	void setScale(glm::vec3 scale);
-	//Set Scale by x
+	//Uniform scale
 	void setScale(float scale);
 };

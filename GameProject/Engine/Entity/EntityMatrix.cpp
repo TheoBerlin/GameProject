@@ -2,24 +2,9 @@
 
 glm::vec3 EntityMatrix::modulusRotation(glm::vec3 rotation)
 {
-	if (rotation.x > (2 * 3.1415)) {
-		rotation.x -= 2 * 3.1415;
-	}
-	else if (rotation.x < 0) {
-		rotation.x += 2 * 3.1415;
-	}
-	if (rotation.y > (2 * 3.1415)) {
-		rotation.y -= 2 * 3.1415;
-	}
-	else if (rotation.y < 0) {
-		rotation.y += 2 * 3.1415;
-	}
-	if (rotation.z > (2 * 3.1415)) {
-		rotation.z -= 2 * 3.1415;
-	}
-	else if (rotation.z < 0) {
-		rotation.z += 2 * 3.1415;
-	}
+	rotation.x = fmod(rotation.x, 2.0 * 3.1415);
+	rotation.y = fmod(rotation.y, 2.0 * 3.1415);
+	rotation.z = fmod(rotation.z, 2.0 * 3.1415);
 
 	return rotation;
 }
@@ -54,7 +39,7 @@ glm::vec3 EntityMatrix::getScale() const
 
 void EntityMatrix::rotate(glm::vec3 rotation)
 {
-	//Might be diffrent amount of rotation for diffrent axis and therefor need to check and rotate each individual axis
+	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
 	if (glm::abs(rotation.x) > 0) {
 		modelMatrix = glm::rotate(modelMatrix, rotation.x, glm::vec3(1, 0, 0));
 	}
@@ -73,7 +58,7 @@ void EntityMatrix::rotate(glm::vec3 rotation, glm::vec3 rotationCenter)
 	glm::vec3 position = getPosition();
 	modelMatrix = glm::translate(modelMatrix, -rotationCenter);
 
-	//Might be diffrent amount of rotation for diffrent axis and therefor need to check and rotate each individual axis
+	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
 	if (glm::abs(rotation.x) > 0) {
 		modelMatrix = glm::rotate(modelMatrix, rotation.x, glm::vec3(1, 0, 0));
 	}

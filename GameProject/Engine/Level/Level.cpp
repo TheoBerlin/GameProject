@@ -12,9 +12,17 @@ void Level::writeName(int index, std::string name)
 	jsonFile[index]["Name"] = name;
 }
 
-void Level::writeToFile(std::string file, glm::vec3 position, glm::vec3 scale)
+void Level::writeToFile(std::string file, EntityManager *entityManager)
 {
-
+	for (int i = 0; i < entityManager->getEntitySize(); i++) {
+		if (entityManager->getEntity(i)->getName().size() > 0) {
+			writeName(i, entityManager->getEntity(i)->getName());
+			writePosition(i, entityManager->getEntity(i)->getMatrix()->getPosition());
+		}
+		else {
+			LOG_WARNING("%s: Entity does not have a name at %d", CLASS_NAME, i);
+		}
+	}
 
 	std::ofstream oStream(file);
 	oStream << std::setw(4) << jsonFile << std::endl;
