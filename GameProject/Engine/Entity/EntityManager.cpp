@@ -18,7 +18,7 @@ EntityManager::~EntityManager()
 
 void EntityManager::update(const float dt)
 {
-	for (int i = 0; i < this->entities.size(); i++) {
+	for (unsigned int i = 0; i < this->entities.size(); i++) {
 		this->entities[i]->update(dt);
 	}
 		
