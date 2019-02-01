@@ -85,6 +85,11 @@ GLFWwindow * Display::getWindowPtr()
 	return this->window;
 }
 
+Renderer & Display::getRenderer()
+{
+	return this->renderer;
+}
+
 Display::~Display()
 {
 	glfwDestroyWindow(this->window);

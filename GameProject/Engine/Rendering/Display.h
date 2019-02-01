@@ -5,6 +5,8 @@
 
 #include <string>
 
+#include "Renderer.h"
+
 class Display
 {
 public:
@@ -27,6 +29,7 @@ public:
 	std::string getTitle() const;
 
 	GLFWwindow* getWindowPtr();
+	Renderer& getRenderer();
 
 	~Display();
 
@@ -39,4 +42,6 @@ private:
 	std::string title;
 	int width;
 	int height;
+
+	Renderer renderer;
 };
