@@ -22,6 +22,8 @@
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
+    <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
+    <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
@@ -51,7 +53,9 @@
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
+    <ClInclude Include="Engine\Entity\EntityMatrix.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
