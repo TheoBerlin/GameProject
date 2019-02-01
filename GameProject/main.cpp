@@ -16,8 +16,8 @@ int main() {
 
 	Logger::destroy();
 
-	ModelLoader::unloadModels();
-	TextureManager::unloadTextures();
+	ModelLoader::unloadAllModels();
+	TextureManager::unloadAllTextures();
 
 	return 0;
 }
