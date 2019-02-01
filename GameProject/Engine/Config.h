@@ -5,3 +5,5 @@
 #define DEFAULT_TITLE "Little Game Project"
 
 #define FRAMES_PER_SECOND 30
+
+//#define IMGUI
