@@ -13,7 +13,4 @@ public:
 	void onUpdate(float dt) override;
 	void onUpdateLogic() override;
 	void onRender() override;
-
-private:
-	MenuState* menuState;
 };

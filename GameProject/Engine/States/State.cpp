@@ -2,17 +2,23 @@
 
 #include "StateManager.h"
 
-State::State(StateManager& stateManager) : stateManager(stateManager)
+State::State()
 {
+	this->stateManager = nullptr;
 }
 
 State::~State()
 {
 }
 
-void State::pushState(State * state, bool shouldSelfDelete)
+void State::setStateManager(StateManager * stateManager)
 {
-	this->getStateManager().push(state, shouldSelfDelete);
+	this->stateManager = stateManager;
+}
+
+void State::pushState(State * state)
+{
+	this->getStateManager().push(state);
 }
 
 void State::popState()
@@ -22,5 +28,5 @@ void State::popState()
 
 StateManager& State::getStateManager()
 {
-	return this->stateManager;
+	return *this->stateManager;
 }

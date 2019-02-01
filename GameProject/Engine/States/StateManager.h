@@ -36,9 +36,8 @@ public:
 	Add a state on top of stack and call its "start" function.
 	Arguments:
 		state:				The state to be added.
-		shouldSelfDelete:	If set to true the state will be deleted if poped or if StateManager is deleted.
 	*/
-	void push(State* state, bool shouldSelfDelete = false);
+	void push(State* state);
 
 	/*
 	Check if stack is empty.
@@ -49,5 +48,5 @@ public:
 
 private:
 	// Stack which holds all the states and a bool which tells if it should be deleted.
-	std::stack<std::pair<State*, bool>> stack;
+	std::stack<State*> stack;
 };

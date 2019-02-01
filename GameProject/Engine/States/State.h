@@ -4,8 +4,10 @@ class StateManager;
 class State
 {
 public:
-	State(StateManager& stateManager);
+	State();
 	virtual ~State();
+
+	void setStateManager(StateManager* stateManager);
 
 	virtual void start() {};
 	virtual void end() {};
@@ -13,11 +15,11 @@ public:
 	virtual void updateLogic() {};
 	virtual void render() {};
 
-	void pushState(State* state, bool shouldSelfDelete = false);
+	void pushState(State* state);
 	void popState();
 
 	StateManager& getStateManager();
 
 private:
-	StateManager& stateManager;
+	StateManager* stateManager;
 };
