@@ -1,16 +1,15 @@
 #pragma once
 
 #include "glm/glm.hpp"
+#include "../Config.h"
 #include "Component.h"
-
-#define FOV 60.0;
-#define ZFAR 100.0;
-#define ZNEAR 0.1;
+#include "../Rendering/Display.h"
+#include "../Events/EventBus.h"
 
 class Camera : public Component
 {
 public:
-	Camera(const std::string& tagName);
+	Camera(const std::string& tagName, const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	virtual ~Camera();
 
 	void update(const float& dt);
@@ -22,8 +21,11 @@ public:
 	glm::mat4 getVP() const;
 
 private:
-	glm::vec3 f, u, r;
+	glm::vec3 f, u, r, offset, pos;
 	glm::mat4 view, proj;
+	float fov, zNear, zFar;
 
+	void updateView();
+	void updateProj(WindowResizeEvent * evnt);
 };
 
