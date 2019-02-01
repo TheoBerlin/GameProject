@@ -10,7 +10,7 @@ Model* ModelLoader::loadModel(std::string fileName)
     Model* loadedModel = loadedModels[fileName];
 
     if (loadedModel) {
-        Logger::printInfo("Model [%s] already loaded", fileName.c_str());
+        LOG_INFO("Model [%s] already loaded", fileName.c_str());
         return loadedModel;
     }
 
@@ -18,14 +18,14 @@ Model* ModelLoader::loadModel(std::string fileName)
     const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
     if (!scene || !scene->mRootNode) {
-        Logger::printWarning("Assimp failed to load [%s]", fileName.c_str());
+        LOG_WARNING("Assimp failed to load [%s]", fileName.c_str());
 
         return nullptr;
     }
 
     loadedModel = new Model();
 
-    Logger::printInfo("Found %d materials", scene->mNumMaterials);
+    LOG_INFO("Found %d materials", scene->mNumMaterials);
 
     // Load selected textures and save texture structs in the model
     for (unsigned int i = 0; i < scene->mNumMaterials; i += 1) {
@@ -67,7 +67,7 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
         // Convert aiString to std::string
         std::string convertedString(texturePath.C_Str());
 
-        Logger::printInfo("Found texture [%s]", convertedString.c_str());
+        LOG_INFO("Found texture [%s]", convertedString.c_str());
 
         // Convert aiTextureType to TextureType
         TextureType txType = convertTextureType(type);

@@ -7,11 +7,11 @@
 #include <string>
 
 // Print function to for info, warnings and errors.
-#define LOG_INFO(...)				Logger::printInfo(__VA_ARGS__)
+#define LOG_INFO(...)				Logger::printInfo(__FILE__, __func__, __LINE__, __VA_ARGS__)
 #define LOG_PRINT(...)				LOG_INFO(__VA_ARGS__)
-#define LOG_WARNING(...)			Logger::printWarning(__VA_ARGS__)
-#define LOG_ERROR(...)				Logger::printError(__VA_ARGS__)
-#define LOG_SUCCESS(...)			Logger::printSuccess(__VA_ARGS__)
+#define LOG_WARNING(...)			Logger::printWarning(__FILE__, __func__, __LINE__, __VA_ARGS__)
+#define LOG_ERROR(...)				Logger::printError(__FILE__, __func__, __LINE__, __VA_ARGS__)
+#define LOG_SUCCESS(...)			Logger::printSuccess(__FILE__, __func__, __LINE__, __VA_ARGS__)
 
 // Restrict printing by only print certain types. 
 #define LOG_SET_FILTER(...)			Logger::setFilter(__VA_ARGS__)
@@ -49,38 +49,46 @@ public:
 	/*
 	Print a formatted white string with [INFO] as a prefix.
 	Arguments:
+		filePathStr: The path to the file which name will be printed.
+		line: The line number which will be printed.
 		str: The formatted string. Eg. "Test: %d"
 		args: List of corresponding formateted specifier. Eg. %03.5ld
 	*/
 	template<typename ...Args>
-	static void printInfo(const std::string& str, Args&& ...args);
+	static void printInfo(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string& str, Args&& ...args);
 
 	/*
 	Print a formatted yellow string with [WARNING] as a prefix.
 	Arguments:
+		filePathStr: The path to the file which name will be printed.
+		line: The line number which will be printed.
 		str: The formatted string. Eg. "Test: %d"
 		args: List of corresponding formateted specifier. Eg. %03.5ld
 	*/
 	template<typename ...Args>
-	static void printWarning(const std::string& str, Args&& ...args);
+	static void printWarning(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string& str, Args&& ...args);
 
 	/*
 	Print a formatted red string with [ERROR] as a prefix.
 	Arguments:
+		filePathStr: The path to the file which name will be printed.
+		line: The line number which will be printed.
 		str: The formatted string. Eg. "Test: %d"
 		args: List of corresponding formateted specifier. Eg. %03.5ld
 	*/
 	template<typename ...Args>
-	static void printError(const std::string& str, Args&& ...args);
+	static void printError(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string& str, Args&& ...args);
 
 	/*
 	Print a formatted green string with [SUCCESS] as a prefix.
 	Arguments:
+		filePathStr: The path to the file which name will be printed.
+		line: The line number which will be printed.
 		str: The formatted string. Eg. "Test: %d"
 		args: List of corresponding formateted specifier. Eg. %03.5ld
 	*/
 	template<typename ...Args>
-	static void printSuccess(const std::string& str, Args&& ...args);
+	static void printSuccess(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string& str, Args&& ...args);
 
 	/*
 	Show certain information and prevent others to be printed.
@@ -118,10 +126,15 @@ private:
 	static bool shouldPrint(TYPE type);
 	static std::string getCurrentTime();
 
+	/*
+	Will format the string and print it to console and to file if writeToFile is true.
+	*/
 	template<typename ...Args>
-	static void print(TYPE type, const std::string& str, CONSOLE_COLOR color, Args&& ...args);
+	static void formatPrint(TYPE type, const std::string& str, const std::string& fileStr, const std::string& functionStr, unsigned int line, CONSOLE_COLOR color, Args&& ...args);
 	template<typename ...Args>
-	static void printToFile(TYPE type, const std::string& str, Args&& ...args);
+	static void print(const std::string& str, CONSOLE_COLOR color, Args&& ...args);
+	template<typename ...Args>
+	static void printToFile(const std::string& str, Args&& ...args);
 	template<typename ...Args>
 	static std::string formatString(const std::string& str, Args&& ...args);
 
@@ -134,108 +147,94 @@ private:
 };
 
 template<typename ...Args>
-inline void Logger::printInfo(const std::string & str, Args&& ...args)
+inline void Logger::printInfo(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string & str, Args&& ...args)
 {
-	if (writeToFile)
-		printToFile(TYPE_INFO, str, std::forward<Args>(args)...);
-	print(TYPE_INFO, str, CONSOLE_COLOR::WHITE, std::forward<Args>(args)...);
+	formatPrint(TYPE_INFO, str, filePathStr, functionStr, line, CONSOLE_COLOR::WHITE, std::forward<Args>(args)...);
 }
 
 template<typename ...Args>
-inline void Logger::printWarning(const std::string & str, Args&& ...args)
+inline void Logger::printWarning(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string & str, Args&& ...args)
 {
-	if (writeToFile)
-		printToFile(TYPE_WARNING, str, std::forward<Args>(args)...);
-	print(TYPE_WARNING, str, CONSOLE_COLOR::YELLOW, std::forward<Args>(args)...);
+	formatPrint(TYPE_WARNING, str, filePathStr, functionStr, line, CONSOLE_COLOR::YELLOW, std::forward<Args>(args)...);
 }
 
 template<typename ...Args>
-inline void Logger::printError(const std::string & str, Args&& ...args)
+inline void Logger::printError(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string & str, Args&& ...args)
 {
-	if(writeToFile)
-		printToFile(TYPE_ERROR, str, std::forward<Args>(args)...);
-	print(TYPE_ERROR, str, CONSOLE_COLOR::RED, std::forward<Args>(args)...);
+	formatPrint(TYPE_ERROR, str, filePathStr, functionStr, line, CONSOLE_COLOR::RED, std::forward<Args>(args)...);
 }
 
 template<typename ...Args>
-inline void Logger::printSuccess(const std::string & str, Args && ...args)
+inline void Logger::printSuccess(const std::string& filePathStr, const std::string& functionStr, unsigned int line, const std::string & str, Args && ...args)
 {
-	if (writeToFile)
-		printToFile(TYPE_SUCCESS, str, std::forward<Args>(args)...);
-	print(TYPE_SUCCESS, str, CONSOLE_COLOR::GREEN, std::forward<Args>(args)...);
+	formatPrint(TYPE_SUCCESS, str, filePathStr, functionStr, line, CONSOLE_COLOR::GREEN, std::forward<Args>(args)...);
 }
 
 template<typename ...Args>
-inline void Logger::print(TYPE type, const std::string & str, CONSOLE_COLOR color, Args&& ...args)
+inline void Logger::formatPrint(TYPE type, const std::string & str, const std::string & filePathStr, const std::string& functionStr, unsigned int line, CONSOLE_COLOR color, Args && ...args)
 {
 	if (shouldPrint(type))
 	{
-		// Tell the user how to stop
-		SetConsoleTextAttribute(hstdout, color);
+		// Fetch name of file from path.
+		std::string fileStr = filePathStr;
+		size_t found = fileStr.rfind("/");
+		if (found == std::string::npos) {
+			found = fileStr.rfind("\\");
+			if (found == std::string::npos) {
+				found = 0;
+			}
+		}
+		fileStr = fileStr.substr(found + (found != 0 ? 1 : 0));
+
+		std::string formattedStr = fileStr + ", " + functionStr + ", " + std::to_string(line) + ": " + str + "\n";
+
+		static std::string finalStr;
+		static std::string typeStr;
+		std::string currTimeStr = writeToFile ? (getCurrentTime() + ", ") : "";
+
 		switch (type)
 		{
 		case TYPE_ERROR:
-		{
-			const std::string s = "[ERROR] " + str + "\n";
-			printf(s.c_str(), args...);
-		}
+			typeStr = "[ERROR]   ";
 		break;
 		case TYPE_WARNING:
-		{
-			const std::string s = "[WARNING] " + str + "\n";
-			printf(s.c_str(), args...);
-		}
+			typeStr = "[WARNING] ";
 		break;
 		case TYPE_SUCCESS:
-		{
-			const std::string s = "[SUCESS] " + str + "\n";
-			printf(s.c_str(), args...);
-		}
+			typeStr = "[SUCCESS] ";
 		break;
 		default:
-		{
-			const std::string s = "[INFO] " + str + "\n";
-			printf(s.c_str(), args...);
-		}
+			typeStr = "[INFO]    ";
 		break;
 		}
 
-		FlushConsoleInputBuffer(hstdin);
-		SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+		if (writeToFile) {
+			finalStr = typeStr + currTimeStr + formattedStr;
+			printToFile(finalStr, std::forward<Args>(args)...);
+		}
+		finalStr = typeStr + formattedStr;
+		print(finalStr, color, std::forward<Args>(args)...);
 	}
 }
 
 template<typename ...Args>
-inline void Logger::printToFile(TYPE type, const std::string & str, Args&& ...args)
+inline void Logger::print(const std::string & str, CONSOLE_COLOR color, Args&& ...args)
 {
-	if (shouldPrint(type))
-	{
-		std::string formattedStr;
-		std::string currTime = getCurrentTime();
+	// Set current console color.
+	SetConsoleTextAttribute(hstdout, color);
+		
+	printf(str.c_str(), args...);
 
-		switch (type)
-		{
-		case TYPE_ERROR:
-		{
-			const std::string s = "[ERROR]   " + currTime + ": " + str + "\n";
-			formattedStr = formatString(s, std::forward<Args>(args)...);
-		}
-		break;
-		case TYPE_WARNING:
-		{
-			const std::string s = "[WARNING] " + currTime + ": " + str + "\n";
-			formattedStr = formatString(s, std::forward<Args>(args)...);
-		}
-		break;
-		default:
-		{
-			const std::string s = "[INFO]    " + currTime + ": " + str + "\n";
-			formattedStr = formatString(s, std::forward<Args>(args)...);
-		}
-		break;
-		}
-		file << formattedStr.c_str();
-	}
+	// Reset console color.
+	FlushConsoleInputBuffer(hstdin);
+	SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+}
+
+template<typename ...Args>
+inline void Logger::printToFile(const std::string & str, Args&& ...args)
+{
+	std::string formattedStr = formatString(str, std::forward<Args>(args)...);
+	file << formattedStr.c_str();
 }
 
 template<typename ...Args>

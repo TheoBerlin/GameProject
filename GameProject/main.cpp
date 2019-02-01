@@ -33,7 +33,7 @@ int main() {
 
 	Game game;
 	game.start();
-
+	
 	Logger::destroy();
 
 	ModelLoader::unloadModels();
