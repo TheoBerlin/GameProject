@@ -32,7 +32,7 @@ public:
 	template<class T, class EventType>
 	void unsubscribe(T * instance, void (T::*memberFunction)(EventType *));
 
-	// Use this to get the instance of the EventBus anywhere
+	// Get the single instance of the EventBus in order to subscribe/publish
 	static EventBus& get();
 
 	// Only called when program exits
@@ -115,6 +115,7 @@ inline unsigned EventBus::getID(T * instance)
 	return (unsigned)(h - (size_t)instance);
 }
 
+// Get the single instance of the EventBus in order to subscribe/publish
 inline EventBus& EventBus::get()
 {
 	static EventBus instance;
@@ -127,10 +128,13 @@ inline EventBus::~EventBus()
 	{
 		HandlerList* handlers = i.second;
 		
-		std::list<HandlerFunctionBase*>::iterator it;
-		for (it = handlers->begin(); it != handlers->end(); ++it)
+		if (handlers != nullptr)
 		{
-			delete *it;
+			std::list<HandlerFunctionBase*>::iterator it;
+			for (it = handlers->begin(); it != handlers->end(); ++it)
+			{
+				delete *it;
+			}
 		}
 		delete handlers;
 	}

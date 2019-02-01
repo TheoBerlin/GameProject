@@ -4,6 +4,7 @@
 #include <unordered_map>
 
 #include "../Components/Component.h"
+#include "EntityMatrix.h"
 
 class Entity
 {
@@ -18,11 +19,13 @@ public:
 
 	void setName(const std::string& name);
 	const std::string getName();
+	EntityMatrix* getMatrix();
 
 private:
 	std::unordered_map<std::string, Component*> components;
 
 	std::string name;
+	EntityMatrix matrix;
 
 };
 

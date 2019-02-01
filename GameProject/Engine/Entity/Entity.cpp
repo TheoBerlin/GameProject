@@ -57,3 +57,8 @@ const std::string Entity::getName()
 {
 	return this->name;
 }
+
+EntityMatrix * Entity::getMatrix()
+{
+	return &matrix;
+}
