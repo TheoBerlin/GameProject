@@ -40,6 +40,8 @@ Camera::~Camera()
 
 void Camera::update(const float & dt)
 {
+	this->pos = getHost()->getMatrix()->getPosition() + offset;
+	updateView();
 }
 
 glm::vec3 Camera::getUp() const

@@ -5,8 +5,6 @@
 #include "Component.h"
 #include "../Rendering/Display.h"
 #include "../Events/EventBus.h"
-#include "glm/gtc/quaternion.hpp"
-//#include "glm/gtx/quaternion.hpp"
 
 class Camera : public Component
 {
@@ -31,7 +29,6 @@ private:
 	glm::vec3 f, u, r, offset, pos;
 	glm::mat4 view, proj;
 	float fov, zNear, zFar;
-	glm::quat rotation;
 
 	void updateView();
 	void updateProj(WindowResizeEvent * evnt);
