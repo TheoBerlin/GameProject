@@ -3,7 +3,7 @@
 #include <Windows.h>
 #include "GL/glew.h"
 
-#include "../../Utils/stb_image.h"
+#include "Utils/stb_image.h"
 #include "../Rendering/GLAbstraction/RenderingResources.h"
 #include <map>
 

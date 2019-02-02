@@ -15,6 +15,11 @@ Mesh::~Mesh()
     delete vertexIndices;
 }
 
+unsigned short Mesh::getMaterialIndex()
+{
+    return this->materialIndex;
+}
+
 void Mesh::createBuffers()
 {
 }

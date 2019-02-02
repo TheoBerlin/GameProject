@@ -27,10 +27,16 @@ Model* ModelLoader::loadModel(std::string fileName)
 
     LOG_INFO("Found %d materials", scene->mNumMaterials);
 
+    // Extract directory path for loading material and texture files
+    std::string directory = fileName.substr(0, fileName.find_last_of('/'));
+	if (directory != "") {
+		directory += "/";
+	}
+
     // Load selected textures and save texture structs in the model
     for (unsigned int i = 0; i < scene->mNumMaterials; i += 1) {
         // Load diffuse textures
-        processMaterial(scene->mMaterials[i], loadedModel, aiTextureType_DIFFUSE);
+        processMaterial(scene->mMaterials[i], loadedModel, aiTextureType_DIFFUSE, directory);
     }
 
     // Process all scene nodes recursively
@@ -53,7 +59,7 @@ void ModelLoader::unloadModels()
     loadedModels.clear();
 }
 
-void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureType type)
+void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureType type, const std::string& directory)
 {
     aiString texturePath;
     unsigned int textureCount = material->GetTextureCount(type);
@@ -72,7 +78,7 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
         // Convert aiTextureType to TextureType
         TextureType txType = convertTextureType(type);
 
-        Texture* texture = TextureManager::loadTexture(convertedString, txType);
+        Texture* texture = TextureManager::loadTexture(directory + convertedString, txType);
 
         newMaterial.Textures.push_back(*texture);
 
