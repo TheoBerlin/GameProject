@@ -38,7 +38,7 @@ void EntityManager::addEntity(Entity* entity)
 	this->entities.push_back(entity);
 }
 
-Entity* EntityManager::getEntity(int index)
+Entity* EntityManager::getEntity(unsigned int index)
 {
 	Entity* entity = nullptr;
 	if (index < entities.size()) {
