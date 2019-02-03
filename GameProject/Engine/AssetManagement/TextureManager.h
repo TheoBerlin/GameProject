@@ -3,7 +3,8 @@
 #include <Windows.h>
 #include "GL/glew.h"
 
-#include "Utils/stb_image.h"
+#include <Utils/Logger.h>
+#include <Utils/stb_image.h>
 #include "../Rendering/GLAbstraction/RenderingResources.h"
 #include <map>
 
@@ -14,6 +15,7 @@ public:
     static Texture* loadTexture(std::string fileName, TextureType type);
 
     static void unloadTextures();
+    static size_t textureCount();
 
 private:
     static std::map<std::string, Texture*> loadedTextures;

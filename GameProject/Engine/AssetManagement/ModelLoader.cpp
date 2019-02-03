@@ -41,7 +41,6 @@ Model* ModelLoader::loadModel(std::string fileName)
 
     // Process all scene nodes recursively
     aiNode *rootNode = scene->mRootNode;
-
     processNode(scene, rootNode, loadedModel);
 
     // Save the model's pointer to avoid duplicate model data
@@ -59,14 +58,19 @@ void ModelLoader::unloadModels()
     loadedModels.clear();
 }
 
+size_t ModelLoader::modelCount()
+{
+    return loadedModels.size();
+}
+
 void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureType type, const std::string& directory)
 {
     aiString texturePath;
     unsigned int textureCount = material->GetTextureCount(type);
 
-    for (unsigned int i = 0; i < textureCount; i += 1) {
-        Material newMaterial;
+    Material newMaterial;
 
+    for (unsigned int i = 0; i < textureCount; i += 1) {
         // Load texture
         material->GetTexture(type, i, &texturePath);
 
@@ -81,24 +85,24 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
         Texture* texture = TextureManager::loadTexture(directory + convertedString, txType);
 
         newMaterial.Textures.push_back(*texture);
-
-        // Store material constants
-		aiColor3D ambient;
-		aiColor3D diffuse;
-
-        material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-        material->Get(AI_MATKEY_COLOR_SPECULAR, diffuse);
-
-		newMaterial.Ka.r = ambient.r;
-		newMaterial.Ka.g = ambient.g;
-		newMaterial.Ka.b = ambient.b;
-
-		newMaterial.Ks.r = diffuse.r;
-		newMaterial.Ks.g = diffuse.g;
-		newMaterial.Ks.b = diffuse.b;
-
-        model->addMaterial(newMaterial);
     }
+
+    // Store material constants
+    aiColor3D ambient;
+    aiColor3D diffuse;
+
+    material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+    material->Get(AI_MATKEY_COLOR_SPECULAR, diffuse);
+
+    newMaterial.Ka.r = ambient.r;
+    newMaterial.Ka.g = ambient.g;
+    newMaterial.Ka.b = ambient.b;
+
+    newMaterial.Ks.r = diffuse.r;
+    newMaterial.Ks.g = diffuse.g;
+    newMaterial.Ks.b = diffuse.b;
+
+    model->addMaterial(newMaterial);
 }
 
 void ModelLoader::processNode(const aiScene* scene, aiNode* node, Model* model)
