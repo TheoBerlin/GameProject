@@ -61,7 +61,7 @@ void LevelParser::read(std::string file, EntityManager *entityManager)
 					}
 					catch (const std::exception& e) {
 						LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
-						return;
+						break;
 					}
 				}
 				else {
@@ -75,7 +75,7 @@ void LevelParser::read(std::string file, EntityManager *entityManager)
 		}
 		else {
 			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
-			return;
+			break;
 		}
 		entity->getMatrix()->setPosition(position);
 		entityManager->addEntity(entity);
