@@ -39,7 +39,7 @@ glm::vec3 EntityMatrix::getScale() const
 
 glm::vec3 EntityMatrix::getForward() const
 {
-	return this->forward;
+	return this->f;
 }
 
 void EntityMatrix::rotate(const glm::vec3& rotation)
@@ -80,11 +80,11 @@ void EntityMatrix::rotate(const glm::vec3& rotation, const glm::vec3& rotationCe
 
 void EntityMatrix::setRotation(const glm::vec3 &rotation)
 {
-	rotation = modulusRotation(rotation);
+	glm::vec3 newRotation = modulusRotation(rotation);
 	this->rotation = glm::vec3(0);
 	this->scaleFactor = glm::vec3(0);
 	this->modelMatrix = glm::mat4(1);
-	rotate(rotation);
+	rotate(newRotation);
 	scale(scaleFactor);
 }
 
@@ -130,5 +130,7 @@ void EntityMatrix::setScale(const float& scale)
 
 void EntityMatrix::setForward(const glm::vec3 & forward)
 {
-	this->forward = forward;
+	this->f = glm::normalize(forward);
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 }

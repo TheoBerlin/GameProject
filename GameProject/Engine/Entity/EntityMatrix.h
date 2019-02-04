@@ -4,6 +4,7 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/constants.hpp"
+#include "../Config.h"
 
 class EntityMatrix
 {
@@ -13,7 +14,7 @@ private:
 	glm::mat4 modelMatrix;
 	glm::vec3 rotation;
 	glm::vec3 scaleFactor;
-	glm::vec3 forward;
+	glm::vec3 f, r, u;
 
 	// Fixes the rotation to always be between 0 to 2π radians
 	glm::vec3 modulusRotation(glm::vec3 rotation);
