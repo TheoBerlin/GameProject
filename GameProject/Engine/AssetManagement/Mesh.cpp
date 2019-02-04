@@ -33,3 +33,12 @@ Mesh::~Mesh()
 
     delete VAO;
 }
+
+unsigned short Mesh::getMaterialIndex()
+{
+    return this->materialIndex;
+}
+
+void Mesh::createBuffers()
+{
+}

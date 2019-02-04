@@ -11,6 +11,7 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
 
     if (textureIterator != loadedTextures.end()) {
         // The texture has already been loaded, return it
+        LOG_INFO("The texture [%s] has already been loaded", fileName.c_str());
         return textureIterator->second;
     }
 
@@ -19,6 +20,12 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
 
     // Load image data
     unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &channelCount, 3);
+
+    if (!textureData) {
+        LOG_WARNING("Unable to load texture [%s]", fileName.c_str());
+
+        return nullptr;
+    }
 
     Texture* newTexture = new Texture();
     newTexture->path = fileName;
@@ -47,4 +54,9 @@ void TextureManager::unloadAllTextures()
     }
 
     loadedTextures.clear();
+}
+
+size_t TextureManager::textureCount()
+{
+    return loadedTextures.size();
 }

@@ -14,6 +14,10 @@ public:
     void bindVertexBuffer();
     // Inserts material data into a uniform buffer
     void bindMaterial(UniformBuffer* uniformBuffer);
+    unsigned short getMaterialIndex();
+
+private:
+    void createBuffers();
 
 private:
     Model* parentModel;

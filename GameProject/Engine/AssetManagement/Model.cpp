@@ -37,6 +37,11 @@ size_t Model::meshCount()
     return meshes.size();
 }
 
+size_t Model::materialCount()
+{
+    return materials.size();
+}
+
 Mesh* Model::getMesh(size_t index)
 {
     return meshes.at(index);
