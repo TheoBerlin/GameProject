@@ -9,7 +9,7 @@
 class Entity
 {
 public:
-	Entity();
+	Entity(const glm::vec3& forward = { 1.0f, 0.0f, 0.0f });
 	~Entity();
 
 	void update(const float dt);

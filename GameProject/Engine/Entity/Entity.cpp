@@ -1,8 +1,8 @@
 #include "Entity.h"
 
-Entity::Entity()
+Entity::Entity(const glm::vec3& forward)
 {
-
+	matrix.setForward(forward);
 }
 
 
