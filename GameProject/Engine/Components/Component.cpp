@@ -1,7 +1,12 @@
 #include "Component.h"
 
-Component::Component(const std::string & tagName)
+#include <Engine/Entity/Entity.h>
+
+Component::Component(Entity* parentEntity, const std::string & tagName)
 {
+	parentEntity->addComponent(this);
+	this->setHost(parentEntity);
+
 	this->tagName = tagName;
 }
 
