@@ -27,8 +27,8 @@ struct AttributeLayout {
 	*/
 	void push(const unsigned& size) {
 
-		this->stride += size;
 		AttributeSettings attribute(size, this->stride*sizeof(float));
+		this->stride += size;
 
 		this->attribs.push_back(attribute);
 

@@ -119,8 +119,6 @@ void Display::init(int width, int height, const std::string& title)
 	this->height = height;
 	this->title = title;
 
-	this->renderer = new Renderer();
-
 	if(!glfwInit()) 
 	{
 		LOG_ERROR("Failed to initialize GLFW!");
@@ -157,4 +155,8 @@ void Display::init(int width, int height, const std::string& title)
 	glViewport(0, 0, this->width, this->height);
 
 	glfwSetWindowSizeCallback(this->window, resizeCallback);
+
+	glCullFace(GL_BACK);
+
+	this->renderer = new Renderer();
 }

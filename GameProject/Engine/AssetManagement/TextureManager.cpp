@@ -19,7 +19,7 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
     int width, height, channelCount;
 
     // Load image data
-    unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &channelCount, 3);
+    unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &channelCount, 4);
 
     if (!textureData) {
         LOG_WARNING("Unable to load texture [%s]", fileName.c_str());
@@ -36,7 +36,12 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
 
     glBindTexture(GL_TEXTURE_2D, newTexture->id);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureData);
 
     // Free image data as OpenGL is storing a copy
     stbi_image_free(textureData);

@@ -81,6 +81,10 @@
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Rendering\Shaders\testShader.frag" />
+    <None Include="Engine\Rendering\Shaders\testShader.vert" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{0CCD4083-B077-4A10-B7A4-32032764ADFD}</ProjectGuid>

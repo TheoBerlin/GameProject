@@ -2,6 +2,7 @@
 
 #include "../../Engine/States/State.h"
 
+class Entity;
 class MenuState : public State
 {
 public:
@@ -15,4 +16,5 @@ public:
 	void render() override;
 
 private:
+	Entity* entity;
 };

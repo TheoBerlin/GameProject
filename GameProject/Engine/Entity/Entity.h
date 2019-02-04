@@ -6,6 +6,8 @@
 #include "../Components/Component.h"
 #include "EntityMatrix.h"
 
+#include "../AssetManagement/Model.h"
+
 class Entity
 {
 public:
@@ -17,6 +19,9 @@ public:
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
 
+	void setModel(Model* model);
+	Model* getModel();
+
 	void setName(const std::string& name);
 	const std::string getName();
 	EntityMatrix* getMatrix();
@@ -27,5 +32,6 @@ private:
 	std::string name;
 	EntityMatrix matrix;
 
+	Model* model;
 };
 

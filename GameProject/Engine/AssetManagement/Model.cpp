@@ -27,7 +27,7 @@ void Model::addMaterial(Material material)
     materials.push_back(material);
 }
 
-Material Model::getMaterial(unsigned short index)
+Material& Model::getMaterial(unsigned short index)
 {
     return materials.at(index);
 }

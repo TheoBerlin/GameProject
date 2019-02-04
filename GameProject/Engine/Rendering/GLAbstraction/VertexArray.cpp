@@ -3,7 +3,6 @@
 VertexArray::VertexArray() : nextLocation(0)
 {
 	glGenVertexArrays(1, &this->id);
-
 }
 
 VertexArray::~VertexArray()
