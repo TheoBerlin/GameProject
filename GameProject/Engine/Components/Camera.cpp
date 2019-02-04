@@ -3,8 +3,6 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include  "../Entity/Entity.h"
 
-const glm::vec3 GLOBAL_UP_VECTOR = glm::vec3(0.0f, 1.0f, 0.0f);
-
 Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(tagName)
 {
 	// Set the standard values
@@ -47,7 +45,7 @@ Camera::~Camera()
 
 void Camera::update(const float & dt)
 {
-	this->pos = getHost()->getMatrix()->getPosition() + offset;
+	updatePosition();
 	updateView();
 }
 
@@ -86,4 +84,10 @@ void Camera::setForward(const glm::vec3 & forward)
 	this->f = glm::normalize(forward);
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
 	this->u = glm::cross(this->r, this->f);
+}
+
+void Camera::updatePosition()
+{
+	glm::vec3 tempPos = getHost()->getMatrix()->getPosition();
+	this->pos = { tempPos.x + offset.x, tempPos.y + offset.y, tempPos.z + offset.z };
 }

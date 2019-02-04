@@ -35,5 +35,7 @@ private:
 
 	// Set the forward-vector and in the process the right and up vector aswell
 	void setForward(const glm::vec3 & forward);
+	// Update camera's position relative to the parent entity
+	void updatePosition();
 };
 
