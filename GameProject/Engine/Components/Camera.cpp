@@ -3,31 +3,13 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include  "../Entity/Entity.h"
 
-const glm::vec3 GLOBAL_UP_VECTOR = glm::vec3(0.0f, 1.0f, 0.0f);
-
 Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(tagName)
 {
 	// Set the standard values
 	this->fov = FOV;
 	this->zNear = ZNEAR;
 	this->zFar = ZFAR;
-
-	// Init camera
 	this->offset = offset;
-	this->pos = getHost()->getMatrix()->getPosition() + offset;
-	if (abs(offset[0]) < EPSILON && abs(offset[1]) < EPSILON && abs(offset[2]) < EPSILON)
-	{
-		// If offset haven't been set, set a default forward
-		setForward(glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-	else
-	{
-		// If offset has been set, set the forward to pos
-		setForward(this->pos - getHost()->getMatrix()->getPosition());
-	}
-	
-	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-	updateView();
 
 	// Set subscribe to resize event to update camera
 	EventBus::get().subscribe(this, &Camera::updateProj);
@@ -40,7 +22,33 @@ Camera::~Camera()
 
 void Camera::update(const float & dt)
 {
+	updatePosition();
+	updateView();
+}
+
+void Camera::init()
+{
+	// Init camera
 	this->pos = getHost()->getMatrix()->getPosition() + offset;
+	this->f = getHost()->getMatrix()->getForward();
+	// If there is an offset set but no forward
+	if (abs(offset.length()) > EPSILON && this->f.length() < EPSILON)
+	{
+		// If offset has been set, set the forward to pos
+		setForward(this->pos - getHost()->getMatrix()->getPosition());
+	}
+	// If no offset and no forward, set default
+	else if (abs(offset.length()) < EPSILON && this->f.length() < EPSILON)
+	{
+		setForward(glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	// If there is a forward, set that
+	else
+	{
+		setForward(this->f);
+	}
+
+	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 	updateView();
 }
 
@@ -79,4 +87,10 @@ void Camera::setForward(const glm::vec3 & forward)
 	this->f = glm::normalize(forward);
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
 	this->u = glm::cross(this->r, this->f);
+}
+
+void Camera::updatePosition()
+{
+	glm::vec3 tempPos = getHost()->getMatrix()->getPosition();
+	this->pos = { tempPos.x + offset.x, tempPos.y + offset.y, tempPos.z + offset.z };
 }

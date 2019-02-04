@@ -9,11 +9,13 @@
 class Camera : public Component
 {
 public:
-	Camera(const std::string& tagName, const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
+	Camera(const std::string& tagName = "Camera", const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	virtual ~Camera();
 
 	// Update called by entity
 	void update(const float& dt);
+
+	void init();
 
 	// Returns the cameras up-vector
 	glm::vec3 getUp() const;
@@ -33,7 +35,9 @@ private:
 	void updateView();
 	void updateProj(WindowResizeEvent * evnt);
 
-	// Set the forward-vector and in the process the right and up vector as well
+	// Set the forward-vector and in the process the right and up vector aswell
 	void setForward(const glm::vec3 & forward);
+	// Update camera's position relative to the parent entity
+	void updatePosition();
 };
 
