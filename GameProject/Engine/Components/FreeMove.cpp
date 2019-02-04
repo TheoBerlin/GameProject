@@ -1,7 +1,7 @@
 #include "FreeMove.h"
 
 #include "GLFW/glfw3.h"
-#include "Engine/Entity/Entity.h"
+#include "../Entity/Entity.h"
 #include "glm/gtx/rotate_vector.hpp"
 
 FreeMove::FreeMove(const std::string& tagName) : Component(tagName)
