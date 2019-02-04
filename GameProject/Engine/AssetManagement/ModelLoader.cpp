@@ -145,7 +145,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, Model* model)
     // so no conversion is needed
     unsigned int materialIndex = assimpMesh->mMaterialIndex;
 
-    Mesh* newMesh = new Mesh(vertices, indices, materialIndex);
+    Mesh* newMesh = new Mesh(vertices, indices, materialIndex, model);
 
     model->addMesh(newMesh);
 }
