@@ -5,6 +5,8 @@
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
 
+#include "Renderer.h"
+
 Display & Display::get()
 {
 	static bool isFirst = true;
@@ -87,11 +89,12 @@ GLFWwindow * Display::getWindowPtr()
 
 Renderer & Display::getRenderer()
 {
-	return this->renderer;
+	return *this->renderer;
 }
 
 Display::~Display()
 {
+	delete this->renderer;
 	glfwDestroyWindow(this->window);
 	glfwTerminate();
 }
@@ -115,6 +118,8 @@ void Display::init(int width, int height, const std::string& title)
 	this->width = width;
 	this->height = height;
 	this->title = title;
+
+	this->renderer = new Renderer();
 
 	if(!glfwInit()) 
 	{

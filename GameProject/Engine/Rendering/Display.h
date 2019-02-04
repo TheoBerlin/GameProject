@@ -5,8 +5,7 @@
 
 #include <string>
 
-#include "Renderer.h"
-
+class Renderer;
 class Display
 {
 public:
@@ -43,5 +42,5 @@ private:
 	int width;
 	int height;
 
-	Renderer renderer;
+	Renderer* renderer;
 };
