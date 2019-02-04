@@ -60,8 +60,8 @@ void FreeMove::moveMouse(MouseMoveEvent * evnt)
 	EntityMatrix * mat = getHost()->getMatrix();
 	glm::vec3 tempForward = mat->getForward();
 
-	tempForward = glm::rotate(tempForward, (float)evnt->xpos, mat->getUp());
-	tempForward = glm::rotate(tempForward, (float)evnt->ypos, mat->getRight());
+	tempForward = glm::rotate(tempForward, this->dt*(float)evnt->xpos, mat->getUp());
+	tempForward = glm::rotate(tempForward, this->dt*(float)evnt->ypos, mat->getRight());
 
 	mat->setForward(tempForward);
 }
