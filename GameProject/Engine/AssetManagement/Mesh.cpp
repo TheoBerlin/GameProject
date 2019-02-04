@@ -22,7 +22,7 @@ void Mesh::bindVertexBuffer()
 void Mesh::bindMaterial(UniformBuffer* uniformBuffer)
 {
     Material* material = &parentModel->getMaterial(this->materialIndex);
-    uniformBuffer->setData((void*)material, sizeof(*material));
+    uniformBuffer->setData((void*)material, sizeof(*material) - sizeof(material->Textures));
 }
 
 Mesh::~Mesh()
