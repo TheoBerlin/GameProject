@@ -32,6 +32,10 @@ public:
 	glm::vec3 getScale() const;
 	//Get forward vector
 	glm::vec3 getForward() const;
+	//Get right vector
+	glm::vec3 getRight() const;
+	//Get up vector
+	glm::vec3 getUp() const;
 
 	/*
 	Any function with the 'set' prefix applies an absolute transformation

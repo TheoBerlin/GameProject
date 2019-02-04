@@ -42,6 +42,16 @@ glm::vec3 EntityMatrix::getForward() const
 	return this->f;
 }
 
+glm::vec3 EntityMatrix::getRight() const
+{
+	return this->r;
+}
+
+glm::vec3 EntityMatrix::getUp() const
+{
+	return this->u;
+}
+
 void EntityMatrix::rotate(const glm::vec3& rotation)
 {
 	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
