@@ -5,6 +5,8 @@
 #include "../Rendering/GLAbstraction/VertexArray.h"
 #include "../Rendering/GLAbstraction/UniformBuffer.h"
 
+class Model;
+
 class Mesh
 {
 public:

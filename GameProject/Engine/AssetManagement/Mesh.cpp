@@ -8,8 +8,6 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
     materialIndex(materialIndex),
     parentModel(parent)
 {
-    VertexBuffer VBO((void*)&vertices[0], vertices->size() * sizeof(Vertex));
-    IndexBuffer indexBuffer((void*)&vertexIndices[0], vertexIndices->size() * sizeof(unsigned short));
 
     VAO = new VertexArray();
 }

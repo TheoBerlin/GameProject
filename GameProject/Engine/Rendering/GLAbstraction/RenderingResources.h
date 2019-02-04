@@ -47,7 +47,8 @@ struct Vertex {
 
 enum TextureType {
     TXTYPE_DIFFUSE = 0,
-    TXTYPE_SPECULAR = 1,
+	TXTYPE_SPECULAR = 1,
+	TXTYPE_NORMAL = 2
 };
 
 struct Texture {

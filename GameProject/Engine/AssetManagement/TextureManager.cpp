@@ -25,11 +25,7 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
     newTexture->type = type;
 
     // Use image data to create an OpenGL texture
-    glGenTextures(1, &newTexture->id);
-
-    glBindTexture(GL_TEXTURE_2D, newTexture->id);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
+	newTexture->id = initTexture(textureData, width, height);
 
     // Free image data as OpenGL is storing a copy
     stbi_image_free(textureData);
@@ -47,4 +43,16 @@ void TextureManager::unloadAllTextures()
     }
 
     loadedTextures.clear();
+}
+
+GLuint TextureManager::initTexture(unsigned char* data, int width, int height, unsigned format, unsigned type)
+{
+	GLuint texture;
+	glGenTextures(1, &texture);
+
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, format, type, data);
+
+	return texture;
 }
