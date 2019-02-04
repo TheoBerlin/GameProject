@@ -12,6 +12,7 @@ public:
 	void update(const float& dt);
 
 	glm::vec3 getPosition();
+	void setTime(float time);
 
 private:
 

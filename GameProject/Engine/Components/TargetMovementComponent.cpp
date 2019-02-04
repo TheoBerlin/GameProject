@@ -23,3 +23,8 @@ glm::vec3 TargetMovementComponent::getPosition()
 {
 	return currentPosition;
 }
+
+void TargetMovementComponent::setTime(float time)
+{
+	this->t = time;
+}
