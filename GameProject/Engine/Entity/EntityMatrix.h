@@ -13,6 +13,7 @@ private:
 	glm::mat4 modelMatrix;
 	glm::vec3 rotation;
 	glm::vec3 scaleFactor;
+	glm::vec3 forward;
 
 	// Fixes the rotation to always be between 0 to 2π radians
 	glm::vec3 modulusRotation(glm::vec3 rotation);
@@ -28,6 +29,8 @@ public:
 	glm::vec3 getRotation() const;
 	//Get scaling factor
 	glm::vec3 getScale() const;
+	//Get forward vector
+	glm::vec3 getForward() const;
 
 	/*
 	Any function with the 'set' prefix applies an absolute transformation
@@ -35,21 +38,23 @@ public:
 	*/
 
 	//Rotate model matrix (x,y,z) radians around its position.
-	void rotate(glm::vec3 rotation);
+	void rotate(const glm::vec3& rotation);
 	//Rotate world matrix (x,y,z) radians around given (x,y,z) position.
-	void rotate(glm::vec3 rotation, glm::vec3 rotationCenter);
+	void rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter);
 	//Set the rotation by (x,y,z)
-	void setRotation(glm::vec3 rotation);
+	void setRotation(const glm::vec3& rotation);
 	//Translate from current position plus given vector
-	void translate(glm::vec3 vector);
+	void translate(const glm::vec3& vector);
 	//Set world position
-	void setPosition(glm::vec3 position);
+	void setPosition(const glm::vec3& position);
 	//Scale by (x,y,z) times
-	void scale(glm::vec3 scale);
+	void scale(const glm::vec3& scale);
 	//Uniform scale
-	void scale(float scale);
+	void scale(const float& scale);
 	//Set Scale by (x,y,z)
-	void setScale(glm::vec3 scale);
+	void setScale(const glm::vec3& scale);
 	//Uniform scale
-	void setScale(float scale);
+	void setScale(const float& scale);
+	//Set forward vector
+	void setForward(const glm::vec3& forward);
 };

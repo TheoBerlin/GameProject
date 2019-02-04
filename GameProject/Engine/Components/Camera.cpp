@@ -15,15 +15,22 @@ Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(
 	// Init camera
 	this->offset = offset;
 	this->pos = getHost()->getMatrix()->getPosition() + offset;
-	if (abs(offset[0]) < EPSILON && abs(offset[1]) < EPSILON && abs(offset[2]) < EPSILON)
-	{
-		// If offset haven't been set, set a default forward
-		setForward(glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-	else
+	this->f = getHost()->getMatrix()->getForward();
+	// If there is an offset set but no forward
+	if(abs(offset.length()) > EPSILON && this->f.length() < EPSILON)
 	{
 		// If offset has been set, set the forward to pos
 		setForward(this->pos - getHost()->getMatrix()->getPosition());
+	}
+	// If no offset and no forward, set default
+	else if (abs(offset.length()) < EPSILON && this->f.length() < EPSILON)
+	{
+		setForward(glm::vec3(1.0f, 0.0f, 0.0f));
+	}
+	// If there is a forward, set that
+	else
+	{
+		setForward(this->f);
 	}
 	
 	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
