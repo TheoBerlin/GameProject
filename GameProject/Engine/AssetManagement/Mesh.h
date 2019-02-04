@@ -3,18 +3,20 @@
 #include <vector>
 #include "../Rendering/GLAbstraction/RenderingResources.h"
 #include "../Rendering/GLAbstraction/VertexArray.h"
+#include "../Rendering/GLAbstraction/UniformBuffer.h"
 
 class Mesh
 {
 public:
-    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex);
+    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
     ~Mesh();
 
     void bindVertexBuffer();
-    void bindTextures();
-    void bindMaterial();
+    // Inserts material data into a uniform buffer
+    void bindMaterial(UniformBuffer* uniformBuffer);
 
 private:
+    Model* parentModel;
     VertexArray* VAO;
 
     std::vector<Vertex>* vertices;

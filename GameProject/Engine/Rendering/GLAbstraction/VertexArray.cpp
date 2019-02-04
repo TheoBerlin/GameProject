@@ -63,5 +63,3 @@ void VertexArray::unbind()
 		}
 	}*/
 }
-
-
