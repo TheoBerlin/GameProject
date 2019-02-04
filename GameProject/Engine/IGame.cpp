@@ -5,6 +5,7 @@
 
 IGame::IGame()
 {
+
 }
 
 IGame::~IGame()
