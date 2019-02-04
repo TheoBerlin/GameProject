@@ -29,24 +29,8 @@ void Camera::update(const float & dt)
 void Camera::init()
 {
 	// Init camera
-	this->pos = getHost()->getMatrix()->getPosition() + offset;
-	this->f = getHost()->getMatrix()->getForward();
-	// If there is an offset set but no forward
-	if (abs(offset.length()) > EPSILON && this->f.length() < EPSILON)
-	{
-		// If offset has been set, set the forward to pos
-		setForward(this->pos - getHost()->getMatrix()->getPosition());
-	}
-	// If no offset and no forward, set default
-	else if (abs(offset.length()) < EPSILON && this->f.length() < EPSILON)
-	{
-		setForward(glm::vec3(1.0f, 0.0f, 0.0f));
-	}
-	// If there is a forward, set that
-	else
-	{
-		setForward(this->f);
-	}
+	setForward(getHost()->getMatrix()->getForward());
+	updatePosition();
 
 	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 	updateView();
@@ -69,7 +53,7 @@ glm::vec3 Camera::getRight() const
 
 glm::mat4 Camera::getVP() const
 {
-	return this->view * this->proj;
+	return this->proj * this->view;
 }
 
 void Camera::updateView()
@@ -79,7 +63,7 @@ void Camera::updateView()
 
 void Camera::updateProj(WindowResizeEvent * evnt)
 {
-	this->proj = glm::perspective(this->fov, Display::get().getRatio(), this->zNear, this->zFar);
+	this->proj = glm::perspective(glm::radians(this->fov), Display::get().getRatio(), this->zNear, this->zFar);
 }
 
 void Camera::setForward(const glm::vec3 & forward)
@@ -91,6 +75,6 @@ void Camera::setForward(const glm::vec3 & forward)
 
 void Camera::updatePosition()
 {
-	glm::vec3 tempPos = getHost()->getMatrix()->getPosition();
-	this->pos = { tempPos.x + offset.x, tempPos.y + offset.y, tempPos.z + offset.z };
+	glm::vec3 hostPos = getHost()->getMatrix()->getPosition();
+	this->pos = hostPos + (this->r * this->offset.x + this->u * this->offset.y + this->f * this->offset.z);
 }
