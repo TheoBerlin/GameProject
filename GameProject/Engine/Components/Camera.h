@@ -15,6 +15,8 @@ public:
 	// Update called by entity
 	void update(const float& dt);
 
+	void init();
+
 	// Returns the cameras up-vector
 	glm::vec3 getUp() const;
 	// Returns the cameras forward-vector

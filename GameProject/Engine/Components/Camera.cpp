@@ -9,13 +9,30 @@ Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(
 	this->fov = FOV;
 	this->zNear = ZNEAR;
 	this->zFar = ZFAR;
-
-	// Init camera
 	this->offset = offset;
+
+	// Set subscribe to resize event to update camera
+	EventBus::get().subscribe(this, &Camera::updateProj);
+}
+
+
+Camera::~Camera()
+{
+}
+
+void Camera::update(const float & dt)
+{
+	updatePosition();
+	updateView();
+}
+
+void Camera::init()
+{
+	// Init camera
 	this->pos = getHost()->getMatrix()->getPosition() + offset;
 	this->f = getHost()->getMatrix()->getForward();
 	// If there is an offset set but no forward
-	if(abs(offset.length()) > EPSILON && this->f.length() < EPSILON)
+	if (abs(offset.length()) > EPSILON && this->f.length() < EPSILON)
 	{
 		// If offset has been set, set the forward to pos
 		setForward(this->pos - getHost()->getMatrix()->getPosition());
@@ -30,22 +47,8 @@ Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(
 	{
 		setForward(this->f);
 	}
-	
+
 	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-	updateView();
-
-	// Set subscribe to resize event to update camera
-	EventBus::get().subscribe(this, &Camera::updateProj);
-}
-
-
-Camera::~Camera()
-{
-}
-
-void Camera::update(const float & dt)
-{
-	updatePosition();
 	updateView();
 }
 
