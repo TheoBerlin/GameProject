@@ -8,7 +8,7 @@ class Component
 {
 public:
 	Component(const std::string& tagName);
-	~Component();
+	virtual ~Component();
 
 	std::string getName();
 	Entity* getHost();
