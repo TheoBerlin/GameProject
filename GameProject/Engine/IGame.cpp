@@ -25,7 +25,7 @@ StateManager& IGame::getStateManager()
 void IGame::gameLoop()
 {
 	Display& display = Display::get();
-
+	
 	float totalTime = 0.0f;
 	float dt = 0.0f;
 	Timer dtTimer;

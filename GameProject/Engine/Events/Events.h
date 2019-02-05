@@ -8,7 +8,7 @@
 // TO PUBLISH TO THE EVENTBUS
 // EventBus::get().publish(new EventType(param1, param2));
 
-// UNSUBSCRIBE IS THE SAME AS SUBCRIBE
+// THE SYNTAX FOR UNSUBSCRIBE IS THE SAME AS FOR SUBSCRIBE
 
 class Event
 {
@@ -26,4 +26,18 @@ struct WindowResizeEvent : public Event
 	WindowResizeEvent(int width, int height) : width{ width }, height{ height } {};
 	int width;
 	int height;
+};
+
+struct MouseMoveEvent : public Event
+{
+	MouseMoveEvent(double xpos, double ypos) : xpos{ xpos }, ypos{ ypos } {};
+	double xpos;
+	double ypos;
+};
+
+struct MouseClickEvent : public Event
+{
+	MouseClickEvent(int button, int action) : button{ button }, action{ action } {};
+	int button;
+	int action;
 };

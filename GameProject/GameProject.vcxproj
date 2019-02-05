@@ -19,10 +19,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Imgui\imgui.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Engine\InputHandler.cpp" />
+    <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
+    <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
+    <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
+    <ClCompile Include="Engine\Rendering\GLAbstraction\Texture.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
@@ -31,6 +41,9 @@
     <ClCompile Include="Engine\AssetManagement\Model.cpp" />
     <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="Engine\Rendering\Renderer.cpp" />
+    <ClCompile Include="Engine\Components\FreeMove.cpp" />
+    <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
@@ -48,9 +61,20 @@
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\Events\EventBus.h" />
+    <ClInclude Include="Engine\Imgui\imconfig.h" />
+    <ClInclude Include="Engine\Imgui\imgui.h" />
+    <ClInclude Include="Engine\Imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Engine\Imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Engine\Imgui\imgui_internal.h" />
+    <ClInclude Include="Engine\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="Engine\Imgui\imstb_textedit.h" />
+    <ClInclude Include="Engine\Imgui\imstb_truetype.h" />
     <ClInclude Include="Engine\InputHandler.h" />
+    <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
+    <ClInclude Include="Engine\Entity\EntityMatrix.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
@@ -59,19 +83,27 @@
     <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
     <ClInclude Include="Engine\AssetManagement\TextureManager.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\RenderingResources.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Texture.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexArray.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
+    <ClInclude Include="Engine\Rendering\Renderer.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
+    <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -131,13 +163,14 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)GameProject/</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>libs;</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;assimp-vc140-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/NODEFAULTLIB:LIBCMT</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,7 +184,7 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>$(ProjectDir)libs\</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)libs/</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>

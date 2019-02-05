@@ -8,28 +8,51 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
     materialIndex(materialIndex),
     parentModel(parent)
 {
-    VertexBuffer VBO((void*)&vertices[0], vertices->size() * sizeof(Vertex));
-    IndexBuffer indexBuffer((void*)&vertexIndices[0], vertexIndices->size() * sizeof(unsigned short));
+	// Load mesh to GPU.
+    this->vao = new VertexArray();
+	this->vao->bind();
+	VertexBuffer* vbo = new VertexBuffer((void*)&((*vertices)[0].Position.x), vertices->size() * sizeof(Vertex));
+	AttributeLayout layout;
+	layout.push(3); // vec3 Position
+	layout.push(3); // vec3 Normal
+	layout.push(2); // vec2 Texture coords
+	this->vao->addBuffer(vbo, layout);
 
-    VAO = new VertexArray();
+	this->vao->bind();
+	this->ib = new IndexBuffer((void*)&((*vertexIndices)[0]), vertexIndices->size());
 }
 
 void Mesh::bindVertexBuffer()
 {
-    VAO->bind();
+    this->vao->bind();
+}
+
+IndexBuffer & Mesh::getIndexBuffer()
+{
+	return *this->ib;
 }
 
 void Mesh::bindMaterial(UniformBuffer* uniformBuffer)
 {
     Material* material = &parentModel->getMaterial(this->materialIndex);
-    uniformBuffer->setData((void*)material, sizeof(*material) - sizeof(material->Textures));
+    uniformBuffer->setData((void*)material, sizeof(*material) - sizeof(material->textures));
 }
 
 Mesh::~Mesh()
 {
     // Delete vertices and indices
-    delete vertices;
-    delete vertexIndices;
+    delete this->vertices;
+    delete this->vertexIndices;
 
-    delete VAO;
+    delete this->vao;
+	delete this->ib;
+}
+
+unsigned short Mesh::getMaterialIndex()
+{
+    return this->materialIndex;
+}
+
+void Mesh::createBuffers()
+{
 }

@@ -2,7 +2,7 @@
 
 std::map<std::string, Texture*> TextureManager::loadedTextures = std::map<std::string, Texture*>();
 
-Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
+Texture* TextureManager::loadTexture(const std::string& fileName, TextureType type)
 {
     std::map<std::string, Texture*>::iterator textureIterator;
 
@@ -11,33 +11,26 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
 
     if (textureIterator != loadedTextures.end()) {
         // The texture has already been loaded, return it
+        LOG_INFO("The texture [%s] has already been loaded", fileName.c_str());
         return textureIterator->second;
     }
 
-    // Load the texture
-    int width, height, channelCount;
-
-    // Load image data
-    unsigned char* textureData = stbi_load(fileName.c_str(), &width, &height, &channelCount, 3);
-
-    Texture* newTexture = new Texture();
-    newTexture->path = fileName;
-    newTexture->type = type;
-
-    // Use image data to create an OpenGL texture
-    glGenTextures(1, &newTexture->id);
-
-    glBindTexture(GL_TEXTURE_2D, newTexture->id);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, textureData);
-
-    // Free image data as OpenGL is storing a copy
-    stbi_image_free(textureData);
+	// Load texture from disc and stor the data with openGL.
+	Texture* newTexture = new Texture(fileName, type);
 
     // Store the new texture in the texture map
     loadedTextures[fileName] = newTexture;
 
     return newTexture;
+}
+
+Texture * TextureManager::getTexture(const std::string & fileName)
+{
+	std::map<std::string, Texture*>::iterator it = loadedTextures.find(fileName);
+	if (it != loadedTextures.end())
+		return it->second;
+	LOG_WARNING("Texture not loaded: %s", fileName.c_str());
+	return nullptr;
 }
 
 void TextureManager::unloadAllTextures()
@@ -47,4 +40,9 @@ void TextureManager::unloadAllTextures()
     }
 
     loadedTextures.clear();
+}
+
+size_t TextureManager::textureCount()
+{
+    return loadedTextures.size();
 }

@@ -6,12 +6,15 @@
 
 UniformBuffer::UniformBuffer(unsigned shaderID, const std::string & blockName, unsigned bindingPoint)
 {
-	glGenBuffers(1, &this->id);
 	this->bindingPoint = bindingPoint;
+	unsigned int index = glGetUniformBlockIndex(shaderID, blockName.c_str());
+	glUniformBlockBinding(shaderID, index, bindingPoint);
+	glGenBuffers(1, &this->id);
 }
 
 UniformBuffer::~UniformBuffer()
 {
+	glDeleteBuffers(1, &this->id);
 }
 
 void UniformBuffer::setData(const void* const data, size_t dataSize)
@@ -20,7 +23,7 @@ void UniformBuffer::setData(const void* const data, size_t dataSize)
 
 	glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(float)* dataSize, data, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, this->bindingPoint, this->id);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);

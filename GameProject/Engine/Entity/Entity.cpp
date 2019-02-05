@@ -1,8 +1,8 @@
 #include "Entity.h"
 
-Entity::Entity()
+Entity::Entity(const glm::vec3& forward) : model(nullptr)
 {
-
+	matrix.setForward(forward);
 }
 
 
@@ -48,6 +48,16 @@ bool Entity::removeComponent(const std::string& componentName)
 	return false;
 }
 
+void Entity::setModel(Model * model)
+{
+	this->model = model;
+}
+
+Model * Entity::getModel()
+{
+	return this->model;
+}
+
 void Entity::setName(const std::string & name)
 {
 	this->name = name;
@@ -56,4 +66,9 @@ void Entity::setName(const std::string & name)
 const std::string Entity::getName()
 {
 	return this->name;
+}
+
+EntityMatrix * Entity::getMatrix()
+{
+	return &matrix;
 }

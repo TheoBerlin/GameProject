@@ -1,6 +1,13 @@
 #include "ModelLoader.h"
 
+#include "Mesh.h"
+
 std::map<std::string, Model*> ModelLoader::loadedModels = std::map<std::string, Model*>();
+
+ModelLoader::~ModelLoader()
+{
+	unloadAllModels();
+}
 
 Model* ModelLoader::loadModel(std::string fileName)
 {
@@ -10,7 +17,7 @@ Model* ModelLoader::loadModel(std::string fileName)
     Model* loadedModel = loadedModels[fileName];
 
     if (loadedModel) {
-        Logger::printInfo("Model [%s] already loaded", fileName.c_str());
+        LOG_INFO("Model [%s] already loaded", fileName.c_str());
         return loadedModel;
     }
 
@@ -18,24 +25,30 @@ Model* ModelLoader::loadModel(std::string fileName)
     const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
 
     if (!scene || !scene->mRootNode) {
-        Logger::printWarning("Assimp failed to load [%s]", fileName.c_str());
+        LOG_WARNING("Assimp failed to load [%s]", fileName.c_str());
 
         return nullptr;
     }
 
     loadedModel = new Model();
 
-    Logger::printInfo("Found %d materials", scene->mNumMaterials);
+    LOG_INFO("Found %d materials", scene->mNumMaterials);
+
+    // Extract directory path for loading material and texture files
+	size_t found = fileName.find_last_of('/');
+    std::string directory = fileName.substr(0, found == std::string::npos ? 0 : found);
+	if (directory != "") {
+		directory += "/";
+	}
 
     // Load selected textures and save texture structs in the model
     for (unsigned int i = 0; i < scene->mNumMaterials; i += 1) {
         // Load diffuse textures
-        processMaterial(scene->mMaterials[i], loadedModel, aiTextureType_DIFFUSE);
+        processMaterial(scene->mMaterials[i], loadedModel, aiTextureType_DIFFUSE, directory);
     }
 
     // Process all scene nodes recursively
     aiNode *rootNode = scene->mRootNode;
-
     processNode(scene, rootNode, loadedModel);
 
     // Save the model's pointer to avoid duplicate model data
@@ -53,46 +66,51 @@ void ModelLoader::unloadAllModels()
     loadedModels.clear();
 }
 
-void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureType type)
+size_t ModelLoader::modelCount()
+{
+    return loadedModels.size();
+}
+
+void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureType type, const std::string& directory)
 {
     aiString texturePath;
     unsigned int textureCount = material->GetTextureCount(type);
 
-    for (unsigned int i = 0; i < textureCount; i += 1) {
-        Material newMaterial;
+    Material newMaterial;
 
+    for (unsigned int i = 0; i < textureCount; i += 1) {
         // Load texture
         material->GetTexture(type, i, &texturePath);
 
         // Convert aiString to std::string
         std::string convertedString(texturePath.C_Str());
 
-        Logger::printInfo("Found texture [%s]", convertedString.c_str());
+        LOG_INFO("Found texture [%s]", convertedString.c_str());
 
         // Convert aiTextureType to TextureType
         TextureType txType = convertTextureType(type);
 
-        Texture* texture = TextureManager::loadTexture(convertedString, txType);
+        Texture* texture = TextureManager::loadTexture(directory + convertedString, txType);
 
-        newMaterial.Textures.push_back(*texture);
-
-        // Store material constants
-		aiColor3D ambient;
-		aiColor3D diffuse;
-
-        material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
-        material->Get(AI_MATKEY_COLOR_SPECULAR, diffuse);
-
-		newMaterial.Ka.r = ambient.r;
-		newMaterial.Ka.g = ambient.g;
-		newMaterial.Ka.b = ambient.b;
-
-		newMaterial.Ks.r = diffuse.r;
-		newMaterial.Ks.g = diffuse.g;
-		newMaterial.Ks.b = diffuse.b;
-
-        model->addMaterial(newMaterial);
+        newMaterial.textures.push_back(texture);
     }
+
+    // Store material constants
+    aiColor3D ambient;
+    aiColor3D diffuse;
+
+    material->Get(AI_MATKEY_COLOR_AMBIENT, ambient);
+    material->Get(AI_MATKEY_COLOR_SPECULAR, diffuse);
+
+    newMaterial.Ka.r = ambient.r;
+    newMaterial.Ka.g = ambient.g;
+    newMaterial.Ka.b = ambient.b;
+
+    newMaterial.Ks.r = diffuse.r;
+    newMaterial.Ks.g = diffuse.g;
+    newMaterial.Ks.b = diffuse.b;
+
+    model->addMaterial(newMaterial);
 }
 
 void ModelLoader::processNode(const aiScene* scene, aiNode* node, Model* model)
