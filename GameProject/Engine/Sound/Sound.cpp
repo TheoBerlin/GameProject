@@ -41,6 +41,7 @@ void Sound::loadSound(std::string fileName)
 {
 	FILE *file;
 	file = fopen(fileName.c_str(), "rb");
+	//Read file size
 	fseek(file, 0, SEEK_END);
 	unsigned int size = ftell(file);
 
@@ -49,12 +50,12 @@ void Sound::loadSound(std::string fileName)
 	unsigned int freq;
 	fread(&freq, 4, 1, file);
 
+	//Read audio data
 	unsigned char* buf = new unsigned char[size];
 	fseek(file, 44, SEEK_SET);
 	fread(buf, sizeof(BYTE), size - 44, file);
 
-
-	alGetError();
+	//Read data to buffer, (-44) is sice of wav header.
 	alBufferData(buffer, AL_FORMAT_MONO16, buf, size - 44, freq);
 	errorCheck();
 
@@ -65,6 +66,18 @@ void Sound::loadSound(std::string fileName)
 void Sound::playSound()
 {
 	alSourcePlay(source);
+}
+
+void Sound::setListener(const glm::vec3 listener)
+{
+	alListener3f(source, listener.x, listener.y, listener.z);
+}
+
+glm::vec3 Sound::getListener() const
+{
+	glm::vec3 position;
+	alGetListener3f(source, &position.x, &position.y, &position.z);
+	return position;
 }
 
 void Sound::setPitch(const float pitch)

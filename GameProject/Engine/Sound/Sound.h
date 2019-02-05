@@ -23,9 +23,8 @@ public:
 	void loadSound(std::string file);
 	void playSound();
 
-	//Get the source. Used for changing multiple sources at same time.
-	ALuint getSource();
-
+	void setListener(const glm::vec3 listener);
+	glm::vec3 getListener() const;
 	void setPitch(const float pitch);
 	float getPitch() const;
 	void setVolume(const float volume);
