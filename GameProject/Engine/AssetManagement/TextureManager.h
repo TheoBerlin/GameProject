@@ -22,7 +22,7 @@ private:
 	/*
 		initialises a texture and retruns the id
 	*/
-	static GLuint initTexture(unsigned char * data, int width, int height, unsigned format = GL_RGB, unsigned type = GL_UNSIGNED_BYTE);
+	static GLuint initTexture(unsigned char * data, int width, int height, unsigned format = GL_RGBA, unsigned type = GL_UNSIGNED_BYTE);
 	
     static std::map<std::string, Texture*> loadedTextures;
 };
