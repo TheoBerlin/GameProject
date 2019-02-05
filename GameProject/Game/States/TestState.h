@@ -2,11 +2,12 @@
 
 #include "../../Engine/States/State.h"
 
-class MenuState : public State
+class Entity;
+class TestState : public State
 {
 public:
-	MenuState();
-	virtual ~MenuState();
+	TestState();
+	virtual ~TestState();
 
 	void start() override;
 	void end() override;
@@ -15,4 +16,6 @@ public:
 	void render() override;
 
 private:
+	Entity* cameraEntity;
+	Entity* entity;
 };
