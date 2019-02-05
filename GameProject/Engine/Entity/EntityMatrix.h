@@ -10,8 +10,8 @@ class EntityMatrix
 {
 private:
 
-	glm::mat4 worldMatrix;
 	glm::mat4 modelMatrix;
+	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scaleFactor;
 	glm::vec3 f, r, u;
@@ -46,6 +46,8 @@ public:
 	void rotate(const glm::vec3& rotation);
 	//Rotate world matrix (x,y,z) radians around given (x,y,z) position.
 	void rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter);
+	//Rotate around given axis
+	void rotateAxis(const float& radians, const glm::vec3& axis);
 	//Set the rotation by (x,y,z)
 	void setRotation(const glm::vec3& rotation);
 	//Translate from current position plus given vector

@@ -2,6 +2,8 @@
 
 #include "../../Engine/States/State.h"
 
+#include "../../Engine/Events/EventBus.h"
+
 class Entity;
 class TestState : public State
 {
@@ -16,6 +18,8 @@ public:
 	void render() override;
 
 private:
+	void moveCube(KeyEvent* e);
+
 	Entity* cameraEntity;
 	Entity* entity;
 };
