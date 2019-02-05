@@ -1,19 +1,16 @@
 #include "Model.h"
 
+#include "Mesh.h"
+
 Model::Model()
 {
-    VAO = 0;
-
-    glGenVertexArrays(1, &VAO);
-
-	glBindVertexArray(VAO);
 }
 
 Model::~Model()
 {
     // Delete all meshes
     for (unsigned short i = 0; i < meshes.size(); i += 1) {
-        delete meshes.at(i);
+		delete meshes.at(i);
     }
 }
 

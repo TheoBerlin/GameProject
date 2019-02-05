@@ -4,6 +4,11 @@
 
 std::map<std::string, Model*> ModelLoader::loadedModels = std::map<std::string, Model*>();
 
+ModelLoader::~ModelLoader()
+{
+	unloadAllModels();
+}
+
 Model* ModelLoader::loadModel(std::string fileName)
 {
     Assimp::Importer importer;

@@ -23,7 +23,6 @@ class Model
         Mesh* getMesh(size_t index);
 
     private:
-        unsigned int VAO;
         std::vector<Mesh*> meshes;
         std::vector<Material> materials;
 };

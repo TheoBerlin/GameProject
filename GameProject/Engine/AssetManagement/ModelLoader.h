@@ -11,6 +11,8 @@
 class ModelLoader
 {
 public:
+	~ModelLoader();
+
     static Model* loadModel(std::string fileName);
 
     static void unloadAllModels();
