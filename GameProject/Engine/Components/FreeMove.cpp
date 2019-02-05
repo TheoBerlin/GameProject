@@ -13,7 +13,7 @@ FreeMove::FreeMove(const std::string& tagName) : Component(tagName)
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
 	this->speed = 100.0f;
-	this->sensitivity = 10.0f;
+	this->sensitivity = 3.0f;
 	this->mouseLock = false;
 	this->xPos = 0.0;
 	this->yPos = 0.0;
