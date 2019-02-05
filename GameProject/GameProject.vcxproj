@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Components\TargetMovementComponent.cpp" />
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
@@ -45,6 +46,7 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Components\TargetMovementComponent.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />

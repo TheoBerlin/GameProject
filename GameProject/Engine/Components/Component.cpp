@@ -23,3 +23,7 @@ void Component::setHost(Entity* entity)
 {
 	this->host = entity;
 }
+
+void Component::init()
+{
+}
