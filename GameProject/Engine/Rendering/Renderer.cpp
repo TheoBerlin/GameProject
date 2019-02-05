@@ -5,7 +5,11 @@
 
 Renderer::Renderer()
 {
-	this->testShader = new Shader("./Engine/Rendering/Shaders/testShader.vert", "./Engine/Rendering/Shaders/testShader.frag");
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+
+	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->uniformBuffer = new UniformBuffer(this->testShader->getID(), "Material", 0);
 	Material emptyMaterial;
 	emptyMaterial.Ka = glm::vec3(0.1f);
@@ -29,8 +33,10 @@ void Renderer::draw(Entity * entity)
 	Model* model = entity->getModel();
 	if (model != nullptr)
 	{
+		EntityMatrix& transform = *entity->getMatrix();
 		this->testShader->bind();
 		this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->activeCamera->getVP()[0][0]));
+		this->testShader->setUniformMatrix4fv("transform", 1, false, &(transform.getMatrix()[0][0]));
 		draw(model);
 	}
 }

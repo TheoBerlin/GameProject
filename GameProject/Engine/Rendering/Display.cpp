@@ -156,7 +156,5 @@ void Display::init(int width, int height, const std::string& title)
 
 	glfwSetWindowSizeCallback(this->window, resizeCallback);
 
-	glCullFace(GL_BACK);
-
 	this->renderer = new Renderer();
 }
