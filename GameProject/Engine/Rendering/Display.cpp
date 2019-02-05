@@ -4,6 +4,9 @@
 #include "../../Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
+#include "../Imgui/imgui.h"
+#include "../Imgui/imgui_impl_glfw.h"
+#include "../Imgui/imgui_impl_opengl3.h"
 
 #include "Renderer.h"
 
@@ -33,10 +36,22 @@ bool Display::isOpen() const
 void Display::startFrame()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	#ifdef IMGUI
+	//Create new frame for ImGui
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplGlfw_NewFrame();
+	ImGui::NewFrame();
+	#endif /* IMGUI */
 }
 
 void Display::endFrame()
 {
+	#ifdef IMGUI
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	#endif /* IMGUI */
+
 	glfwSwapBuffers(this->window);
 	glfwPollEvents();
 }
@@ -94,6 +109,13 @@ Renderer & Display::getRenderer()
 
 Display::~Display()
 {
+	#ifdef IMGUI
+	//Cleanup for ImGui
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+	#endif /* IMGUI */
+
 	delete this->renderer;
 	glfwDestroyWindow(this->window);
 	glfwTerminate();
@@ -155,6 +177,18 @@ void Display::init(int width, int height, const std::string& title)
 	glViewport(0, 0, this->width, this->height);
 
 	glfwSetWindowSizeCallback(this->window, resizeCallback);
+
+	#ifdef IMGUI
+	//---------------INIT ImGui------------------
+	//Context and init
+	const char* glsl_version = "#version 430";
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(this->window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+
+	// Setup Dear ImGui style
+	ImGui::StyleColorsDark();
+	#endif /* IMGUI */
 
 	this->renderer = new Renderer();
 }
