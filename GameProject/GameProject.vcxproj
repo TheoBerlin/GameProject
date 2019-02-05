@@ -26,6 +26,7 @@
     <ClCompile Include="Engine\Imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Engine\InputHandler.cpp" />
+    <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
@@ -39,6 +40,9 @@
     <ClCompile Include="Engine\AssetManagement\Model.cpp" />
     <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="Engine\Rendering\Renderer.cpp" />
+    <ClCompile Include="Engine\Components\FreeMove.cpp" />
+    <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
@@ -65,6 +69,7 @@
     <ClInclude Include="Engine\Imgui\imstb_textedit.h" />
     <ClInclude Include="Engine\Imgui\imstb_truetype.h" />
     <ClInclude Include="Engine\InputHandler.h" />
+    <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\Entity\EntityMatrix.h" />
     <ClInclude Include="Engine\IGame.h" />
@@ -81,15 +86,22 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
+    <ClInclude Include="Engine\Rendering\Renderer.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
+    <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

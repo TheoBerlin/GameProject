@@ -1,6 +1,13 @@
 #include "ModelLoader.h"
 
+#include "Mesh.h"
+
 std::map<std::string, Model*> ModelLoader::loadedModels = std::map<std::string, Model*>();
+
+ModelLoader::~ModelLoader()
+{
+	unloadAllModels();
+}
 
 Model* ModelLoader::loadModel(std::string fileName)
 {
@@ -28,7 +35,8 @@ Model* ModelLoader::loadModel(std::string fileName)
     LOG_INFO("Found %d materials", scene->mNumMaterials);
 
     // Extract directory path for loading material and texture files
-    std::string directory = fileName.substr(0, fileName.find_last_of('/'));
+	size_t found = fileName.find_last_of('/');
+    std::string directory = fileName.substr(0, found == std::string::npos ? 0 : found);
 	if (directory != "") {
 		directory += "/";
 	}

@@ -2,8 +2,10 @@
 
 #include "GL/glew.h"
 #include <vector>
-#include "Mesh.h"
 
+#include "../Rendering/GLAbstraction/RenderingResources.h"
+
+class Mesh;
 class Model
 {
     public:
@@ -12,7 +14,7 @@ class Model
 
         void addMesh(Mesh* mesh);
 		void addMaterial(Material material);
-        Material getMaterial(unsigned short index);
+        Material& getMaterial(unsigned short index);
 
         size_t meshCount();
         size_t materialCount();
@@ -21,7 +23,6 @@ class Model
         Mesh* getMesh(size_t index);
 
     private:
-        unsigned int VAO;
         std::vector<Mesh*> meshes;
         std::vector<Material> materials;
 };

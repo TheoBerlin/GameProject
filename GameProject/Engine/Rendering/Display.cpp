@@ -8,6 +8,8 @@
 #include "../Imgui/imgui_impl_glfw.h"
 #include "../Imgui/imgui_impl_opengl3.h"
 
+#include "Renderer.h"
+
 Display & Display::get()
 {
 	static bool isFirst = true;
@@ -100,6 +102,11 @@ GLFWwindow * Display::getWindowPtr()
 	return this->window;
 }
 
+Renderer & Display::getRenderer()
+{
+	return *this->renderer;
+}
+
 Display::~Display()
 {
 	#ifdef IMGUI
@@ -109,6 +116,7 @@ Display::~Display()
 	ImGui::DestroyContext();
 	#endif /* IMGUI */
 
+	delete this->renderer;
 	glfwDestroyWindow(this->window);
 	glfwTerminate();
 }
@@ -181,4 +189,6 @@ void Display::init(int width, int height, const std::string& title)
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();
 	#endif /* IMGUI */
+
+	this->renderer = new Renderer();
 }

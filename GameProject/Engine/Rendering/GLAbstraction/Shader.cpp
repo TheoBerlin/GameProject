@@ -38,6 +38,13 @@ const GLuint Shader::getID() const
 	return this->id;
 }
 
+void Shader::setTexture2D(const std::string & name, unsigned int unit, GLuint textureID)
+{
+	setUniform1i(name, unit);
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, textureID);
+}
+
 void Shader::setUniform1b(const std::string & name, bool value)
 {
 	GLint location = addUniform(name);
