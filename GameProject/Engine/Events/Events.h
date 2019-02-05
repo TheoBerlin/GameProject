@@ -30,9 +30,9 @@ struct WindowResizeEvent : public Event
 
 struct MouseMoveEvent : public Event
 {
-	MouseMoveEvent(double xpos, double ypos) : xpos{ xpos }, ypos{ ypos } {};
-	double xpos;
-	double ypos;
+	MouseMoveEvent(double moveX, double moveY) : moveX{ moveX }, moveY{ moveY } {};
+	double moveX;
+	double moveY;
 };
 
 struct MouseClickEvent : public Event
