@@ -12,24 +12,26 @@ public:
 	/*
 		Set up for vbo object data is templated
 	*/
-	VertexBuffer(const std::vector<float>& data);
+	VertexBuffer(const void* const data, const size_t& dataSize);
 	~VertexBuffer();
 
 	unsigned getID() { return this->id; };
 
-	void setLocation(unsigned location, unsigned attribNumber) { this->locations[attribNumber] = location; };
-	unsigned getLocation(unsigned attribNumber) { return locations[attribNumber]; };
+	void bind();
+	void unbind();
+	void updateDate(const void* const data, const size_t& dataSize, int offset);
+
+	//void setLocation(unsigned location, unsigned attribNumber) { this->locations[attribNumber] = location; };
+	//unsigned getLocation(unsigned attribNumber) { return locations[attribNumber]; };
 
 	void setAttribCount(unsigned count) { this->attribCount = count; };
 	unsigned getAttribCount() { return this->attribCount; };
 
 private:
 	unsigned id, attribCount;
+	size_t dataSize;
 	/*
 		Locations for all attributes included in the vbo
 	*/
-	unsigned locations[5];
-
-	std::vector<float> data;
+	//unsigned locations[5];
 };
-

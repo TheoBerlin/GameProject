@@ -6,16 +6,21 @@
 #include "../Components/Component.h"
 #include "EntityMatrix.h"
 
+#include "../AssetManagement/Model.h"
+
 class Entity
 {
 public:
-	Entity();
+	Entity(const glm::vec3& forward = { 0.0f, 0.0f, -1.0f });
 	~Entity();
 
 	void update(const float dt);
 
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
+
+	void setModel(Model* model);
+	Model* getModel();
 
 	void setName(const std::string& name);
 	const std::string getName();
@@ -27,5 +32,6 @@ private:
 	std::string name;
 	EntityMatrix matrix;
 
+	Model* model;
 };
 

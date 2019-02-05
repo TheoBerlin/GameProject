@@ -8,9 +8,10 @@ class Component
 {
 public:
 	Component(Entity* parentEntity, const std::string& tagName);
-	~Component();
+	virtual ~Component();
 
 	std::string getName();
+	Entity* getHost();
 	void setHost(Entity* entity);
 
 	virtual void init();

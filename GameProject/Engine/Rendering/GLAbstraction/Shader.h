@@ -20,6 +20,15 @@ public:
 	const GLuint getID() const;
 
 	/*
+	Add a uniform for a texture2D.
+	Arguments:
+		name: Name of texture in shader.
+		unit: The texture unit which will be used.
+		textureID: The texture which will be used.
+	*/
+	void setTexture2D(const std::string& name, unsigned int unit, GLuint textureID);
+
+	/*
 	Add uniform if not found, then set it to the new value.
 	Arguments:
 		name: Name of the uniform in the shader.
