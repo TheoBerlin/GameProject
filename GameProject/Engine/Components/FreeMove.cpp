@@ -81,7 +81,6 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 	if (evnt->key == GLFW_KEY_C && evnt->action == GLFW_PRESS)
 	{
 		this->mouseLock = !this->mouseLock;
-		//glfwSetCursorPos(Display::get().getWindowPtr(), Display::get().getWidth() / 2, Display::get().getHeight() / 2);
 		
 		if (this->mouseLock)
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -96,11 +95,6 @@ void FreeMove::moveMouse(MouseMoveEvent * evnt)
 	this->yPos = evnt->ypos - this->preYPos;
 	this->preXPos = evnt->xpos;
 	this->preYPos = evnt->ypos;
-
-	//this->xPos -= Display::get().getWidth() / 2;
-	//this->yPos -= Display::get().getHeight() / 2;
-
-	LOG_PRINT("XPOS: %f, YPOS: %f", this->xPos, this->yPos);
 }
 
 void FreeMove::clickMouse(MouseClickEvent * evnt)
