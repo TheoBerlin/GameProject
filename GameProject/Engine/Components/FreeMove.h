@@ -14,6 +14,7 @@ public:
 private:
 	float dt;
 	bool active;
+	float speed;
 
 	void moveKeyboard(KeyEvent * evnt);
 	void moveMouse(MouseMoveEvent * evnt);

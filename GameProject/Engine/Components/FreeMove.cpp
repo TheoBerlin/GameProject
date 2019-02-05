@@ -35,22 +35,22 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 		switch (evnt->key)
 		{
 		case GLFW_KEY_W:
-			mat->setPosition(this->dt * mat->getForward());
+			mat->setPosition(mat->getPosition() + this->speed*this->dt * mat->getForward());
 
 		case GLFW_KEY_A:
-			mat->setPosition(this->dt * -mat->getRight());
+			mat->setPosition(mat->getPosition() + this->speed*this->dt * -mat->getRight());
 
 		case GLFW_KEY_D:
-			mat->setPosition(this->dt * mat->getRight());
+			mat->setPosition(mat->getPosition() + this->speed*this->dt * mat->getRight());
 
 		case GLFW_KEY_S:
-			mat->setPosition(this->dt * -mat->getForward());
+			mat->setPosition(mat->getPosition() + this->speed*this->dt * -mat->getForward());
 
 		case GLFW_KEY_SPACE:
-			mat->setPosition(this->dt * mat->getUp());
+			mat->setPosition(mat->getPosition() + this->speed*this->dt * mat->getUp());
 
 		case GLFW_KEY_LEFT_CONTROL:
-			mat->setPosition(this->dt * -mat->getUp());
+			mat->setPosition(mat->getPosition() + this->speed*this->dt * -mat->getUp());
 		}
 	}
 }
