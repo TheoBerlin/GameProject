@@ -20,6 +20,8 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, EntityMatrix startingTransform, g
     // from the window resolution
     EventBus::get().subscribe(this, &ArrowGuider::handleWindowResize);
     windowHeight = Display::get().getHeight();
+
+    turnFactors = glm::vec2(0.0f, 0.0f);
 }
 
 ArrowGuider::~ArrowGuider()
@@ -40,6 +42,12 @@ void ArrowGuider::update(const float& dt)
     glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
 
     setPosition(newPos);
+
+    // Update turn factors (proportionally slow down turning)
+    turnFactors.x /= 1.0f + turnFactorFalloff;
+    turnFactors.y /= 1.0f + turnFactorFalloff;
+
+    applyTurn();
 }
 
 void ArrowGuider::startGuiding()
@@ -64,26 +72,9 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     // Invert Y as input treats Y as pointing downwards
     float turnFactorPitch = (float)-event->moveY / (windowHeight * maxMouseMove);
 
-    // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
-    float yaw = turnFactorYaw * maxTurnSpeed;
-    float pitch = turnFactorPitch * maxTurnSpeed;
-
-    // Redirect arrow
-    glm::vec3 upDir(0.0f, 1.0f, 0.0f);
-    glm::vec3 rightVec = glm::cross(direction, upDir);
-
-    // vec4 is required for multiplication with matrices
-    glm::vec4 tempDirection(direction.x, direction.y, direction.z, 1.0f);
-
-    // Yaw
-    glm::mat4 rotMatrix = glm::rotate(yaw, upDir);
-    tempDirection = tempDirection * rotMatrix;
-
-    // Pitch
-    rotMatrix = glm::rotate(pitch, rightVec);
-    tempDirection = tempDirection * rotMatrix;
-
-    direction = glm::vec3(tempDirection);
+    // Update turnFactors
+    turnFactors.x = glm::max<float>(-1.0f, glm::min<float>(1.0f, turnFactors.x + turnFactorYaw));
+    turnFactors.y = glm::max<float>(-1.0f, glm::min<float>(1.0f, turnFactors.y + turnFactorPitch));
 }
 
 void ArrowGuider::handleWindowResize(WindowResizeEvent* event)
@@ -129,4 +120,28 @@ float ArrowGuider::getMovementSpeed()
 void ArrowGuider::setMovementSpeed(const float movementSpeed)
 {
     this->movementSpeed = movementSpeed;
+}
+
+void ArrowGuider::applyTurn()
+{
+    // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
+    float yaw = turnFactors.x * maxTurnSpeed;
+    float pitch = turnFactors.y * maxTurnSpeed;
+
+    // Redirect arrow
+    glm::vec3 upDir(0.0f, 1.0f, 0.0f);
+    glm::vec3 rightVec = glm::cross(direction, upDir);
+
+    // vec4 is required for multiplication with matrices
+    glm::vec4 tempDirection(direction.x, direction.y, direction.z, 1.0f);
+
+    // Yaw
+    glm::mat4 rotMatrix = glm::rotate(turnFactors.x, upDir);
+    tempDirection = tempDirection * rotMatrix;
+
+    // Pitch
+    rotMatrix = glm::rotate(turnFactors.y, rightVec);
+    tempDirection = tempDirection * rotMatrix;
+
+    direction = glm::vec3(tempDirection);
 }

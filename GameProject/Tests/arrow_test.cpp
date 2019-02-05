@@ -30,6 +30,8 @@ TEST_CASE("Arrow guider") {
         REQUIRE(Approx(newPos.x - expectedPos.x) == 0.0f);
         REQUIRE(Approx(newPos.y - expectedPos.y) == 0.0f);
         REQUIRE(Approx(newPos.z - expectedPos.z) == 0.0f);
+
+        arrowGuider->stopGuiding();
     }
 
     SECTION("Can be aimed using mouse input") {
@@ -38,11 +40,27 @@ TEST_CASE("Arrow guider") {
 
         EventBus::get().publish(&mouseMoveEvent);
 
+        arrowGuider->update(0.1f);
+
         glm::vec3 newDir = arrowGuider->getDirection();
 
         CAPTURE(newDir.x, newDir.y, newDir.z);
 
         // Horizontal mouse movement should redirect the arrow horizontally
-        REQUIRE(Approx(abs(newDir.x - startingDirection.x)) != 0.0f);
+        REQUIRE(Approx(newDir.x - startingDirection.x) != 0.0f);
+        // Horizontal mouse movement should not cause the arrow to pitch
+        REQUIRE(Approx(newDir.y - startingDirection.y) == 0.0f);
+
+        SECTION("Turns over time") {
+            arrowGuider->update(10.0f);
+
+            // See if the direction has changed from the previous test
+            glm::vec3 oldDir = newDir;
+            newDir = arrowGuider->getDirection();
+
+            REQUIRE(Approx(newDir.x - oldDir.x) != 0.0f);
+            // Horizontal mouse movement should not cause the arrow to pitch
+            REQUIRE(Approx(newDir.y - oldDir.y) == 0.0f);
+        }
     }
 }
