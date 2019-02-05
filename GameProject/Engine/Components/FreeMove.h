@@ -1,6 +1,6 @@
 #pragma once
 #include "Component.h"
-#include "../Events/EventBus.h"
+#include "../Events/Events.h"
 
 class FreeMove : public Component
 {
