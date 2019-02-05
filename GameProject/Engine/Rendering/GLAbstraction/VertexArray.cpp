@@ -17,7 +17,7 @@ void VertexArray::addBuffer(VertexBuffer * vbo, const AttributeLayout& attribute
 
 	glBindVertexArray(this->id);
 
-	for (int i = 0; i < attributes.attribs.size(); i++) {
+	for (unsigned int i = 0; i < attributes.attribs.size(); i++) {
 		glBindBuffer(GL_ARRAY_BUFFER, vbo->getID());
 
 		AttributeSettings attrib = attributes.attribs[i];
@@ -36,7 +36,7 @@ void VertexArray::bind()
 	glBindVertexArray(this->id);
 
 	for (auto vbo : this->vbos) {
-		for (int i = 0; i < vbo->getAttribCount(); i++) {
+		for (unsigned int i = 0; i < vbo->getAttribCount(); i++) {
 			glEnableVertexAttribArray(vbo->getLocation(i));
 		}
 	}
@@ -48,7 +48,7 @@ void VertexArray::unbind()
 	glBindVertexArray(0);
 
 	for (auto vbo : this->vbos) {
-		for (int i = 0; i < vbo->getAttribCount(); i++) {
+		for (unsigned int i = 0; i < vbo->getAttribCount(); i++) {
 			glDisableVertexAttribArray(vbo->getLocation(i));
 		}
 	}

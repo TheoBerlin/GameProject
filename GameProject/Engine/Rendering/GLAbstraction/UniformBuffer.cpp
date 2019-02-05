@@ -1,6 +1,6 @@
 #include "UniformBuffer.h"
 
-#include "GL/glew.h"<
+#include "GL/glew.h"
 
 #include "../../../Utils/Logger.h"
 

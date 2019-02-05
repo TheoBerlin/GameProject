@@ -19,10 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Imgui\imgui.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="Engine\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
+    <ClCompile Include="Engine\Level\LevelParser.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
@@ -50,11 +57,20 @@
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\Events\EventBus.h" />
+    <ClInclude Include="Engine\Imgui\imconfig.h" />
+    <ClInclude Include="Engine\Imgui\imgui.h" />
+    <ClInclude Include="Engine\Imgui\imgui_impl_glfw.h" />
+    <ClInclude Include="Engine\Imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="Engine\Imgui\imgui_internal.h" />
+    <ClInclude Include="Engine\Imgui\imstb_rectpack.h" />
+    <ClInclude Include="Engine\Imgui\imstb_textedit.h" />
+    <ClInclude Include="Engine\Imgui\imstb_truetype.h" />
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\Entity\EntityMatrix.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Level\Level.h" />
+    <ClInclude Include="Engine\Level\LevelParser.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
@@ -135,7 +151,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)GameProject/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>
