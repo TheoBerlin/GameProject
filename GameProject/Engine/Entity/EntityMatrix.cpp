@@ -2,9 +2,9 @@
 
 glm::vec3 EntityMatrix::modulusRotation(glm::vec3 rotation)
 {
-	rotation.x = fmod(rotation.x, 2.0 * 3.1415);
-	rotation.y = fmod(rotation.y, 2.0 * 3.1415);
-	rotation.z = fmod(rotation.z, 2.0 * 3.1415);
+	rotation.x = (float)fmod(rotation.x, 2.0 * 3.1415);
+	rotation.y = (float)fmod(rotation.y, 2.0 * 3.1415);
+	rotation.z = (float)fmod(rotation.z, 2.0 * 3.1415);
 
 	return rotation;
 }

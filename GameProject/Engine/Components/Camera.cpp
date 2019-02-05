@@ -8,9 +8,9 @@ const glm::vec3 GLOBAL_UP_VECTOR = glm::vec3(0.0f, 1.0f, 0.0f);
 Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(tagName)
 {
 	// Set the standard values
-	this->fov = FOV;
-	this->zNear = ZNEAR;
-	this->zFar = ZFAR;
+	this->fov = (float)FOV;
+	this->zNear = (float)ZNEAR;
+	this->zFar = (float)ZFAR;
 
 	// Init camera
 	this->offset = offset;
