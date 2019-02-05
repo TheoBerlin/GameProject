@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "../Events/Events.h"
+#include <unordered_map>
 
 class FreeMove : public Component
 {
@@ -13,8 +14,12 @@ public:
 
 private:
 	float dt;
-	bool active;
 	float speed;
+	float sensitivity;
+	bool mouseLock;
+	double xPos, yPos;
+	double preXPos, preYPos;
+	std::unordered_map<unsigned, bool> pressedKeys;
 
 	void moveKeyboard(KeyEvent * evnt);
 	void moveMouse(MouseMoveEvent * evnt);
