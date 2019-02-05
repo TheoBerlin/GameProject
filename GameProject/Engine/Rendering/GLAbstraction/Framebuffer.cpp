@@ -21,10 +21,7 @@ Framebuffer::Framebuffer()
 Framebuffer::~Framebuffer()
 {
 	for (Texture* attachment : this->colorAttachments)
-	{
-		glDeleteTextures(1, &attachment->id);
 		delete attachment;
-	}
 
 	if (this->depthAttachment != nullptr)
 		this->deleteDepthTexture();
@@ -32,22 +29,18 @@ Framebuffer::~Framebuffer()
 		this->deleteRenderBuffer();
 
 	glDeleteFramebuffers(1, &this->id);
-	
 }
 
 Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height, const AttachmentType& attachmentTYPE)
 {
 	Texture* tex = new Texture();
 	
-	glGenTextures(1, &tex->id);
-	glBindTexture(GL_TEXTURE_2D, tex->id);
-
 	switch (attachmentTYPE) {
 	case AttachmentType::COLOR:
 		if (this->colorAttachments.size() < 7) {
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			tex->recreate(NULL, width, height);
 
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + this->colorAttachments.size(), GL_TEXTURE_2D, tex->id, 0);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + this->colorAttachments.size(), GL_TEXTURE_2D, tex->getID(), 0);
 
 			this->colorAttachments.push_back(tex);
 		}
@@ -58,9 +51,9 @@ Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height,
 		break;
 
 	case AttachmentType::DEPTH:
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+		tex->recreate(NULL, width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex->id, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex->getID(), 0);
 
 		if (this->depthAttachment != nullptr) {
 			LOG_INFO("Old depth texture attachment has been replaced!");
@@ -76,6 +69,7 @@ Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height,
 		break;
 	}
 
+	tex->bind();
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -107,20 +101,15 @@ void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const G
 {
 	if (index < this->colorAttachments.size() - 1) {
 		Texture* tex = this->colorAttachments.at(index);
-		glBindTexture(GL_TEXTURE_2D, tex->id);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
+		tex->recreate(NULL, width, height);
 	}
 	else {
 		LOG_ERROR("Index out of range, cannot update dimensions of non existent color attachment!");
 	}
-
 }
 
 void Framebuffer::bind() const
 {
-
 	glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) 
 	{
@@ -130,8 +119,6 @@ void Framebuffer::bind() const
 		LOG_INFO("attachments should be complete as well (reserved memory).");
 		LOG_INFO("Each buffer should have the same number of samples.");
 	}
-		
-	
 }
 
 void Framebuffer::unbind() const
@@ -141,7 +128,6 @@ void Framebuffer::unbind() const
 
 void Framebuffer::deleteDepthTexture()
 {
-	glDeleteTextures(1, &this->depthAttachment->id);
 	delete this->depthAttachment;
 	this->depthAttachment = nullptr;
 }

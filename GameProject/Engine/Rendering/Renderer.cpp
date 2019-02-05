@@ -2,6 +2,7 @@
 
 #include "../Entity/Entity.h"
 #include "../AssetManagement/Mesh.h"
+#include "GLAbstraction/Texture.h"
 
 Renderer::Renderer()
 {
@@ -14,7 +15,7 @@ Renderer::Renderer()
 	Material emptyMaterial;
 	emptyMaterial.Ka = glm::vec3(0.1f);
 	emptyMaterial.Ks = glm::vec3(1.0f);
-	this->uniformBuffer->setData((void*)(&emptyMaterial), sizeof(emptyMaterial) - sizeof(emptyMaterial.Textures));
+	this->uniformBuffer->setData((void*)(&emptyMaterial), sizeof(emptyMaterial) - sizeof(emptyMaterial.textures));
 }
 
 Renderer::~Renderer()
@@ -64,8 +65,8 @@ void Renderer::draw(Model * model)
 		
 		unsigned int materialIndex = mesh->getMaterialIndex();
 		Material& material = model->getMaterial(materialIndex);
-		for (Texture& texture : material.Textures) {
-			this->testShader->setTexture2D("tex", 0, texture.id);
+		for (Texture* texture : material.textures) {
+			this->testShader->setTexture2D("tex", 0, texture->getID());
 		}
 		
 		mesh->bindVertexBuffer();
