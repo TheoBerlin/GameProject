@@ -12,10 +12,10 @@ public:
 	Camera(const std::string& tagName = "Camera", const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	virtual ~Camera();
 
+	void init();
+
 	// Update called by entity
 	void update(const float& dt);
-
-	void init();
 
 	// Returns the cameras up-vector
 	glm::vec3 getUp() const;

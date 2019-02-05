@@ -24,8 +24,8 @@ void InputHandler::mouseClickCallback(GLFWwindow * window, int button, int actio
 InputHandler::InputHandler(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, this->keyCallback);
-	//glfwSetCursorPosCallback(window, this->mouseMoveCallback);
-	//glfwSetMouseButtonCallback(window, this->mouseClickCallback);
+	glfwSetCursorPosCallback(window, this->mouseMoveCallback);
+	glfwSetMouseButtonCallback(window, this->mouseClickCallback);
 }
 
 

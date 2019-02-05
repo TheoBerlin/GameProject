@@ -8,7 +8,7 @@
 // TO PUBLISH TO THE EVENTBUS
 // EventBus::get().publish(new EventType(param1, param2));
 
-// UNSUBSCRIBE IS THE SAME AS SUBCRIBE
+// THE SYNTAX FOR UNSUBSCRIBE IS THE SAME AS FOR SUBSCRIBE
 
 class Event
 {

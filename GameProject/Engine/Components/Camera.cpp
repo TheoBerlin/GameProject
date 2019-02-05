@@ -58,7 +58,7 @@ glm::mat4 Camera::getVP() const
 
 void Camera::updateView()
 {
-	this->view = glm::lookAt(this->pos, this->pos + this->f, this->u);
+	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getMatrix()->getForward(), this->u);
 }
 
 void Camera::updateProj(WindowResizeEvent * evnt)
