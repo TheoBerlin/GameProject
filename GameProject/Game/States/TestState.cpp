@@ -50,6 +50,8 @@ void TestState::updateLogic()
 
 void TestState::render()
 {
-	Display::get().getRenderer().draw(this->entity);
-	Display::get().getRenderer().draw(this->cameraEntity);
+	Renderer& renderer = Display::get().getRenderer();
+	renderer.push(this->entity);
+	renderer.push(this->cameraEntity);
+	renderer.drawAll();
 }
