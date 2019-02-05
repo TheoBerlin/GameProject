@@ -3,7 +3,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include  "../Entity/Entity.h"
 
-Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(tagName)
+Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec3& offset) : Component(parentEntity, tagName)
 {
 	// Set the standard values
 	this->fov = FOV;

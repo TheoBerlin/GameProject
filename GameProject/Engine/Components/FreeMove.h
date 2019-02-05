@@ -6,7 +6,7 @@
 class FreeMove : public Component
 {
 public:
-	FreeMove(const std::string& tagName = "FreeMove");
+	FreeMove(Entity * parentEntity, const std::string& tagName = "FreeMove");
 	virtual ~FreeMove();
 
 	void init();

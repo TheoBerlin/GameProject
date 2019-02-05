@@ -13,9 +13,9 @@ TestState::TestState() : State()
 {
 	InputHandler ih(Display::get().getWindowPtr());
 	this->cameraEntity = new Entity({ 0.0f, 0.0f, -1.0f });
-	this->cameraEntity->addComponent(new FreeMove());
-	Camera* camera = new Camera("Camera", { 0.0f, 1.0f, -2.0f });
-	this->cameraEntity->addComponent(camera);
+	FreeMove * move = new FreeMove(this->cameraEntity);
+
+	Camera* camera = new Camera(this->cameraEntity, "Camera", { 0.0f, 1.0f, -2.0f });
 	camera->init();
 	Display::get().getRenderer().setActiveCamera(camera);
 

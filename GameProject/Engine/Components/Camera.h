@@ -9,7 +9,7 @@
 class Camera : public Component
 {
 public:
-	Camera(const std::string& tagName = "Camera", const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
+	Camera(Entity * parentEntity, const std::string& tagName = "Camera", const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	virtual ~Camera();
 
 	void init();

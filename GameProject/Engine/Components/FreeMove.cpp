@@ -6,11 +6,13 @@
 #include "../Events/EventBus.h"
 #include "Utils/Logger.h"
 
-FreeMove::FreeMove(const std::string& tagName) : Component(tagName)
+FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
 	EventBus::get().subscribe(this, &FreeMove::moveKeyboard);
 	EventBus::get().subscribe(this, &FreeMove::moveMouse);
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
+
+	LOG_PRINT("FreeMove constructor");
 
 	this->speed = 100.0f;
 	this->sensitivity = 3.0f;
@@ -24,6 +26,7 @@ FreeMove::FreeMove(const std::string& tagName) : Component(tagName)
 
 FreeMove::~FreeMove()
 {
+	LOG_PRINT("FreeMove destructor");
 	EventBus::get().unsubscribe(this, &FreeMove::moveKeyboard);
 	EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
 	EventBus::get().unsubscribe(this, &FreeMove::clickMouse);
@@ -91,10 +94,10 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
-	this->xPos = evnt->xpos - this->preXPos;
-	this->yPos = evnt->ypos - this->preYPos;
-	this->preXPos = evnt->xpos;
-	this->preYPos = evnt->ypos;
+	this->xPos = evnt->moveX - this->preXPos;
+	this->yPos = evnt->moveY - this->preYPos;
+	this->preXPos = evnt->moveX;
+	this->preYPos = evnt->moveY;
 }
 
 void FreeMove::clickMouse(MouseClickEvent * evnt)
