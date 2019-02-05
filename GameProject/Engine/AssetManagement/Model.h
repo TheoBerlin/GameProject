@@ -13,8 +13,8 @@ class Model
         void addMesh(Mesh* mesh);
 		void addMaterial(Material material);
 
-        // Returns the amount of meshes comprising the model
         size_t meshCount();
+        size_t materialCount();
 
         // Returns pointer to indexed mesh
         Mesh* getMesh(size_t index);

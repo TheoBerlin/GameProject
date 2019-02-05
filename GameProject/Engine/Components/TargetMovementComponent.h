@@ -1,17 +1,19 @@
 #pragma once
 
 #include "Component.h"
+#define OFFSET 5;
 
-class TargetMovementComponent : Component
+class TargetMovementComponent : public Component
 {
 public: 
-	TargetMovementComponent(std::string name = "TargetMovement");
+	TargetMovementComponent(Entity* parent, std::string name);
 	virtual ~TargetMovementComponent();
 
-	void init();
 	void update(const float& dt);
 
-	glm::vec3 getPosition();
+	glm::vec3 getCurrentPosition();
+	glm::vec3 getAddedPosition();
+	glm::vec3 addPosition(glm::vec3 position);
 	void setTime(float time);
 
 private:

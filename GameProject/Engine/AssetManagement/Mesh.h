@@ -9,6 +9,8 @@ public:
     Mesh(std::vector<Vertex>* vertices, std::vector<unsigned short>* vertexIndices, unsigned short materialIndex);
     ~Mesh();
 
+    unsigned short getMaterialIndex();
+
 private:
     void createBuffers();
 
