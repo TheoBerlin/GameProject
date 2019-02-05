@@ -27,3 +27,9 @@ struct WindowResizeEvent : public Event
 	int width;
 	int height;
 };
+
+struct MouseMoveEvent : public Event
+{
+	MouseMoveEvent(double moveX, double moveY) : moveX(moveX), moveY(moveY) {};
+	double moveX, moveY;
+};
