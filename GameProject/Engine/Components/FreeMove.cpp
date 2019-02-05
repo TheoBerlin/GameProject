@@ -12,8 +12,6 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	EventBus::get().subscribe(this, &FreeMove::moveMouse);
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
-	LOG_PRINT("FreeMove constructor");
-
 	this->speed = 100.0f;
 	this->sensitivity = 3.0f;
 	this->mouseLock = false;
@@ -26,7 +24,6 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 
 FreeMove::~FreeMove()
 {
-	LOG_PRINT("FreeMove destructor");
 	EventBus::get().unsubscribe(this, &FreeMove::moveKeyboard);
 	EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
 	EventBus::get().unsubscribe(this, &FreeMove::clickMouse);
@@ -38,7 +35,8 @@ void FreeMove::init()
 
 void FreeMove::update(const float & dt)
 {
-	EntityMatrix * mat = getHost()->getMatrix();
+	EntityMatrix * mat = host->getMatrix();
+
 	this->dt = dt;
 
 	// Keys that need constant polling

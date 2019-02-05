@@ -13,7 +13,7 @@ TestState::TestState() : State()
 {
 	InputHandler ih(Display::get().getWindowPtr());
 	this->cameraEntity = new Entity({ 0.0f, 0.0f, -1.0f });
-	FreeMove * move = new FreeMove(this->cameraEntity);
+	new FreeMove(this->cameraEntity);
 
 	Camera* camera = new Camera(this->cameraEntity, "Camera", { 0.0f, 1.0f, -2.0f });
 	camera->init();
