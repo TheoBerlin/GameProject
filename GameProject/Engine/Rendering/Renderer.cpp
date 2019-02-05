@@ -29,6 +29,20 @@ void Renderer::setActiveCamera(Camera * camera)
 	this->activeCamera = camera;
 }
 
+void Renderer::push(Entity * entity)
+{
+	this->renderingList.push_back(entity);
+}
+
+void Renderer::drawAll()
+{
+	for (Entity* entity : this->renderingList)
+	{
+		draw(entity);
+	}
+	this->renderingList.clear();
+}
+
 void Renderer::draw(Entity * entity)
 {
 	Model* model = entity->getModel();
