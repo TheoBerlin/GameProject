@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 class VertexArray
 {
@@ -15,6 +16,7 @@ public:
 		Important to push attributes to attributeHandler in order of how they lay in the vertex buffer
 	*/
 	void addBuffer(VertexBuffer* vbo, const AttributeLayout& layout);
+	void setIndexBuffer(IndexBuffer* indexBuffer);
 
 	/*
 		used before drawing
@@ -26,5 +28,5 @@ private:
 	unsigned id;
 
 	std::vector<VertexBuffer*> vbos;
-
+	IndexBuffer* indexBuffer;
 };

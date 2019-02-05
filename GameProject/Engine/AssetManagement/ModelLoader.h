@@ -15,6 +15,7 @@ public:
 
     static void unloadModels();
     static size_t modelCount();
+    static void unloadAllModels();
 
 private:
     static std::map<std::string, Model*> loadedModels;

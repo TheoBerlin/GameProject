@@ -9,8 +9,6 @@ Framebuffer::Framebuffer()
 	glGenFramebuffers(1, &this->id);
 	glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
 }
 
 Framebuffer::~Framebuffer()

@@ -1,13 +1,13 @@
 #include "VertexBuffer.h"
 
-VertexBuffer::VertexBuffer(const std::vector<float>& data)
+VertexBuffer::VertexBuffer(const void* const data, const size_t& dataSize)
+	:dataSize(dataSize)
 {
-	this->data = data;
 	glGenBuffers(1, &this->id);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->id);
 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * this->data.size(), &this->data[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }

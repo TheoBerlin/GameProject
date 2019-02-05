@@ -30,6 +30,7 @@
     <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
+    <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
@@ -69,6 +70,7 @@
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
     <ClInclude Include="Engine\AssetManagement\Model.h" />

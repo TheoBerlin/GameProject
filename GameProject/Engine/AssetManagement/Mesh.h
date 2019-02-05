@@ -2,22 +2,29 @@
 
 #include <vector>
 #include "../Rendering/GLAbstraction/RenderingResources.h"
+#include "../Rendering/GLAbstraction/VertexArray.h"
+#include "../Rendering/GLAbstraction/UniformBuffer.h"
 
 class Mesh
 {
 public:
-    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned short>* vertexIndices, unsigned short materialIndex);
+    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
     ~Mesh();
 
     unsigned short getMaterialIndex();
 
 private:
     void createBuffers();
+    void bindVertexBuffer();
+    // Inserts material data into a uniform buffer
+    void bindMaterial(UniformBuffer* uniformBuffer);
 
-    GLuint vertexVBO, indexVBO;
+private:
+    Model* parentModel;
+    VertexArray* VAO;
 
     std::vector<Vertex>* vertices;
-    std::vector<unsigned short>* vertexIndices;
-    // The index refers to the material storage in the meshe's model
+    std::vector<unsigned int>* vertexIndices;
+    // The index refers to the material storage in the mesh's model
     unsigned short materialIndex;
 };

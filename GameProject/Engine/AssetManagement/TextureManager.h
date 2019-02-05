@@ -16,6 +16,7 @@ public:
 
     static void unloadTextures();
     static size_t textureCount();
+    static void unloadAllTextures();
 
 private:
     static std::map<std::string, Texture*> loadedTextures;

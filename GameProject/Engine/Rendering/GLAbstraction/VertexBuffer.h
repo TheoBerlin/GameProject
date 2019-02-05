@@ -12,7 +12,7 @@ public:
 	/*
 		Set up for vbo object data is templated
 	*/
-	VertexBuffer(const std::vector<float>& data);
+	VertexBuffer(const void* const data, const size_t& dataSize);
 	~VertexBuffer();
 
 	unsigned getID() { return this->id; };
@@ -25,11 +25,9 @@ public:
 
 private:
 	unsigned id, attribCount;
+	size_t dataSize;
 	/*
 		Locations for all attributes included in the vbo
 	*/
 	unsigned locations[5];
-
-	std::vector<float> data;
 };
-

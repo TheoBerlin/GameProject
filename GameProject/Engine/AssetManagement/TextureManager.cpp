@@ -47,7 +47,7 @@ Texture* TextureManager::loadTexture(std::string fileName, TextureType type)
     return newTexture;
 }
 
-void TextureManager::unloadTextures()
+void TextureManager::unloadAllTextures()
 {
     for (std::map<std::string, Texture*>::iterator itr = loadedTextures.begin(); itr != loadedTextures.end(); itr++) {
         delete itr->second;

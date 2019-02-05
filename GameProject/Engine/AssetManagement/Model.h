@@ -12,6 +12,7 @@ class Model
 
         void addMesh(Mesh* mesh);
 		void addMaterial(Material material);
+        Material getMaterial(unsigned short index);
 
         size_t meshCount();
         size_t materialCount();
