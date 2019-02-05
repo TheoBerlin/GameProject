@@ -21,4 +21,5 @@ private:
 	Camera* activeCamera;
 	UniformBuffer* uniformBuffer;
 	Shader* testShader;
+
 };

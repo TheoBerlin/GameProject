@@ -24,6 +24,12 @@ public:
 	*/
 	void updateDimensions(unsigned index, const GLuint& width, const GLuint& height);
 
+	/*
+		Get Color Texture attachment from index, in order of attachment.
+	*/
+	Texture* getColorTexture(unsigned index);
+
+
 	void bind() const;
 	void unbind() const;
 

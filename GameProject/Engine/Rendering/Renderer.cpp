@@ -11,6 +11,7 @@ Renderer::Renderer()
 
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->uniformBuffer = new UniformBuffer(this->testShader->getID(), "Material", 0);
+
 	Material emptyMaterial;
 	emptyMaterial.Ka = glm::vec3(0.1f);
 	emptyMaterial.Ks = glm::vec3(1.0f);
@@ -43,6 +44,8 @@ void Renderer::draw(Entity * entity)
 
 void Renderer::draw(Model * model)
 {
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
 	for (size_t i = 0; i < model->meshCount(); i++)
 	{
 		Mesh* mesh = model->getMesh(i);
@@ -59,4 +62,5 @@ void Renderer::draw(Model * model)
 		ib.bind();
 		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 	}
+
 }
