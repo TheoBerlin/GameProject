@@ -200,7 +200,6 @@
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="..\Utils\Logger.cpp" />
     <ClCompile Include="..\Utils\Timer.cpp" />
-    <ClCompile Include="Matrix_Test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
