@@ -10,8 +10,7 @@
 Framebuffer::Framebuffer()
 {
 	glGenFramebuffers(1, &this->id);
-	glBindFramebuffer(GL_FRAMEBUFFER, this->id);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 
 	this->colorAttachments.reserve(7);
 	this->depthAttachment = nullptr;
@@ -37,10 +36,13 @@ Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height,
 	
 	switch (attachmentTYPE) {
 	case AttachmentType::COLOR:
+	{
 		if (this->colorAttachments.size() < 7) {
 			tex->recreate(NULL, width, height);
 
+			glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + this->colorAttachments.size(), GL_TEXTURE_2D, tex->getID(), 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 			this->colorAttachments.push_back(tex);
 		}
@@ -48,12 +50,16 @@ Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height,
 			delete tex;
 			LOG_WARNING("You have exceeded the maxmimum amount of color attachments!");
 		}
+	}
 		break;
 
 	case AttachmentType::DEPTH:
+	{
 		tex->recreate(NULL, width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT);
 
+		glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex->getID(), 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		if (this->depthAttachment != nullptr) {
 			LOG_INFO("Old depth texture attachment has been replaced!");
@@ -66,6 +72,7 @@ Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height,
 
 
 		this->depthAttachment = tex;
+	}
 		break;
 	}
 
@@ -106,15 +113,13 @@ void Framebuffer::attachRenderBuffer(const GLuint & width, const GLuint & height
 void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const GLuint & height)
 {
 	if (this->depthAttachment != nullptr) {
-		glBindTexture(GL_TEXTURE_2D, this->depthAttachment->getID());
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
-		glBindTexture(GL_TEXTURE_2D, 0);
+		this->depthAttachment->resize(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT);
 	}
 
 
 	if (index >= 0 && index <= this->colorAttachments.size() - 1) {
 		Texture* tex = this->colorAttachments.at(index);
-		tex->recreate(NULL, width, height);
+		tex->resize(width, height);
 	}
 	else {
 		LOG_WARNING("Index out of range, cannot update dimensions of non existent color attachment!");

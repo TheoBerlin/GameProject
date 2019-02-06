@@ -29,7 +29,7 @@ Pipeline::Pipeline()
 	Material emptyMaterial;
 	emptyMaterial.Ka = glm::vec3(0.1f);
 	emptyMaterial.Ks = glm::vec3(1.0f);
-	this->uniformBuffer->setData((void*)(&emptyMaterial), sizeof(emptyMaterial) - sizeof(emptyMaterial.Textures));
+	this->uniformBuffer->setData((void*)(&emptyMaterial), sizeof(emptyMaterial) - sizeof(emptyMaterial.textures));
 
 }
 
@@ -60,8 +60,8 @@ void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
 void Pipeline::prePassDepthOn()
 {
 	glEnable(GL_DEPTH_TEST);
-
 	glDepthMask(GL_TRUE);
+
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glDepthFunc(GL_LESS);
@@ -98,7 +98,7 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	glEnable(GL_DEPTH_TEST);
 
 	this->fbo.bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT);
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
@@ -117,7 +117,7 @@ void Pipeline::drawTextureToQuad(Texture * tex)
 	glDisable(GL_DEPTH_TEST);
 
 	this->quadShader->bind();
-	this->quadShader->setTexture2D("tex", 0, tex->id);
+	this->quadShader->setTexture2D("tex", 0, tex->getID());
 
 	Mesh* mesh = this->quad->getMesh(0);
 	mesh->bindVertexBuffer();
@@ -196,10 +196,10 @@ void Pipeline::drawModel(Model * model, Shader* shader)
 		unsigned int materialIndex = mesh->getMaterialIndex();
 		Material& material = model->getMaterial(materialIndex);
 
-		this->uniformBuffer->setSubData((void*)(&material), sizeof(material) - sizeof(material.Textures), 0);
+		this->uniformBuffer->setSubData((void*)(&material), sizeof(material) - sizeof(material.textures), 0);
 
-		for (Texture& texture : material.Textures) {
-			shader->setTexture2D("tex", 0, texture.id);
+		for (Texture* texture : material.textures) {
+			shader->setTexture2D("tex", 0, texture->getID());
 		}
 
 		mesh->bindVertexBuffer();
