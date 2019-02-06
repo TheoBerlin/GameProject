@@ -5,6 +5,7 @@
 
 #include "../Entity/EntityManager.h"
 #include "../../Utils/Logger.h"
+#include "../AssetManagement/ModelLoader.h"
 
 #include <fstream>
 #include <iostream>
@@ -18,10 +19,16 @@ class LevelParser {
 private:
 	json::json jsonFile;
 
-	void writePosition(int index, glm::vec3 position);
-	void writeName(int index, std::string name);
+	/*void writePosition(int index, glm::vec3 position);
+	void writeName(int index, std::string name);*/
+
+	void readEntityTargets(EntityManager *entityManager);
+	void readEntityBoxes(EntityManager *entityManager);
+	void readEntityWalls(EntityManager *entityManager);
+	void readEntityArrow(EntityManager *entityManager);
 
 public:
-	void writeToFile(std::string file, EntityManager *entityManager);
-	void read(std::string file, EntityManager *entityManager);
+	//void writeToFile(std::string file, EntityManager *entityManager);
+	void readEntity(std::string file, EntityManager *entityManager);
+
 };

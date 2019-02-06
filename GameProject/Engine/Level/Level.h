@@ -5,10 +5,10 @@
 class Level
 {
 public:
-    Level();
-    ~Level();
+	Level();
+	~Level();
 
 private:
-    EntityManager* entityManager;
+	EntityManager* entityManager;
 
 };
