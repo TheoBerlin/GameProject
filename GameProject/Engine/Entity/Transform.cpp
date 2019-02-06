@@ -35,7 +35,10 @@ Transform::Transform()
 glm::mat4 Transform::getMatrix() const
 {
 	glm::mat4 ret = glm::mat4(1);
-	ret = glm::rotate(ret, rotation.x + rotation.y + rotation.z, glm::normalize(rotation));
+	if(rotation != glm::vec3(0.0f)) {
+		ret = glm::rotate(ret, rotation.x + rotation.y + rotation.z, glm::normalize(rotation));
+	}
+
 	ret = glm::scale(ret, scaleFactor);
 	ret[3][0] = position.x;
 	ret[3][1] = position.y;
@@ -81,23 +84,25 @@ void Transform::rotate(const glm::vec3& rotation)
 
 void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
-	glm::mat4 rotationMatrix = glm::mat4(1);
+	if(rotation != glm::vec3(0.0f)) {
+		glm::mat4 rotationMatrix = glm::mat4(1);
 
-	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
-	rotationMatrix = glm::translate(rotationMatrix, rotationCenter - position);
+		//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
+		rotationMatrix = glm::translate(rotationMatrix, rotationCenter - position);
 
-	if (glm::abs(rotation.x) > 0) {
-		rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1, 0, 0));
-	}
-	if (glm::abs(rotation.y) > 0) {
-		rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
-	}
-	if (glm::abs(rotation.z) > 0) {
-		rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0, 0, 1));
-	}
+		if (glm::abs(rotation.x) > 0) {
+			rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1, 0, 0));
+		}
+		if (glm::abs(rotation.y) > 0) {
+			rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
+		}
+		if (glm::abs(rotation.z) > 0) {
+			rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0, 0, 1));
+		}
 
-	rotationMatrix = glm::translate(rotationMatrix, position - rotationCenter);
-	position = (rotationMatrix * glm::vec4(position, 1.0f)).xyz();
+		rotationMatrix = glm::translate(rotationMatrix, position - rotationCenter);
+		position = (rotationMatrix * glm::vec4(position, 1.0f)).xyz();
+	}
 }
 
 void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
@@ -109,7 +114,7 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 void Transform::setRotation(const glm::vec3 &rotation)
 {
 	this->rotation = modulusRotation(rotation);
-	f = glm::vec3(0, 0, 1);
+	f = defaultForward;
 	updateForwardRightUp();
 }
 
