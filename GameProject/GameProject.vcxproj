@@ -43,6 +43,7 @@
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
+    <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="main.cpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="Game\Components\ArrowGuider.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
