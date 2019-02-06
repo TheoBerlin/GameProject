@@ -3,13 +3,13 @@
 #include "Model.h"
 
 Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent)
-    : vertices(vertices),
-    vertexIndices(vertexIndices),
-    materialIndex(materialIndex),
-    parentModel(parent)
+	: vertices(vertices),
+	vertexIndices(vertexIndices),
+	materialIndex(materialIndex),
+	parentModel(parent)
 {
 	// Load mesh to GPU.
-    this->vao = new VertexArray();
+	this->vao = new VertexArray();
 	this->vao->bind();
 	VertexBuffer* vbo = new VertexBuffer((void*)&((*vertices)[0].Position.x), vertices->size() * sizeof(Vertex));
 	AttributeLayout layout;
@@ -24,7 +24,7 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 
 void Mesh::bindVertexBuffer()
 {
-    this->vao->bind();
+	this->vao->bind();
 }
 
 IndexBuffer & Mesh::getIndexBuffer()
@@ -40,17 +40,17 @@ void Mesh::bindMaterial(UniformBuffer* uniformBuffer)
 
 Mesh::~Mesh()
 {
-    // Delete vertices and indices
-    delete this->vertices;
-    delete this->vertexIndices;
+	// Delete vertices and indices
+	delete this->vertices;
+	delete this->vertexIndices;
 
-    delete this->vao;
+	delete this->vao;
 	delete this->ib;
 }
 
 unsigned short Mesh::getMaterialIndex()
 {
-    return this->materialIndex;
+	return this->materialIndex;
 }
 
 void Mesh::createBuffers()

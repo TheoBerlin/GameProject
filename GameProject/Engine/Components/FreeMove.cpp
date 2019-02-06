@@ -35,7 +35,7 @@ void FreeMove::init()
 
 void FreeMove::update(const float & dt)
 {
-	EntityMatrix * mat = host->getMatrix();
+	Transform * mat = host->getTransform();
 
 	this->dt = dt;
 
@@ -57,7 +57,7 @@ void FreeMove::update(const float & dt)
 	{
 		if (this->xPos != 0.0 || this->yPos != 0.0)
 		{
-			EntityMatrix * mat = getHost()->getMatrix();
+			Transform * mat = getHost()->getTransform();
 			glm::vec3 oldForward = mat->getForward();
 
 			oldForward = glm::rotate(oldForward, -(float)xPos * this->dt * this->sensitivity, mat->getUp());
@@ -66,7 +66,7 @@ void FreeMove::update(const float & dt)
 			this->xPos = 0.0;
 			this->yPos = 0.0;
 
-			getHost()->getMatrix()->setForward(oldForward);
+			getHost()->getTransform()->setForward(oldForward);
 		}
 	}
 }

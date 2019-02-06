@@ -1,26 +1,25 @@
 ﻿#pragma once
 #define GLM_ENABLE_EXPERIMENTAL
-
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/constants.hpp"
 #include "../Config.h"
 
-class EntityMatrix
+class Transform
 {
 private:
-
-	glm::mat4 worldMatrix;
-	glm::mat4 modelMatrix;
+	glm::vec3 position;
 	glm::vec3 rotation;
 	glm::vec3 scaleFactor;
 	glm::vec3 f, r, u;
+	glm::vec3 defaultForward;
 
 	// Fixes the rotation to always be between 0 to 2π radians
 	glm::vec3 modulusRotation(glm::vec3 rotation);
+	void updateForwardRightUp();
 
 public:
-	EntityMatrix();
+	Transform();
 
 	//Get combined matrix of world and model
 	glm::mat4 getMatrix() const;
@@ -46,17 +45,19 @@ public:
 	void rotate(const glm::vec3& rotation);
 	//Rotate world matrix (x,y,z) radians around given (x,y,z) position.
 	void rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter);
+	//Rotate around given axis
+	void rotateAxis(const float& radians, const glm::vec3& axis);
 	//Set the rotation by (x,y,z)
 	void setRotation(const glm::vec3& rotation);
 	//Translate from current position plus given vector
 	void translate(const glm::vec3& vector);
 	//Set world position
 	void setPosition(const glm::vec3& position);
-	//Scale by (x,y,z) times
-	void scale(const glm::vec3& scale);
-	//Uniform scale
-	void scale(const float& scale);
-	//Set Scale by (x,y,z)
+	//Scale by (x,y,z) times, send in delta time to scale by time.
+	void scale(const glm::vec3& scale, float deltaTime = 1.0f);
+	//Uniform scale,  send in delta time to scale by time.
+	void scale(const float& scale, float deltaTime = 1.0f);
+	//Set Scale by (x,y,z), 
 	void setScale(const glm::vec3& scale);
 	//Uniform scale
 	void setScale(const float& scale);
