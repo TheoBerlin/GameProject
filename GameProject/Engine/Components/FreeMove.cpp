@@ -39,19 +39,23 @@ void FreeMove::update(const float & dt)
 
 	this->dt = dt;
 
-	// Keys that need constant polling
+	glm::vec3 newPosition = mat->getPosition();
+
+	// Check keyboard input (WASD) to calculate new position
 	if (this->pressedKeys[GLFW_KEY_W])
-		mat->setPosition(mat->getPosition() + this->dt * mat->getForward() * this->speed);
+		newPosition += this->dt * mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_A])
-		mat->setPosition(mat->getPosition() + this->dt * -mat->getRight() * this->speed);
+		newPosition += this->dt * -mat->getRight() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_D])
-		mat->setPosition(mat->getPosition() + this->dt * mat->getRight() * this->speed);
+		newPosition += this->dt * mat->getRight() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_S])
-		mat->setPosition(mat->getPosition() + this->dt * -mat->getForward() * this->speed);
+		newPosition += this->dt * -mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_SPACE])
-		mat->setPosition(mat->getPosition() + this->dt * mat->getUp() * this->speed);
+		newPosition += this->dt * mat->getUp() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
-		mat->setPosition(mat->getPosition() + this->dt * -mat->getUp() * this->speed);
+		newPosition += this->dt * -mat->getUp() * this->speed;
+
+	mat->setPosition(newPosition);
 
 	if (this->mouseLock)
 	{
