@@ -27,6 +27,8 @@ TEST_CASE("Arrow guider") {
         glm::vec3 newPos = arrowEntity->getTransform()->getPosition();
         glm::vec3 expectedPos = startingPosition + startingDirection * startingSpeed * dt;
 
+        CAPTURE(newPos.x, newPos.y, newPos.z);
+
         REQUIRE(Approx(newPos.x - expectedPos.x) == 0.0f);
         REQUIRE(Approx(newPos.y - expectedPos.y) == 0.0f);
         REQUIRE(Approx(newPos.z - expectedPos.z) == 0.0f);

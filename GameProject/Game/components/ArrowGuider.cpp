@@ -100,10 +100,15 @@ void ArrowGuider::update(const float& dt)
 
 void ArrowGuider::startGuiding()
 {
+    // Get camera pointer from parent entity
+    Component* tempPtr = host->getComponent("Camera");
+    arrowCamera = dynamic_cast<Camera*>(tempPtr);
+
     if (!arrowCamera) {
-        LOG_WARNING("Tried to start guiding arrow without camera");
+        LOG_WARNING("Arrow Guider failed to find Camera component, will not start guiding");
         return;
     }
+
     isGuiding = true;
 
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
@@ -112,14 +117,6 @@ void ArrowGuider::startGuiding()
     storedPositions.clear();
     storedPositions.push_back(getPosition());
 
-    // Get camera pointer from parent entity
-    Component* tempPtr = host->getComponent("Camera");
-    arrowCamera = dynamic_cast<Camera*>(tempPtr);
-
-    if (!arrowCamera) {
-        LOG_WARNING("Arrow Guider failed to find Camera component");
-        return;
-    }
 
     // Set camera settings
     arrowCamera->setFOV(minFOV);
