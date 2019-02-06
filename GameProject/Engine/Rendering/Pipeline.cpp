@@ -17,9 +17,11 @@ Pipeline::Pipeline()
 	this->quadShader = new Shader("./Engine/Rendering/Shaders/PostProcessVert.vert", "./Engine/Rendering/Shaders/PostProcessFrag.frag");
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
-
-	this->fbo.attachTexture(512, 512, AttachmentType::COLOR);
-	this->fbo.attachTexture(512, 512, AttachmentType::DEPTH);
+	//Display& display = Display::get();
+	int width = 640;
+	int height = 480;
+	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
+	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
 	/*
 		Set up main uniform buffer for material settings
@@ -143,7 +145,7 @@ void Pipeline::draw(const std::vector<Entity*>& renderingList)
 	for (Entity* entity : renderingList)
 	{
 		Model* model = entity->getModel();
-		EntityMatrix* transform = entity->getMatrix();
+		Transform* transform = entity->getTransform();
 
 		if (model != nullptr)
 		{
@@ -158,7 +160,7 @@ void Pipeline::draw(const std::vector<Entity*>& renderingList, Shader* shader)
 	for (Entity* entity : renderingList)
 	{
 		Model* model = entity->getModel();
-		EntityMatrix* transform = entity->getMatrix();
+		Transform* transform = entity->getTransform();
 		
 		if (model != nullptr)
 		{
