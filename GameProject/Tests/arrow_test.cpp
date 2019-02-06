@@ -1,7 +1,7 @@
 #include <Catch/catch.hpp>
 
 #include <Engine/Entity/Entity.h>
-#include <Engine/Entity/EntityMatrix.h>
+#include <Engine/Entity/Transform.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Engine/Components/Camera.h>
 #include <Engine/Events/Events.h>
@@ -13,18 +13,21 @@ TEST_CASE("Arrow guider") {
     glm::vec3 startingDirection(0.0f, 0.0f, 1.0f);
     float startingSpeed = 0.1f;
 
-    Entity* arrowEntity = new Entity();
+    Entity* arrowEntity = new Entity(startingDirection);
+    arrowEntity->getTransform()->setPosition(startingPosition);
 
     Camera* arrowCam = new Camera(arrowEntity);
-    ArrowGuider* arrowGuider = new ArrowGuider(arrowEntity, startingPosition, startingDirection, startingSpeed);
+    ArrowGuider* arrowGuider = new ArrowGuider(arrowEntity, startingSpeed);
 
-    SECTION("Travels in a linear path with linear speed") {
+    SECTION("Is able to travel in a linear path with constant speed") {
         float dt = 10.0f;
         arrowGuider->startGuiding();
         arrowGuider->update(dt);
 
-        glm::vec3 newPos = arrowEntity->getMatrix()->getPosition();
+        glm::vec3 newPos = arrowEntity->getTransform()->getPosition();
         glm::vec3 expectedPos = startingPosition + startingDirection * startingSpeed * dt;
+
+        CAPTURE(newPos.x, newPos.y, newPos.z);
 
         REQUIRE(Approx(newPos.x - expectedPos.x) == 0.0f);
         REQUIRE(Approx(newPos.y - expectedPos.y) == 0.0f);

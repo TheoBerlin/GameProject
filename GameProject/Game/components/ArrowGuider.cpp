@@ -2,14 +2,10 @@
 
 #include <Engine/Entity/Entity.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, const glm::vec3& startingPosition, const glm::vec3& startingDirection, float movementSpeed, float maxTurnSpeed)
+ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
     isGuiding = false;
-
-    host->getMatrix()->setPosition(startingPosition);
-
-    this->direction = startingDirection;
 
     this->movementSpeed = movementSpeed;
 
@@ -40,6 +36,8 @@ void ArrowGuider::update(const float& dt)
         return;
     }
 
+    glm::vec3 direction = host->getTransform()->getForward();
+
     // Update arrow position
     glm::vec3 currentPos = getPosition();
     glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
@@ -64,11 +62,6 @@ void ArrowGuider::update(const float& dt)
         std::fmod(posStoreTimer, posStoreFrequency);
 
         storedPositions.push_back(getPosition());
-    }
-
-    if (!arrowCamera) {
-        LOG_WARNING("Arrow guider is missing a camera");
-        return;
     }
 
     // Update camera settings using turn factors
@@ -107,6 +100,15 @@ void ArrowGuider::update(const float& dt)
 
 void ArrowGuider::startGuiding()
 {
+    // Get camera pointer from parent entity
+    Component* tempPtr = host->getComponent("Camera");
+    arrowCamera = dynamic_cast<Camera*>(tempPtr);
+
+    if (!arrowCamera) {
+        LOG_WARNING("Arrow Guider failed to find Camera component, will not start guiding");
+        return;
+    }
+
     isGuiding = true;
 
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
@@ -115,14 +117,6 @@ void ArrowGuider::startGuiding()
     storedPositions.clear();
     storedPositions.push_back(getPosition());
 
-    // Get camera pointer from parent entity
-    Component* tempPtr = host->getComponent("Camera");
-    arrowCamera = dynamic_cast<Camera*>(tempPtr);
-
-    if (!arrowCamera) {
-        LOG_WARNING("Arrow Guider failed to find Camera component");
-        return;
-    }
 
     // Set camera settings
     arrowCamera->setFOV(minFOV);
@@ -177,12 +171,12 @@ void ArrowGuider::setMaxTurnSpeed(const float maxTurnSpeed)
 
 glm::vec3 ArrowGuider::getDirection()
 {
-    return direction;
+    return host->getTransform()->getForward();
 }
 
 void ArrowGuider::setDirection(const glm::vec3 direction)
 {
-    this->direction = direction;
+    host->getTransform()->setForward(direction);
 }
 
 glm::vec3 ArrowGuider::getPosition()
@@ -226,6 +220,8 @@ void ArrowGuider::applyTurn()
     float yaw = turnFactors.x * maxTurnSpeed;
     float pitch = turnFactors.y * maxTurnSpeed;
 
+    glm::vec3 direction = host->getTransform()->getForward();
+
     // Redirect arrow
     glm::vec3 upDir(0.0f, 1.0f, 0.0f);
     glm::vec3 rightVec = glm::cross(direction, upDir);
@@ -242,15 +238,18 @@ void ArrowGuider::applyTurn()
     tempDirection = tempDirection * rotMatrix;
 
     // Used for calculation of entity rotation
-    //glm::vec3 normOldDirection = glm::normalize(direction);
+    glm::vec3 normOldDirection = glm::normalize(direction);
 
     direction = glm::vec3(tempDirection);
 
-    // TODO: Rotate the entity (rotation around axis needs to be implemented in EntityMatrix first)
-    /*
+    // Rotate the entity
     glm::vec3 normNewDirection = glm::normalize(direction);
     glm::vec3 rotationAxis = glm::cross(normOldDirection, normNewDirection);
 
-    float rotationAngle = glm::dot(normOldDirection, normNewDirection);
-    */
+    float cosAngle = glm::dot(normOldDirection, normNewDirection);
+    float rotationAngle = std::acosf(cosAngle);
+
+    host->getTransform()->rotateAxis(rotationAngle, rotationAxis);
+
+    host->getTransform()->setForward(direction);
 }
