@@ -22,8 +22,6 @@ TestState::TestState() : State()
 	this->entity = new Entity();
 	this->entity->setModel(ModelLoader::loadModel("Game/assets/cube.obj"));
 	this->entity->getMatrix()->setPosition({ 0.0f, 0.0f, -2.0f });
-
-	EventBus::get().subscribe(this, &TestState::moveCube);
 }
 
 TestState::~TestState()
@@ -44,11 +42,6 @@ void TestState::update(const float dt)
 {
 	this->cameraEntity->update(dt);
 	this->entity->update(dt);
-	//entity->getMatrix()->rotate(glm::vec3(5 * dt, 0, 0), glm::vec3(0, 0, -1));
-	//entity->getMatrix()->translate(glm::vec3(10 *dt, 0, 0));
-	entity->getMatrix()->rotate(glm::vec3(0, (3.1415 / 2) * dt, 0));
-	entity->getMatrix()->scale(1.1 *dt);
-	LOG_PRINT("%f, %f, %f", entity->getMatrix()->getPosition().x, entity->getMatrix()->getPosition().y, entity->getMatrix()->getPosition().z);
 }
 
 void TestState::updateLogic()
@@ -61,11 +54,4 @@ void TestState::render()
 	renderer.push(this->entity);
 	renderer.push(this->cameraEntity);
 	renderer.drawAll();
-}
-
-void TestState::moveCube(KeyEvent * e)
-{
-	if (e->key == GLFW_KEY_0)
-		entity->getMatrix()->setScale(glm::vec3(5, 5, 0.1));
-
 }

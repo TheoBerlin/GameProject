@@ -1,12 +1,27 @@
+#define GLM_FORCE_SWIZZLE
 #include "EntityMatrix.h"
 
 glm::vec3 EntityMatrix::modulusRotation(glm::vec3 rotation)
 {
-	rotation.x = (float)fmod(rotation.x, 2.0 * 3.1415);
-	rotation.y = (float)fmod(rotation.y, 2.0 * 3.1415);
-	rotation.z = (float)fmod(rotation.z, 2.0 * 3.1415);
+	rotation.x = (float)fmod(rotation.x, 2.0f * 3.1415f);
+	rotation.y = (float)fmod(rotation.y, 2.0f * 3.1415f);
+	rotation.z = (float)fmod(rotation.z, 2.0f * 3.1415f);
 
 	return rotation;
+}
+
+void EntityMatrix::updateForwardRightUp()
+{
+	glm::mat4 rotMat = glm::mat4(1.0f);
+	if (rotation.x > 0)
+		rotMat = glm::rotate(rotMat, rotation.x, glm::vec3(1, 0, 0));
+	if (rotation.y > 0)
+		rotMat = glm::rotate(rotMat, rotation.y, glm::vec3(0, 1, 0));
+	if (rotation.z > 0)
+		rotMat = glm::rotate(rotMat, rotation.z, glm::vec3(0, 0, 1));
+	this->f = (rotMat * glm::vec4(defaultForward, 1.0f)).xyz();
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 }
 
 EntityMatrix::EntityMatrix()
@@ -14,7 +29,7 @@ EntityMatrix::EntityMatrix()
 	this->scaleFactor = glm::vec3(1, 1, 1);
 	this->rotation = glm::vec3(0, 0, 0);
 	this->position = glm::vec3(0, 0, 0);
-	this->modelMatrix = glm::mat4(1);
+	setForward(glm::vec3(1, 0, 0));
 }
 
 glm::mat4 EntityMatrix::getMatrix() const
@@ -60,18 +75,8 @@ glm::vec3 EntityMatrix::getUp() const
 
 void EntityMatrix::rotate(const glm::vec3& rotation)
 {
-	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
-	if (glm::abs(rotation.x) > 0) {
-		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.x, glm::vec3(1, 0, 0));
-	}
-	if (glm::abs(rotation.y) > 0) {
-		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.y, glm::vec3(0, 1, 0));
-	}
-	if (glm::abs(rotation.z) > 0) {
-		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.z, glm::vec3(0, 0, 1));
-	}
 	this->rotation = modulusRotation(this->rotation + rotation);
-	setForward(modelMatrix * glm::vec4(f, 1.0f));
+	updateForwardRightUp();
 }
 
 void EntityMatrix::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
@@ -92,27 +97,20 @@ void EntityMatrix::rotate(const glm::vec3& rotation, const glm::vec3& rotationCe
 	}
 
 	rotationMatrix = glm::translate(rotationMatrix, position - rotationCenter);
-	glm::vec4 temp = rotationMatrix * glm::vec4(position, 1.0);
-	position.x = temp.x;
-	position.y = temp.y;
-	position.z = temp.z;
+	position = (rotationMatrix * glm::vec4(position, 1.0f)).xyz();
 }
 
 void EntityMatrix::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
-	modelMatrix = glm::rotate(modelMatrix, radians, normalize(axis));
-	setForward(modelMatrix * glm::vec4(f, 1.0f));
+	rotation += normalize(axis) * radians;
+	updateForwardRightUp();
 }
 
 void EntityMatrix::setRotation(const glm::vec3 &rotation)
 {
-	glm::vec3 newRotation = modulusRotation(rotation);
-	this->rotation = glm::vec3(0);
-	glm::vec3 saveScale = scaleFactor;
-	this->scaleFactor = glm::vec3(1);
-	this->modelMatrix = glm::mat4(1);
-	rotate(newRotation);
-	scale(saveScale);
+	this->rotation = modulusRotation(rotation);
+	f = glm::vec3(0, 0, 1);
+	updateForwardRightUp();
 }
 
 void EntityMatrix::translate(const glm::vec3& vector)
@@ -125,41 +123,40 @@ void EntityMatrix::setPosition(const glm::vec3& position)
 	this->position = position;
 }
 
-void EntityMatrix::scale(const glm::vec3& scale)
+void EntityMatrix::scale(const glm::vec3& scale, float deltaTime)
 {
-	this->scaleFactor *= scale;
-	this->modelMatrix = glm::scale(this->modelMatrix, scale);
+	//Take the scale change by taking -1, then change based on delta time. Then take +1 to properly scale down or up.
+	glm::vec3 s = scale;
+	s -= glm::vec3(1.0f);
+	s *= deltaTime;
+	s += glm::vec3(1.0f);
+	this->scaleFactor *= s;
 }
 
-void EntityMatrix::scale(const float& scale)
+void EntityMatrix::scale(const float& scale, float deltaTime)
 {
-	this->scaleFactor *= scale + glm::vec3(1, 1, 1);
-	this->modelMatrix = glm::scale(this->modelMatrix, glm::vec3(scale, scale, scale));
+	//Take the scale change by taking -1, then change based on delta time. Then take +1 to properly scale down or up.
+	float s = scale;
+	s -= 1.0f;
+	s *= deltaTime;
+	s += 1.0f;
+	this->scaleFactor *= s;
 }
 
 void EntityMatrix::setScale(const glm::vec3& scale)
 {
-	this->scaleFactor = glm::vec3(1);
-	glm::vec3 saveRotation = rotation;
-	this->rotation = glm::vec3(0);
-	this->modelMatrix = glm::mat4(1);
-	this->scale(scale);
-	rotate(saveRotation);
+	this->scaleFactor = scale;
 }
 
 void EntityMatrix::setScale(const float& scale)
 {
-	glm::vec3 saveRotation = rotation;
-	this->rotation = glm::vec3(0);
-	this->scaleFactor = glm::vec3(0);
-	this->modelMatrix = glm::mat4(1);
-	this->scale(scale);
-	rotate(this->rotation);
+	this->scaleFactor = glm::vec3(scale);
 }
 
 void EntityMatrix::setForward(const glm::vec3 & forward)
 {
-	this->f = glm::normalize(forward);
+	this->f = normalize(forward);
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
 	this->u = glm::cross(this->r, this->f);
+	defaultForward = f;
 }
