@@ -5,7 +5,7 @@
 #include "glm/gtc/constants.hpp"
 #include "../Config.h"
 
-class EntityMatrix
+class Transform
 {
 private:
 	glm::vec3 position;
@@ -19,7 +19,7 @@ private:
 	void updateForwardRightUp();
 
 public:
-	EntityMatrix();
+	Transform();
 
 	//Get combined matrix of world and model
 	glm::mat4 getMatrix() const;

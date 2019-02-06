@@ -1,7 +1,7 @@
 #define GLM_FORCE_SWIZZLE
-#include "EntityMatrix.h"
+#include "Transform.h"
 
-glm::vec3 EntityMatrix::modulusRotation(glm::vec3 rotation)
+glm::vec3 Transform::modulusRotation(glm::vec3 rotation)
 {
 	rotation.x = (float)fmod(rotation.x, 2.0f * 3.1415f);
 	rotation.y = (float)fmod(rotation.y, 2.0f * 3.1415f);
@@ -10,7 +10,7 @@ glm::vec3 EntityMatrix::modulusRotation(glm::vec3 rotation)
 	return rotation;
 }
 
-void EntityMatrix::updateForwardRightUp()
+void Transform::updateForwardRightUp()
 {
 	glm::mat4 rotMat = glm::mat4(1.0f);
 	if (rotation.x > 0)
@@ -24,7 +24,7 @@ void EntityMatrix::updateForwardRightUp()
 	this->u = glm::cross(this->r, this->f);
 }
 
-EntityMatrix::EntityMatrix()
+Transform::Transform()
 {
 	this->scaleFactor = glm::vec3(1, 1, 1);
 	this->rotation = glm::vec3(0, 0, 0);
@@ -32,7 +32,7 @@ EntityMatrix::EntityMatrix()
 	setForward(glm::vec3(1, 0, 0));
 }
 
-glm::mat4 EntityMatrix::getMatrix() const
+glm::mat4 Transform::getMatrix() const
 {
 	glm::mat4 ret = glm::mat4(1);
 	ret = glm::rotate(ret, rotation.x + rotation.y + rotation.z, glm::normalize(rotation));
@@ -43,43 +43,43 @@ glm::mat4 EntityMatrix::getMatrix() const
 	return ret;
 }
 
-glm::vec3 EntityMatrix::getPosition() const
+glm::vec3 Transform::getPosition() const
 {
 	return position;
 }
 
-glm::vec3 EntityMatrix::getRotation() const
+glm::vec3 Transform::getRotation() const
 {
 	return this->rotation;
 }
 
-glm::vec3 EntityMatrix::getScale() const
+glm::vec3 Transform::getScale() const
 {
 	return this->scaleFactor;
 }
 
-glm::vec3 EntityMatrix::getForward() const
+glm::vec3 Transform::getForward() const
 {
 	return this->f;
 }
 
-glm::vec3 EntityMatrix::getRight() const
+glm::vec3 Transform::getRight() const
 {
 	return this->r;
 }
 
-glm::vec3 EntityMatrix::getUp() const
+glm::vec3 Transform::getUp() const
 {
 	return this->u;
 }
 
-void EntityMatrix::rotate(const glm::vec3& rotation)
+void Transform::rotate(const glm::vec3& rotation)
 {
 	this->rotation = modulusRotation(this->rotation + rotation);
 	updateForwardRightUp();
 }
 
-void EntityMatrix::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
+void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
 	glm::mat4 rotationMatrix = glm::mat4(1);
 
@@ -100,30 +100,30 @@ void EntityMatrix::rotate(const glm::vec3& rotation, const glm::vec3& rotationCe
 	position = (rotationMatrix * glm::vec4(position, 1.0f)).xyz();
 }
 
-void EntityMatrix::rotateAxis(const float & radians, const glm::vec3 & axis)
+void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
 	rotation += normalize(axis) * radians;
 	updateForwardRightUp();
 }
 
-void EntityMatrix::setRotation(const glm::vec3 &rotation)
+void Transform::setRotation(const glm::vec3 &rotation)
 {
 	this->rotation = modulusRotation(rotation);
 	f = glm::vec3(0, 0, 1);
 	updateForwardRightUp();
 }
 
-void EntityMatrix::translate(const glm::vec3& vector)
+void Transform::translate(const glm::vec3& vector)
 {
 	this->position += vector;
 }
 
-void EntityMatrix::setPosition(const glm::vec3& position)
+void Transform::setPosition(const glm::vec3& position)
 {
 	this->position = position;
 }
 
-void EntityMatrix::scale(const glm::vec3& scale, float deltaTime)
+void Transform::scale(const glm::vec3& scale, float deltaTime)
 {
 	//Take the scale change by taking -1, then change based on delta time. Then take +1 to properly scale down or up.
 	glm::vec3 s = scale;
@@ -133,7 +133,7 @@ void EntityMatrix::scale(const glm::vec3& scale, float deltaTime)
 	this->scaleFactor *= s;
 }
 
-void EntityMatrix::scale(const float& scale, float deltaTime)
+void Transform::scale(const float& scale, float deltaTime)
 {
 	//Take the scale change by taking -1, then change based on delta time. Then take +1 to properly scale down or up.
 	float s = scale;
@@ -143,17 +143,17 @@ void EntityMatrix::scale(const float& scale, float deltaTime)
 	this->scaleFactor *= s;
 }
 
-void EntityMatrix::setScale(const glm::vec3& scale)
+void Transform::setScale(const glm::vec3& scale)
 {
 	this->scaleFactor = scale;
 }
 
-void EntityMatrix::setScale(const float& scale)
+void Transform::setScale(const float& scale)
 {
 	this->scaleFactor = glm::vec3(scale);
 }
 
-void EntityMatrix::setForward(const glm::vec3 & forward)
+void Transform::setForward(const glm::vec3 & forward)
 {
 	this->f = normalize(forward);
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);

@@ -47,7 +47,7 @@ void Renderer::draw(Entity * entity)
 	Model* model = entity->getModel();
 	if (model != nullptr)
 	{
-		EntityMatrix& transform = *entity->getMatrix();
+		Transform& transform = *entity->getTransform();
 		this->testShader->bind();
 		this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->activeCamera->getVP()[0][0]));
 		this->testShader->setUniformMatrix4fv("transform", 1, false, &(transform.getMatrix()[0][0]));
