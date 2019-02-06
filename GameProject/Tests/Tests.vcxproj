@@ -132,6 +132,7 @@
     <ClInclude Include="..\Engine\Components\Camera.h" />
     <ClInclude Include="..\Engine\Components\FreeMove.h" />
     <ClInclude Include="..\Engine\Rendering\GLAbstraction\IndexBuffer.h" />
+    <ClInclude Include="..\Engine\Rendering\GLAbstraction\Texture.h" />
     <ClInclude Include="..\Engine\Rendering\Renderer.h" />
     <ClInclude Include="..\Game\Components\ArrowGuider.h" />
     <ClInclude Include="..\Game\States\TestState.h" />
@@ -144,7 +145,7 @@
     <ClInclude Include="..\Engine\Config.h" />
     <ClInclude Include="..\Engine\Entity\Entity.h" />
     <ClInclude Include="..\Engine\Entity\EntityManager.h" />
-    <ClInclude Include="..\Engine\Entity\EntityMatrix.h" />
+    <ClInclude Include="..\Engine\Entity\Transform.h" />
     <ClInclude Include="..\Engine\Events\EventBus.h" />
     <ClInclude Include="..\Engine\Events\Events.h" />
     <ClInclude Include="..\Engine\Events\memberFunctionHandler.h" />
@@ -176,7 +177,7 @@
     <ClCompile Include="..\Engine\Components\FreeMove.cpp" />
     <ClCompile Include="..\Engine\Entity\Entity.cpp" />
     <ClCompile Include="..\Engine\Entity\EntityManager.cpp" />
-    <ClCompile Include="..\Engine\Entity\EntityMatrix.cpp" />
+    <ClCompile Include="..\Engine\Entity\Transform.cpp" />
     <ClCompile Include="..\Engine\IGame.cpp" />
     <ClCompile Include="..\Engine\InputHandler.cpp" />
     <ClCompile Include="..\Engine\Level\Level.cpp" />
@@ -184,6 +185,7 @@
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\Shader.cpp" />
+    <ClCompile Include="..\Engine\Rendering\GLAbstraction\Texture.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\UniformBuffer.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
