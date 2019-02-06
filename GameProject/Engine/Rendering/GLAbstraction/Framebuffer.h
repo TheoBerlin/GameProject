@@ -19,8 +19,9 @@ public:
 		Explicitly used as depth attachment replaces current depth attachment(Texture or RBO) with renderbuffer depth attachment
 	*/
 	void attachRenderBuffer(const GLuint& width, const GLuint& height);
+
 	/*
-		Updates the width and height of color attachment
+		Updates the width and height of color attachment and depth attachments if it exists.
 	*/
 	void updateDimensions(unsigned index, const GLuint& width, const GLuint& height);
 
@@ -28,6 +29,10 @@ public:
 		Get Color Texture attachment from index, in order of attachment.
 	*/
 	Texture* getColorTexture(unsigned index);
+	/*
+		Returns depth texture if it exists, otherwise returns nullptr
+	*/
+	Texture* getDepthTexture();
 
 
 	void bind() const;
@@ -41,5 +46,4 @@ private:
 
 	void deleteDepthTexture();
 	void deleteRenderBuffer();
-
 };

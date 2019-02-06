@@ -114,7 +114,14 @@ void Framebuffer::attachRenderBuffer(const GLuint & width, const GLuint & height
 
 void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const GLuint & height)
 {
-	if (index < this->colorAttachments.size() - 1) {
+	if (this->depthAttachment != nullptr) {
+		glBindTexture(GL_TEXTURE_2D, this->depthAttachment->id);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, width, height, 0, GL_DEPTH_COMPONENT, GL_UNSIGNED_BYTE, NULL);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+
+	if (index >= 0 && index <= this->colorAttachments.size() - 1) {
 		Texture* tex = this->colorAttachments.at(index);
 		glBindTexture(GL_TEXTURE_2D, tex->id);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -124,7 +131,6 @@ void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const G
 	else {
 		LOG_WARNING("Index out of range, cannot update dimensions of non existent color attachment!");
 	}
-
 }
 
 Texture * Framebuffer::getColorTexture(unsigned index)
@@ -135,6 +141,11 @@ Texture * Framebuffer::getColorTexture(unsigned index)
 		LOG_WARNING("Index out of range!");
 		return nullptr;
 	}
+}
+
+Texture * Framebuffer::getDepthTexture()
+{
+	return this->depthAttachment;
 }
 
 void Framebuffer::bind() const
