@@ -29,6 +29,6 @@ private:
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
-	void readEntity(std::string file, EntityManager *entityManager);
+	void readEntites(std::string file, EntityManager *entityManager);
 
 };

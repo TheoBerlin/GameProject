@@ -28,11 +28,12 @@ void LevelParser::writeToFile(std::string file, EntityManager *entityManager)
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
 {
+	Model *model = nullptr;
 	//Get the size of the target entities
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		Model *model = ModelLoader::loadModel("");
+		model = ModelLoader::loadModel("../../Game/assests/Target.obj");
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -74,7 +75,49 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 
 void LevelParser::readEntityBoxes(EntityManager * entityManager)
 {
-	//Add read for boxes
+	Model *model = nullptr;
+	//Get the size of the target entities
+	int targetSize = jsonFile["Boxes"].size();
+
+	if (targetSize != 0) {
+		model = ModelLoader::loadModel("../../Game/assests/Cube.obj");
+	}
+
+	for (int i = 0; i < targetSize; i++)
+	{
+		Entity* entity;
+		glm::vec3 position;
+		//Every object requires a name
+		if (!jsonFile["Boxes"][i]["Name"].empty() && jsonFile["Boxes"][i]["Name"].is_string()) {
+			std::string name = jsonFile["Target"][i]["Name"];
+
+			//Start on X then loop through all positions
+			for (int j = 0; j < 3; j++) {
+				//If object exists go ahead otherwise do default position
+				if (!jsonFile["Boxes"][i]["Position"][j].empty()) {
+					try {
+						position[j] = jsonFile["Boxes"][i]["Position"][j];
+					}
+					catch (const std::exception& e) {
+						LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+						break;
+					}
+				}
+				else {
+					//Default position
+					position[j] = 0.0;
+					LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, j, entity->getName().c_str());
+				}
+			}
+		}
+		else {
+			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			break;
+		}
+		entity->getMatrix()->setPosition(position);
+		entity->setModel(model);
+		entityManager->addEntity(entity);
+	}
 }
 
 void LevelParser::readEntityWalls(EntityManager * entityManager)
@@ -87,7 +130,7 @@ void LevelParser::readEntityArrow(EntityManager * entityManager)
 	//add read for the arrow
 }
 
-void LevelParser::readEntity(std::string file, EntityManager *entityManager)
+void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 {
 	std::ifstream iFile;
 	iFile.open(file);
@@ -100,8 +143,8 @@ void LevelParser::readEntity(std::string file, EntityManager *entityManager)
 	}
 
 	readEntityTargets(entityManager);
-	readEntityTargets(entityManager);
-	readEntityTargets(entityManager);
-	readEntityTargets(entityManager);
+	readEntityBoxes(entityManager);
+	readEntityWalls(entityManager);
+	readEntityArrow(entityManager);
 
 }
