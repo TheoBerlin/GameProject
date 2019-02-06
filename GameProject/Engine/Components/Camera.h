@@ -27,6 +27,12 @@ public:
 	// Returns the View-Projection matrix
 	glm::mat4 getVP() const;
 
+	float getFOV() const;
+	void setFOV(const float FOV);
+
+	glm::vec3 getOffset() const;
+	void setOffset(const glm::vec3& offset);
+
 private:
 	glm::vec3 f, u, r, offset, pos;
 	glm::mat4 view, proj;

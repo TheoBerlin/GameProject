@@ -2,11 +2,11 @@
 
 #include <Engine/Entity/Entity.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, Transform startingTransform, glm::vec3 startingDirection,
+ArrowGuider::ArrowGuider(Entity* parentEntity, const EntityMatrix& startingTransform, glm::vec3 startingDirection,
     float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
-    *(host->getTransform()) = startingTransform;
+    *(host->getMatrix()) = startingTransform;
 
     isGuiding = false;
 
@@ -22,6 +22,10 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, Transform startingTransform, glm:
     windowHeight = Display::get().getHeight();
 
     turnFactors = glm::vec2(0.0f, 0.0f);
+
+    posStoreTimer = 0.0f;
+
+    arrowCamera = nullptr;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -44,10 +48,62 @@ void ArrowGuider::update(const float& dt)
     setPosition(newPos);
 
     // Update turn factors (proportionally slow down turning)
-    turnFactors.x /= 1.0f + turnFactorFalloff;
-    turnFactors.y /= 1.0f + turnFactorFalloff;
+    turnFactors.x /= 1.0f + turnFactorFalloff * dt;
+    turnFactors.y /= 1.0f + turnFactorFalloff * dt;
 
     applyTurn();
+
+    // Update position storing frequency based on turning factors
+    float turnFactorsLength = glm::length(turnFactors);
+    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    // Update position store timer
+    posStoreTimer += dt;
+
+    if (posStoreTimer > 1.0f/posStoreFrequency) {
+        // Store position and reset timer
+        std::fmod(posStoreTimer, posStoreFrequency);
+
+        storedPositions.push_back(getPosition());
+    }
+
+    if (!arrowCamera) {
+        LOG_WARNING("Arrow guider is missing a camera");
+        return;
+    }
+
+    // Update camera settings using turn factors
+    // Camera FOV
+    float currentFOV = arrowCamera->getFOV();
+
+    // Linearly interpolate between min and max FOV
+    float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
+
+    // Gradually increase FOV
+    float deltaFOV = (desiredFOV - currentFOV) * dt;
+
+    // Limit FOV change per second
+    if (std::abs(deltaFOV) > FOVChangeMax) {
+        deltaFOV *= deltaFOV / FOVChangeMax;
+    }
+
+    arrowCamera->setFOV(currentFOV + deltaFOV);
+
+    // Camera offset
+    glm::vec3 currentOffset = arrowCamera->getOffset();
+
+    // Linearly interpolate between min and max offset
+    glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
+
+    // Gradually increase offset
+    glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
+
+    // Limit offset change per second
+    if (glm::length(deltaOffset) > offsetChangeMax) {
+        deltaOffset *= deltaOffset / offsetChangeMax;
+    }
+
+    arrowCamera->setOffset(currentOffset + deltaOffset);
 }
 
 void ArrowGuider::startGuiding()
@@ -55,6 +111,23 @@ void ArrowGuider::startGuiding()
     isGuiding = true;
 
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
+
+    // Clear previous path and store starting position
+    storedPositions.clear();
+    storedPositions.push_back(getPosition());
+
+    // Get camera pointer from parent entity
+    Component* tempPtr = host->getComponent("Camera");
+    arrowCamera = dynamic_cast<Camera*>(tempPtr);
+
+    if (!arrowCamera) {
+        LOG_WARNING("Arrow Guider failed to find Camera component");
+        return;
+    }
+
+    // Set camera settings
+    arrowCamera->setFOV(minFOV);
+    arrowCamera->setOffset(minCamOffset);
 }
 
 void ArrowGuider::stopGuiding()
@@ -62,6 +135,11 @@ void ArrowGuider::stopGuiding()
     isGuiding = false;
 
     EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+
+    turnFactors.x = 0.0f;
+    turnFactors.y = 0.0f;
+
+    posStoreTimer = 0.0f;
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
@@ -73,8 +151,14 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     float turnFactorPitch = (float)-event->moveY / (windowHeight * maxMouseMove);
 
     // Update turnFactors
-    turnFactors.x = glm::max<float>(-1.0f, glm::min<float>(1.0f, turnFactors.x + turnFactorYaw));
-    turnFactors.y = glm::max<float>(-1.0f, glm::min<float>(1.0f, turnFactors.y + turnFactorPitch));
+    turnFactors.x += turnFactorYaw;
+    turnFactors.y += turnFactorPitch;
+
+    // Keep the length of turnfactors within [0,1]
+    float turnFactorLength = glm::length(turnFactors);
+    if (turnFactorLength > 1.0f) {
+        turnFactors /= turnFactorLength;
+    }
 }
 
 void ArrowGuider::handleWindowResize(WindowResizeEvent* event)
@@ -104,12 +188,12 @@ void ArrowGuider::setDirection(const glm::vec3 direction)
 
 glm::vec3 ArrowGuider::getPosition()
 {
-    return host->getTransform()->getPosition();
+    return host->getMatrix()->getPosition();
 }
 
 void ArrowGuider::setPosition(const glm::vec3 position)
 {
-    host->getTransform()->setPosition(position);
+    host->getMatrix()->setPosition(position);
 }
 
 float ArrowGuider::getMovementSpeed()
@@ -120,6 +204,21 @@ float ArrowGuider::getMovementSpeed()
 void ArrowGuider::setMovementSpeed(const float movementSpeed)
 {
     this->movementSpeed = movementSpeed;
+}
+
+float ArrowGuider::getPosStoreFrequency()
+{
+    return posStoreFrequency;
+}
+
+std::vector<glm::vec3>& ArrowGuider::getStoredPositions()
+{
+    return storedPositions;
+}
+
+float ArrowGuider::getTurningSpeed()
+{
+    return glm::length(turnFactors) * maxTurnSpeed;
 }
 
 void ArrowGuider::applyTurn()
@@ -143,5 +242,16 @@ void ArrowGuider::applyTurn()
     rotMatrix = glm::rotate(turnFactors.y, rightVec);
     tempDirection = tempDirection * rotMatrix;
 
+    // Used for calculation of entity rotation
+    //glm::vec3 normOldDirection = glm::normalize(direction);
+
     direction = glm::vec3(tempDirection);
+
+    // TODO: Rotate the entity (rotation around axis needs to be implemented in EntityMatrix first)
+    /*
+    glm::vec3 normNewDirection = glm::normalize(direction);
+    glm::vec3 rotationAxis = glm::cross(normOldDirection, normNewDirection);
+
+    float rotationAngle = glm::dot(normOldDirection, normNewDirection);
+    */
 }
