@@ -6,7 +6,7 @@
 Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec3& offset) : Component(parentEntity, tagName)
 {
 	// Set the standard values
-	this->fov = FOV;
+	this->fov = STARTING_FOV;
 	this->zNear = ZNEAR;
 	this->zFar = ZFAR;
 	this->offset = offset;
@@ -54,6 +54,28 @@ glm::vec3 Camera::getRight() const
 glm::mat4 Camera::getVP() const
 {
 	return this->proj * this->view;
+}
+
+float Camera::getFOV() const
+{
+	return fov;
+}
+
+void Camera::setFOV(const float FOV)
+{
+	this->fov = FOV;
+
+	updateProj(nullptr);
+}
+
+glm::vec3 Camera::getOffset() const
+{
+	return offset;
+}
+
+void Camera::setOffset(const glm::vec3& offset)
+{
+	this->offset = offset;
 }
 
 void Camera::updateView()

@@ -13,7 +13,7 @@
 #define FRAMES_PER_SECOND 30
 
 // Camera defines
-#define FOV 60.0f;
+#define STARTING_FOV 75;
 #define ZFAR 100.0f;
 #define ZNEAR 0.1f;
 const glm::vec3 GLOBAL_UP_VECTOR = glm::vec3(0.0f, 1.0f, 0.0f);
