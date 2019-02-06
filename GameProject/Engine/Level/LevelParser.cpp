@@ -80,7 +80,7 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/cube.obj");
+		model = ModelLoader::loadModel("./Game/assets/Cube.fbx");
 	}
 
 	for (int i = 0; i < targetSize; i++)
