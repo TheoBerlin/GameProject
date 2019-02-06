@@ -58,6 +58,9 @@ TEST_CASE("EventBus") {
                 REQUIRE(expectedNum1 == testSubscriber1.getNum());
                 REQUIRE(expectedNum2 == testSubscriber2.getNum());
 
+                SECTION("Does not cause exceptions when non-subscriber unsubscribes") {
+                    REQUIRE_NOTHROW(testSubscriber1.unsubscribe());
+                }
             }
         }
     }

@@ -4,6 +4,7 @@
 #include <Catch/catch.hpp>
 
 #include "Engine/AssetManagement/ModelLoader.h"
+#include "Engine/AssetManagement/Mesh.h"
 
 TEST_CASE("ModelLoader") {
 	Model* cube = ModelLoader::loadModel("../Game/assets/cube.obj");
@@ -32,7 +33,7 @@ TEST_CASE("ModelLoader") {
 	}
 
 	SECTION("Is able to unload models from memory") {
-		ModelLoader::unloadModels();
+		ModelLoader::unloadAllModels();
 
 		CHECK(ModelLoader::modelCount() == 0);
 	}
@@ -58,7 +59,7 @@ TEST_CASE("TextureManager") {
 	}
 
 	SECTION("Is able to unload textures from memory") {
-		TextureManager::unloadTextures();
+		TextureManager::unloadAllTextures();
 		CHECK(TextureManager::textureCount() == 0);
 	}
 }
