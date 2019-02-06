@@ -130,6 +130,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Engine\Level\LevelParser.h" />
+    <ClInclude Include="..\Game\Components\ArrowGuider.h" />
     <ClInclude Include="catch.hpp" />
     <ClInclude Include="..\Engine\AssetManagement\Mesh.h" />
     <ClInclude Include="..\Engine\AssetManagement\Model.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
     <ClCompile Include="..\Engine\States\State.cpp" />
     <ClCompile Include="..\Engine\States\StateManager.cpp" />
+    <ClCompile Include="..\Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="..\Game\Game.cpp" />
     <ClCompile Include="..\Game\States\MenuState.cpp" />
     <ClCompile Include="AssetLoading_test.cpp">
@@ -191,6 +193,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="LevelParser_test.cpp" />
+    <ClCompile Include="arrow_test.cpp" />
+    <ClCompile Include="AssetLoading_test.cpp" />
+    <ClCompile Include="Events_test.cpp" />
     <ClCompile Include="main_test.cpp" />
     <ClCompile Include="..\Utils\Logger.cpp" />
     <ClCompile Include="..\Utils\Timer.cpp" />

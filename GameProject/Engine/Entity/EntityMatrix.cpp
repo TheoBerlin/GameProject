@@ -2,24 +2,24 @@
 
 glm::vec3 EntityMatrix::modulusRotation(glm::vec3 rotation)
 {
-	rotation.x = fmod(rotation.x, 2.0f * 3.1415f);
-	rotation.y = fmod(rotation.y, 2.0f * 3.1415f);
-	rotation.z = fmod(rotation.z, 2.0f * 3.1415f);
+	rotation.x = (float)fmod(rotation.x, 2.0 * 3.1415);
+	rotation.y = (float)fmod(rotation.y, 2.0 * 3.1415);
+	rotation.z = (float)fmod(rotation.z, 2.0 * 3.1415);
 
 	return rotation;
 }
 
 EntityMatrix::EntityMatrix()
 {
-	scaleFactor = glm::vec3(1, 1, 1);
-	rotation = glm::vec3(0, 0, 0);
-	worldMatrix = glm::mat4(1);
-	modelMatrix = glm::mat4(1);
+	this->scaleFactor = glm::vec3(1, 1, 1);
+	this->rotation = glm::vec3(0, 0, 0);
+	this->worldMatrix = glm::mat4(1);
+	this->modelMatrix = glm::mat4(1);
 }
 
 glm::mat4 EntityMatrix::getMatrix() const
 {
-	return worldMatrix * modelMatrix;
+	return this->worldMatrix * this->modelMatrix;
 }
 
 glm::vec3 EntityMatrix::getPosition() const
@@ -29,96 +29,118 @@ glm::vec3 EntityMatrix::getPosition() const
 
 glm::vec3 EntityMatrix::getRotation() const
 {
-	return rotation;
+	return this->rotation;
 }
 
 glm::vec3 EntityMatrix::getScale() const
 {
-	return scaleFactor;
+	return this->scaleFactor;
 }
 
-void EntityMatrix::rotate(glm::vec3 rotation)
+glm::vec3 EntityMatrix::getForward() const
+{
+	return this->f;
+}
+
+glm::vec3 EntityMatrix::getRight() const
+{
+	return this->r;
+}
+
+glm::vec3 EntityMatrix::getUp() const
+{
+	return this->u;
+}
+
+void EntityMatrix::rotate(const glm::vec3& rotation)
 {
 	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
 	if (glm::abs(rotation.x) > 0) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.x, glm::vec3(1, 0, 0));
+		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.x, glm::vec3(1, 0, 0));
 	}
 	if (glm::abs(rotation.y) > 0) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.y, glm::vec3(0, 1, 0));
+		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.y, glm::vec3(0, 1, 0));
 	}
 	if (glm::abs(rotation.z) > 0) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.z, glm::vec3(0, 0, 1));
+		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.z, glm::vec3(0, 0, 1));
 	}
 	this->rotation = modulusRotation(this->rotation + rotation);
 }
 
-void EntityMatrix::rotate(glm::vec3 rotation, glm::vec3 rotationCenter)
+void EntityMatrix::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
 	//Save matrix position and then translate modelMatrix so rotationCenter is at origin.
 	glm::vec3 position = getPosition();
-	modelMatrix = glm::translate(modelMatrix, -rotationCenter);
+	this->modelMatrix = glm::translate(this->modelMatrix, -rotationCenter);
 
 	//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
 	if (glm::abs(rotation.x) > 0) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.x, glm::vec3(1, 0, 0));
+		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.x, glm::vec3(1, 0, 0));
 	}
 	if (glm::abs(rotation.y) > 0) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.y, glm::vec3(0, 1, 0));
+		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.y, glm::vec3(0, 1, 0));
 	}
 	if (glm::abs(rotation.z) > 0) {
-		modelMatrix = glm::rotate(modelMatrix, rotation.z, glm::vec3(0, 0, 1));
+		this->modelMatrix = glm::rotate(this->modelMatrix, rotation.z, glm::vec3(0, 0, 1));
 	}
 
 	//Return to original position after rotation
-	modelMatrix = glm::translate(modelMatrix, getPosition());
+	this->modelMatrix = glm::translate(this->modelMatrix, getPosition());
 }
 
-void EntityMatrix::setRotation(glm::vec3 rotation)
+void EntityMatrix::setRotation(const glm::vec3 &rotation)
 {
-	rotation = modulusRotation(rotation);
+	glm::vec3 newRotation = modulusRotation(rotation);
 	this->rotation = glm::vec3(0);
-	scaleFactor = glm::vec3(0);
-	modelMatrix = glm::mat4(1);
-	rotate(rotation);
+	this->scaleFactor = glm::vec3(0);
+	this->modelMatrix = glm::mat4(1);
+	rotate(newRotation);
 	scale(scaleFactor);
 }
 
-void EntityMatrix::translate(glm::vec3 vector)
+void EntityMatrix::translate(const glm::vec3& vector)
 {
-	worldMatrix = glm::translate(worldMatrix, vector);
+	this->worldMatrix = glm::translate(this->worldMatrix, vector);
 }
 
-void EntityMatrix::setPosition(glm::vec3 position)
+void EntityMatrix::setPosition(const glm::vec3& position)
 {
-	worldMatrix = glm::mat4(1);
-	worldMatrix = glm::translate(worldMatrix, position);
+	this->worldMatrix = glm::mat4(1);
+	this->worldMatrix = glm::translate(this->worldMatrix, position);
 }
 
-void EntityMatrix::scale(glm::vec3 scale)
+void EntityMatrix::scale(const glm::vec3& scale)
 {
-	scaleFactor += scale;
-	modelMatrix = glm::scale(modelMatrix, scale);
+	this->scaleFactor += scale;
+	this->modelMatrix = glm::scale(this->modelMatrix, scale);
 }
 
-void EntityMatrix::scale(float scale)
+void EntityMatrix::scale(const float& scale)
 {
-	modelMatrix = glm::scale(modelMatrix, glm::vec3(scale, scale, scale));
+	this->modelMatrix = glm::scale(this->modelMatrix, glm::vec3(scale, scale, scale));
 }
 
-void EntityMatrix::setScale(glm::vec3 scale)
+void EntityMatrix::setScale(const glm::vec3& scale)
 {
-	scaleFactor = glm::vec3(0);
-	rotation = glm::vec3(0);
-	modelMatrix = glm::mat4(1);
+	this->scaleFactor = glm::vec3(0);
+	this->rotation = glm::vec3(0);
+	this->modelMatrix = glm::mat4(1);
 	this->scale(scale);
-	rotate(rotation);
+	rotate(this->rotation);
 }
 
-void EntityMatrix::setScale(float scale)
+void EntityMatrix::setScale(const float& scale)
 {
-	scaleFactor = glm::vec3(0);
-	rotation = glm::vec3(0);
-	modelMatrix = glm::mat4(1);
+	this->scaleFactor = glm::vec3(0);
+	this->rotation = glm::vec3(0);
+	this->modelMatrix = glm::mat4(1);
 	this->scale(scale);
-	rotate(rotation);
+	rotate(this->rotation);
+}
+
+void EntityMatrix::setForward(const glm::vec3 & forward)
+{
+	this->f = glm::normalize(forward);
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 }

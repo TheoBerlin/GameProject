@@ -1,6 +1,13 @@
 #include "ModelLoader.h"
 
+#include "Mesh.h"
+
 std::map<std::string, Model*> ModelLoader::loadedModels = std::map<std::string, Model*>();
+
+ModelLoader::~ModelLoader()
+{
+	unloadAllModels();
+}
 
 Model* ModelLoader::loadModel(std::string fileName)
 {
@@ -28,7 +35,8 @@ Model* ModelLoader::loadModel(std::string fileName)
     LOG_INFO("Found %d materials", scene->mNumMaterials);
 
     // Extract directory path for loading material and texture files
-    std::string directory = fileName.substr(0, fileName.find_last_of('/'));
+	size_t found = fileName.find_last_of('/');
+    std::string directory = fileName.substr(0, found == std::string::npos ? 0 : found);
 	if (directory != "") {
 		directory += "/";
 	}
@@ -49,7 +57,7 @@ Model* ModelLoader::loadModel(std::string fileName)
     return loadedModel;
 }
 
-void ModelLoader::unloadModels()
+void ModelLoader::unloadAllModels()
 {
     for (std::map<std::string, Model*>::iterator itr = loadedModels.begin(); itr != loadedModels.end(); itr++) {
         delete itr->second;
@@ -122,7 +130,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, Model* model)
 {
     // Data for the mesh
     std::vector<Vertex>* vertices = new std::vector<Vertex>;
-    std::vector<unsigned short>* indices = new std::vector<unsigned short>;
+    std::vector<unsigned int>* indices = new std::vector<unsigned int>;
 
     // Process vertices
     for (unsigned int i = 0; i < assimpMesh->mNumVertices; i += 1) {
@@ -155,7 +163,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, Model* model)
     // so no conversion is needed
     unsigned int materialIndex = assimpMesh->mMaterialIndex;
 
-    Mesh* newMesh = new Mesh(vertices, indices, materialIndex);
+    Mesh* newMesh = new Mesh(vertices, indices, materialIndex, model);
 
     model->addMesh(newMesh);
 }

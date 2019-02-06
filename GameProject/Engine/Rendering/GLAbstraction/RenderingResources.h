@@ -10,12 +10,11 @@
 	drawOption choose between GL_STATIC_DRAW, GL_DYNAMIC_DRAW and GL_STREAM_DRAW
 */
 struct AttributeSettings {
-	AttributeSettings(unsigned size, unsigned offset = 0, unsigned location = 0)
-		: size(size), offset(offset), location(location) {}
+	AttributeSettings(unsigned size, unsigned offset = 0)
+		: size(size), offset(offset) {}
 
 	unsigned size;
 	unsigned offset;
-	unsigned location;
 };
 
 struct AttributeLayout {
@@ -28,8 +27,8 @@ struct AttributeLayout {
 	*/
 	void push(const unsigned& size) {
 
+		AttributeSettings attribute(size, this->stride*sizeof(float));
 		this->stride += size;
-		AttributeSettings attribute(size, this->stride, this->attribs.size());
 
 		this->attribs.push_back(attribute);
 
@@ -48,7 +47,8 @@ struct Vertex {
 
 enum TextureType {
     TXTYPE_DIFFUSE = 0,
-    TXTYPE_SPECULAR = 1,
+	TXTYPE_SPECULAR = 1,
+	TXTYPE_NORMAL = 2
 };
 
 struct Texture {

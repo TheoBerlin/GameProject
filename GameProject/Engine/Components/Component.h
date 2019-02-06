@@ -7,18 +7,18 @@ class Entity;
 class Component
 {
 public:
-	Component(const std::string& tagName);
-	~Component();
+	Component(Entity* parentEntity, const std::string& tagName);
+	virtual ~Component();
 
 	std::string getName();
+	Entity* getHost();
 	void setHost(Entity* entity);
 
-	virtual void init() = 0;
+	virtual void init();
 	virtual void update(const float& dt) = 0;
 
-private:
+protected:
 	Entity* host;
 
 	std::string tagName;
 };
-

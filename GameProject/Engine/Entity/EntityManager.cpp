@@ -41,7 +41,7 @@ void EntityManager::addEntity(Entity* entity)
 Entity* EntityManager::getEntity(unsigned int index)
 {
 	Entity* entity = nullptr;
-	if (index < entities.size()) {
+	if ((unsigned)index < entities.size()) {
 		entity = entities[index];
 	}
 	else {
