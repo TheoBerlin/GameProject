@@ -109,6 +109,11 @@ bool EntityManager::removeTracedEntity(const std::string & name)
 	return false;
 }
 
+std::vector<Entity*>& EntityManager::getAll()
+{
+	return this->entities;
+}
+
 void EntityManager::removeEntities()
 {
 	for (int i = this->entities.size() - 1; i >= 0; i--) {

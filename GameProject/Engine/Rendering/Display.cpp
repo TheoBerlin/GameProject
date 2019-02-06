@@ -1,6 +1,5 @@
 #include "Display.h"
 
-#include "../Config.h"
 #include "../../Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
@@ -12,12 +11,7 @@
 
 Display & Display::get()
 {
-	static bool isFirst = true;
 	static Display display;
-	if (isFirst) {
-		display.init(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_TITLE);
-		isFirst = false;
-	}
 	return display;
 }
 

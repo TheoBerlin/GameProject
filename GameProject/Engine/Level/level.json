@@ -2,21 +2,57 @@
   "Target": [
     {
       "Name": "Target1",
-      "Position": [ 1, 5, 1 ]
+      "Position": [ 1, 1, -1 ]
     },
     {
       "Name": "Target2",
-      "Position": [ 2, 5, 1 ]
+      "Position": [ 2, 2, -2 ]
+    },
+    {
+      "Name": "Target3",
+      "Position": [ 3, 1, -3 ]
+    },
+    {
+      "Name": "Target4",
+      "Position": [ 4, 2, -3 ]
+    },
+    {
+      "Name": "Target5",
+      "Position": [ 1, 1, -4 ]
+    },
+    {
+      "Name": "Target6",
+      "Position": [ 2, 2, -5 ]
+    },
+    {
+      "Name": "Target7",
+      "Position": [ 3, 1, -6 ]
+    },
+    {
+      "Name": "Target8",
+      "Position": [ 4, 2, -7 ]
     }
   ],
   "Boxes": [
     {
       "Name": "Box1",
-      "Position": [ 1, 5, 1 ]
+      "Position": [ -1, 1, -1 ]
     },
     {
       "Name": "Box2",
-      "Position": [ 2, 5, 1 ]
+      "Position": [ -2, 2, -2 ]
+    },
+    {
+      "Name": "Box3",
+      "Position": [ -3, 1, -3 ]
+    },
+    {
+      "Name": "Box4",
+      "Position": [ -1, 2, -4 ]
+    },
+    {
+      "Name": "Box5",
+      "Position": [ -2, 1, -5 ]
     }
   ]
 } 

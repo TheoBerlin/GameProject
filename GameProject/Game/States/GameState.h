@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Engine/States/State.h"
+#include "../../Engine/Level/LevelParser.h"
 
 class GameState : public State
 {
@@ -15,4 +16,5 @@ public:
 	void render() override;
 
 private:
+	LevelParser levelParser;
 };

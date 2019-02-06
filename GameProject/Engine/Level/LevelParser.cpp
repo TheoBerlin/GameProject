@@ -33,7 +33,7 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("../../Game/assests/Target.obj");
+		model = ModelLoader::loadModel("./Game/assets/Target.fbx");
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -80,23 +80,24 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("../../Game/assests/Cube.obj");
+		model = ModelLoader::loadModel("./Game/assets/cube.obj");
 	}
 
 	for (int i = 0; i < targetSize; i++)
 	{
+		json::json& box = jsonFile["Boxes"][i];
 		Entity* entity;
 		glm::vec3 position;
 		//Every object requires a name
-		if (!jsonFile["Boxes"][i]["Name"].empty() && jsonFile["Boxes"][i]["Name"].is_string()) {
-			std::string name = jsonFile["Target"][i]["Name"];
-
+		if (!box["Name"].empty() && box["Name"].is_string()) {
+			std::string name = box["Name"];
+			entity = entityManager->addEntity();
 			//Start on X then loop through all positions
 			for (int j = 0; j < 3; j++) {
 				//If object exists go ahead otherwise do default position
-				if (!jsonFile["Boxes"][i]["Position"][j].empty()) {
+				if (!box["Position"][j].empty()) {
 					try {
-						position[j] = jsonFile["Boxes"][i]["Position"][j];
+						position[j] = box["Position"][j];
 					}
 					catch (const std::exception& e) {
 						LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
@@ -116,7 +117,6 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 		}
 		entity->getMatrix()->setPosition(position);
 		entity->setModel(model);
-		entityManager->addEntity(entity);
 	}
 }
 
@@ -134,17 +134,24 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 {
 	std::ifstream iFile;
 	iFile.open(file);
-	try {
-		iFile >> jsonFile;
-	}
-	catch (const std::exception e) {
-		LOG_ERROR("%s: Failed to read JSON file with error: %s", CLASS_NAME, e.what());
-		return;
-	}
+	if (iFile.is_open())
+	{
+		try {
+			iFile >> jsonFile;
+		}
+		catch (const std::exception e) {
+			LOG_ERROR("%s: Failed to read JSON file with error: %s", CLASS_NAME, e.what());
+			return;
+		}
 
-	readEntityTargets(entityManager);
-	readEntityBoxes(entityManager);
-	readEntityWalls(entityManager);
-	readEntityArrow(entityManager);
+		readEntityTargets(entityManager);
+		readEntityBoxes(entityManager);
+		readEntityWalls(entityManager);
+		readEntityArrow(entityManager);
+	}
+	else
+	{
+		LOG_ERROR("Can not open file: %s", file.c_str());
+	}
 
 }
