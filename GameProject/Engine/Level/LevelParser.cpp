@@ -34,6 +34,10 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 	//Get the size of the target entities
 	int targetSize = jsonFile["Target"].size();
 
+	if (targetSize != 0) {
+		Model *model = ModelLoader::loadModel("");
+	}
+
 	for (int i = 0; i < targetSize; i++)
 	{
 		Entity* entity;
