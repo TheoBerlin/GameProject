@@ -3,7 +3,6 @@
 #include "Config.h"
 #include "Rendering/Display.h"
 #include <string>
-#include "../Utils/Logger.h"
 
 IGame::IGame()
 {
