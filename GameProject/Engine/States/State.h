@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../Entity/EntityManager.h"
+
 class StateManager;
 class State
 {
@@ -19,7 +21,9 @@ public:
 	void popState();
 
 	StateManager& getStateManager();
+	EntityManager& getEntityManager();
 
 private:
 	StateManager* stateManager;
+	EntityManager entityManager;
 };

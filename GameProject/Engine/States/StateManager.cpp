@@ -36,6 +36,10 @@ void StateManager::pop()
 	state->end();
 	delete state;
 	this->stack.pop();
+
+	if (this->lowerStates.empty() == false) {
+		this->lowerStates.pop();
+	}
 }
 
 void StateManager::push(State * state)
@@ -43,7 +47,8 @@ void StateManager::push(State * state)
 	state->setStateManager(this);
 
 	if (isEmpty() == false) {
-		this->stack.top()->end();
+		this->lowerStates.push(this->stack.top());
+		this->lowerStates.top()->end();
 	}
 
 	this->stack.push(state);
@@ -53,4 +58,11 @@ void StateManager::push(State * state)
 bool StateManager::isEmpty() const
 {
 	return this->stack.empty();
+}
+
+State * StateManager::getLowerState()
+{
+	if (this->lowerStates.empty())
+		return nullptr;
+	return this->lowerStates.top();
 }
