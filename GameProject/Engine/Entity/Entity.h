@@ -18,6 +18,8 @@ public:
 
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
+	// Used by components to get neighboring components
+	Component* getComponent(const std::string& componentName);
 
 	void setModel(Model* model);
 	Model* getModel();
@@ -34,4 +36,3 @@ private:
 
 	Model* model;
 };
-

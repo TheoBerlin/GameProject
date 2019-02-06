@@ -5,9 +5,9 @@
 Component::Component(Entity* parentEntity, const std::string & tagName)
 {
 	this->tagName = tagName;
+
 	parentEntity->addComponent(this);
 	this->setHost(parentEntity);
-
 }
 
 Component::~Component()
