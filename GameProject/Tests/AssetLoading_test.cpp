@@ -46,12 +46,12 @@ TEST_CASE("TextureManager") {
 
 	SECTION("Only loads the desired texture type") {
 		// Require that the desired type is attributed
-		REQUIRE(texture->type == TXTYPE_DIFFUSE);
+		REQUIRE(texture->getType() == TXTYPE_DIFFUSE);
 
 		// Check that a different type cannot be attributed to an already loaded texture
 		Texture* textureCopy = TextureManager::loadTexture("../Game/assets/stone_wall_diffuse.jpg", TXTYPE_SPECULAR);
 
-		CHECK(textureCopy->type != TXTYPE_SPECULAR);
+		CHECK(textureCopy->getType() != TXTYPE_SPECULAR);
 	}
 
 	SECTION("Returns nullptr when loading non-existent files") {
