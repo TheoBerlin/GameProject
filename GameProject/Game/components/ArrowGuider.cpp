@@ -22,6 +22,8 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, EntityMatrix startingTransform, g
     windowHeight = Display::get().getHeight();
 
     turnFactors = glm::vec2(0.0f, 0.0f);
+
+    posStoreTimer = 0.0f;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -44,10 +46,23 @@ void ArrowGuider::update(const float& dt)
     setPosition(newPos);
 
     // Update turn factors (proportionally slow down turning)
-    turnFactors.x /= 1.0f + turnFactorFalloff;
-    turnFactors.y /= 1.0f + turnFactorFalloff;
+    turnFactors.x /= 1.0f + turnFactorFalloff * dt;
+    turnFactors.y /= 1.0f + turnFactorFalloff * dt;
 
     applyTurn();
+
+    // Update position storing frequency based on turning factors
+    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * glm::length(turnFactors);
+
+    // Update position store timer
+    posStoreTimer += dt;
+
+    if (posStoreTimer > 1.0f/posStoreFrequency) {
+        // Store position and reset timer
+        std::fmod(posStoreTimer, posStoreFrequency);
+
+        storedPositions.push_back(getPosition());
+    }
 }
 
 void ArrowGuider::startGuiding()
@@ -55,6 +70,10 @@ void ArrowGuider::startGuiding()
     isGuiding = true;
 
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
+
+    // Clear previous path and store starting position
+    storedPositions.clear();
+    storedPositions.push_back(getPosition());
 }
 
 void ArrowGuider::stopGuiding()
@@ -62,6 +81,11 @@ void ArrowGuider::stopGuiding()
     isGuiding = false;
 
     EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+
+    turnFactors.x = 0.0f;
+    turnFactors.y = 0.0f;
+
+    posStoreTimer = 0.0f;
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
@@ -73,8 +97,14 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     float turnFactorPitch = (float)-event->moveY / (windowHeight * maxMouseMove);
 
     // Update turnFactors
-    turnFactors.x = glm::max<float>(-1.0f, glm::min<float>(1.0f, turnFactors.x + turnFactorYaw));
-    turnFactors.y = glm::max<float>(-1.0f, glm::min<float>(1.0f, turnFactors.y + turnFactorPitch));
+    turnFactors.x += turnFactorYaw;
+    turnFactors.y += turnFactorPitch;
+
+    // Keep the length of turnfactors within [0,1]
+    float turnFactorLength = glm::length(turnFactors);
+    if (turnFactorLength > 1.0f) {
+        turnFactors /= turnFactorLength;
+    }
 }
 
 void ArrowGuider::handleWindowResize(WindowResizeEvent* event)
@@ -122,6 +152,21 @@ void ArrowGuider::setMovementSpeed(const float movementSpeed)
     this->movementSpeed = movementSpeed;
 }
 
+float ArrowGuider::getPosStoreFrequency()
+{
+    return posStoreFrequency;
+}
+
+std::vector<glm::vec3>& ArrowGuider::getStoredPositions()
+{
+    return storedPositions;
+}
+
+float ArrowGuider::getTurningSpeed()
+{
+    return glm::length(turnFactors) * maxTurnSpeed;
+}
+
 void ArrowGuider::applyTurn()
 {
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
@@ -143,5 +188,16 @@ void ArrowGuider::applyTurn()
     rotMatrix = glm::rotate(turnFactors.y, rightVec);
     tempDirection = tempDirection * rotMatrix;
 
+    // Used for calculation of entity rotation
+    //glm::vec3 normOldDirection = glm::normalize(direction);
+
     direction = glm::vec3(tempDirection);
+
+    // TODO: Rotate the entity (rotation around axis needs to be implemented in EntityMatrix first)
+    /*
+    glm::vec3 normNewDirection = glm::normalize(direction);
+    glm::vec3 rotationAxis = glm::cross(normOldDirection, normNewDirection);
+
+    float rotationAngle = glm::dot(normOldDirection, normNewDirection);
+    */
 }

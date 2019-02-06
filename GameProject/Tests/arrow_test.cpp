@@ -31,7 +31,43 @@ TEST_CASE("Arrow guider") {
         REQUIRE(Approx(newPos.y - expectedPos.y) == 0.0f);
         REQUIRE(Approx(newPos.z - expectedPos.z) == 0.0f);
 
-        arrowGuider->stopGuiding();
+        SECTION("Stores its travel path") {
+            std::vector<glm::vec3> expectedPositions;
+            expectedPositions.push_back(startingPosition);
+            expectedPositions.push_back(expectedPos);
+
+            // Choose a dt which makes every update(dt) trigger the position to be stored
+            float posStoreFrequency = arrowGuider->getPosStoreFrequency();
+            dt = 1.001f / posStoreFrequency;
+
+            // Trigger a number of positions to be stored
+            unsigned int updateCount = 10;
+
+            for (unsigned int i = 0; i < updateCount; i += 1) {
+                arrowGuider->update(dt);
+
+                expectedPos = newPos + startingDirection * startingSpeed * dt;
+                expectedPositions.push_back(expectedPos);
+            }
+
+            // The position storing frequency should not change when the arrow is not turning
+            REQUIRE(Approx(posStoreFrequency - arrowGuider->getPosStoreFrequency()) == 0.0f);
+
+            // Check that the positions are stored
+            std::vector<glm::vec3> storedPositions = arrowGuider->getStoredPositions();
+
+            REQUIRE(storedPositions.size() == expectedPositions.size());
+
+            // Check that the positions are correct
+            // (with some error margin because predicting the exact points is difficult)
+            for (unsigned int i = 0; i < updateCount; i += 1) {
+                REQUIRE(Approx(storedPositions.at(i).x - expectedPositions.at(i).x) <= 0.2f);
+                REQUIRE(Approx(storedPositions.at(i).y - expectedPositions.at(i).y) <= 0.2f);
+                REQUIRE(Approx(storedPositions.at(i).z - expectedPositions.at(i).z) <= 0.2f);
+            }
+
+            arrowGuider->stopGuiding();
+        }
     }
 
     SECTION("Can be aimed using mouse input") {
@@ -40,11 +76,9 @@ TEST_CASE("Arrow guider") {
 
         EventBus::get().publish(&mouseMoveEvent);
 
-        arrowGuider->update(0.1f);
+        arrowGuider->update(0.01f);
 
         glm::vec3 newDir = arrowGuider->getDirection();
-
-        CAPTURE(newDir.x, newDir.y, newDir.z);
 
         // Horizontal mouse movement should redirect the arrow horizontally
         REQUIRE(Approx(newDir.x - startingDirection.x) != 0.0f);
@@ -59,8 +93,49 @@ TEST_CASE("Arrow guider") {
             newDir = arrowGuider->getDirection();
 
             REQUIRE(Approx(newDir.x - oldDir.x) != 0.0f);
+
             // Horizontal mouse movement should not cause the arrow to pitch
             REQUIRE(Approx(newDir.y - oldDir.y) == 0.0f);
+
+            SECTION("Slows down turning over time") {
+                // Start turning the arrow
+                MouseMoveEvent mouseMoveEvent(700.0, 0.0);
+                EventBus::get().publish(&mouseMoveEvent);
+
+                float oldTurningSpeed = arrowGuider->getTurningSpeed();
+
+                for (unsigned int i = 0; i < 3; i += 1) {
+                    // Check that the turning speed is decreased over time
+                    arrowGuider->update(0.1f);
+                    float newTurningSpeed = arrowGuider->getTurningSpeed();
+
+                    REQUIRE(oldTurningSpeed > newTurningSpeed);
+
+                    oldTurningSpeed = newTurningSpeed;
+                }
+
+                arrowGuider->stopGuiding();
+            }
+
+            SECTION("Increases its storing frequency when turning faster") {
+                MouseMoveEvent mouseMoveEvent(700.0, 0.0);
+
+                EventBus::get().publish(&mouseMoveEvent);
+
+                float firstPosStoreFrequency = arrowGuider->getPosStoreFrequency();
+
+                // Turning the arrow and updating to refresh storing frequency
+                arrowGuider->update(0.01f);
+
+                float secondPosStoreFrequency = arrowGuider->getPosStoreFrequency();
+
+                REQUIRE(secondPosStoreFrequency > firstPosStoreFrequency);
+
+                // Letting the arrow slow down its turning and decrease storing frequency
+                arrowGuider->update(100.0f);
+
+                REQUIRE(arrowGuider->getPosStoreFrequency() < secondPosStoreFrequency);
+            }
         }
     }
 }

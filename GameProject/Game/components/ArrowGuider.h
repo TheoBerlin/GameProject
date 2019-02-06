@@ -3,8 +3,8 @@
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/EntityMatrix.h>
 #include <Engine/Events/EventBus.h>
-#include <Utils/Logger.h>
 #include <Engine/Rendering/Display.h>
+#include <vector>
 
 class Entity;
 
@@ -36,6 +36,12 @@ public:
     float getMovementSpeed();
     void setMovementSpeed(const float speed);
 
+    float getPosStoreFrequency();
+    std::vector<glm::vec3>& getStoredPositions();
+
+    // Redirection measured in radians per second
+    float getTurningSpeed();
+
 private:
     // Use turn factors to turn
     void applyTurn();
@@ -56,4 +62,11 @@ private:
 
     // Disables and enables the guider
     bool isGuiding;
+
+    // Frequency at which the position is stored
+    float posStoreFrequency;
+    const float minStoreFrequency = 5.0f, maxStoreFrequency = 20.0f;
+    // Time since position was stored
+    float posStoreTimer;
+    std::vector<glm::vec3> storedPositions;
 };
