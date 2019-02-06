@@ -2,13 +2,12 @@
 
 #include <Engine/Entity/Entity.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, const EntityMatrix& startingTransform, glm::vec3 startingDirection,
-    float movementSpeed, float maxTurnSpeed)
+ArrowGuider::ArrowGuider(Entity* parentEntity, const glm::vec3& startingPosition, const glm::vec3& startingDirection, float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
-    *(host->getMatrix()) = startingTransform;
-
     isGuiding = false;
+
+    host->getMatrix()->setPosition(startingPosition);
 
     this->direction = startingDirection;
 

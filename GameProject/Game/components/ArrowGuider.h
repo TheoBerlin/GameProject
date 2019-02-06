@@ -13,7 +13,7 @@ class Entity;
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, const EntityMatrix& startingTransform, glm::vec3 startingDirection,
+    ArrowGuider(Entity* parentEntity, const glm::vec3& startingPosition, const glm::vec3& startingDirection,
     float movementSpeed = 0.2f, float maxTurnSpeed = glm::quarter_pi<float>() / 2.0f);
     ~ArrowGuider();
 

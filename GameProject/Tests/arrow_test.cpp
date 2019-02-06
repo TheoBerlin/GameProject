@@ -13,13 +13,10 @@ TEST_CASE("Arrow guider") {
     glm::vec3 startingDirection(0.0f, 0.0f, 1.0f);
     float startingSpeed = 0.1f;
 
-    EntityMatrix startingTransform;
-    startingTransform.setPosition(startingPosition);
-
     Entity* arrowEntity = new Entity();
 
     Camera* arrowCam = new Camera(arrowEntity);
-    ArrowGuider* arrowGuider = new ArrowGuider(arrowEntity, startingTransform, startingDirection, startingSpeed);
+    ArrowGuider* arrowGuider = new ArrowGuider(arrowEntity, startingPosition, startingDirection, startingSpeed);
 
     SECTION("Travels in a linear path with linear speed") {
         float dt = 10.0f;
