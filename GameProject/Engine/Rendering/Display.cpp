@@ -156,7 +156,7 @@ void Display::init(int width, int height, const std::string& title)
 	}
 
 	glfwMakeContextCurrent(this->window);
-	glfwSwapInterval(1); // Enable vsync
+	//glfwSwapInterval(1); // Enable vsync
 
 	// --------------- INIT GLEW ---------------
 	glewExperimental = true; // Needed in core profile

@@ -33,7 +33,7 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/Target.fbx");
+		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
 	}
 
 	for (int i = 0; i < targetSize; i++)
