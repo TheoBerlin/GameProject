@@ -9,7 +9,7 @@
 class Camera : public Component
 {
 public:
-	Camera(const std::string& tagName = "Camera", const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
+	Camera(Entity * parentEntity, const std::string& tagName = "Camera", const glm::vec3& offset = glm::vec3(0.0f, 0.0f, 0.0f));
 	virtual ~Camera();
 
 	void init();
@@ -26,6 +26,12 @@ public:
 
 	// Returns the View-Projection matrix
 	glm::mat4 getVP() const;
+
+	float getFOV() const;
+	void setFOV(const float FOV);
+
+	glm::vec3 getOffset() const;
+	void setOffset(const glm::vec3& offset);
 
 private:
 	glm::vec3 f, u, r, offset, pos;

@@ -28,8 +28,9 @@
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
-    <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
+    <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
+    <ClCompile Include="Engine\Level\LevelParser.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Texture.cpp" />
@@ -44,6 +45,7 @@
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
     <ClCompile Include="Game\States\TestState.cpp" />
+    <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
@@ -73,9 +75,10 @@
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
-    <ClInclude Include="Engine\Entity\EntityMatrix.h" />
+    <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Level\Level.h" />
+    <ClInclude Include="Engine\Level\LevelParser.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
@@ -94,6 +97,7 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Game\Components\ArrowGuider.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\TestState.h" />
@@ -165,7 +169,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)GameProject/</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)include;$(ProjectDir)</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>
       </AdditionalUsingDirectories>
     </ClCompile>

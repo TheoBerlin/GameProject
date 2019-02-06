@@ -3,10 +3,10 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include  "../Entity/Entity.h"
 
-Camera::Camera(const std::string& tagName, const glm::vec3& offset) : Component(tagName)
+Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec3& offset) : Component(parentEntity, tagName)
 {
 	// Set the standard values
-	this->fov = FOV;
+	this->fov = STARTING_FOV;
 	this->zNear = ZNEAR;
 	this->zFar = ZFAR;
 	this->offset = offset;
@@ -29,7 +29,7 @@ void Camera::update(const float & dt)
 void Camera::init()
 {
 	// Init camera
-	setForward(getHost()->getMatrix()->getForward());
+	setForward(getHost()->getTransform()->getForward());
 	updatePosition();
 
 	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
@@ -56,9 +56,31 @@ glm::mat4 Camera::getVP() const
 	return this->proj * this->view;
 }
 
+float Camera::getFOV() const
+{
+	return fov;
+}
+
+void Camera::setFOV(const float FOV)
+{
+	this->fov = FOV;
+
+	updateProj(nullptr);
+}
+
+glm::vec3 Camera::getOffset() const
+{
+	return offset;
+}
+
+void Camera::setOffset(const glm::vec3& offset)
+{
+	this->offset = offset;
+}
+
 void Camera::updateView()
 {
-	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getMatrix()->getForward(), this->u);
+	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getTransform()->getForward(), this->u);
 }
 
 void Camera::updateProj(WindowResizeEvent * evnt)
@@ -75,6 +97,6 @@ void Camera::setForward(const glm::vec3 & forward)
 
 void Camera::updatePosition()
 {
-	glm::vec3 hostPos = getHost()->getMatrix()->getPosition();
+	glm::vec3 hostPos = getHost()->getTransform()->getPosition();
 	this->pos = hostPos + (this->r * this->offset.x + this->u * this->offset.y + this->f * this->offset.z);
 }
