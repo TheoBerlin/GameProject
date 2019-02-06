@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "../Components/Component.h"
-#include "EntityMatrix.h"
+#include "Transform.h"
 
 #include "../AssetManagement/Model.h"
 
@@ -26,13 +26,13 @@ public:
 
 	void setName(const std::string& name);
 	const std::string getName();
-	EntityMatrix* getMatrix();
+	Transform* getTransform();
 
 private:
 	std::unordered_map<std::string, Component*> components;
 
 	std::string name;
-	EntityMatrix matrix;
+	Transform transform;
 
 	Model* model;
 };
