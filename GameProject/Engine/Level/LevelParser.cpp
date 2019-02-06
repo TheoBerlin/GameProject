@@ -17,7 +17,7 @@ void LevelParser::writeToFile(std::string file, EntityManager *entityManager)
 	for (int i = 0; i < entityManager->getEntitySize(); i++) {
 		if (entityManager->getEntity(i)->getName().size() > 0) {
 			writeName(i, entityManager->getEntity(i)->getName());
-			writePosition(i, entityManager->getEntity(i)->getTransform()->getPosition());
+			writePosition(i, entityManager->getEntity(i)->getMatrix()->getPosition());
 		}
 		else {
 			LOG_WARNING("%s: Entity does not have a name at %d", CLASS_NAME, i);
@@ -77,7 +77,7 @@ void LevelParser::read(std::string file, EntityManager *entityManager)
 			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
 			break;
 		}
-		entity->getTransform()->setPosition(position);
+		entity->getMatrix()->setPosition(position);
 		entityManager->addEntity(entity);
 	}
 }

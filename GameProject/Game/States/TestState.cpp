@@ -21,7 +21,7 @@ TestState::TestState() : State()
 
 	this->entity = new Entity();
 	this->entity->setModel(ModelLoader::loadModel("Game/assets/cube.obj"));
-	this->entity->getTransform()->setPosition({ 0.0f, 0.0f, -2.0f });
+	this->entity->getMatrix()->setPosition({ 0.0f, 0.0f, -2.0f });
 }
 
 TestState::~TestState()

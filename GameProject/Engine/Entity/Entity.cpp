@@ -2,7 +2,7 @@
 
 Entity::Entity(const glm::vec3& forward) : model(nullptr)
 {
-	transform.setForward(forward);
+	matrix.setForward(forward);
 }
 
 
@@ -68,7 +68,7 @@ const std::string Entity::getName()
 	return this->name;
 }
 
-Transform * Entity::getTransform()
+EntityMatrix * Entity::getMatrix()
 {
-	return &transform;
+	return &matrix;
 }
