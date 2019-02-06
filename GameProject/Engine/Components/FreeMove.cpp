@@ -12,8 +12,8 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	EventBus::get().subscribe(this, &FreeMove::moveMouse);
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
-	this->speed = 100.0f;
-	this->sensitivity = 3.0f;
+	this->speed = 5.0f;
+	this->sensitivity = 0.5f;
 	this->mouseLock = false;
 	this->xPos = 0.0;
 	this->yPos = 0.0;

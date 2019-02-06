@@ -2,6 +2,7 @@
 #include "../Utils/Timer.h"
 #include "Config.h"
 #include "Rendering/Display.h"
+#include <string>
 
 IGame::IGame()
 {
@@ -28,9 +29,13 @@ void IGame::gameLoop()
 	
 	float totalTime = 0.0f;
 	float dt = 0.0f;
+	int frames = 0;
+	float frameTime = 0.0f;
 	Timer dtTimer;
 	while (this->isRunning && !this->stateManager.isEmpty() && display.isOpen())
 	{
+		frames++;
+
 		dtTimer.restart();
 		
 		display.startFrame();
@@ -46,15 +51,22 @@ void IGame::gameLoop()
 			totalTime = 0.0f;
 		}
 
+		if (frameTime >= 1.0f) {
+			display.setTitleSuffix(", FPS: " + std::to_string(frames));
+			frames = 0;
+			frameTime = 0.0f;
+		}
+
 		// Render state
 		this->stateManager.render();
 		onRender();
 
+		display.endFrame();
+
 		// Restart dtTimer
 		dtTimer.stop();
-		dt = dtTimer.getTime();
+		dt = dtTimer.getDeltaTime();
 		totalTime += dt;
-
-		display.endFrame();
+		frameTime += dt;
 	}
 }
