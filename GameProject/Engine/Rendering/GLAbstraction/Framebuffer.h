@@ -1,6 +1,6 @@
 #pragma once
 
-#include "RenderingResources.h"
+#include "Texture.h"
 
 enum AttachmentType {
 	COLOR,

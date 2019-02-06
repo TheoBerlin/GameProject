@@ -2,6 +2,7 @@
 
 #include "../Entity/Entity.h"
 #include "../AssetManagement/Mesh.h"
+#include "GLAbstraction/Texture.h"
 
 Renderer::Renderer()
 {
