@@ -5,10 +5,10 @@
 #include "Engine/AssetManagement/ModelLoader.h"
 
 #include "ft2build.h" //DO NOT MOVE HEADER FILE FROM ROOT DIRECTORY OF INCLUDE
-#include FT_FREETYPE_H  
+#include FT_FREETYPE_H
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../../Utils/stb_image.h" //Single library for img loader
+#include <Utils/stb_image.h> //Single library for img loader
 
 #include "Engine/Sound/SoundContext.h"
 
@@ -22,8 +22,8 @@ int main() {
 	
 	Logger::destroy();
 
-	ModelLoader::unloadModels();
-	TextureManager::unloadTextures();
+	ModelLoader::unloadAllModels();
+	TextureManager::unloadAllTextures();
 
 	return 0;
 }

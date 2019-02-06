@@ -1,6 +1,7 @@
 #include "Shader.h"
 
 #include "../../../Utils/Logger.h"
+#include "Texture.h"
 
 Shader::Shader()
 {
@@ -36,6 +37,18 @@ void Shader::unbind()
 const GLuint Shader::getID() const
 {
 	return this->id;
+}
+
+void Shader::setTexture2D(const std::string & name, unsigned int unit, const Texture & texture)
+{
+	setTexture2D(name, unit, texture.getID());
+}
+
+void Shader::setTexture2D(const std::string & name, unsigned int unit, GLuint textureID)
+{
+	setUniform1i(name, unit);
+	glActiveTexture(GL_TEXTURE0 + unit);
+	glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
 void Shader::setUniform1b(const std::string & name, bool value)
