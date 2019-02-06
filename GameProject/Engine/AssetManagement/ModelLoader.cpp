@@ -92,7 +92,7 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
 
         Texture* texture = TextureManager::loadTexture(directory + convertedString, txType);
 
-        newMaterial.Textures.push_back(*texture);
+        newMaterial.textures.push_back(texture);
     }
 
     // Store material constants

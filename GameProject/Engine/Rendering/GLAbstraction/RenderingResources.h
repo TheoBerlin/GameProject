@@ -51,14 +51,9 @@ enum TextureType {
 	TXTYPE_NORMAL = 2
 };
 
-struct Texture {
-	GLuint id;
-	TextureType type;
-	std::string path;
-};
-
+class Texture;
 struct Material {
 	glm::vec3 Ka;
 	glm::vec3 Ks;
-	std::vector<Texture> Textures;
+	std::vector<Texture*> textures;
 };
