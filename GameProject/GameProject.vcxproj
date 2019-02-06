@@ -28,11 +28,12 @@
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
-    <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
+    <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="Engine\Level\LevelParser.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
+    <ClCompile Include="Engine\Rendering\GLAbstraction\Texture.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexArray.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\VertexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
@@ -73,7 +74,7 @@
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
-    <ClInclude Include="Engine\Entity\EntityMatrix.h" />
+    <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Level\LevelParser.h" />
@@ -85,6 +86,7 @@
     <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
     <ClInclude Include="Engine\AssetManagement\TextureManager.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\RenderingResources.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Texture.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexArray.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
