@@ -68,7 +68,7 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
 			break;
 		}
-		entity->getMatrix()->setPosition(position);
+		entity->getTransform()->setPosition(position);
 		entity->setModel(model);
 	}
 }
@@ -115,7 +115,7 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
 			break;
 		}
-		entity->getMatrix()->setPosition(position);
+		entity->getTransform()->setPosition(position);
 		entity->setModel(model);
 	}
 }
