@@ -1,9 +1,11 @@
 #pragma once
 
+#include <Engine/Components/Camera.h>
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/EntityMatrix.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
+#include <Utils/Logger.h>
 #include <vector>
 
 class Entity;
@@ -11,7 +13,7 @@ class Entity;
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, EntityMatrix startingTransform, glm::vec3 startingDirection,
+    ArrowGuider(Entity* parentEntity, const EntityMatrix& startingTransform, glm::vec3 startingDirection,
     float movementSpeed = 0.2f, float maxTurnSpeed = glm::quarter_pi<float>() / 2.0f);
     ~ArrowGuider();
 
@@ -43,7 +45,7 @@ public:
     float getTurningSpeed();
 
 private:
-    // Use turn factors to turn
+    // Use turn factors to update direction
     void applyTurn();
 
     float movementSpeed;
@@ -69,4 +71,14 @@ private:
     // Time since position was stored
     float posStoreTimer;
     std::vector<glm::vec3> storedPositions;
+
+    // The pointer is retrieved when startGuiding() is called
+    Camera* arrowCamera;
+
+    // Camera settings
+    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.1f, 0.2f), maxCamOffset = glm::vec3(0.0f, 0.1f, 0.8f);
+    const float offsetChangeMax = 0.5f;
+
+    const float minFOV = 75.0f, maxFOV = 95.0f;
+    const float FOVChangeMax = 20.0f;
 };

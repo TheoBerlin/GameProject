@@ -3,6 +3,7 @@
 #include <Engine/Entity/Entity.h>
 #include <Engine/Entity/EntityMatrix.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Engine/Components/Camera.h>
 #include <Engine/Events/Events.h>
 #include <Engine/Events/EventBus.h>
 
@@ -17,6 +18,7 @@ TEST_CASE("Arrow guider") {
 
     Entity* arrowEntity = new Entity();
 
+    Camera* arrowCam = new Camera(arrowEntity);
     ArrowGuider* arrowGuider = new ArrowGuider(arrowEntity, startingTransform, startingDirection, startingSpeed);
 
     SECTION("Travels in a linear path with linear speed") {
@@ -84,6 +86,29 @@ TEST_CASE("Arrow guider") {
         REQUIRE(Approx(newDir.x - startingDirection.x) != 0.0f);
         // Horizontal mouse movement should not cause the arrow to pitch
         REQUIRE(Approx(newDir.y - startingDirection.y) == 0.0f);
+
+        SECTION("Changes camera settings when turning") {
+            // Make sure that the arrow isn't already turning
+            arrowGuider->update(100.0f);
+
+            float firstFOV = arrowCam->getFOV();
+            glm::vec3 firstOffset = arrowCam->getOffset();
+
+            // Turn the arrow
+            MouseMoveEvent mouseMoveEvent(1000.0, 0.0);
+            EventBus::get().publish(&mouseMoveEvent);
+
+            arrowGuider->update(0.1f);
+
+            // Check that the camera settings have changed after a small amount of time
+            float secondFOV = arrowCam->getFOV();
+            glm::vec3 secondOffset = arrowCam->getOffset();
+
+            REQUIRE(secondFOV > firstFOV);
+            REQUIRE(glm::length(secondOffset) > glm::length(firstOffset));
+
+            arrowGuider->stopGuiding();
+        }
 
         SECTION("Turns over time") {
             arrowGuider->update(10.0f);

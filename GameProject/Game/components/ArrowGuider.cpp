@@ -2,7 +2,7 @@
 
 #include <Engine/Entity/Entity.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, EntityMatrix startingTransform, glm::vec3 startingDirection,
+ArrowGuider::ArrowGuider(Entity* parentEntity, const EntityMatrix& startingTransform, glm::vec3 startingDirection,
     float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
@@ -24,6 +24,8 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, EntityMatrix startingTransform, g
     turnFactors = glm::vec2(0.0f, 0.0f);
 
     posStoreTimer = 0.0f;
+
+    arrowCamera = nullptr;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -52,7 +54,8 @@ void ArrowGuider::update(const float& dt)
     applyTurn();
 
     // Update position storing frequency based on turning factors
-    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * glm::length(turnFactors);
+    float turnFactorsLength = glm::length(turnFactors);
+    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
 
     // Update position store timer
     posStoreTimer += dt;
@@ -63,6 +66,44 @@ void ArrowGuider::update(const float& dt)
 
         storedPositions.push_back(getPosition());
     }
+
+    if (!arrowCamera) {
+        LOG_WARNING("Arrow guider is missing a camera");
+        return;
+    }
+
+    // Update camera settings using turn factors
+    // Camera FOV
+    float currentFOV = arrowCamera->getFOV();
+
+    // Linearly interpolate between min and max FOV
+    float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
+
+    // Gradually increase FOV
+    float deltaFOV = (desiredFOV - currentFOV) * dt;
+
+    // Limit FOV change per second
+    if (std::abs(deltaFOV) > FOVChangeMax) {
+        deltaFOV *= deltaFOV / FOVChangeMax;
+    }
+
+    arrowCamera->setFOV(currentFOV + deltaFOV);
+
+    // Camera offset
+    glm::vec3 currentOffset = arrowCamera->getOffset();
+
+    // Linearly interpolate between min and max offset
+    glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
+
+    // Gradually increase offset
+    glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
+
+    // Limit offset change per second
+    if (glm::length(deltaOffset) > offsetChangeMax) {
+        deltaOffset *= deltaOffset / offsetChangeMax;
+    }
+
+    arrowCamera->setOffset(currentOffset + deltaOffset);
 }
 
 void ArrowGuider::startGuiding()
@@ -74,6 +115,19 @@ void ArrowGuider::startGuiding()
     // Clear previous path and store starting position
     storedPositions.clear();
     storedPositions.push_back(getPosition());
+
+    // Get camera pointer from parent entity
+    Component* tempPtr = host->getComponent("Camera");
+    arrowCamera = dynamic_cast<Camera*>(tempPtr);
+
+    if (!arrowCamera) {
+        LOG_WARNING("Arrow Guider failed to find Camera component");
+        return;
+    }
+
+    // Set camera settings
+    arrowCamera->setFOV(minFOV);
+    arrowCamera->setOffset(minCamOffset);
 }
 
 void ArrowGuider::stopGuiding()
