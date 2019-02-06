@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine/Components/Component.h>
-#include <Engine/Entity/Transform.h>
+#include <Engine/Entity/EntityMatrix.h>
 #include <Engine/Events/EventBus.h>
 #include <Utils/Logger.h>
 #include <Engine/Rendering/Display.h>
@@ -11,7 +11,7 @@ class Entity;
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, Transform startingTransform, glm::vec3 startingDirection,
+    ArrowGuider(Entity* parentEntity, EntityMatrix startingTransform, glm::vec3 startingDirection,
     float movementSpeed = 0.2f, float maxTurnSpeed = glm::quarter_pi<float>() / 2.0f);
     ~ArrowGuider();
 

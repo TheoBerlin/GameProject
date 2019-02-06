@@ -10,26 +10,26 @@ class Model;
 class Mesh
 {
 public:
-	Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
-	~Mesh();
+    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
+    ~Mesh();
 
-	void bindVertexBuffer();
+    void bindVertexBuffer();
 	IndexBuffer& getIndexBuffer();
 
-	// Inserts material data into a uniform buffer
-	void bindMaterial(UniformBuffer* uniformBuffer);
-	unsigned short getMaterialIndex();
+    // Inserts material data into a uniform buffer
+    void bindMaterial(UniformBuffer* uniformBuffer);
+    unsigned short getMaterialIndex();
 
 private:
-	void createBuffers();
+    void createBuffers();
 
 private:
-	Model* parentModel;
-	VertexArray* vao;
+    Model* parentModel;
+    VertexArray* vao;
 	IndexBuffer* ib;
 
-	std::vector<Vertex>* vertices;
-	std::vector<unsigned int>* vertexIndices;
-	// The index refers to the material storage in the mesh's model
-	unsigned short materialIndex;
+    std::vector<Vertex>* vertices;
+    std::vector<unsigned int>* vertexIndices;
+    // The index refers to the material storage in the mesh's model
+    unsigned short materialIndex;
 };

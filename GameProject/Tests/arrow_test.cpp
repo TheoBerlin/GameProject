@@ -12,7 +12,7 @@ TEST_CASE("Arrow guider") {
     glm::vec3 startingDirection(0.0f, 0.0f, 1.0f);
     float startingSpeed = 0.1f;
 
-    Transform startingTransform;
+    EntityMatrix startingTransform;
     startingTransform.setPosition(startingPosition);
 
     Entity* arrowEntity = new Entity();
@@ -24,7 +24,7 @@ TEST_CASE("Arrow guider") {
         arrowGuider->startGuiding();
         arrowGuider->update(dt);
 
-        glm::vec3 newPos = arrowEntity->getTransform()->getPosition();
+        glm::vec3 newPos = arrowEntity->getMatrix()->getPosition();
         glm::vec3 expectedPos = startingPosition + startingDirection * startingSpeed * dt;
 
         REQUIRE(Approx(newPos.x - expectedPos.x) == 0.0f);

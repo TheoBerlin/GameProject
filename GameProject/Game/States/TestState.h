@@ -16,7 +16,6 @@ public:
 	void render() override;
 
 private:
-
 	Entity* cameraEntity;
 	Entity* entity;
 };
