@@ -15,7 +15,7 @@ void LevelParser::writeToFile(std::string file, EntityManager *entityManager)
 	for (int i = 0; i < entityManager->getEntitySize(); i++) {
 		if (entityManager->getEntity(i)->getName().size() > 0) {
 			writeName(i, entityManager->getEntity(i)->getName());
-			writePosition(i, entityManager->getEntity(i)->getMatrix()->getPosition());
+			writePosition(i, entityManager->getEntity(i)->getTransform()->getPosition());
 		}
 		else {
 			LOG_WARNING("%s: Entity does not have a name at %d", CLASS_NAME, i);

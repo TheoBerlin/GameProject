@@ -29,8 +29,6 @@ bool Display::isOpen() const
 
 void Display::startFrame()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	#ifdef IMGUI
 	//Create new frame for ImGui
 	ImGui_ImplOpenGL3_NewFrame();

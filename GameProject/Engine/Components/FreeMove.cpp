@@ -12,8 +12,8 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	EventBus::get().subscribe(this, &FreeMove::moveMouse);
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
-	this->speed = 100.0f;
-	this->sensitivity = 3.0f;
+	this->speed = 5.0f;
+	this->sensitivity = 0.5f;
 	this->mouseLock = false;
 	this->xPos = 0.0;
 	this->yPos = 0.0;
@@ -35,29 +35,33 @@ void FreeMove::init()
 
 void FreeMove::update(const float & dt)
 {
-	EntityMatrix * mat = host->getMatrix();
+	Transform * mat = host->getTransform();
 
 	this->dt = dt;
 
-	// Keys that need constant polling
+	glm::vec3 newPosition = mat->getPosition();
+
+	// Check keyboard input (WASD) to calculate new position
 	if (this->pressedKeys[GLFW_KEY_W])
-		mat->setPosition(mat->getPosition() + this->dt * mat->getForward() * this->speed);
+		newPosition += this->dt * mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_A])
-		mat->setPosition(mat->getPosition() + this->dt * -mat->getRight() * this->speed);
+		newPosition += this->dt * -mat->getRight() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_D])
-		mat->setPosition(mat->getPosition() + this->dt * mat->getRight() * this->speed);
+		newPosition += this->dt * mat->getRight() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_S])
-		mat->setPosition(mat->getPosition() + this->dt * -mat->getForward() * this->speed);
+		newPosition += this->dt * -mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_SPACE])
-		mat->setPosition(mat->getPosition() + this->dt * mat->getUp() * this->speed);
+		newPosition += this->dt * mat->getUp() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
-		mat->setPosition(mat->getPosition() + this->dt * -mat->getUp() * this->speed);
+		newPosition += this->dt * -mat->getUp() * this->speed;
+
+	mat->setPosition(newPosition);
 
 	if (this->mouseLock)
 	{
 		if (this->xPos != 0.0 || this->yPos != 0.0)
 		{
-			EntityMatrix * mat = getHost()->getMatrix();
+			Transform * mat = getHost()->getTransform();
 			glm::vec3 oldForward = mat->getForward();
 
 			oldForward = glm::rotate(oldForward, -(float)xPos * this->dt * this->sensitivity, mat->getUp());
@@ -66,7 +70,7 @@ void FreeMove::update(const float & dt)
 			this->xPos = 0.0;
 			this->yPos = 0.0;
 
-			getHost()->getMatrix()->setForward(oldForward);
+			getHost()->getTransform()->setForward(oldForward);
 		}
 	}
 }

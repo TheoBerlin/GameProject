@@ -37,6 +37,12 @@ void Texture::recreate(unsigned char * data, unsigned int width, unsigned int he
 	init(data, width, height, internalFormat, format, texType);
 }
 
+void Texture::resize(unsigned int width, unsigned int height, unsigned internalFormat, unsigned format)
+{
+	bind();
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
+}
+
 unsigned int Texture::getWidth() const
 {
 	return this->width;

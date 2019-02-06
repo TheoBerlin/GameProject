@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "../Components/Component.h"
-#include "EntityMatrix.h"
+#include "Transform.h"
 
 #include "../AssetManagement/Model.h"
 
@@ -18,20 +18,21 @@ public:
 
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
+	// Used by components to get neighboring components
+	Component* getComponent(const std::string& componentName);
 
 	void setModel(Model* model);
 	Model* getModel();
 
 	void setName(const std::string& name);
 	const std::string getName();
-	EntityMatrix* getMatrix();
+	Transform* getTransform();
 
 private:
 	std::unordered_map<std::string, Component*> components;
 
 	std::string name;
-	EntityMatrix matrix;
+	Transform transform;
 
 	Model* model;
 };
-

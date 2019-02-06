@@ -28,7 +28,7 @@
     <ClCompile Include="Engine\InputHandler.cpp" />
     <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
-    <ClCompile Include="Engine\Entity\EntityMatrix.cpp" />
+    <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="Engine\Level\LevelParser.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
@@ -55,6 +55,7 @@
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\UniformBuffer.cpp" />
+    <ClCompile Include="Engine\Rendering\Pipeline.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
@@ -75,7 +76,7 @@
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
-    <ClInclude Include="Engine\Entity\EntityMatrix.h" />
+    <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Level\LevelParser.h" />
@@ -102,6 +103,7 @@
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
+    <ClInclude Include="Engine\Rendering\Pipeline.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
