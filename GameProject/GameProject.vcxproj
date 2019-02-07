@@ -46,6 +46,7 @@
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
+    <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="main.cpp" />
@@ -56,6 +57,7 @@
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\UniformBuffer.cpp" />
+    <ClCompile Include="Engine\Rendering\Pipeline.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
@@ -103,7 +105,9 @@
     <ClInclude Include="Game\Components\ArrowGuider.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
+    <ClInclude Include="Engine\Rendering\Pipeline.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />

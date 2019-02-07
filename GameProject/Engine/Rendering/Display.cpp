@@ -1,6 +1,5 @@
 #include "Display.h"
 
-#include "../Config.h"
 #include "../../Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
@@ -12,12 +11,7 @@
 
 Display & Display::get()
 {
-	static bool isFirst = true;
 	static Display display;
-	if (isFirst) {
-		display.init(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_TITLE);
-		isFirst = false;
-	}
 	return display;
 }
 
@@ -35,8 +29,6 @@ bool Display::isOpen() const
 
 void Display::startFrame()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	#ifdef IMGUI
 	//Create new frame for ImGui
 	ImGui_ImplOpenGL3_NewFrame();
@@ -164,7 +156,7 @@ void Display::init(int width, int height, const std::string& title)
 	}
 
 	glfwMakeContextCurrent(this->window);
-	glfwSwapInterval(1); // Enable vsync
+	//glfwSwapInterval(1); // Enable vsync
 
 	// --------------- INIT GLEW ---------------
 	glewExperimental = true; // Needed in core profile

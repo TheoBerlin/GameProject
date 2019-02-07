@@ -133,6 +133,7 @@
     <ClInclude Include="..\Engine\Components\FreeMove.h" />
     <ClInclude Include="..\Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="..\Engine\Rendering\Renderer.h" />
+    <ClInclude Include="..\Engine\Level\LevelParser.h" />
     <ClInclude Include="..\Game\Components\ArrowGuider.h" />
     <ClInclude Include="..\Game\States\TestState.h" />
     <ClInclude Include="catch.hpp" />
@@ -180,6 +181,7 @@
     <ClCompile Include="..\Engine\IGame.cpp" />
     <ClCompile Include="..\Engine\InputHandler.cpp" />
     <ClCompile Include="..\Engine\Level\Level.cpp" />
+    <ClCompile Include="..\Engine\Level\LevelParser.cpp" />
     <ClCompile Include="..\Engine\Rendering\Display.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\Framebuffer.cpp" />
     <ClCompile Include="..\Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
@@ -194,6 +196,13 @@
     <ClCompile Include="..\Game\Game.cpp" />
     <ClCompile Include="..\Game\States\MenuState.cpp" />
     <ClCompile Include="..\Game\States\TestState.cpp" />
+    <ClCompile Include="AssetLoading_test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="Events_test.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="LevelParser_test.cpp" />
     <ClCompile Include="arrow_test.cpp" />
     <ClCompile Include="AssetLoading_test.cpp" />
     <ClCompile Include="Events_test.cpp" />

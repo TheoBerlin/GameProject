@@ -20,7 +20,7 @@ TestState::TestState() : State()
 	Display::get().getRenderer().setActiveCamera(camera);
 
 	this->entity = new Entity();
-	this->entity->setModel(ModelLoader::loadModel("Game/assets/cube.obj"));
+	this->entity->setModel(ModelLoader::loadModel("Game/assets/droneTarget.fbx"));
 	this->entity->getTransform()->setPosition({ 0.0f, 0.0f, -2.0f });
 }
 
