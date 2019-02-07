@@ -3,6 +3,7 @@
 #include <Engine/Entity/Entity.h>
 
 ArrowGuider::ArrowGuider(Entity* parentEntity, const Transform& startingTransform, glm::vec3 startingDirection,
+
     float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
