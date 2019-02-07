@@ -1,30 +1,5 @@
 #include "LevelParser.h"
 
-/*void LevelParser::writePosition(int index, glm::vec3 position)
-{
-	jsonFile[index]["X"] = position.x;
-	jsonFile[index]["Y"] = position.y;
-	jsonFile[index]["Z"] = position.z;
-}
-void LevelParser::writeName(int index, std::string name)
-{
-	jsonFile[index]["Name"] = name;
-}
-void LevelParser::writeToFile(std::string file, EntityManager *entityManager)
-{
-	for (int i = 0; i < entityManager->getEntitySize(); i++) {
-		if (entityManager->getEntity(i)->getName().size() > 0) {
-			writeName(i, entityManager->getEntity(i)->getName());
-			writePosition(i, entityManager->getEntity(i)->getTransform()->getPosition());
-		}
-		else {
-			LOG_WARNING("%s: Entity does not have a name at %d", CLASS_NAME, i);
-		}
-	}
-	std::ofstream oStream(file);
-	oStream << std::setw(4) << jsonFile << std::endl;
-}*/
-
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
 {

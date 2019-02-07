@@ -14,11 +14,6 @@ GameState::GameState()
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
-	/*Entity* cameraEntity = entityManager.addTracedEntity("Camera");
-	new FreeMove(cameraEntity);
-	Camera* camera = new Camera(cameraEntity, "Camera", { 0.0f, 0.5f, -1.0f });
-	camera->init();
-	cameraEntity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
 	Display::get().getRenderer().setActiveCamera(camera);*/
 
