@@ -66,6 +66,8 @@ void Sound::loadSound(std::string fileName)
 
 	alSourcei(source, AL_BUFFER, buffer);
 	errorCheck();
+
+	delete buf;
 }
 
 void Sound::playSound()
