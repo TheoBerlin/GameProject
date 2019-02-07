@@ -1,29 +1,9 @@
 #include "LevelParser.h"
 
-/*void LevelParser::writePosition(int index, glm::vec3 position)
-{
-	jsonFile[index]["X"] = position.x;
-	jsonFile[index]["Y"] = position.y;
-	jsonFile[index]["Z"] = position.z;
-}
-void LevelParser::writeName(int index, std::string name)
-{
-	jsonFile[index]["Name"] = name;
-}
-void LevelParser::writeToFile(std::string file, EntityManager *entityManager)
-{
-	for (int i = 0; i < entityManager->getEntitySize(); i++) {
-		if (entityManager->getEntity(i)->getName().size() > 0) {
-			writeName(i, entityManager->getEntity(i)->getName());
-			writePosition(i, entityManager->getEntity(i)->getTransform()->getPosition());
-		}
-		else {
-			LOG_WARNING("%s: Entity does not have a name at %d", CLASS_NAME, i);
-		}
-	}
-	std::ofstream oStream(file);
-	oStream << std::setw(4) << jsonFile << std::endl;
-}*/
+#include "../../Engine/Rendering/Display.h"
+#include "../../Engine/Rendering/Renderer.h"
+#include "../../Engine/Components/FreeMove.h"
+#include "../../Engine/Components/Camera.h"
 
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
@@ -38,19 +18,20 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 
 	for (int i = 0; i < targetSize; i++)
 	{
+		json::json& target = jsonFile["Target"][i];
 		Entity* entity;
 		glm::vec3 position;
 		//Every object requires a name
-		if (!jsonFile["Target"][i]["Name"].empty() && jsonFile["Target"][i]["Name"].is_string()) {
-			std::string name = jsonFile["Target"][i]["Name"];
+		if (!target["Name"].empty() && target["Name"].is_string()) {
+			std::string name = target["Name"];
 			entity = entityManager->addTracedEntity(name);
 
 			//Start on X then loop through all positions
 			for (int j = 0; j < 3; j++) {
 				//If object exists go ahead otherwise do default position
-				if (!jsonFile["Target"][i]["Position"][j].empty()) {
+				if (!target["Position"][j].empty()) {
 					try {
-						position[j] = jsonFile["Target"][i]["Position"][j];
+						position[j] = target["Position"][j];
 					}
 					catch (const std::exception& e) {
 						LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
@@ -125,9 +106,46 @@ void LevelParser::readEntityWalls(EntityManager * entityManager)
 	//Add read for walls
 }
 
-void LevelParser::readEntityArrow(EntityManager * entityManager)
+void LevelParser::readEntityPlayer(EntityManager * entityManager)
 {
-	//add read for the arrow
+	Model *model = nullptr;
+	model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
+
+	Entity* entity;
+	glm::vec3 position;
+
+	json::json& player = jsonFile["Player"];
+	//Every object requires a name
+	if (!player["Name"].empty() && player["Name"].is_string()) {
+		std::string name = jsonFile["Player"]["Name"];
+		entity = entityManager->addTracedEntity(name);
+		for (int i = 0; i < 3; i++) {
+			//If object exists go ahead otherwise do default position
+			if (!player["Position"].empty()) {
+				try {
+					position[i] = player["Position"][i];
+				}
+				catch (const std::exception& e) {
+					LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+					break;
+				}
+			}
+			else {
+				//Default position
+				position[i] = 0.0;
+				LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, i, entity->getName().c_str());
+			}
+		}
+		entity->getTransform()->setPosition(position);
+		new FreeMove(entity);
+		Camera* camera = new Camera(entity, name, { 0.0f, 0.5f, -1.0f });
+		camera->init();
+		entity->setModel(model);
+		Display::get().getRenderer().setActiveCamera(camera);
+	}
+	else {
+		LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+	}
 }
 
 void LevelParser::readEntites(std::string file, EntityManager *entityManager)
@@ -147,7 +165,7 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 		readEntityTargets(entityManager);
 		readEntityBoxes(entityManager);
 		readEntityWalls(entityManager);
-		readEntityArrow(entityManager);
+		readEntityPlayer(entityManager);
 	}
 	else
 	{
