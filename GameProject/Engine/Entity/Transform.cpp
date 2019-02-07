@@ -4,8 +4,17 @@
 glm::vec3 Transform::modulusRotation(glm::vec3 rotation)
 {
 	rotation.x = (float)fmod(rotation.x, 2.0f * 3.1415f);
+	if (rotation.x < 0.0f) {
+		rotation.x += 2.0f * glm::two_pi<float>();
+	}
 	rotation.y = (float)fmod(rotation.y, 2.0f * 3.1415f);
+	if (rotation.y < 0.0f) {
+		rotation.y += 2.0f * glm::two_pi<float>();
+	}
 	rotation.z = (float)fmod(rotation.z, 2.0f * 3.1415f);
+	if (rotation.z < 0.0f) {
+		rotation.z += 2.0f * glm::two_pi<float>();
+	}
 
 	return rotation;
 }
@@ -108,6 +117,7 @@ void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCente
 void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
 	rotation += normalize(axis) * radians;
+	rotation = modulusRotation(rotation);
 	updateForwardRightUp();
 }
 

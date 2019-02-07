@@ -80,11 +80,11 @@ private:
     Camera* arrowCamera;
 
     // Camera settings
-    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.1f, 0.2f), maxCamOffset = glm::vec3(0.0f, 0.1f, 0.8f);
-    const float offsetChangeMax = 0.5f;
+    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.15f, 0.2f), maxCamOffset = glm::vec3(0.0f, 0.15f, 0.6f);
+    const float offsetChangeMax = 0.35f;
 
-    const float minFOV = 75.0f, maxFOV = 95.0f;
-    const float FOVChangeMax = 20.0f;
+    const float minFOV = 75.0f, maxFOV = 90.0f;
+    const float FOVChangeMax = 15.0f;
 
     // Used to prevent gimbal lock
     float currentPitch;

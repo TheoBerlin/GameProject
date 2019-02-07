@@ -14,6 +14,8 @@ TestState::TestState() : State()
 {
 	InputHandler ih(Display::get().getWindowPtr());
 	this->cameraEntity = new Entity({ 0.0f, 0.0f, -1.0f });
+	//cameraEntity->setModel(ModelLoader::loadModel("Game/assets/Arrow.fbx"));
+	cameraEntity->getTransform()->setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
 	//new FreeMove(this->cameraEntity);
 
 	Camera* camera = new Camera(this->cameraEntity, "Camera", { 0.0f, 1.0f, -2.0f });
@@ -25,7 +27,7 @@ TestState::TestState() : State()
 
 	this->entity = new Entity();
 	this->entity->setModel(ModelLoader::loadModel("Game/assets/cube.obj"));
-	this->entity->getTransform()->setPosition({ 0.0f, 0.0f, -2.0f });
+	this->entity->getTransform()->setPosition({ 0.0f, 0.0f, -5.0f });
 }
 
 TestState::~TestState()

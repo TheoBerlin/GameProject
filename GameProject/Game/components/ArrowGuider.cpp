@@ -35,12 +35,16 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTur
     this->currentPitch = direction.y > 0.0f ? currentPitch : -currentPitch;
 
     LOG_INFO("Pitch: %f", currentPitch);
+
+    //host->getTransform()->setRotation(glm::vec3(0.0f, 0.0f, -1.0f));
 }
 
 ArrowGuider::~ArrowGuider()
 {
     EventBus::get().unsubscribe(this, &ArrowGuider::handleWindowResize);
-    EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+    if (isGuiding) {
+        EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+    }
 }
 
 void ArrowGuider::update(const float& dt)
@@ -168,6 +172,9 @@ void ArrowGuider::stopGuiding()
     turnFactors.y = 0.0f;
 
     posStoreTimer = 0.0f;
+
+    // Unlock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
@@ -179,13 +186,12 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     mousePos.x = (float)event->moveX;
     mousePos.y = (float)event->moveY;
 
+    //float turnFactorYaw = moveX / (windowHeight * 50.0f);
+    //float turnFactorPitch = moveY / (windowHeight * 50.0f);
+
     // Divide by window height to separate turn speed from screen resolution
-    float turnFactorYaw = moveX / (windowHeight * 50.0f);
-    float turnFactorPitch = moveY / (windowHeight * 50.0f);
-
-    //float turnFactorYaw = moveX / (windowHeight * maxMouseMove);
-    //float turnFactorPitch = moveY / (windowHeight * maxMouseMove);
-
+    float turnFactorYaw = moveX / (windowHeight * maxMouseMove);
+    float turnFactorPitch = moveY / (windowHeight * maxMouseMove);
 
     // Update turnFactors
     turnFactors.x += turnFactorYaw;
@@ -198,8 +204,8 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     }
 
     if (printTimer2 > 0.5f) {
-        LOG_INFO("moveX, moveY: [%f,%f]", moveX, moveY);
-        LOG_INFO("yaw, pitch: [%f,%f]", turnFactorYaw, turnFactorPitch);
+        //LOG_INFO("moveX, moveY: [%f,%f]", moveX, moveY);
+        //LOG_INFO("yaw, pitch: [%f,%f]", turnFactorYaw, turnFactorPitch);
         LOG_INFO("turnFactors: [%f,%f]", turnFactors.x, turnFactors.y);
         printTimer2 = 0.0f;
     }
@@ -268,13 +274,15 @@ float ArrowGuider::getTurningSpeed()
 void ArrowGuider::applyTurn(const float& dt)
 {
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
-    float yaw = turnFactors.x * maxTurnSpeed;// * dt;
+    float yaw = turnFactors.x * maxTurnSpeed * dt;
     //yaw = maxTurnSpeed * dt;
-    float pitch = turnFactors.y * maxTurnSpeed;// * dt;
+    float pitch = turnFactors.y * maxTurnSpeed * dt;
     //pitch = 0.0f;
-    //if (printTimer2 > 0.5f) {
-    //    LOG_INFO("yaw, pitch: [%f,%f]", yaw, pitch);
-    //}
+    if (printTimer2 > 0.5f) {
+        //LOG_INFO("yaw, pitch: [%f,%f]", yaw, pitch);
+        //LOG_INFO("ARROW ROTATION: %f, %f, %f", host->getTransform()->getRotation().x, host->getTransform()->getRotation().y, host->getTransform()->getRotation().z);
+		//printTimer2 = 0.0f; 
+    }
 
     Transform* transform = host->getTransform();
     glm::vec3 direction = transform->getForward();
@@ -290,13 +298,14 @@ void ArrowGuider::applyTurn(const float& dt)
     tempDirection = tempDirection * rotMatrix;
 
     // Prevent gimbal lock and reset vertical turn factor
-    if (std::abs(currentPitch + pitch) >= glm::half_pi<float>() - FLT_EPSILON * 5.0f) {
+    /*if (std::abs(currentPitch + pitch) >= glm::half_pi<float>() - FLT_EPSILON * 5.0f) {
+        LOG_INFO("Limiting pitch");
         turnFactors.y = 0.0f;
 
         // Restrict pitch
         pitch = pitch > 0.0f ? (glm::half_pi<float>() - FLT_EPSILON * 10.0f) - currentPitch
         : (-glm::half_pi<float>() + FLT_EPSILON * 10.0f) - currentPitch;
-    }
+    }*/
 
     currentPitch += pitch;
 
@@ -310,13 +319,24 @@ void ArrowGuider::applyTurn(const float& dt)
     direction = glm::vec3(tempDirection);
 
     // Rotate the entity
-    glm::vec3 normNewDirection = glm::normalize(direction);
-    glm::vec3 rotationAxis = glm::cross(normOldDirection, normNewDirection);
+    //glm::vec3 normNewDirection = glm::normalize(direction);
+    glm::vec3 rotationAxis = glm::normalize(glm::cross(normOldDirection, direction));
+	//transform->rotateAxis(0.016f, glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)));
 
-    float cosAngle = glm::dot(normOldDirection, normNewDirection);
-    float rotationAngle = std::acosf(cosAngle);
+    if (glm::length(rotationAxis) > 0.9f) {
+		float cosAngle = glm::dot(normOldDirection, direction);
 
-    //transform->rotateAxis(rotationAngle, rotationAxis);
+		float rotationAngle = std::acosf(cosAngle);
+        transform->rotateAxis(rotationAngle, rotationAxis);
 
-    transform->setForward(direction);
+        //transform->setRotation(direction);
+        if (printTimer2 > 0.5f) {
+            LOG_INFO("rotationAxis: (%f,%f,%f)", rotationAxis.x, rotationAxis.y, rotationAxis.z);
+        }
+    }
+
+    if (printTimer2 > 0.5f) {
+        LOG_INFO("direction: (%f,%f,%f", direction.x, direction.y, direction.z);
+        printTimer2 = 0.0f;
+    }
 }
