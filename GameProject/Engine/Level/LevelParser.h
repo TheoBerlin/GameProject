@@ -11,6 +11,11 @@
 #include <iostream>
 #include <iomanip>
 
+#include "../../Engine/Rendering/Display.h"
+#include "../../Engine/Rendering/Renderer.h"
+#include "../../Engine/Components/FreeMove.h"
+#include "../../Engine/Components/Camera.h"
+
 namespace json = nlohmann;
 
 #define CLASS_NAME "LEVEL_PARSER"
@@ -25,7 +30,7 @@ private:
 	void readEntityTargets(EntityManager *entityManager);
 	void readEntityBoxes(EntityManager *entityManager);
 	void readEntityWalls(EntityManager *entityManager);
-	void readEntityArrow(EntityManager *entityManager);
+	void readEntityPlayer(EntityManager *entityManager);
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
