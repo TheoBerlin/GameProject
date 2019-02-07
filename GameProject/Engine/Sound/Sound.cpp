@@ -41,6 +41,11 @@ void Sound::loadSound(std::string fileName)
 {
 	FILE *file;
 	file = fopen(fileName.c_str(), "rb");
+	
+	if (file == NULL) {
+		LOG_ERROR("SOUND: File not read properly");
+		return;
+	}
 	//Read file size
 	fseek(file, 0, SEEK_END);
 	unsigned int size = ftell(file);
