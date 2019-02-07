@@ -44,9 +44,10 @@ Pipeline::~Pipeline()
 	delete this->uniformBuffer;
 }
 
-void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
+void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)
 {
-	this->fbo.bind();
+	if(!toScreen)
+		this->fbo.bind();
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
@@ -56,7 +57,8 @@ void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
 	
 	this->ZprePassShader->unbind();
 	this->prePassDepthOff();
-	this->fbo.unbind();
+	if (!toScreen)
+		this->fbo.unbind();
 }
 
 void Pipeline::prePassDepthOn()

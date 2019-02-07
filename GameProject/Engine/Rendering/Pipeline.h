@@ -17,7 +17,7 @@ public:
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
-	void prePassDepth(const std::vector<Entity*>& renderingList);
+	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false);
 
 	/*
 		Draw directly to the screen
