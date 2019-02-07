@@ -14,9 +14,6 @@ GameState::GameState()
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
-
-	Display::get().getRenderer().setActiveCamera(camera);*/
-
 	InputHandler ih(Display::get().getWindowPtr());
 }
 
