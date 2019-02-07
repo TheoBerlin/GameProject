@@ -1,5 +1,10 @@
 #include "LevelParser.h"
 
+#include "../../Engine/Rendering/Display.h"
+#include "../../Engine/Rendering/Renderer.h"
+#include "../../Engine/Components/FreeMove.h"
+#include "../../Engine/Components/Camera.h"
+
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
 {

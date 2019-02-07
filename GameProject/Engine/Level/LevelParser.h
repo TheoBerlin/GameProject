@@ -11,11 +11,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include "../../Engine/Rendering/Display.h"
-#include "../../Engine/Rendering/Renderer.h"
-#include "../../Engine/Components/FreeMove.h"
-#include "../../Engine/Components/Camera.h"
-
 namespace json = nlohmann;
 
 #define CLASS_NAME "LEVEL_PARSER"
