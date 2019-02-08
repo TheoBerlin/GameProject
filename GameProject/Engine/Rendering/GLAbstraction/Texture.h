@@ -56,6 +56,11 @@ public:
 	void recreate(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, TextureType texType = TextureType::TXTYPE_DIFFUSE);
 
 	/*
+		Resize existing texture
+	*/
+	void resize(unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA);
+
+	/*
 	Returns the width in pixels.
 	*/
 	unsigned int getWidth() const;
@@ -64,7 +69,7 @@ public:
 	Returns the height in pixels.
 	*/
 	unsigned int getHeight() const;
-	
+
 	/*
 	Get the texture id.
 	*/

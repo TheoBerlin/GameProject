@@ -42,8 +42,11 @@
     <ClCompile Include="Engine\AssetManagement\Model.cpp" />
     <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="Engine\Sound\Sound.cpp" />
+    <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
+    <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="main.cpp" />
@@ -54,6 +57,7 @@
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\UniformBuffer.cpp" />
+    <ClCompile Include="Engine\Rendering\Pipeline.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
@@ -91,6 +95,8 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
+    <ClInclude Include="Engine\Sound\Sound.h" />
+    <ClInclude Include="Engine\Sound\SoundContext.h" />
     <ClInclude Include="Engine\Rendering\Renderer.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
@@ -99,7 +105,9 @@
     <ClInclude Include="Game\Components\ArrowGuider.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
+    <ClInclude Include="Engine\Rendering\Pipeline.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />
@@ -172,6 +180,8 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;assimp-vc140-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;assimp-vc140-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT</AdditionalOptions>
@@ -188,6 +198,8 @@
       </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
+      <AdditionalLibraryDirectories>libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(ProjectDir)libs/</AdditionalLibraryDirectories>
       <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>

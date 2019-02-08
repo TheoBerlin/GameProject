@@ -4,8 +4,17 @@
 glm::vec3 Transform::modulusRotation(glm::vec3 rotation)
 {
 	rotation.x = (float)fmod(rotation.x, 2.0f * 3.1415f);
+	if (rotation.x < 0.0f) {
+		rotation.x += 2.0f * glm::two_pi<float>();
+	}
 	rotation.y = (float)fmod(rotation.y, 2.0f * 3.1415f);
+	if (rotation.y < 0.0f) {
+		rotation.y += 2.0f * glm::two_pi<float>();
+	}
 	rotation.z = (float)fmod(rotation.z, 2.0f * 3.1415f);
+	if (rotation.z < 0.0f) {
+		rotation.z += 2.0f * glm::two_pi<float>();
+	}
 
 	return rotation;
 }
@@ -29,14 +38,21 @@ Transform::Transform()
 	this->scaleFactor = glm::vec3(1, 1, 1);
 	this->rotation = glm::vec3(0, 0, 0);
 	this->position = glm::vec3(0, 0, 0);
+	this->defaultForward = glm::vec3(0, 0, -1);
 	setForward(glm::vec3(1, 0, 0));
 }
 
 glm::mat4 Transform::getMatrix() const
 {
 	glm::mat4 ret = glm::mat4(1);
-	if(rotation != glm::vec3(0.0f)) {
-		ret = glm::rotate(ret, rotation.x + rotation.y + rotation.z, glm::normalize(rotation));
+	glm::vec3 rotationAxis = glm::cross(defaultForward, this->f);
+	float rotationAxisLength = glm::length(rotationAxis);
+	if(rotationAxisLength > 0.0f) {
+		rotationAxis /= rotationAxisLength;
+
+		float rotationAngle = std::acosf(glm::dot(defaultForward, this->f));
+
+		ret = glm::rotate(rotationAngle, rotationAxis);
 	}
 
 	ret = glm::scale(ret, scaleFactor);
@@ -108,6 +124,7 @@ void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCente
 void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
 	rotation += normalize(axis) * radians;
+	rotation = modulusRotation(rotation);
 	updateForwardRightUp();
 }
 
@@ -163,5 +180,4 @@ void Transform::setForward(const glm::vec3 & forward)
 	this->f = normalize(forward);
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
 	this->u = glm::cross(this->r, this->f);
-	defaultForward = f;
 }

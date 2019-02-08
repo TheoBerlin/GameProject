@@ -2,10 +2,12 @@
 #include "../Utils/Timer.h"
 #include "Config.h"
 #include "Rendering/Display.h"
+#include "Config.h"
 #include <string>
 
 IGame::IGame()
 {
+	Display::get().init(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_TITLE);
 }
 
 IGame::~IGame()
@@ -30,12 +32,13 @@ void IGame::gameLoop()
 	float totalTime = 0.0f;
 	float dt = 0.0f;
 	int frames = 0;
+	int ups = 0;
 	float frameTime = 0.0f;
 	Timer dtTimer;
 	while (this->isRunning && !this->stateManager.isEmpty() && display.isOpen())
 	{
 		frames++;
-
+		
 		dtTimer.restart();
 		
 		display.startFrame();
@@ -49,12 +52,14 @@ void IGame::gameLoop()
 			this->stateManager.updateLogic();
 			onUpdateLogic();
 			totalTime = 0.0f;
+			ups++;
 		}
 
 		if (frameTime >= 1.0f) {
-			display.setTitleSuffix(", FPS: " + std::to_string(frames));
+			display.setTitleSuffix(", FPS: " + std::to_string(frames) + ", UPS: " + std::to_string(ups));
 			frames = 0;
 			frameTime = 0.0f;
+			ups = 0;
 		}
 
 		// Render state

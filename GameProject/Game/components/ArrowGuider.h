@@ -7,13 +7,14 @@
 #include <Engine/Rendering/Display.h>
 #include <Utils/Logger.h>
 #include <vector>
+#include <cmath>
 
 class Entity;
 
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, float movementSpeed = 0.2f, float maxTurnSpeed = glm::quarter_pi<float>() / 2.0f);
+    ArrowGuider(Entity* parentEntity, float movementSpeed = 0.2f, float maxTurnSpeed = glm::quarter_pi<float>());
     ~ArrowGuider();
 
     void update(const float& dt);
@@ -45,14 +46,18 @@ public:
 
 private:
     // Use turn factors to update direction
-    void applyTurn();
+    void applyTurn(const float& dt);
+
+    float printTimer = 0.0f, printTimer2 = 0.0f;
 
     float movementSpeed;
     int windowHeight;
     // Max turn speed measured in radians
     float maxTurnSpeed;
     // Mouse movement, relative to window height, required to reach max turn speed
-    const float maxMouseMove = 0.7f;
+    const float maxMouseMove = 0.5f;
+
+    glm::vec2 mousePos;
 
     // Used to create prolonged turns, i.e. slowly turning the arrow over time
     glm::vec2 turnFactors;
@@ -75,9 +80,12 @@ private:
     Camera* arrowCamera;
 
     // Camera settings
-    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.1f, 0.2f), maxCamOffset = glm::vec3(0.0f, 0.1f, 0.8f);
-    const float offsetChangeMax = 0.5f;
+    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.3f, 0.2f), maxCamOffset = glm::vec3(0.0f, 0.3f, -0.6f);
+    const float offsetChangeMax = 0.35f;
 
-    const float minFOV = 75.0f, maxFOV = 95.0f;
-    const float FOVChangeMax = 20.0f;
+    const float minFOV = 75.0f, maxFOV = 90.0f;
+    const float FOVChangeMax = 15.0f;
+
+    // Used to prevent gimbal lock
+    float currentPitch;
 };
