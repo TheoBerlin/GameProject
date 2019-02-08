@@ -13,14 +13,14 @@ out vec4 finalColor;
 
 uniform sampler2D tex;
 
+
 void main()
 {
+    vec3 lightDir = normalize(vec3(0.0, -1.0, -2.0));
     vec3 texColor = texture2D(tex, fragUv).rgb;
-    finalColor = vec4(texColor + 0.0*vec3(0.5, 0.0, 0.0), 1.0);
     
-    float s = step(0.5, fragUv.x);
-    finalColor = vec4(texColor, 1.0) + vec4(fragUv, 0.0, 1.0)*0.01 + (1.0 - s)*vec4((fragNormal+1.0)/2.0, 1.0)*0.01;
+    float diffuse = -dot(fragNormal, lightDir);
 
-    finalColor.rgb += material.ka*0.01 + material.ks*0.01;
-    finalColor = min(finalColor, 1.0);
+    finalColor.rgb += material.ka * 0.01f + material.ks*0.01;
+    finalColor = max(vec4(texColor * diffuse, 1.0), 0);
 }

@@ -1,20 +1,50 @@
-[
+{
+  "Target": [
     {
-        "Name": "Test",
-        "X": 1.0,
-        "Y": 2.0,
-        "Z": 3.0
+      "Name": "Target1",
+      "Position": [ -5, 2, -5 ]
     },
     {
-        "Name": "box2",
-        "X": 1.0,
-        "Y": 5.0,
-        "Z": 3.0
+      "Name": "Target2",
+      "Position": [ -5, 2, 5 ]
     },
     {
-        "Name": "TEST2",
-        "X": 5.0,
-        "Y": 2.0,
-        "Z": 9.0
+      "Name": "Target3",
+      "Position": [ 5, 2, -5 ]
+    },
+    {
+      "Name": "Target4",
+      "Position": [ 5, 2, 5 ]
+    },
+    {
+      "Name": "Target5",
+      "Position": [ 0, 2, 0 ]
     }
-]
+  ],
+  "Boxes": [
+    {
+      "Name": "Box1",
+      "Position": [ -5, 0, -5 ]
+    },
+    {
+      "Name": "Box2",
+      "Position": [ -5, 0, 5 ]
+    },
+    {
+      "Name": "Box3",
+      "Position": [ 5, 0, -5 ]
+    },
+    {
+      "Name": "Box4",
+      "Position": [ 5, 0, 5 ]
+    },
+    {
+      "Name": "Box5",
+      "Position": [ 0, 0, 0 ]
+    }
+  ],
+  "Player": {
+    "Name":  "Camera",
+    "Position": [ 0, 2.2, 10 ]
+  }
+} 

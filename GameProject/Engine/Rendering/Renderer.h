@@ -3,6 +3,7 @@
 #include "../Components/Camera.h"
 #include "GLAbstraction/UniformBuffer.h"
 #include "GLAbstraction/Shader.h"
+#include "Pipeline.h"
 
 class Model;
 class Entity;
@@ -31,12 +32,10 @@ public:
 	*/
 	void drawAll();
 
-	void draw(Entity* entity);
-	void draw(Model* model);
 
 private:
-	Camera* activeCamera;
-	UniformBuffer* uniformBuffer;
-	Shader* testShader;
+	Pipeline pipeline;
+
+
 	std::vector<Entity*> renderingList;
 };

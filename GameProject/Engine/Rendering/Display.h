@@ -10,6 +10,7 @@ class Display
 {
 public:
 	static Display& get();
+	void init(int width, int height, const std::string& title);
 
 	void updateView(int width, int height);
 
@@ -35,7 +36,6 @@ public:
 private:
 	static void errorCallback(int error, const char* description);
 	static void resizeCallback(GLFWwindow* window, int width, int height);
-	void init(int width, int height, const std::string& title);
 
 	GLFWwindow* window;
 	std::string title;

@@ -26,9 +26,8 @@ TestState::TestState() : State()
 	arrowGuider->startGuiding();
 
 	this->entity = new Entity();
-	this->entity->setModel(ModelLoader::loadModel("Game/assets/cube.obj"));
-	this->entity->getTransform()->setPosition({ 0.0f, 0.0f, -5.0f });
-	this->entity->getTransform()->setForward(glm::vec3(0.4f, 0.3f, 0.2f));
+	this->entity->setModel(ModelLoader::loadModel("Game/assets/droneTarget.fbx"));
+	this->entity->getTransform()->setPosition({ 0.0f, 0.0f, -2.0f });
 }
 
 TestState::~TestState()
