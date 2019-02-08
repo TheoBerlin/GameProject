@@ -38,14 +38,21 @@ Transform::Transform()
 	this->scaleFactor = glm::vec3(1, 1, 1);
 	this->rotation = glm::vec3(0, 0, 0);
 	this->position = glm::vec3(0, 0, 0);
+	this->defaultForward = glm::vec3(0, 0, -1);
 	setForward(glm::vec3(1, 0, 0));
 }
 
 glm::mat4 Transform::getMatrix() const
 {
 	glm::mat4 ret = glm::mat4(1);
-	if(rotation != glm::vec3(0.0f)) {
-		ret = glm::rotate(ret, rotation.x + rotation.y + rotation.z, glm::normalize(rotation));
+	glm::vec3 rotationAxis = glm::cross(defaultForward, this->f);
+	float rotationAxisLength = glm::length(rotationAxis);
+	if(rotationAxisLength > 0.0f) {
+		rotationAxis /= rotationAxisLength;
+
+		float rotationAngle = std::acosf(glm::dot(defaultForward, this->f));
+
+		ret = glm::rotate(rotationAngle, rotationAxis);
 	}
 
 	ret = glm::scale(ret, scaleFactor);
@@ -173,5 +180,4 @@ void Transform::setForward(const glm::vec3 & forward)
 	this->f = normalize(forward);
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
 	this->u = glm::cross(this->r, this->f);
-	defaultForward = f;
 }

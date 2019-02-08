@@ -33,10 +33,6 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTur
 
     // Determine pitch sign
     this->currentPitch = direction.y > 0.0f ? currentPitch : -currentPitch;
-
-    LOG_INFO("Pitch: %f", currentPitch);
-
-    //host->getTransform()->setRotation(glm::vec3(0.0f, 0.0f, -1.0f));
 }
 
 ArrowGuider::~ArrowGuider()
@@ -57,18 +53,8 @@ void ArrowGuider::update(const float& dt)
     glm::vec3 direction = host->getTransform()->getForward();
 
     // Update turn factors (proportionally slow down turning)
-    printTimer += dt;
-    printTimer2 += dt;
-    if (printTimer > 0.5f) {
-        LOG_INFO("before [%f]", turnFactors.x);
-    }
-
     turnFactors.x /= 1.0f + turnFactorFalloff * dt;
     turnFactors.y /= 1.0f + turnFactorFalloff * dt;
-    if (printTimer > 0.5f) {
-        LOG_INFO("after [%f]", turnFactors.x);
-        printTimer = 0.0f;
-    }
 
     applyTurn(dt);
 
@@ -186,9 +172,6 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     mousePos.x = (float)event->moveX;
     mousePos.y = (float)event->moveY;
 
-    //float turnFactorYaw = moveX / (windowHeight * 50.0f);
-    //float turnFactorPitch = moveY / (windowHeight * 50.0f);
-
     // Divide by window height to separate turn speed from screen resolution
     float turnFactorYaw = moveX / (windowHeight * maxMouseMove);
     float turnFactorPitch = moveY / (windowHeight * maxMouseMove);
@@ -201,13 +184,6 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
     float turnFactorLength = glm::length(turnFactors);
     if (turnFactorLength > 1.0f) {
         turnFactors /= turnFactorLength;
-    }
-
-    if (printTimer2 > 0.5f) {
-        //LOG_INFO("moveX, moveY: [%f,%f]", moveX, moveY);
-        //LOG_INFO("yaw, pitch: [%f,%f]", turnFactorYaw, turnFactorPitch);
-        LOG_INFO("turnFactors: [%f,%f]", turnFactors.x, turnFactors.y);
-        printTimer2 = 0.0f;
     }
 }
 
@@ -275,14 +251,7 @@ void ArrowGuider::applyTurn(const float& dt)
 {
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
     float yaw = turnFactors.x * maxTurnSpeed * dt;
-    //yaw = maxTurnSpeed * dt;
     float pitch = turnFactors.y * maxTurnSpeed * dt;
-    //pitch = 0.0f;
-    if (printTimer2 > 0.5f) {
-        //LOG_INFO("yaw, pitch: [%f,%f]", yaw, pitch);
-        //LOG_INFO("ARROW ROTATION: %f, %f, %f", host->getTransform()->getRotation().x, host->getTransform()->getRotation().y, host->getTransform()->getRotation().z);
-		//printTimer2 = 0.0f; 
-    }
 
     Transform* transform = host->getTransform();
     glm::vec3 direction = transform->getForward();
@@ -313,30 +282,12 @@ void ArrowGuider::applyTurn(const float& dt)
     rotMatrix = glm::rotate(pitch, rightVec);
     tempDirection = tempDirection * rotMatrix;
 
+    transform->rotate(glm::vec3(yaw, pitch, 0.0f));
+
     // Used for calculation of entity rotation
     glm::vec3 normOldDirection = glm::normalize(direction);
 
     direction = glm::vec3(tempDirection);
 
-    // Rotate the entity
-    //glm::vec3 normNewDirection = glm::normalize(direction);
-    glm::vec3 rotationAxis = glm::normalize(glm::cross(normOldDirection, direction));
-	//transform->rotateAxis(0.016f, glm::normalize(glm::vec3(0.0f, -1.0f, 0.0f)));
-
-    if (glm::length(rotationAxis) > 0.9f) {
-		float cosAngle = glm::dot(normOldDirection, direction);
-
-		float rotationAngle = std::acosf(cosAngle);
-        transform->rotateAxis(rotationAngle, rotationAxis);
-
-        //transform->setRotation(direction);
-        if (printTimer2 > 0.5f) {
-            LOG_INFO("rotationAxis: (%f,%f,%f)", rotationAxis.x, rotationAxis.y, rotationAxis.z);
-        }
-    }
-
-    if (printTimer2 > 0.5f) {
-        LOG_INFO("direction: (%f,%f,%f", direction.x, direction.y, direction.z);
-        printTimer2 = 0.0f;
-    }
+    transform->setForward(direction);
 }
