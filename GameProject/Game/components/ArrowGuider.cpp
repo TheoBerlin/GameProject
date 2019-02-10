@@ -21,18 +21,6 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTur
     posStoreTimer = 0.0f;
 
     arrowCamera = nullptr;
-
-    // Calculate initial pitch
-    glm::vec3 direction = host->getTransform()->getForward();
-
-    glm::vec3 horizontalVec = glm::normalize(glm::vec3(direction.x, 0.0f, direction.z));
-
-    float cosPitch = glm::dot(direction, horizontalVec);
-
-    this->currentPitch = std::acosf(cosPitch);
-
-    // Determine pitch sign
-    this->currentPitch = direction.y > 0.0f ? currentPitch : -currentPitch;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -69,7 +57,7 @@ void ArrowGuider::update(const float& dt)
         // Store position and reset timer
         std::fmod(posStoreTimer, posStoreFrequency);
 
-        storedPositions.push_back(getPosition());
+        storedPositions.push_back(host->getTransform()->getPosition());
     }
 
     // Update camera settings using turn factors
@@ -106,10 +94,12 @@ void ArrowGuider::update(const float& dt)
     arrowCamera->setOffset(currentOffset + deltaOffset);
 
     // Update arrow position
-    glm::vec3 currentPos = getPosition();
-    glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
+    Transform* transform = host->getTransform();
 
-    setPosition(newPos);
+    glm::vec3 currentPos = transform->getPosition();
+	glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
+
+    transform->setPosition(newPos);
 }
 
 void ArrowGuider::startGuiding()
@@ -127,7 +117,7 @@ void ArrowGuider::startGuiding()
 
     // Clear previous path and store starting position
     storedPositions.clear();
-    storedPositions.push_back(getPosition());
+    storedPositions.push_back(host->getTransform()->getPosition());
 
     // Set camera settings
     arrowCamera->setFOV(minFOV);
@@ -202,26 +192,6 @@ void ArrowGuider::setMaxTurnSpeed(const float maxTurnSpeed)
     this->maxTurnSpeed = maxTurnSpeed;
 }
 
-glm::vec3 ArrowGuider::getDirection()
-{
-    return host->getTransform()->getForward();
-}
-
-void ArrowGuider::setDirection(const glm::vec3 direction)
-{
-    host->getTransform()->setForward(direction);
-}
-
-glm::vec3 ArrowGuider::getPosition()
-{
-    return host->getTransform()->getPosition();
-}
-
-void ArrowGuider::setPosition(const glm::vec3 position)
-{
-    host->getTransform()->setPosition(position);
-}
-
 float ArrowGuider::getMovementSpeed()
 {
     return movementSpeed;
@@ -250,44 +220,8 @@ float ArrowGuider::getTurningSpeed()
 void ArrowGuider::applyTurn(const float& dt)
 {
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
-    float yaw = turnFactors.x * maxTurnSpeed * dt;
-    float pitch = turnFactors.y * maxTurnSpeed * dt;
+    float yaw = -turnFactors.x * maxTurnSpeed * dt;
+    float pitch = -turnFactors.y * maxTurnSpeed * dt;
 
-    Transform* transform = host->getTransform();
-    glm::vec3 direction = transform->getForward();
-
-    // Redirect arrow
-    glm::vec3 rightVec = transform->getRight();
-
-    // vec4 is required for multiplication with matrices
-    glm::vec4 tempDirection(direction.x, direction.y, direction.z, 1.0f);
-
-    // Yaw
-    glm::mat4 rotMatrix = glm::rotate(yaw, transform->getUp());
-    tempDirection = tempDirection * rotMatrix;
-
-    // Prevent gimbal lock and reset vertical turn factor
-    /*if (std::abs(currentPitch + pitch) >= glm::half_pi<float>() - FLT_EPSILON * 5.0f) {
-        LOG_INFO("Limiting pitch");
-        turnFactors.y = 0.0f;
-
-        // Restrict pitch
-        pitch = pitch > 0.0f ? (glm::half_pi<float>() - FLT_EPSILON * 10.0f) - currentPitch
-        : (-glm::half_pi<float>() + FLT_EPSILON * 10.0f) - currentPitch;
-    }*/
-
-    currentPitch += pitch;
-
-    // Pitch
-    rotMatrix = glm::rotate(pitch, rightVec);
-    tempDirection = tempDirection * rotMatrix;
-
-    transform->rotate(glm::vec3(yaw, pitch, 0.0f));
-
-    // Used for calculation of entity rotation
-    glm::vec3 normOldDirection = glm::normalize(direction);
-
-    direction = glm::vec3(tempDirection);
-
-    transform->setForward(direction);
+    host->getTransform()->rotate(yaw, pitch);
 }

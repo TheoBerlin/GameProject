@@ -8,13 +8,14 @@
 #include <Utils/Logger.h>
 #include <vector>
 #include <cmath>
+#include <glm/gtc/quaternion.hpp>
 
 class Entity;
 
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, float movementSpeed = 0.2f, float maxTurnSpeed = glm::quarter_pi<float>());
+    ArrowGuider(Entity* parentEntity, float movementSpeed = 3.0f, float maxTurnSpeed = glm::half_pi<float>());
     ~ArrowGuider();
 
     void update(const float& dt);
@@ -28,12 +29,6 @@ public:
 
     float getMaxTurnSpeed();
     void setMaxTurnSpeed(const float maxTurnSpeed);
-
-    glm::vec3 getDirection();
-    void setDirection(const glm::vec3 direction);
-
-    glm::vec3 getPosition();
-    void setPosition(const glm::vec3 position);
 
     float getMovementSpeed();
     void setMovementSpeed(const float speed);
@@ -85,7 +80,4 @@ private:
 
     const float minFOV = 75.0f, maxFOV = 90.0f;
     const float FOVChangeMax = 15.0f;
-
-    // Used to prevent gimbal lock
-    float currentPitch;
 };

@@ -19,9 +19,9 @@ int main() {
 	SoundContext::initSoundContext();
 	
 	Sound sound;
-	sound.loadSound("Game/assets/sound/dream_catcher.wav");
-	sound.setLoopState(true);
-	sound.playSound();
+	//sound.loadSound("Game/assets/sound/dream_catcher.wav");
+	//sound.setLoopState(true);
+	//sound.playSound();
 
 	Game game;
 	game.start();

@@ -138,10 +138,13 @@ void LevelParser::readEntityPlayer(EntityManager * entityManager)
 			}
 		}
 		entity->getTransform()->setPosition(position);
-		//new FreeMove(entity);
+		entity->getTransform()->setScale(glm::vec3(1.0f, 1.0f, 0.5f));
+
 		Camera* camera = new Camera(entity, name, { 0.0f, 0.5f, -1.0f });
 		camera->init();
+
 		entity->setModel(model);
+
 		ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
 		arrow->startGuiding();
 
