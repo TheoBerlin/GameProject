@@ -4,6 +4,7 @@
 #include "../../Engine/Rendering/Renderer.h"
 #include "../../Engine/Components/FreeMove.h"
 #include "../../Engine/Components/Camera.h"
+#include "../../Game/components/ArrowGuider.h"
 
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
@@ -137,10 +138,16 @@ void LevelParser::readEntityPlayer(EntityManager * entityManager)
 			}
 		}
 		entity->getTransform()->setPosition(position);
-		new FreeMove(entity);
+		entity->getTransform()->setScale(glm::vec3(1.0f, 1.0f, 0.5f));
+
 		Camera* camera = new Camera(entity, name, { 0.0f, 0.5f, -1.0f });
 		camera->init();
+
 		entity->setModel(model);
+
+		ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
+		arrow->startGuiding();
+
 		Display::get().getRenderer().setActiveCamera(camera);
 	}
 	else {
