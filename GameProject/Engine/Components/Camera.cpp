@@ -56,6 +56,21 @@ glm::mat4 Camera::getVP() const
 	return this->proj * this->view;
 }
 
+glm::mat4 Camera::getView() const
+{
+	return this->view;
+}
+
+glm::mat4 Camera::getProj() const
+{
+	return this->proj;
+}
+
+glm::vec3 Camera::getPosition() const
+{
+	return this->pos;
+}
+
 float Camera::getFOV() const
 {
 	return fov;
