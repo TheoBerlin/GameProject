@@ -9,6 +9,11 @@
 
 class Entity;
 
+struct DirectionalLight {
+	glm::vec4 direction;
+	glm::vec4 color_intensity;
+};
+
 class Pipeline
 {
 public:
@@ -45,7 +50,6 @@ public:
 private:
 	Camera * camera;
 	unsigned width, height;
-	UniformBuffer* uniformBuffer;
 	Framebuffer fbo;
 
 	void draw(const std::vector<Entity*>& renderingList);
@@ -64,5 +68,13 @@ private:
 
 	Model* quad;
 
+	DirectionalLight mainLight;
+
+	std::vector<UniformBuffer*> uniformBuffers;
+
+	/*
+		Generates uniform buffer with shaders uniform blocks size and data specified, bound to bindingpoint specified.
+	*/
+	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
 };
 
