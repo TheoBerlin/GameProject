@@ -2,6 +2,7 @@
 #include "../Utils/Timer.h"
 #include "Config.h"
 #include "Rendering/Display.h"
+#include "GUI/FontManager.h"
 #include "Config.h"
 #include <string>
 
@@ -12,6 +13,7 @@ IGame::IGame()
 
 IGame::~IGame()
 {
+	FontManager::free();
 }
 
 void IGame::start()
