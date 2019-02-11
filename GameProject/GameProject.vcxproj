@@ -46,6 +46,7 @@
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
+    <ClCompile Include="Game\components\PathTreader.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
@@ -104,6 +105,8 @@
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Game\Components\ArrowGuider.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
+    <ClInclude Include="Game\components\ComponentResources.h" />
+    <ClInclude Include="Game\components\PathTreader.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />

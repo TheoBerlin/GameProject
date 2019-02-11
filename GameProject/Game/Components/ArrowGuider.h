@@ -5,6 +5,7 @@
 #include <Engine/Entity/Transform.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
+#include <Game/components/ComponentResources.h>
 #include <Utils/Logger.h>
 #include <vector>
 #include <cmath>
@@ -34,7 +35,7 @@ public:
     void setMovementSpeed(const float speed);
 
     float getPosStoreFrequency();
-    std::vector<glm::vec3>& getStoredPositions();
+    std::vector<KeyPoint>& getPath();
 
     // Redirection measured in radians per second
     float getTurningSpeed();
@@ -67,7 +68,8 @@ private:
     const float minStoreFrequency = 5.0f, maxStoreFrequency = 20.0f;
     // Time since position was stored
     float posStoreTimer;
-    std::vector<glm::vec3> storedPositions;
+    float flightTime;
+    std::vector<KeyPoint> path;
 
     // The pointer is retrieved when startGuiding() is called
     Camera* arrowCamera;
@@ -79,6 +81,6 @@ private:
     const float minFOV = 75.0f, maxFOV = 90.0f;
     const float FOVChangeMax = 15.0f;
 
-    float currentPitch = 0.0f;
+    float currentPitch;
     const float maxPitch = glm::half_pi<float>() - FLT_EPSILON;
 };

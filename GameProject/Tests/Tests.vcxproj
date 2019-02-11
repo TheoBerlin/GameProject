@@ -137,6 +137,8 @@
     <ClInclude Include="..\Engine\Rendering\Renderer.h" />
     <ClInclude Include="..\Engine\Level\LevelParser.h" />
     <ClInclude Include="..\Game\Components\ArrowGuider.h" />
+    <ClInclude Include="..\Game\components\ComponentResources.h" />
+    <ClInclude Include="..\Game\components\PathTreader.h" />
     <ClInclude Include="..\Game\States\GameState.h" />
     <ClInclude Include="..\Game\States\TestState.h" />
     <ClInclude Include="catch.hpp" />
@@ -198,6 +200,7 @@
     <ClCompile Include="..\Engine\States\State.cpp" />
     <ClCompile Include="..\Engine\States\StateManager.cpp" />
     <ClCompile Include="..\Game\Components\ArrowGuider.cpp" />
+    <ClCompile Include="..\Game\components\PathTreader.cpp" />
     <ClCompile Include="..\Game\Game.cpp" />
     <ClCompile Include="..\Game\States\GameState.cpp" />
     <ClCompile Include="..\Game\States\MenuState.cpp" />
@@ -208,6 +211,7 @@
     <ClCompile Include="AssetLoading_test.cpp" />
     <ClCompile Include="Events_test.cpp" />
     <ClCompile Include="main_test.cpp" />
+    <ClCompile Include="PathTreader_test.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
