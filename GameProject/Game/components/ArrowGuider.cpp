@@ -223,5 +223,16 @@ void ArrowGuider::applyTurn(const float& dt)
     float yaw = -turnFactors.x * maxTurnSpeed * dt;
     float pitch = -turnFactors.y * maxTurnSpeed * dt;
 
+    // Limit pitch
+    float newPitch = currentPitch + pitch;
+
+    if (newPitch > maxPitch) {
+        pitch = maxPitch - currentPitch;
+    } else if (newPitch < -maxPitch) {
+        pitch = -maxPitch - currentPitch;
+    }
+
+    currentPitch += pitch;
+
     host->getTransform()->rotate(yaw, pitch);
 }

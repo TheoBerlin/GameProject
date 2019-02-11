@@ -1,13 +1,6 @@
 #define GLM_FORCE_SWIZZLE
 #include "Transform.h"
 
-void Transform::updateForwardRightUp(const glm::quat& rotQuat)
-{
-	this->f = rotQuat * this->f;
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
-}
-
 Transform::Transform()
 {
 	rotationQuat = glm::quat_cast(glm::mat4(1.0f));
@@ -59,15 +52,12 @@ glm::vec3 Transform::getUp() const
 	return this->u;
 }
 
-float Transform::getPitch() const
-{
-	return glm::pitch(rotationQuat);
-}
-
 void Transform::rotate(const glm::vec3& rotation)
 {
 	glm::quat rotQuat = glm::quat(rotation);
-	updateForwardRightUp(rotQuat);
+	this->f = rotationQuat * this->f;
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 
 	rotationQuat = rotQuat * rotationQuat;
 }
@@ -98,7 +88,9 @@ void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCente
 void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
 	glm::quat axisRotation = glm::rotate(rotationQuat, radians, glm::normalize(axis));
-	updateForwardRightUp(axisRotation);
+	this->f = rotationQuat * this->f;
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 
 	rotationQuat = axisRotation * rotationQuat;
 }
@@ -106,7 +98,10 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 void Transform::setRotation(const glm::vec3 &rotation)
 {
 	rotationQuat = glm::quat(rotation);
-	updateForwardRightUp(rotationQuat);
+
+	this->f = rotationQuat * defaultForward;
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 }
 
 void Transform::translate(const glm::vec3& vector)
@@ -162,7 +157,7 @@ void Transform::setForward(const glm::vec3 & forward)
 	} else if (cosAngle <= -1.0f + FLT_EPSILON) {
 		// The new forward is parallell to the old one, create a 180 degree rotation quarternion
 		// around any axis
-		rotationQuat = glm::angleAxis(glm::half_pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
+		rotQuat = glm::angleAxis(glm::pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
 	} else {
 		// Calculate rotation quaternion
 		glm::vec3 axis = glm::normalize(glm::cross(this->f, forward));
