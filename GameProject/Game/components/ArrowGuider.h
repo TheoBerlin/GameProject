@@ -43,8 +43,6 @@ private:
     // Use turn factors to update direction
     void applyTurn(const float& dt);
 
-    float printTimer = 0.0f, printTimer2 = 0.0f;
-
     float movementSpeed;
     int windowHeight;
     // Max turn speed measured in radians
@@ -75,9 +73,12 @@ private:
     Camera* arrowCamera;
 
     // Camera settings
-    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.3f, 0.2f), maxCamOffset = glm::vec3(0.0f, 0.3f, -0.6f);
+    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.3f, -1.0f), maxCamOffset = glm::vec3(0.0f, 0.3f, -1.6f);
     const float offsetChangeMax = 0.35f;
 
     const float minFOV = 75.0f, maxFOV = 90.0f;
     const float FOVChangeMax = 15.0f;
+
+    float currentPitch = 0.0f;
+    const float maxPitch = glm::half_pi<float>() - FLT_EPSILON;
 };

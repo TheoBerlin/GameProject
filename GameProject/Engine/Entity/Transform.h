@@ -16,10 +16,6 @@ private:
 
 	glm::quat rotationQuat;
 
-	// Fixes the rotation to always be between 0 to 2π radians
-	glm::vec3 modulusRotation(glm::vec3 rotation);
-	void updateForwardRightUp(const glm::quat& rotation);
-
 public:
 	Transform();
 
@@ -37,7 +33,6 @@ public:
 	glm::vec3 getRight() const;
 	//Get up vector
 	glm::vec3 getUp() const;
-	float getPitch() const;
 
 	/*
 	Any function with the 'set' prefix applies an absolute transformation
