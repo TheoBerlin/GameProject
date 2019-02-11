@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../Engine/States/State.h"
+#include "../../Engine/GUI/Text.h"
 
 class MenuState : public State
 {
@@ -15,4 +16,5 @@ public:
 	void render() override;
 
 private:
+	Text test;
 };

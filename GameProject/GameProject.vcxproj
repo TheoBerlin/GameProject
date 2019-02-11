@@ -22,6 +22,7 @@
     <ClCompile Include="Engine\GUI\Font.cpp" />
     <ClCompile Include="Engine\GUI\FontManager.cpp" />
     <ClCompile Include="Engine\GUI\Panel.cpp" />
+    <ClCompile Include="Engine\GUI\Text.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -74,6 +75,7 @@
     <ClInclude Include="Engine\GUI\Font.h" />
     <ClInclude Include="Engine\GUI\FontManager.h" />
     <ClInclude Include="Engine\GUI\Panel.h" />
+    <ClInclude Include="Engine\GUI\Text.h" />
     <ClInclude Include="Engine\Imgui\imconfig.h" />
     <ClInclude Include="Engine\Imgui\imgui.h" />
     <ClInclude Include="Engine\Imgui\imgui_impl_glfw.h" />
