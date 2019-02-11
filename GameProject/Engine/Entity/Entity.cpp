@@ -5,7 +5,6 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 	transform.setForward(forward);
 }
 
-
 Entity::~Entity()
 {
 	for (auto& it : this->components) {

@@ -117,6 +117,10 @@ void ModelLoader::processNode(const aiScene* scene, aiNode* node, Model* model)
 {
     // Process node's meshes
     for (unsigned int i = 0; i < node->mNumMeshes; i += 1) {
+        if (!scene->mMeshes[node->mMeshes[i]]->HasTextureCoords(0)) {
+            LOG_WARNING("Ignoring mesh: Missing TX coordinates");
+            continue;
+        }
         processMesh(scene->mMeshes[node->mMeshes[i]], model);
     }
 
