@@ -7,6 +7,9 @@
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
 
+//TEST TEST TEST REMOVE
+#include "Engine/Particle/ParticleManager.h"
+
 class Entity;
 
 class Pipeline
@@ -48,6 +51,12 @@ private:
 	UniformBuffer* uniformBuffer;
 	Framebuffer fbo;
 
+	//PARTICLE TEST
+
+	ParticleManager particleManager;
+
+	//PARTICLE TEST
+
 	void draw(const std::vector<Entity*>& renderingList);
 	void draw(const std::vector<Entity*>& renderingList, Shader* shader);
 	void drawModel(Model * model, Shader* shader);
@@ -61,6 +70,7 @@ private:
 	Shader* ZprePassShader;
 	Shader* testShader;
 	Shader* quadShader;
+	Shader* particleShader;
 
 	Model* quad;
 

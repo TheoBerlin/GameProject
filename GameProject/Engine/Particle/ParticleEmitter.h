@@ -1,39 +1,28 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include "Particle.h"
+#include <vector>
 
 class ParticleEmitter {
 private:
-	struct Partice {
-		glm::vec3 position;
-		glm::vec3 colour;
-		float scale;
-		float timeAlive;
-		float lifeTime;
-	};
-	struct quadData {
-		float vertex[12] = {
-			-0.5, -0.5, 0.0, //BOTTOM LEFT
-			-0.5,  0.5, 0.0, //TOP LEFT
-			 0.5,  0.5, 0.0, //TOP RIGHT
-			 0.5, -0.5, 0.0 //BOTTOM RIGHT
-		};
-		int n[6] = {
-			0, 1, 2,
-			2, 3, 0
-		};
-	};
-
 	glm::vec3 position;
 	glm::vec3 velocity;
 	glm::vec3 gravity;
 
 	int maxParticle;
-	int nrOfParticle;
+	int oldestParticle;
 	int spawnRate;
 	float spread;
+
+	float emissionTime;
+	std::vector<Particle> particles;
 public:
 	ParticleEmitter(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 velocity = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f), int maxParticle = 100, int spawnRate = 10, float spread = 0.0f);
+
+	void update(float dt);
+
+	std::vector<Particle> getParticleArray() const;
 
 	//Set emitter position
 	void setPosition(const glm::vec3 position);
