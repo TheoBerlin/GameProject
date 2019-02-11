@@ -141,6 +141,7 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
 	draw(renderingList, this->testShader);
 
