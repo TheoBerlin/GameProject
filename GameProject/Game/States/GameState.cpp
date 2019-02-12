@@ -14,11 +14,14 @@ GameState::GameState()
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
+	this->collisionHandler = new CollisionHandler();
+
 	InputHandler ih(Display::get().getWindowPtr());
 }
 
 GameState::~GameState()
 {
+	delete this->collisionHandler;
 }
 
 void GameState::start()
