@@ -2,6 +2,7 @@
 
 #include "../../Engine/States/State.h"
 #include "../../Engine/Level/LevelParser.h"
+#include "Engine/Particle/ParticleManager.h"
 
 class GameState : public State
 {
@@ -17,4 +18,5 @@ public:
 
 private:
 	LevelParser levelParser;
+	ParticleManager particleManger;
 };

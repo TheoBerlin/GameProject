@@ -6,23 +6,20 @@
 
 class ParticleManager {
 private:
-	static const GLfloat vertexData[] = {
-	-0.5, -0.5, 0.0, //BOTTOM LEFT
-	-0.5,  0.5, 0.0, //TOP LEFT
-	 0.5,  0.5, 0.0, //TOP RIGHT
-	 0.5, -0.5, 0.0 //BOTTOM RIGHT
-	};
-
 	std::vector<ParticleEmitter> emitters;
-	std::vector<std::vector<Particle>> particlesArray;
-	int nrOfEmitters;
-
-
 
 public:
 	void update(float dt);
-	void draw();
-
+	/*
+	Adds an emitter to the world.
+	Position is emitter starting position.
+	Velocity is starting velocity of particles spawned by emitter.
+	Gravity is velocity change of particles over time.
+	maxParticle is how many particles will be spawned and spawn rate is how many is spawned per second. maxParticle / spawnRate gives particle lifeTime.
+	Spread is how much particles can randomly divert from starting velocity direction.
+	*/
 	void addEmitter(glm::vec3 position, glm::vec3 velocity, glm::vec3 gravity, int maxParticle, int spawnRate, float spread);
-
+	int getMaxParticles() const;
+	int getParticleCount() const;
+	std::vector<Particle*> getParticleArray() const;
 };

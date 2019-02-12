@@ -1,8 +1,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Particle.h"
 #include <vector>
+
+struct Particle {
+	glm::vec3 position;
+	float scale;
+	glm::vec3 velocity;
+	glm::vec3 colour;
+};
 
 class ParticleEmitter {
 private:
@@ -16,13 +22,18 @@ private:
 	float spread;
 
 	float emissionTime;
-	std::vector<Particle> particles;
+
+	//Particles
+	std::vector<Particle*> particles;
+	void particleUpdate(unsigned int index, float dt, glm::vec3 velocity, float scale);
+	void particleReset(unsigned int index, glm::vec3 position, glm::vec3 velocity, glm::vec3 colour, float scale);
+
 public:
 	ParticleEmitter(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 velocity = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f), int maxParticle = 100, int spawnRate = 10, float spread = 0.0f);
 
 	void update(float dt);
 
-	std::vector<Particle> getParticleArray() const;
+	std::vector<Particle*> getParticleArray() const;
 
 	//Set emitter position
 	void setPosition(const glm::vec3 position);

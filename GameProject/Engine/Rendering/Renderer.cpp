@@ -28,24 +28,31 @@ void Renderer::push(Entity * entity)
 	this->renderingList.push_back(entity);
 }
 
+void Renderer::pushParticleManager(ParticleManager * particleManager)
+{
+	this->particleManager = particleManager;
+}
+
 void Renderer::drawAll()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-	/*
-		Z-prepass stage
-	*/
-	this->pipeline.prePassDepth(this->renderingList);
 
-	/*
-		Drawing stage with pre existing depth buffer to texture
-	*/
-	Texture * postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
+	///*
+	//	Z-prepass stage
+	//*/
+	//this->pipeline.prePassDepth(this->renderingList);
 
-	/*
-		Draw texture of scene to quad for postprocessing
-	*/
-	this->pipeline.drawTextureToQuad(postProcessTexture);
+	///*
+	//	Drawing stage with pre existing depth buffer to texture
+	//*/
+	//Texture * postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
+
+	///*
+	//	Draw texture of scene to quad for postprocessing
+	//*/
+	//this->pipeline.drawTextureToQuad(postProcessTexture);
+
+	this->pipeline.drawParticle(*particleManager);
 
 	this->renderingList.clear();
 }

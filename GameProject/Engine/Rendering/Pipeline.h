@@ -17,6 +17,11 @@ class Pipeline
 public:
 	Pipeline();
 	~Pipeline();
+
+	//PARTICLE TEST
+	void drawParticle(ParticleManager& particleManager);
+
+
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
@@ -50,12 +55,6 @@ private:
 	unsigned width, height;
 	UniformBuffer* uniformBuffer;
 	Framebuffer fbo;
-
-	//PARTICLE TEST
-
-	ParticleManager particleManager;
-
-	//PARTICLE TEST
 
 	void draw(const std::vector<Entity*>& renderingList);
 	void draw(const std::vector<Entity*>& renderingList, Shader* shader);

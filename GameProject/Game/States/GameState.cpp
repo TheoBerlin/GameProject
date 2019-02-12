@@ -15,6 +15,9 @@ GameState::GameState()
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
 	InputHandler ih(Display::get().getWindowPtr());
+
+
+	particleManger.addEmitter(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0, 1.0f, 0.0f), glm::vec3(0.0f), 100, 10, 0.0f);
 }
 
 GameState::~GameState()
@@ -39,6 +42,7 @@ void GameState::update(const float dt)
 
 void GameState::updateLogic()
 {
+	particleManger.update(1 / (float)FRAMES_PER_SECOND);
 }
 
 void GameState::render()
@@ -48,6 +52,9 @@ void GameState::render()
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
+
+	renderer.pushParticleManager(&this->particleManger);
+
 	for (Entity* entity : entities)
 		renderer.push(entity);
 	renderer.drawAll();

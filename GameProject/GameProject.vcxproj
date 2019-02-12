@@ -31,7 +31,6 @@
     <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Level\Level.cpp" />
     <ClCompile Include="Engine\Level\LevelParser.cpp" />
-    <ClCompile Include="Engine\Particle\Particle.cpp" />
     <ClCompile Include="Engine\Particle\ParticleEmitter.cpp" />
     <ClCompile Include="Engine\Particle\ParticleManager.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
@@ -85,7 +84,6 @@
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Level\LevelParser.h" />
-    <ClInclude Include="Engine\Particle\Particle.h" />
     <ClInclude Include="Engine\Particle\ParticleEmitter.h" />
     <ClInclude Include="Engine\Particle\ParticleManager.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />

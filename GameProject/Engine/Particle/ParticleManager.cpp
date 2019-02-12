@@ -11,5 +11,27 @@ void ParticleManager::addEmitter(glm::vec3 position, glm::vec3 velocity, glm::ve
 {
 	ParticleEmitter emitter(position, velocity, gravity, maxParticle, spawnRate, spread);
 	emitters.push_back(emitter);
-	particlesArray.push_back(emitter.getParticleArray());
+}
+
+int ParticleManager::getMaxParticles() const
+{
+	int maxParticle = 0;
+	for (int i = 0; i < emitters.size(); i++) {
+		maxParticle += emitters[i].getMaxParticle();
+	}
+	return maxParticle;
+}
+
+int ParticleManager::getParticleCount() const
+{
+	int countParticle = 0;
+	for (int i = 0; i < emitters.size(); i++) {
+		countParticle += emitters[i].getParticleArray().size();
+	}
+	return countParticle;
+}
+
+std::vector<Particle*> ParticleManager::getParticleArray() const
+{
+	return emitters[0].getParticleArray();
 }

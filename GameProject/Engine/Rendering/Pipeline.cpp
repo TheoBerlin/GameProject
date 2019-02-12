@@ -17,7 +17,9 @@ Pipeline::Pipeline()
 	this->quadShader = new Shader("./Engine/Rendering/Shaders/PostProcessVert.vert", "./Engine/Rendering/Shaders/PostProcessFrag.frag");
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
-	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag")
+
+	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
+
 	Display& display = Display::get();
 	int width = display.getWidth();
 	int height = display.getHeight();
@@ -43,6 +45,73 @@ Pipeline::~Pipeline()
 	delete this->ZprePassShader;
 	delete this->testShader;
 	delete this->uniformBuffer;
+
+	//PARTICLE TEST
+	delete this->particleShader;
+}
+
+void Pipeline::drawParticle(ParticleManager& particleManager)
+{
+	this->particleShader->bind();
+
+	static const GLfloat g_vertex_buffer_data[] = {
+	-0.5f, -0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f,
+	-0.5f, 0.5f, 0.0f,
+	0.5f, 0.5f, 0.0f,
+	};
+	GLuint billboard_vertex_buffer;
+	glGenBuffers(1, &billboard_vertex_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+
+	GLuint particles_position_buffer;
+	glGenBuffers(1, &particles_position_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
+	glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+
+	if (particleManager.getParticleCount() != 0) {
+		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		glBufferSubData(GL_ARRAY_BUFFER, sizeof(Particle), particleManager.getParticleCount() * sizeof(GLfloat) * 4, particleManager.getParticleArray()[0]);
+	}
+
+	// 1rst attribute buffer : vertices
+	glEnableVertexAttribArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+	glVertexAttribPointer(
+		0, // attribute. No particular reason for 0, but must match the layout in the shader.
+		3, // size
+		GL_FLOAT, // type
+		GL_FALSE, // normalized?
+		0, // stride
+		(void*)0 // array buffer offset
+	);
+
+	// 2nd attribute buffer : positions of particles' centers
+	glEnableVertexAttribArray(1);
+	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glVertexAttribPointer(
+		1, // attribute. No particular reason for 1, but must match the layout in the shader.
+		4, // size : x + y + z + size => 4
+		GL_FLOAT, // type
+		GL_FALSE, // normalized?
+		0, // stride
+		(void*)0 // array buffer offset
+	);
+
+	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
+	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
+
+
+	this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->particleShader->setUniform3fv("cameraUp", 1, &this->camera->getUp()[0]);
+	this->particleShader->setUniform3fv("cameraRight", 1, &this->camera->getRight()[0]);
+
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
+
+	this->particleShader->unbind();
 }
 
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
