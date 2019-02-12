@@ -35,7 +35,7 @@ void PathTreader::update(const float& dt)
         return;
     }
 
-    linearTread();
+    catmullRomTread();
 }
 
 void PathTreader::setPath(const std::vector<KeyPoint>& path)
@@ -87,33 +87,27 @@ void PathTreader::linearTread()
 
 void PathTreader::catmullRomTread()
 {
-    KeyPoint& P0 = path.at(currentPointIndex);
-    KeyPoint& P1 = path.at(currentPointIndex + 1);
-    KeyPoint& P2 = path.at(currentPointIndex + 2);
-    KeyPoint& P3 = path.at(currentPointIndex + 3);
+    // Iterate through points to find P1
+    while (currentPointIndex + 2 < path.size() && path.at(currentPointIndex + 1).t < pathTime) {
+        currentPointIndex += 1;
+    }
 
-    float t = pathTime - P0.t;
+    KeyPoint& P0 = path.at(std::max(currentPointIndex - 1, 0));
+    KeyPoint& P1 = path.at(currentPointIndex);
+    KeyPoint& P2 = path.at(currentPointIndex + 1);
+    KeyPoint& P3 = path.at(std::min(currentPointIndex + 2, path.size() - 1));
 
-    float t0 = 0.0f;
-    float t1 = calculateT(t0, P0.Position, P1.Position);
-    float t2 = calculateT(t1, P1.Position, P2.Position);
-    float t3 = calculateT(t2, P2.Position, P3.Position);
-
-    glm::vec3 A1 = (t1 - t)/(t1 - t0) * P0.Position + (t - t0)/(t1 - t0) * P1.Position;
-    glm::vec3 A2 = (t2 - t)/(t2 - t1) * P0.Position + (t - t1)/(t2 - t1) * P2.Position;
-    glm::vec3 A3 = (t3 - t)/(t3 - t2) * P0.Position + (t - t2)/(t3 - t2) * P3.Position;
-
-    glm::vec3 B1 = (t2 - t)/(t2 - t0) * A1 + (t - t0)/(t2 - t0) * A2;
-    glm::vec3 B2 = (t3 - t)/(t3 - t1) * A2 + (t - t1)/(t3 - t1) * A3;
-
-    glm::vec3 newPosition = (t2 - t)/(t2 - t1) * B1 + (t - t1)/(t2 - t1) * B2;
+    // Get t in [0, 1] using pathTime's relative position in [P1.t, P2.t]
+    // pathTime = P1.t + t * (P2.t-P1.t)
+    float t = (pathTime - P1.t) / (P2.t - P1.t);
 
     Transform* transform = host->getTransform();
 
-    glm::vec3 newDirection = glm::normalize(newPosition - transform->getPosition());
+    glm::vec3 newPos = glm::catmullRom(P0.Position, P1.Position, P2.Position, P3.Position, t);
+    glm::vec3 newDir = glm::normalize(newPos - transform->getPosition());
 
-    transform->setPosition(newPosition);
-    transform->setForward(newDirection);
+    transform->setPosition(newPos);
+    transform->setForward(newDir);
 }
 
 float PathTreader::calculateT(const float& t0, const glm::vec3& P0, const glm::vec3& P1)
