@@ -131,12 +131,12 @@
   <ItemGroup>
     <ClInclude Include="..\Engine\Components\Camera.h" />
     <ClInclude Include="..\Engine\Components\FreeMove.h" />
+    <ClInclude Include="..\Engine\Components\ArrowGuider.h" />
     <ClInclude Include="..\Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="..\Engine\Rendering\GLAbstraction\Texture.h" />
     <ClInclude Include="..\Engine\Rendering\Pipeline.h" />
     <ClInclude Include="..\Engine\Rendering\Renderer.h" />
     <ClInclude Include="..\Engine\Level\LevelParser.h" />
-    <ClInclude Include="..\Game\Components\ArrowGuider.h" />
     <ClInclude Include="..\Game\components\ComponentResources.h" />
     <ClInclude Include="..\Game\components\PathTreader.h" />
     <ClInclude Include="..\Game\States\GameState.h" />

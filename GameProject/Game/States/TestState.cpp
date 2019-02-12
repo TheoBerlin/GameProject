@@ -1,14 +1,13 @@
 #include "TestState.h"
 
-#include <Engine/States/StateManager.h>
 #include <Engine/Rendering/Display.h>
+#include <Engine/States/StateManager.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Engine/Entity/Entity.h>
 #include <Engine/Components/Camera.h>
-#include <Engine/Components/FreeMove.h>
+#include <Engine/Components/ArrowGuider.h>
 #include <Engine/AssetManagement/ModelLoader.h>
 #include <Engine/InputHandler.h>
-#include <Game/components/ArrowGuider.h>
 
 TestState::TestState() : State()
 {

@@ -42,9 +42,5 @@
       "Name": "Box5",
       "Position": [ 0, 0, 0 ]
     }
-  ],
-  "Player": {
-    "Name":  "Camera",
-    "Position": [ 0, 2.2, 10 ]
-  }
+  ]
 } 

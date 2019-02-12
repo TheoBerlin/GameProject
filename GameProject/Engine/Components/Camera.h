@@ -26,6 +26,12 @@ public:
 
 	// Returns the View-Projection matrix
 	glm::mat4 getVP() const;
+	// Returns the View matrix
+	glm::mat4 getView() const;
+	// Returns the Projection matrix
+	glm::mat4 getProj() const;
+	// Returns the position of the camera in world. This is its parent pos with the added offset.
+	glm::vec3 getPosition() const;
 
 	float getFOV() const;
 	void setFOV(const float FOV);

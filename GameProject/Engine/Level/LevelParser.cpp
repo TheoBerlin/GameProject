@@ -4,7 +4,7 @@
 #include "../../Engine/Rendering/Renderer.h"
 #include "../../Engine/Components/FreeMove.h"
 #include "../../Engine/Components/Camera.h"
-#include "../../Game/components/ArrowGuider.h"
+//#include "../../Game/components/ArrowGuider.h"
 
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
@@ -145,8 +145,8 @@ void LevelParser::readEntityPlayer(EntityManager * entityManager)
 
 		entity->setModel(model);
 
-		ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
-		arrow->startGuiding();
+		//ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
+		//arrow->startGuiding();
 
 		Display::get().getRenderer().setActiveCamera(camera);
 	}
@@ -172,7 +172,7 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 		readEntityTargets(entityManager);
 		readEntityBoxes(entityManager);
 		readEntityWalls(entityManager);
-		readEntityPlayer(entityManager);
+		//readEntityPlayer(entityManager);
 	}
 	else
 	{
