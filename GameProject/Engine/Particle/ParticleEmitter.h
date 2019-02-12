@@ -30,6 +30,7 @@ private:
 
 public:
 	ParticleEmitter(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 velocity = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f), int maxParticle = 100, int spawnRate = 10, float spread = 0.0f);
+	~ParticleEmitter();
 
 	void update(float dt);
 

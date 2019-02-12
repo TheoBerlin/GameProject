@@ -17,7 +17,7 @@ GameState::GameState()
 	InputHandler ih(Display::get().getWindowPtr());
 
 
-	particleManger.addEmitter(glm::vec3(0.0f, 0.0f, -2.0f), glm::vec3(0.0, 1.0f, 0.0f), glm::vec3(0.0f), 100, 10, 0.0f);
+	particleManger.addEmitter(glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0, 1.0f, 0.0f), glm::vec3(0.0f), 100, 10, 0.0f);
 }
 
 GameState::~GameState()

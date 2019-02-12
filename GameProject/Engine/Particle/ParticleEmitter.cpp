@@ -13,6 +13,13 @@ ParticleEmitter::ParticleEmitter(glm::vec3 position, glm::vec3 velocity, glm::ve
 	emissionTime = 0;
 }
 
+ParticleEmitter::~ParticleEmitter()
+{
+	for (int i = 0; i < particles.size(); i++) {
+		delete particles[i];
+	}
+}
+
 void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 velocity, float scale)
 {
 	particles[index]->position += velocity * dt;
@@ -41,12 +48,12 @@ void ParticleEmitter::update(float dt)
 	while (emissionTime >= ((float)1 / spawnRate)) {
 		emissionTime -= ((float)1 / spawnRate);
 		if (particles.size() != maxParticle) {
-			Particle particle;
-			particle.position = position;
-			particle.velocity = velocity;
-			particle.colour = glm::vec3(1.0f);
-			particle.scale = 1.0f;
-			particles.push_back(&particle);
+			Particle* particle = new Particle;
+			particle->position = position;
+			particle->velocity = velocity;
+			particle->colour = glm::vec3(1.0f);
+			particle->scale = 1.0f;
+			particles.push_back(particle);
 		} else {
 			particleReset(oldestParticle++, position, velocity, glm::vec3(1.0f), 1.0f);
 			if (oldestParticle == maxParticle)
