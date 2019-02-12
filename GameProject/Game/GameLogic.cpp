@@ -55,7 +55,7 @@ void GameLogic::changePhase(Phases phase)
 		this->enterPhaseOne(glm::vec3(-10.0f, 20.0f, 10.0f), glm::normalize(glm::vec3(0.5f, -1.0f, -0.5f)));
 		break;
 	case Phases::PHASE_TWO:
-		this->enterPhaseTwo(glm::vec3(1.0f, 1.0f, 2.0f));
+		this->enterPhaseTwo(glm::vec3(1.0f, 1.0f, 16.0f));
 		break;
 	case Phases::PHASE_THREE:
 
@@ -74,7 +74,7 @@ void GameLogic::enterPhaseOne(const glm::vec3 & cameraPos, const glm::vec3 & cam
 	this->camera->getTransform()->setPosition(cameraPos);
 	this->camera->getTransform()->setForward(cameraDir);
 
-	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -1.0f });
+	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
 	Display::get().getRenderer().setActiveCamera(camera);
@@ -101,7 +101,7 @@ void GameLogic::enterPhaseTwo(const glm::vec3 & playerPos)
 	/*
 		Add arrowguider to entity
 	*/
-	ArrowGuider* arrow = new ArrowGuider(entity, 10.0f);
+	ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
 	arrow->startGuiding();
 
 	Display::get().getRenderer().setActiveCamera(camera);
