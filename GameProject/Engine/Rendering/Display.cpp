@@ -203,6 +203,8 @@ void Display::init(int width, int height, const std::string& title)
 		LOG_ERROR("Failed to initialize FreeType library");
 		exit(EXIT_FAILURE);
 	}
+
+	// Disable byte-alignment restriction
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	this->renderer = new Renderer();

@@ -278,6 +278,7 @@ bool Shader::addShaderPart(const std::string & name, GLuint type)
 			return true;
 		}
 	}
+	LOG_ERROR("Could not add shader part: %s", name.c_str());
 	return false;
 }
 
