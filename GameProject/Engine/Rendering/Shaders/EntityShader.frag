@@ -25,25 +25,30 @@ uniform vec3 camPos;
 void main()
 {
     vec3 texColor = texture2D(tex, fragUv).rgb;
+     /*
+        Ambient
+    */
+    vec3 ambient = dirLight.color_intensity.rgb * 0.2;
+    /*
+        Diffuse
+    */
+    vec3 diffuse = dirLight.color_intensity.rgb;
+    diffuse *= max(-dot(fragNormal, normalize(dirLight.direction.xyz)), 0.0);
 
-    float diffuse = -dot(fragNormal, normalize(dirLight.direction.xyz));
-
+    /*
+        Specular
+    */
+    vec3 specular;
     vec3 lightReflect = normalize(reflect(dirLight.direction.xyz, fragNormal));
     vec3 VertexToEye = normalize(camPos - fragPos);
-    vec3 specular;
     float specularFactor = dot(VertexToEye, lightReflect);
         if (specularFactor > 0) {
-            specularFactor = pow(specularFactor, 10.0f);
+            specularFactor = pow(specularFactor, mat.ks_f.a);
             specular = dirLight.color_intensity.rgb * specularFactor;
         }
     
-
-    //finalColor.rgb += material.ka + material.ks*0.01;
-    /*
-        Apply sky color(ambient)
-    */
-    texColor *= dirLight.color_intensity.rgb;
     texColor = min(texColor * dirLight.color_intensity.a, 1.0f);
+    vec3 phong = min(texColor * (specular + ambient + diffuse), 1.0f);
 
-    finalColor = max(vec4(texColor * (diffuse + specular), 1.0f), 0.0f);
+    finalColor = vec4(phong, 1.0f);
 }

@@ -75,6 +75,7 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
 {
     aiString texturePath;
     unsigned int textureCount = material->GetTextureCount(type);
+	material->mProperties;
 
     Material newMaterial;
 
@@ -98,10 +99,11 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
     // Store material constants
     aiColor3D diffuse;
     aiColor3D specular;
-	double shininess = 0.0;
+	float shininess = 0.0;
 
     material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
     material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
+	material->Get(AI_MATKEY_SHININESS, shininess);
 
     newMaterial.Kd.r = diffuse.r;
     newMaterial.Kd.g = diffuse.g;
@@ -110,6 +112,7 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
     newMaterial.Ks_factor.r = specular.r;
     newMaterial.Ks_factor.g = specular.g;
     newMaterial.Ks_factor.b = specular.b;
+	newMaterial.Ks_factor.a = shininess;
 
     model->addMaterial(newMaterial);
 }
