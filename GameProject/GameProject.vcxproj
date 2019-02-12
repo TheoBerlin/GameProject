@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
+    <ClCompile Include="Engine\Components\Target.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -65,6 +66,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
+    <ClInclude Include="Engine\Components\Target.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />

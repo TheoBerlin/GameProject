@@ -41,3 +41,15 @@ struct MouseClickEvent : public Event
 	int button;
 	int action;
 };
+
+struct CollisionEvent : public Event
+{
+	CollisionEvent( std::string entityOne, std::string entityTwo) : entityOne{ entityOne }, entityTwo{ entityTwo } {};
+	std::string entityOne;
+	std::string entityTwo;
+};
+
+struct ResetEvent : public Event
+{
+	ResetEvent() {};
+};
