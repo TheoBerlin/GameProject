@@ -118,7 +118,7 @@ void LevelParser::readEntityPlayer(EntityManager * entityManager)
 	json::json& player = jsonFile["Player"];
 	//Every object requires a name
 	if (!player["Name"].empty() && player["Name"].is_string()) {
-		std::string name = jsonFile["Player"]["Name"];
+		std::string name = player["Name"];
 		entity = entityManager->addTracedEntity(name);
 		for (int i = 0; i < 3; i++) {
 			//If object exists go ahead otherwise do default position
