@@ -11,7 +11,18 @@ public:
 	Settings();
 	~Settings();
 
+	float volume();
 };
+
+inline bool Settings::readFile(std::string fileName)
+{
+	return false;
+}
+
+inline bool Settings::writeFile(std::string fileName)
+{
+	return false;
+}
 
 inline Settings& Settings::get()
 {
@@ -21,9 +32,11 @@ inline Settings& Settings::get()
 
 inline Settings::Settings()
 {
-	readFile("test");
+	readFile();
 }
 
 inline Settings::~Settings()
 {
+	//Add flag if changes are made, to make sure that the file only changes if necessary
+	writeFile();
 }
