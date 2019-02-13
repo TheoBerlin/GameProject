@@ -8,14 +8,12 @@
 class UniformBuffer
 {
 public:
-	/*
-		Maximum amount of binding points is 20
-	*/
 	UniformBuffer();
 	~UniformBuffer();
-
-	void setShader(unsigned shaderID, const std::string& blockName, unsigned bindingPoint);
-
+	/*
+		Bind uniform buffer to bindingpoint and allocate space for the block buffer in shader given as input.
+	*/
+	void bindShader(unsigned shaderID, const char* blockName, unsigned bindingPoint);
 	void setData(const void* const data, size_t dataSize);
 
 	/*
@@ -25,4 +23,5 @@ public:
 
 private:
 	unsigned id, bindingPoint, currentSize;
+
 };

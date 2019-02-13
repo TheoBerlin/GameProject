@@ -41,7 +41,7 @@ void GameLogic::changePhase(Phases phase)
 		this->enterOverviewPhase(glm::vec3(-10.0f, 20.0f, 10.0f), glm::normalize(glm::vec3(0.5f, -1.0f, -0.5f)));
 		break;
 	case Phases::PHASE_GUIDING:
-		this->enterGuidingPhase(glm::vec3(1.0f, 1.0f, 16.0f));
+		this->enterGuidingPhase(glm::vec3(1.0f, 1.0f, 12.0f));
 		break;
 	case Phases::PHASE_REPLAY:
 		this->enterReplayPhase(glm::vec3(1.0f, 1.0f, 16.0f));
@@ -89,7 +89,7 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	*/
 	Entity * entity = this->em->addTracedEntity("Player");
 	entity->getTransform()->setPosition(playerPos);
-	entity->getTransform()->setScale(glm::vec3(1.0f, 1.0f, 0.5f));
+	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 	entity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
 	/*
@@ -101,7 +101,7 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	/*
 		Add arrowguider to entity
 	*/
-	ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
+	ArrowGuider* arrow = new ArrowGuider(entity, 2.0f);
 	arrow->startGuiding();
 
 	Display::get().getRenderer().setActiveCamera(camera);
@@ -125,7 +125,7 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 	*/
 	Entity * arrowEntity = this->em->addTracedEntity("ArrowReplay");
 	arrowEntity->getTransform()->setPosition(arrowPos);
-	arrowEntity->getTransform()->setScale(glm::vec3(1.0f, 1.0f, 0.5f));
+	arrowEntity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 	arrowEntity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
 	// Add camera to arrow entity

@@ -4,8 +4,6 @@
 #include "../../Engine/Rendering/Renderer.h"
 #include "../../Engine/Components/FreeMove.h"
 #include "../../Engine/Components/Camera.h"
-//#include "../../Game/components/ArrowGuider.h"
-
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
 {
@@ -51,6 +49,7 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 			break;
 		}
 		entity->getTransform()->setPosition(position);
+		entity->getTransform()->setScale(0.25f);
 		entity->setModel(model);
 	}
 }
@@ -98,6 +97,7 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 			break;
 		}
 		entity->getTransform()->setPosition(position);
+		entity->getTransform()->setScale(0.25f);
 		entity->setModel(model);
 	}
 }
@@ -107,52 +107,38 @@ void LevelParser::readEntityWalls(EntityManager * entityManager)
 	//Add read for walls
 }
 
-void LevelParser::readEntityPlayer(EntityManager * entityManager)
+void LevelParser::readEntityFloor(EntityManager * entityManager)
 {
 	Model *model = nullptr;
-	model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
+	model = ModelLoader::loadModel("./Game/assets/floor.fbx");
 
 	Entity* entity;
 	glm::vec3 position;
 
-	json::json& player = jsonFile["Player"];
-	//Every object requires a name
-	if (!player["Name"].empty() && player["Name"].is_string()) {
-		std::string name = jsonFile["Player"]["Name"];
-		entity = entityManager->addTracedEntity(name);
-		for (int i = 0; i < 3; i++) {
-			//If object exists go ahead otherwise do default position
-			if (!player["Position"].empty()) {
-				try {
-					position[i] = player["Position"][i];
-				}
-				catch (const std::exception& e) {
-					LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
-					break;
-				}
+	json::json& floor = jsonFile["Floor"];
+	
+	entity = entityManager->addEntity();
+	for (int i = 0; i < 3; i++) {
+		//If object exists go ahead otherwise do default position
+		if (!floor["Position"].empty()) {
+			try {
+				position[i] = floor["Position"][i];
 			}
-			else {
-				//Default position
-				position[i] = 0.0;
-				LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, i, entity->getName().c_str());
+			catch (const std::exception& e) {
+				LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+				break;
 			}
 		}
-		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setScale(glm::vec3(1.0f, 1.0f, 0.5f));
+		else {
+			//Default position
+			position[i] = 0.0;
+			LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, i, entity->getName().c_str());
+		}
 
-		Camera* camera = new Camera(entity, name, { 0.0f, 0.5f, -1.0f });
-		camera->init();
-
-		entity->setModel(model);
-
-		//ArrowGuider* arrow = new ArrowGuider(entity, 3.0f);
-		//arrow->startGuiding();
-
-		Display::get().getRenderer().setActiveCamera(camera);
 	}
-	else {
-		LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
-	}
+	entity->getTransform()->setPosition(position);
+	entity->setModel(model);
+
 }
 
 void LevelParser::readEntites(std::string file, EntityManager *entityManager)
@@ -172,7 +158,7 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 		readEntityTargets(entityManager);
 		readEntityBoxes(entityManager);
 		readEntityWalls(entityManager);
-		//readEntityPlayer(entityManager);
+		readEntityFloor(entityManager);
 	}
 	else
 	{
