@@ -3,6 +3,7 @@
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/Transform.h>
 #include <Game/components/ComponentResources.h>
+#include <Utils/Logger.h>
 #include <glm/gtx/spline.hpp>
 #include <vector>
 
@@ -19,17 +20,15 @@ public:
 
     void setPath(const std::vector<KeyPoint>& path);
 
-    void beginTreading();
+    // Start or restart path treading from the beginning
+    void startTreading();
     void stopTreading();
 
 private:
-    void init();
     bool isTreading;
 
     void linearTread();
     void catmullRomTread();
-    // Help function for Catmull-Rom calculations
-    float calculateT(const float& t0, const glm::vec3& P0, const glm::vec3& P1);
 
     std::vector<KeyPoint> path;
 

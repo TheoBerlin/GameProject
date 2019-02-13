@@ -13,15 +13,15 @@ TEST_CASE("Path Treader") {
         // Create circular path in the XZ plane
         std::vector<KeyPoint> path;
 
-        float pathRadius = 10.0f;
-        float storingFrequency = 20.0f;
+        float pathRadius = 100.0f;
+        float storingFrequency = 0.4f;
 
         // Path length in seconds
-        float pathLength = 5.0f;
+        float pathLength = 300.0f;
 
         KeyPoint currentKeyPoint;
 
-        for (float pathTime = 0.0f; pathTime <= pathLength; pathTime += storingFrequency) {
+        for (float pathTime = 0.0f; pathTime <= pathLength; pathTime += 1.0f/storingFrequency) {
             glm::vec3 position;
             position.x = std::cos((pathLength/pathTime) * glm::two_pi<float>());
             position.y = 0.0f;
@@ -38,7 +38,7 @@ TEST_CASE("Path Treader") {
         // Set path and begin treading
         pathTreader->setPath(path);
 
-        pathTreader->beginTreading();
+        pathTreader->startTreading();
 
         // Check that the treader is not moving linearly
         glm::vec3 linearPosition;

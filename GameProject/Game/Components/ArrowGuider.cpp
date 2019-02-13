@@ -61,7 +61,7 @@ void ArrowGuider::update(const float& dt)
 
     if (posStoreTimer > 1.0f/posStoreFrequency) {
         // Store position and reset timer
-        std::fmod(posStoreTimer, posStoreFrequency);
+        posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
 
         KeyPoint newKeyPoint;
         newKeyPoint.Position = host->getTransform()->getPosition();
@@ -164,6 +164,13 @@ void ArrowGuider::stopGuiding()
     turnFactors.y = 0.0f;
 
     posStoreTimer = 0.0f;
+
+    // Store end point
+    KeyPoint newKeyPoint;
+    newKeyPoint.Position = host->getTransform()->getPosition();
+    newKeyPoint.t = flightTime;
+
+    path.push_back(newKeyPoint);
 
     // Unlock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);

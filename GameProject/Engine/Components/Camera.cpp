@@ -95,7 +95,7 @@ void Camera::setOffset(const glm::vec3& offset)
 
 void Camera::updateView()
 {
-	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getTransform()->getForward(), this->u);
+	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getTransform()->getForward(), GLOBAL_UP_VECTOR);
 }
 
 void Camera::updateProj(WindowResizeEvent * evnt)

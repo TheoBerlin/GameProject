@@ -5,7 +5,7 @@
 PathTreader::PathTreader(Entity* host)
     :Component(host, "PathTreader")
 {
-    init();
+    isTreading = false;
 }
 
 PathTreader::PathTreader(Entity* host, const std::vector<KeyPoint>& path)
@@ -13,11 +13,12 @@ PathTreader::PathTreader(Entity* host, const std::vector<KeyPoint>& path)
 {
     setPath(path);
 
-    init();
+    isTreading = false;
 }
 
 PathTreader::~PathTreader()
 {
+    stopTreading();
 }
 
 void PathTreader::update(const float& dt)
@@ -26,10 +27,10 @@ void PathTreader::update(const float& dt)
         return;
     }
 
-    pathTime += dt;
+	pathTime += dt;
 
     // Check if the end has been reached
-    if (pathTime > path.at(path.size() - 1).t) {
+    if (pathTime >= path.at(path.size() - 1).t) {
         stopTreading();
 
         return;
@@ -44,8 +45,13 @@ void PathTreader::setPath(const std::vector<KeyPoint>& path)
     currentPointIndex = 0;
 }
 
-void PathTreader::beginTreading()
+void PathTreader::startTreading()
 {
+    if (path.size() < 2) {
+        LOG_WARNING("Path too small to start treading, size: %d", path.size());
+        return;
+    }
+
     pathTime = 0.0f;
 
     isTreading = true;
@@ -54,11 +60,6 @@ void PathTreader::beginTreading()
 }
 
 void PathTreader::stopTreading()
-{
-    isTreading = false;
-}
-
-void PathTreader::init()
 {
     isTreading = false;
 }
@@ -92,13 +93,13 @@ void PathTreader::catmullRomTread()
         currentPointIndex += 1;
     }
 
-    KeyPoint& P0 = path.at(std::max(currentPointIndex - 1, 0));
-    KeyPoint& P1 = path.at(currentPointIndex);
-    KeyPoint& P2 = path.at(currentPointIndex + 1);
-    KeyPoint& P3 = path.at(std::min(currentPointIndex + 2, path.size() - 1));
+    KeyPoint P0 = path.at(glm::max<int>(currentPointIndex - 1, 0));
+    KeyPoint P1 = path.at(currentPointIndex);
+    KeyPoint P2 = path.at(currentPointIndex + 1);
+    KeyPoint P3 = path.at(glm::min<int>(currentPointIndex + 2, path.size() - 1));
 
     // Get t in [0, 1] using pathTime's relative position in [P1.t, P2.t]
-    // pathTime = P1.t + t * (P2.t-P1.t)
+    // t is derived from the following equation: pathTime = P1.t + t * (P2.t-P1.t)
     float t = (pathTime - P1.t) / (P2.t - P1.t);
 
     Transform* transform = host->getTransform();
@@ -108,9 +109,4 @@ void PathTreader::catmullRomTread()
 
     transform->setPosition(newPos);
     transform->setForward(newDir);
-}
-
-float PathTreader::calculateT(const float& t0, const glm::vec3& P0, const glm::vec3& P1)
-{
-    return t0 + glm::pow(glm::length(P1 - P0), 0.5f);
 }

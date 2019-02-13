@@ -29,7 +29,6 @@
     <ClCompile Include="Engine\Components\Camera.cpp" />
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
-    <ClCompile Include="Engine\Components\ArrowGuider.cpp" />
     <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Entity\Entity.cpp" />
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
@@ -54,7 +53,9 @@
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
-    <ClCompile Include="Game\components\PathTreader.cpp" />
+    <ClCompile Include="Game\Components\ArrowGuider.cpp" />
+    <ClCompile Include="Game\Components\PathTreader.cpp" />
+    <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
@@ -80,7 +81,6 @@
     <ClInclude Include="Engine\InputHandler.h" />
     <ClInclude Include="Engine\Components\Camera.h" />
     <ClInclude Include="Engine\Components\Component.h" />
-    <ClInclude Include="Engine\Components\ArrowGuider.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
@@ -107,9 +107,11 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\GameLogic.h" />
-    <ClInclude Include="Game\components\ComponentResources.h" />
-    <ClInclude Include="Game\components\PathTreader.h" />
+    <ClInclude Include="Game\Components\ArrowGuider.h" />
+    <ClInclude Include="Game\Components\ComponentResources.h" />
+    <ClInclude Include="Game\Components\PathTreader.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />

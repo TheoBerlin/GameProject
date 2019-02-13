@@ -65,7 +65,7 @@ private:
 
     // Frequency at which the position is stored
     float posStoreFrequency;
-    const float minStoreFrequency = 5.0f, maxStoreFrequency = 20.0f;
+    const float minStoreFrequency = 0.5f, maxStoreFrequency = 1.0f;
     // Time since position was stored
     float posStoreTimer;
     float flightTime;
