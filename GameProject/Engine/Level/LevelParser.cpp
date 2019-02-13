@@ -117,7 +117,7 @@ void LevelParser::readEntityFloor(EntityManager * entityManager)
 	glm::vec3 position;
 
 	json::json& floor = jsonFile["Floor"];
-	//Every object requires a name
+	
 	entity = entityManager->addEntity();
 	for (int i = 0; i < 3; i++) {
 		//If object exists go ahead otherwise do default position
