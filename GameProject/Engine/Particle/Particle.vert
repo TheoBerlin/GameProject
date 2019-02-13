@@ -7,12 +7,8 @@ uniform mat4 vp;
 uniform vec3 cameraRight;
 uniform vec3 cameraUp;
 
-out vec3 test;
-
 void main() {
-	vec3 vertexPos = PosScale.xyz + cameraRight * vertex.x + cameraUp * vertex.y;
-
-	test = PosScale.xyz;
+	vec3 vertexPos = PosScale.xyz + cameraRight * vertex.x * PosScale.w + cameraUp * vertex.y * PosScale.w;
 
 	gl_Position = vp * vec4(vertexPos, 1.0f);
 }

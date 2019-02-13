@@ -4,10 +4,10 @@
 #include <vector>
 
 struct Particle {
-	glm::vec3 position;
+	float position[3];
 	float scale;
-	glm::vec3 velocity;
-	glm::vec3 colour;
+	float velocity[3];
+	float colour[3];
 };
 
 class ParticleEmitter {

@@ -22,9 +22,11 @@ ParticleEmitter::~ParticleEmitter()
 
 void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 velocity, float scale)
 {
-	particles[index]->position += velocity * dt;
-	if (velocity != glm::vec3(0.0f)) {
-		particles[index]->velocity += velocity * dt;
+	for (int i = 0; i < 3; i++) {
+		particles[index]->position[i] += particles[index]->velocity[i] * dt;
+		if (velocity != glm::vec3(0.0f)) {
+			particles[index]->velocity[i] += velocity[i] * dt;
+		}
 	}
 	if (scale != 0.0f && scale != 1.0f) {
 		scale -= 1.0f;
@@ -36,9 +38,11 @@ void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 vel
 
 void ParticleEmitter::particleReset(unsigned int index, glm::vec3 position, glm::vec3 velocity, glm::vec3 colour, float scale)
 {
-	particles[index]->position = position;
-	particles[index]->velocity = velocity;
-	particles[index]->colour = colour;
+	for (int i = 0; i < 3; i++) {
+		particles[index]->position[i] = position[i];
+		particles[index]->velocity[i] = velocity[i];
+		particles[index]->colour[i] = colour[i];
+	}
 	particles[index]->scale = scale;
 }
 
@@ -47,12 +51,14 @@ void ParticleEmitter::update(float dt)
 	emissionTime += dt;
 	while (emissionTime >= ((float)1 / spawnRate)) {
 		emissionTime -= ((float)1 / spawnRate);
-		if (particles.size() != maxParticle) {
+		if (particles.size() < maxParticle) {
 			Particle* particle = new Particle;
-			particle->position = position;
-			particle->velocity = velocity;
-			particle->colour = glm::vec3(1.0f);
-			particle->scale = 1.0f;
+			for (int i = 0; i < 3; i++) {
+				particle->position[i] = position[i];
+				particle->velocity[i] = velocity[i];
+				particle->colour[i] = 1.0f;
+			}
+			particle->scale = 0.5f;
 			particles.push_back(particle);
 		} else {
 			particleReset(oldestParticle++, position, velocity, glm::vec3(1.0f), 1.0f);
@@ -72,5 +78,5 @@ std::vector<Particle*> ParticleEmitter::getParticleArray() const
 
 int ParticleEmitter::getMaxParticle() const
 {
-	return particles.size();
+	return maxParticle;
 }

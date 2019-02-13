@@ -48,7 +48,8 @@ glm::vec3 Camera::getForward() const
 
 glm::vec3 Camera::getRight() const
 {
-	return this->r;
+	const glm::vec3 c = this->getHost()->getTransform()->getRight();
+	return c;
 }
 
 glm::mat4 Camera::getVP() const

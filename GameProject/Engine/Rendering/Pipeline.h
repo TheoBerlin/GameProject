@@ -70,6 +70,9 @@ private:
 	Shader* testShader;
 	Shader* quadShader;
 	Shader* particleShader;
+	bool p = true;
+	GLuint billboard_vertex_buffer;
+	GLuint particles_position_buffer;
 
 	Model* quad;
 

@@ -52,29 +52,29 @@ Pipeline::~Pipeline()
 
 void Pipeline::drawParticle(ParticleManager& particleManager)
 {
-	this->particleShader->bind();
-
 	static const GLfloat g_vertex_buffer_data[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	-0.5f, 0.5f, 0.0f,
-	0.5f, 0.5f, 0.0f,
+		-0.5f, -0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f,
+		-0.5f, 0.5f, 0.0f,
+		0.5f, 0.5f, 0.0f,
 	};
-	GLuint billboard_vertex_buffer;
-	glGenBuffers(1, &billboard_vertex_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
+	this->particleShader->bind();
+	if (p) {
 
-	GLuint particles_position_buffer;
-	glGenBuffers(1, &particles_position_buffer);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-	// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-	glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW);
+		glGenBuffers(1, &billboard_vertex_buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
+		glGenBuffers(1, &particles_position_buffer);
+		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+		// Initialize with empty (NULL) buffer : it will be updated later, each frame.
+		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 10 * sizeof(float), NULL, GL_STREAM_DRAW);
+	}
+	p = false;
 	if (particleManager.getParticleCount() != 0) {
 		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 4 * sizeof(GLfloat), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-		glBufferSubData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 2, particleManager.getParticleCount() * sizeof(GLfloat) * 4, particleManager.getParticleArray()[0]);
+		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 10 * sizeof(float), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		glBufferSubData(GL_ARRAY_BUFFER, 0, particleManager.getParticleCount() * sizeof(float) * 10, particleManager.getParticleArray()[0]);
 	}
 
 	// 1rst attribute buffer : vertices
@@ -97,7 +97,7 @@ void Pipeline::drawParticle(ParticleManager& particleManager)
 		4, // size : x + y + z + size => 4
 		GL_FLOAT, // type
 		GL_FALSE, // normalized?
-		0, // stride
+		sizeof(Particle) - sizeof(float) * 4, // stride
 		(void*)0 // array buffer offset
 	);
 
@@ -109,7 +109,12 @@ void Pipeline::drawParticle(ParticleManager& particleManager)
 	this->particleShader->setUniform3f("cameraUp", this->camera->getUp().x, this->camera->getUp().y, this->camera->getUp().z);
 	this->particleShader->setUniform3f("cameraRight", this->camera->getRight().x, this->camera->getRight().y, this->camera->getRight().z);
 
+	std::cout << this->camera->getForward().x << " : " << this->camera->getForward().y << " : " << this->camera->getForward().z << std::endl;
+
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
 
 	this->particleShader->unbind();
 }
