@@ -24,8 +24,6 @@ int main() {
 	//sound.setLoopState(true);
 	//sound.playSound();
 
-	float x = Settings::get().volume();
-
 	Game game;
 	game.start();
 	

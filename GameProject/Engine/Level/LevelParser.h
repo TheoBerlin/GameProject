@@ -6,6 +6,7 @@
 #include "../Entity/EntityManager.h"
 #include "../../Utils/Logger.h"
 #include "../AssetManagement/ModelLoader.h"
+#include "Utils/Settings.h"
 
 #include <fstream>
 #include <iostream>
