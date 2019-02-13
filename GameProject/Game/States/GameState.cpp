@@ -15,6 +15,9 @@ GameState::GameState()
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
 	this->collisionHandler = new CollisionHandler();
+	this->collisionHandler->createCollisionBodies(2);
+	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Camera"), Shape::BOX);
+	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Target1"), Shape::BOX);
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
@@ -42,6 +45,7 @@ void GameState::update(const float dt)
 
 void GameState::updateLogic()
 {
+	this->collisionHandler->update(1);
 }
 
 void GameState::render()
