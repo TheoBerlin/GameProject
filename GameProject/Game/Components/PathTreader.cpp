@@ -105,8 +105,13 @@ void PathTreader::catmullRomTread()
     Transform* transform = host->getTransform();
 
     glm::vec3 newPos = glm::catmullRom(P0.Position, P1.Position, P2.Position, P3.Position, t);
-    glm::vec3 newDir = glm::normalize(newPos - transform->getPosition());
 
-    transform->setPosition(newPos);
-    transform->setForward(newDir);
+	float distance = glm::length(newPos - transform->getPosition());
+
+	if (distance > 0.0f) {
+		glm::vec3 newDir = (newPos - transform->getPosition())/distance;
+
+        transform->setForward(newDir);
+        transform->setPosition(newPos);
+	}
 }
