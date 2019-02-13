@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Collision\Collision.cpp" />
     <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
@@ -64,6 +65,7 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
