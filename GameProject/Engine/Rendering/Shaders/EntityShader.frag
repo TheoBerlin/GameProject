@@ -32,23 +32,22 @@ void main()
     /*
         Diffuse
     */
-    vec3 diffuse = dirLight.color_intensity.rgb;
-    diffuse *= max(-dot(fragNormal, normalize(dirLight.direction.xyz)), 0.0);
+    //vec3 diffuse = dirLight.color_intensity.rgb  * dirLight.color_intensity.a;
+    float diffuse = max(-dot(normalize(fragNormal), normalize(dirLight.direction.xyz)), 0.0);
 
     /*
         Specular
     */
-    vec3 specular;
+    float specular;
     vec3 lightReflect = normalize(reflect(dirLight.direction.xyz, fragNormal));
     vec3 VertexToEye = normalize(camPos - fragPos);
     float specularFactor = dot(VertexToEye, lightReflect);
         if (specularFactor > 0) {
-            specularFactor = pow(specularFactor, mat.ks_f.a);
-            specular = dirLight.color_intensity.rgb * specularFactor;
+            specular = pow(specularFactor, mat.ks_f.a);
         }
     
-    texColor = min(texColor * dirLight.color_intensity.a, 1.0f);
-    vec3 phong = min(texColor * (specular + ambient + diffuse), 1.0f);
+    texColor = min(texColor, 1.0f);
+    vec3 phong = min(texColor * ( specular + diffuse + ambient), 1.0f);
 
     finalColor = vec4(phong, 1.0f);
 }
