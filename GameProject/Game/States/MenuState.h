@@ -17,4 +17,5 @@ public:
 
 private:
 	Text test;
+	Font* font;
 };

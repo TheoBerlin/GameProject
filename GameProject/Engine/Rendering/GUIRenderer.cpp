@@ -21,14 +21,23 @@ void GUIRenderer::bakeText(Text & text, float scale)
 {
 	Display& display = Display::get();
 
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
+	if (scale > 0.0f)
+		text.setScale(scale);
+	float currentScale = scale > 0.0f ? scale : text.getScale();
+
 	fb.updateDimensions(0, text.getWidth(), text.getHeight());
 	fb.bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
-	drawToBake(text, scale);
+	drawToBake(text, currentScale);
 	fb.unbind();
-	text.setTexture(fb.getColorTexture(0));
+	glViewport(0, 0, display.getWidth(), display.getHeight());
+	text.setBakedTexture(fb.getColorTexture(0));
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void GUIRenderer::drawToBake(Text & text, float scale)
@@ -37,31 +46,23 @@ void GUIRenderer::drawToBake(Text & text, float scale)
 
 	Display& display = Display::get();
 
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
-	const float scaleX = sx * scale;
-	const float scaleY = sy * scale;
+	float sx = 1.0f / (float)(text.getWidth());
+	float sy = 1.0f / (float)(text.getHeight());
+	const float scaleX = sx * 2.0f;
+	const float scaleY = sy * 2.0f;
 	float x = -1.0f;
-	float y = -1.0f;
+	float y = -1.0f + (text.getHeight()-text.getBearingY())*scaleY;
 
-	std::vector<Text::CharacterRect> characterRects = text.getCharacterRects();
-	for (unsigned int i = 0; i < characterRects.size(); i++)
+	std::vector<Text::CharacterDrawData> charactersData = text.getCharactersDrawData();
+	for (unsigned int i = 0; i < charactersData.size(); i++)
 	{
-		Text::CharacterRect rect = characterRects[i];
-		rect.rect.tl.x = rect.rect.tl.x*scaleX + x;
-		rect.rect.tl.y = rect.rect.tl.y*scaleY + y;
-		rect.rect.tr.x = rect.rect.tr.x*scaleX + x;
-		rect.rect.tr.y = rect.rect.tr.y*scaleY + y;
-		rect.rect.bl.x = rect.rect.bl.x*scaleX + x;
-		rect.rect.bl.y = rect.rect.bl.y*scaleY + y;
-		rect.rect.br.x = rect.rect.br.x*scaleX + x;
-		rect.rect.br.y = rect.rect.br.y*scaleY + y;
-
-		this->vb->updateData(&(rect.rect.tl.x), sizeof(Text::CharacterRect::Rect));
+		Text::CharacterDrawData character = charactersData[i];
 
 		font->getShader()->bind();
 		font->getShader()->setUniform4fv("color", 1, &text.getColor()[0]);
-		font->getShader()->setTexture2D("tex", 0, rect.textureID);
+		font->getShader()->setTexture2D("tex", 0, character.textureID);
+		font->getShader()->setUniform2f("scale", character.scale.x * scaleX, character.scale.y * scaleY);
+		font->getShader()->setUniform2f("pos", character.pos.x * scaleX + x, character.pos.y * scaleY + y);
 
 		this->va->bind();
 		this->vb->bind();
@@ -69,11 +70,20 @@ void GUIRenderer::drawToBake(Text & text, float scale)
 	}
 }
 
-void GUIRenderer::draw(Text & text, float x, float y)
+void GUIRenderer::drawBaked(Text & text, float x, float y)
 {
+	Display& display = Display::get();
+
+	float sx = display.getPixelXScale();
+	float sy = display.getPixelYScale();
+
+	float scaleX = sx * text.getScale();
+	float scaleY = sy * text.getScale();
+
 	this->shader->bind();
-	this->shader->setTexture2D("tex", 0, *text.getTexture());
-	this->shader->setUniform2f("pos", x+1.0f, y+1.0f);
+	this->shader->setTexture2D("tex", 0, *text.getBakedTexture());
+	this->shader->setUniform2f("pos", x + text.getWidth()*scaleX*0.5f, y + text.getHeight()*scaleY*0.5f);
+	this->shader->setUniform2f("scale", text.getWidth()*scaleX*0.5f, text.getHeight()*scaleY*0.5f);
 	this->vaQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	this->shader->unbind();
@@ -84,29 +94,23 @@ void GUIRenderer::draw(Text & text, float x, float y, float scale)
 	Font* font = text.getFont();
 	Display& display = Display::get();
 
+	float currentScale = scale < 0.0f ? text.getScale() : scale;
+
 	float sx = display.getPixelXScale();
 	float sy = display.getPixelYScale();
-	const float scaleX = sx * scale;
-	const float scaleY = sy * scale;
+	const float scaleX = sx * currentScale;
+	const float scaleY = sy * currentScale;
 
-	std::vector<Text::CharacterRect> characterRects = text.getCharacterRects();
-	for (unsigned int i = 0; i < characterRects.size(); i++)
+	std::vector<Text::CharacterDrawData> charactersData = text.getCharactersDrawData();
+	for (unsigned int i = 0; i < charactersData.size(); i++)
 	{
-		Text::CharacterRect rect = characterRects[i];
-		rect.rect.tl.x = rect.rect.tl.x*scaleX + x;
-		rect.rect.tl.y = rect.rect.tl.y*scaleY + y;
-		rect.rect.tr.x = rect.rect.tr.x*scaleX + x;
-		rect.rect.tr.y = rect.rect.tr.y*scaleY + y;
-		rect.rect.bl.x = rect.rect.bl.x*scaleX + x;
-		rect.rect.bl.y = rect.rect.bl.y*scaleY + y;
-		rect.rect.br.x = rect.rect.br.x*scaleX + x;
-		rect.rect.br.y = rect.rect.br.y*scaleY + y;
+		Text::CharacterDrawData character = charactersData[i];
 
-		this->vb->updateData(&(rect.rect.tl.x), sizeof(Text::CharacterRect::Rect));
-		
 		font->getShader()->bind();
 		font->getShader()->setUniform4fv("color", 1, &text.getColor()[0]);
-		font->getShader()->setTexture2D("tex", 0, rect.textureID);
+		font->getShader()->setTexture2D("tex", 0, character.textureID);
+		font->getShader()->setUniform2f("scale", character.scale.x * scaleX, character.scale.y * scaleY);
+		font->getShader()->setUniform2f("pos", character.pos.x * scaleX + x, character.pos.y * scaleY + y);
 		
 		this->va->bind();
 		this->vb->bind();
@@ -154,6 +158,7 @@ void GUIRenderer::draw(const std::string & str, float x, float y, const glm::vec
 
 void GUIRenderer::prepareTextRendering()
 {
+	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -162,7 +167,13 @@ void GUIRenderer::initTextRendering()
 {
 	// Vao for each character
 	this->va = new VertexArray();
-	this->vb = new VertexBuffer(NULL, sizeof(float) * 4*4, GL_DYNAMIC_DRAW);
+	GLfloat rect2[4][4] = {
+			{ -0.5f, +0.5f, 0, 0 }, // TL
+			{ -0.5f, -0.5f, 0, 1 }, // BL
+			{ +0.5f, +0.5f, 1, 0 }, // TR
+			{ +0.5f, -0.5f, 1, 1 }, // BR
+	};
+	this->vb = new VertexBuffer(rect2, sizeof(rect2), GL_STATIC_DRAW);
 	AttributeLayout layout;
 	layout.push(4); // [vec4] Position and uv.
 	this->va->addBuffer(vb, layout);
@@ -180,5 +191,4 @@ void GUIRenderer::initTextRendering()
 
 	Display& display = Display::get();
 	this->fb.attachTexture(display.getWidth(), display.getHeight(), AttachmentType::COLOR);
-	this->fb.attachTexture(display.getWidth(), display.getHeight(), AttachmentType::DEPTH);
 }

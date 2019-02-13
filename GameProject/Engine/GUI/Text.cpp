@@ -1,13 +1,14 @@
 #include "Text.h"
 
 #include "Utils/Logger.h"
+#include "../Rendering/GUIRenderer.h"
 
-Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), texture(nullptr)
+Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), bakedTexture(nullptr), scale(2.0f)
 {
 	this->font = nullptr;
 }
 
-Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), texture(nullptr)
+Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), bakedTexture(nullptr), scale(2.0f)
 {
 	setText(str, font);
 }
@@ -21,50 +22,90 @@ void Text::setColor(const glm::vec4 & color)
 	this->color = color;
 }
 
-void Text::setText(const std::string & str, Font * font)
+bool Text::setText(const std::string & str, Font * font)
 {
+	bool isFontDifferent = false;
 	if (font != nullptr)
-		this->font = font;
-	else
 	{
-		LOG_WARNING("Font is missing!");
-		return;
+		if (this->font != font)
+		{
+			isFontDifferent = true;
+			this->font = font;
+		}
+	}
+	else if (this->font == nullptr)
+	{
+		LOG_WARNING("Text '%s' is missing font!", str.c_str());
+		return false;
 	}
 
-	this->characterRects.clear();
-	this->str = str;
-
-	this->width = 0.0f;
-	this->height = 0.0f;
-	
-	float x = 0.0f;
-	const char* c;
-	for (c = str.c_str(); *c; c++)
+	// Only update text if the string or the font is different.
+	if (this->str != str || isFontDifferent)
 	{
-		Font::Character character = this->font->getCharacter(*c);
+		// Clear character set.
+		this->charactersDrawData.clear();
+		this->str = str;
 
-		float x2 = x + character.bearingX;
-		float y2 = -character.height + character.bearingY;
-		float w = character.width;
-		float h = character.height;
-		this->width = w;
+		this->width = 0.0f;
+		this->height = 0.0f;
 
-		if (this->height < h)
-			this->height = h;
-		if (this->bearingY < character.bearingY)
-			this->bearingY = character.bearingY;
+		float min = 0.0f;
+		this->bearingY = 0.0f;
 
-		CharacterRect characterRect;
-		characterRect.textureID = character.textureID;
-		characterRect.rect.tl = { x2	, y2 + h, 0, 0 }; // TL
-		characterRect.rect.bl = { x2	, y2	, 0, 1 }; // BL
-		characterRect.rect.tr = { x2 + w, y2 + h, 1, 0 }; // TR
-		characterRect.rect.br = { x2 + w, y2	, 1, 1 }; // BR
-		this->characterRects.push_back(characterRect);
+		// Loop through all characters and calculate their position and scale.
+		float x = 0.0f;
+		const char* c;
+		for (c = str.c_str(); *c; c++)
+		{
+			Font::Character character = this->font->getCharacter(*c);
 
-		x += (character.advance >> 6);
+			float x2 = x + character.bearingX;
+			float y2 = -character.height + character.bearingY;
+			float w = character.width;
+			float h = character.height;
+			this->width = w;
+
+			// Save the highest and the lowest distances to the line.
+			if (min < (character.height - character.bearingY))
+				min = character.height - character.bearingY;
+			if (this->bearingY < character.bearingY)
+				this->bearingY = character.bearingY;
+
+			CharacterDrawData characterData;
+			characterData.pos = { x2, y2 };
+			characterData.scale = { w, h };
+			characterData.textureID = character.textureID;
+			this->charactersDrawData.push_back(characterData);
+
+			x += (character.advance >> 6);
+		}
+		this->width += x;
+		this->height = min + this->bearingY;
+		return true;
 	}
-	this->width += x;
+	return false;
+}
+
+void Text::updateText(const std::string & str, float scale, Font * font)
+{
+	if (setText(str, font))
+	{
+		Display& display = Display::get();
+		GUIRenderer& guiRenderer = display.getGUIRenderer();
+
+		guiRenderer.prepareTextRendering();
+		guiRenderer.bakeText(*this, scale);
+	}
+}
+
+void Text::setScale(float scale)
+{
+	this->scale = scale;
+}
+
+float Text::getScale() const
+{
+	return this->scale;
 }
 
 glm::vec4 Text::getColor() const
@@ -87,14 +128,14 @@ float Text::getBearingY() const
 	return this->bearingY;
 }
 
-void Text::setTexture(Texture * texture)
+void Text::setBakedTexture(Texture * texture)
 {
-	this->texture = texture;
+	this->bakedTexture = texture;
 }
 
-Texture* Text::getTexture()
+Texture* Text::getBakedTexture()
 {
-	return this->texture;
+	return this->bakedTexture;
 }
 
 Font * Text::getFont()
@@ -102,7 +143,12 @@ Font * Text::getFont()
 	return this->font;
 }
 
-std::vector<Text::CharacterRect>& Text::getCharacterRects()
+void Text::setFont(Font * font)
 {
-	return this->characterRects;
+	this->font = font;
+}
+
+std::vector<Text::CharacterDrawData>& Text::getCharactersDrawData()
+{
+	return this->charactersDrawData;
 }

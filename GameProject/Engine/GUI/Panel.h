@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include "../Rendering/GLAbstraction/Texture.h"
 
 class Panel
 {
@@ -11,4 +12,5 @@ public:
 
 private:
 	std::vector<Panel*> panels;
+	Texture* bakedTexture;
 };

@@ -20,7 +20,7 @@ public:
 	/*
 	Draw the text with its internal baked texture.
 	*/
-	void draw(Text & text, float x, float y);
+	void drawBaked(Text & text, float x, float y);
 
 	/*
 	Draw each character. One draw call for each character.

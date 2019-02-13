@@ -6,25 +6,54 @@
 class Text
 {
 public:
-	struct CharacterRect
+	struct CharacterDrawData
 	{
 		GLuint textureID;
-		struct Rect
-		{
-			glm::vec4 tl;
-			glm::vec4 bl;
-			glm::vec4 tr;
-			glm::vec4 br;
-		} rect;
+		glm::vec2 pos;
+		glm::vec2 scale;
 	};
 
 	Text();
 	Text(const std::string& str, Font* font);
 	virtual ~Text();
 
+	/*
+	Set the color of the text.
+	*/
 	void setColor(const glm::vec4& color);
-	void setText(const std::string& str, Font* font = nullptr);
 
+	/*
+	Upadate the string and construct the new set of characters. Will only update the character set if the string or the font is different.
+	Arguments:
+		str: The string which will be converted to characters.
+		font: A pointer to the font, which will be used. If font is nullptr, an error will occur.
+	Return:
+		true if updated, false if not.
+	*/
+	bool setText(const std::string& str, Font* font = nullptr);
+
+	/*
+	Update the text like setText but will only do this if the string or the font is different.
+	Arguments:
+		str: The string which will be converted to characters.
+		scale: The scale of the text. This is not the same as the font size.
+		font: A pointer to the font, which will be used. If font is nullptr, an error will occur.
+	*/
+	void updateText(const std::string& str, float scale = 2.0f, Font* font = nullptr);
+
+	/*
+	Set the scale of the text. This is not the same as setting the font size.
+	*/
+	void setScale(float scale);
+
+	/*
+	Get the current scale.
+	*/
+	float getScale() const;
+
+	/*
+	Get the color as rgba.
+	*/
 	glm::vec4 getColor() const;
 
 	/*
@@ -40,22 +69,42 @@ public:
 	*/
 	float getBearingY() const;
 
-	void setTexture(Texture* texture);
-	Texture* getTexture();
+	/*
+	Set the baked texture.
+	*/
+	void setBakedTexture(Texture* texture);
+	/*
+	Get a pointer to the baked texture.
+	*/
+	Texture* getBakedTexture();
 
+	/*
+	Get a pointer to the current font.
+	*/
 	Font* getFont();
 
-	std::vector<CharacterRect>& getCharacterRects();
+	/*
+	Set the current font.
+	*/
+	void setFont(Font* font);
+
+	/*
+	Get the characters draw data set.
+	*/
+	std::vector<CharacterDrawData>& getCharactersDrawData();
 
 private:
 	std::string str;
 
+	float line;
 	float width;
 	float height;
 	float bearingY;
 	glm::vec4 color;
 
-	Texture* texture;
+	float scale;
+
+	Texture* bakedTexture;
 	Font* font;
-	std::vector<CharacterRect> characterRects;
+	std::vector<CharacterDrawData> charactersDrawData;
 };
