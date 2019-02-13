@@ -8,6 +8,7 @@ public:
 	Collision();
 	~Collision();
 
+	// Callback function for the testCollision in CollisionHandler
 	void notifyContact(const CollisionCallbackInfo &collisionCallbackInfo);
 
 private:
