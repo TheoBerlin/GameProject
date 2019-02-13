@@ -16,8 +16,9 @@ GameState::GameState()
 
 	this->collisionHandler = new CollisionHandler();
 	this->collisionHandler->createCollisionBodies(2);
-	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Camera"), Shape::BOX);
-	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Target1"), Shape::BOX);
+	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Camera"), SHAPE::BOX);
+	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Target1"), SHAPE::BOX);
+	//this->collisionHandler->removeCollisionBody(entityManager.getTracedEntity("Target1"));
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
