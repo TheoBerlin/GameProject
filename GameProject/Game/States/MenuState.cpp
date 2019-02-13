@@ -16,10 +16,14 @@ MenuState::MenuState() : State()
 	this->font = FontManager::getFont("arial");
 	test.setText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 (Testing text rendering!) [%&'-'\"+\"]", this->font);
 	test.setColor({1.0f, 1.0f, 1.0f, 1.0f});
+
+	this->panel = new Panel();
+	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 }
 
 MenuState::~MenuState()
 {
+	delete this->panel;
 }
 
 void MenuState::start()
@@ -60,8 +64,9 @@ void MenuState::render()
 	Display& display = Display::get();
 	
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
+
+	guiRenderer.draw(this->panel);
 	guiRenderer.prepareTextRendering();
 	guiRenderer.drawBaked(test, -1.0f, 0.5f);
 	//guiRenderer.draw(test, -1.0, -0.5, 2.0f);
-	
 }

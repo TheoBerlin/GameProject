@@ -3,6 +3,7 @@
 #include "GLAbstraction/VertexArray.h"
 #include "GLAbstraction/Framebuffer.h"
 #include "../GUI/Text.h"
+#include "../GUI/Panel.h"
 
 class GUIRenderer
 {
@@ -14,8 +15,6 @@ public:
 	Bake text into texture.
 	*/
 	void bakeText(Text& text, float scale);
-
-	void drawToBake(Text& text, float scale);
 
 	/*
 	Draw the text with its internal baked texture.
@@ -32,15 +31,31 @@ public:
 	*/
 	void draw(const std::string& str, float x, float y, const glm::vec4& color, const std::string& fontName, float scale);
 
+	/*
+	Enable and set the blend function.
+	*/
 	void prepareTextRendering();
 
+	void bakePanel(Panel* panel);
+	void drawBaked(Panel* panel);
+	void draw(Panel* panel);
+
 private:
+	/*
+	Draw the text to the framebuffer.
+	*/
+	void drawToBake(Text& text);
+
 	void initTextRendering();
-	VertexArray* va;
-	VertexBuffer* vb;
+
+	VertexArray* vaFullQuad;
+	VertexBuffer* vbFullQuad;
 
 	Framebuffer fb;
 	VertexArray* vaQuad;
 	VertexBuffer* vbQuad;
-	Shader* shader;
+	Shader* textShader;
+
+	Texture* whiteOnePixTexture;
+	Shader* panelShader;
 };
