@@ -1,5 +1,7 @@
 #include "Entity.h"
 
+#include "reactphysics3d/reactphysics3d.h"
+
 Entity::Entity(const glm::vec3& forward) : model(nullptr)
 {
 	transform.setForward(forward);
@@ -19,6 +21,14 @@ void Entity::update(const float dt)
 {
 	for (auto& it : this->components)
 		it.second->update(dt);
+
+	if (this->body != nullptr) {
+		glm::vec3 pos = this->transform.getPosition();
+		rp3d::Vector3 initPosition({ pos.x, pos.y, pos.z });
+		rp3d::Quaternion initOrientation = rp3d::Quaternion::identity();
+		rp3d::Transform transform(initPosition, initOrientation);
+		this->body->setTransform(transform);
+	}
 }
 
 bool Entity::addComponent(Component * component)
@@ -76,4 +86,14 @@ const std::string Entity::getName()
 Transform * Entity::getTransform()
 {
 	return &transform;
+}
+
+void Entity::setCollisionBody(rp3d::CollisionBody * body)
+{
+	this->body = body;
+}
+
+rp3d::CollisionBody * Entity::getCollisionBody() const
+{
+	return this->body;
 }

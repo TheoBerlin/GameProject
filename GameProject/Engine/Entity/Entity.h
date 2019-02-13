@@ -8,6 +8,10 @@
 
 #include "../AssetManagement/Model.h"
 
+namespace reactphysics3d {
+	class CollisionBody;
+}
+
 class Entity
 {
 public:
@@ -28,6 +32,9 @@ public:
 	const std::string getName();
 	Transform* getTransform();
 
+	void setCollisionBody(reactphysics3d::CollisionBody* body);
+	reactphysics3d::CollisionBody* getCollisionBody() const;
+
 private:
 	std::unordered_map<std::string, Component*> components;
 
@@ -35,4 +42,5 @@ private:
 	Transform transform;
 
 	Model* model;
+	reactphysics3d::CollisionBody* body;
 };
