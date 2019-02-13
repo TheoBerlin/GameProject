@@ -36,9 +36,9 @@ void Camera::init()
 	updateView();
 }
 
-glm::vec3 Camera::getUp() const
+glm::vec3 Camera::getUp()
 {
-	return this->u;
+	return this->getHost()->getTransform()->getUp();
 }
 
 glm::vec3 Camera::getForward() const
@@ -46,15 +46,19 @@ glm::vec3 Camera::getForward() const
 	return this->f;
 }
 
-glm::vec3 Camera::getRight() const
+glm::vec3 Camera::getRight()
 {
-	const glm::vec3 c = this->getHost()->getTransform()->getRight();
-	return c;
+	return this->getHost()->getTransform()->getRight();
 }
 
 glm::mat4 Camera::getVP() const
 {
 	return this->proj * this->view;
+}
+
+glm::mat4 Camera::getV() const
+{
+	return this->view;
 }
 
 float Camera::getFOV() const

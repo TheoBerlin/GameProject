@@ -2,19 +2,31 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include <random>
+#include "Engine/Config.h"
 
+//Values which shader is intrested in
 struct Particle {
-	float position[3];
+	glm::vec3 position;
 	float scale;
-	float velocity[3];
-	float colour[3];
+	glm::vec3 colour;
 };
 
 class ParticleEmitter {
 private:
+	//Values to change particle structs values for every particle.
+	//Structs are seperated to not buffer this data for shader
+	struct ParticleUpdateInfo {
+		glm::vec3 velocity;
+		float lifeTime;
+		glm::vec3 spread = glm::vec3(0.0f);
+	};
+
 	glm::vec3 position;
-	glm::vec3 velocity;
-	glm::vec3 gravity;
+	glm::vec3 startVelocity;
+	glm::vec3 startColour;
+	glm::vec3 endColour;
+	float startScale;
 
 	int maxParticle;
 	int oldestParticle;
@@ -24,17 +36,17 @@ private:
 	float emissionTime;
 
 	//Particles
-	std::vector<Particle*> particles;
+	std::vector<Particle> particles;
+	std::vector<ParticleUpdateInfo> particlesInfo;
 	void particleUpdate(unsigned int index, float dt, glm::vec3 velocity, float scale);
-	void particleReset(unsigned int index, glm::vec3 position, glm::vec3 velocity, glm::vec3 colour, float scale);
-
+	void particleReset(unsigned int index);
+	void interpolateColour(unsigned int index);
 public:
-	ParticleEmitter(glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3 velocity = glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f), int maxParticle = 100, int spawnRate = 10, float spread = 0.0f);
-	~ParticleEmitter();
+	ParticleEmitter(glm::vec3 position, glm::vec3 startVelocity, glm::vec3 startColour, float startScale, int maxParticle, int spawnRate, float spread, glm::vec3 endColour);
 
-	void update(float dt);
+	void update(float dt, glm::vec3 velocity, float scale);
 
-	std::vector<Particle*> getParticleArray() const;
+	std::vector<Particle> getParticleArray() const;
 
 	//Set emitter position
 	void setPosition(const glm::vec3 position);

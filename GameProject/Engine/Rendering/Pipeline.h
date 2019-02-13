@@ -72,7 +72,7 @@ private:
 	Shader* particleShader;
 	bool p = true;
 	GLuint billboard_vertex_buffer;
-	GLuint particles_position_buffer;
+	GLuint particleDataBuffer;
 
 	Model* quad;
 

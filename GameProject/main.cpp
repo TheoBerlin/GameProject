@@ -3,6 +3,7 @@
 #include "Utils/Logger.h"
 #include "Game/Game.h"
 #include "Engine/AssetManagement/ModelLoader.h"
+#include "Engine/Config.h"
 
 #include "ft2build.h" //DO NOT MOVE HEADER FILE FROM ROOT DIRECTORY OF INCLUDE
 #include FT_FREETYPE_H
@@ -17,7 +18,9 @@ int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
 	SoundContext::initSoundContext();
-	
+
+	ran.seed(std::random_device()());
+
 	Sound sound;
 	sound.loadSound("Game/assets/sound/dream_catcher.wav");
 	sound.setLoopState(true);

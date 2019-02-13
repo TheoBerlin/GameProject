@@ -1,77 +1,86 @@
 #include "ParticleEmitter.h"
 
-ParticleEmitter::ParticleEmitter(glm::vec3 position, glm::vec3 velocity, glm::vec3 gravity, int maxParticle, int spawnRate, float spread)
+ParticleEmitter::ParticleEmitter(glm::vec3 position, glm::vec3 velocity, glm::vec3 startColour, float startScale, int maxParticle, int spawnRate, float spread, glm::vec3 endColour)
 {
 	this->position = position;
-	this->velocity = velocity;
-	this->gravity = gravity;
+	this->startVelocity = velocity;
 	this->maxParticle = maxParticle;
 	this->spawnRate = spawnRate;
 	this->spread = spread;
+	this->startColour = startColour;
+	this->endColour = endColour;
+	this->startScale = startScale;
+	this->spread = spread;
+
+	particles.reserve(maxParticle);
 
 	oldestParticle = 0;
 	emissionTime = 0;
 }
 
-ParticleEmitter::~ParticleEmitter()
-{
-	for (int i = 0; i < particles.size(); i++) {
-		delete particles[i];
-	}
-}
-
 void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 velocity, float scale)
 {
-	for (int i = 0; i < 3; i++) {
-		particles[index]->position[i] += particles[index]->velocity[i] * dt;
-		if (velocity != glm::vec3(0.0f)) {
-			particles[index]->velocity[i] += velocity[i] * dt;
-		}
+	particles[index].position += (particlesInfo[index].velocity + particlesInfo[index].spread) * dt;
+	if (velocity != glm::vec3(0.0f)) {
+		particlesInfo[index].velocity += velocity * dt;
+	}
+	particlesInfo[index].lifeTime -= dt;
+	if (startColour != endColour) {
+		interpolateColour(index);
 	}
 	if (scale != 0.0f && scale != 1.0f) {
 		scale -= 1.0f;
 		scale * dt;
 		scale += 1.0f;
-		particles[index]->scale *= scale;
+		particles[index].scale *= scale;
 	}
 }
 
-void ParticleEmitter::particleReset(unsigned int index, glm::vec3 position, glm::vec3 velocity, glm::vec3 colour, float scale)
+void ParticleEmitter::particleReset(unsigned int index)
 {
-	for (int i = 0; i < 3; i++) {
-		particles[index]->position[i] = position[i];
-		particles[index]->velocity[i] = velocity[i];
-		particles[index]->colour[i] = colour[i];
-	}
-	particles[index]->scale = scale;
+	particles[index].position = position;
+	particles[index].colour = startColour;
+	particles[index].scale = startScale;
+	particlesInfo[index].velocity = startVelocity;
+	particlesInfo[index].lifeTime = maxParticle / spawnRate;
+	std::uniform_real_distribution<> r(-spread, spread);
+	particlesInfo[index].spread = glm::vec3(r(ran), r(ran), r(ran));
 }
 
-void ParticleEmitter::update(float dt)
+void ParticleEmitter::interpolateColour(unsigned int index)
+{
+	float maxLife = maxParticle / spawnRate;
+	particles[index].colour = startColour * (particlesInfo[index].lifeTime / maxLife) + endColour * (1 - particlesInfo[index].lifeTime / maxLife);;
+}
+
+void ParticleEmitter::update(float dt, glm::vec3 velocity, float scale)
 {
 	emissionTime += dt;
 	while (emissionTime >= ((float)1 / spawnRate)) {
 		emissionTime -= ((float)1 / spawnRate);
 		if (particles.size() < maxParticle) {
-			Particle* particle = new Particle;
-			for (int i = 0; i < 3; i++) {
-				particle->position[i] = position[i];
-				particle->velocity[i] = velocity[i];
-				particle->colour[i] = 1.0f;
-			}
-			particle->scale = 0.5f;
-			particles.push_back(particle);
-		} else {
-			particleReset(oldestParticle++, position, velocity, glm::vec3(1.0f), 1.0f);
+			particles.push_back(Particle());
+			particles[particles.size() - 1].position = position;
+			particles[particles.size() - 1].colour = startColour;
+			particles[particles.size() - 1].scale = startScale;
+			particlesInfo.push_back(ParticleUpdateInfo());
+			particlesInfo[particlesInfo.size() - 1].velocity = startVelocity;
+			particlesInfo[particlesInfo.size() - 1].lifeTime = maxParticle/spawnRate;
+			std::uniform_real_distribution<> r(-spread, spread);
+			particlesInfo[particlesInfo.size() - 1].spread = glm::vec3(r(ran), r(ran), r(ran));
+		}
+		else {
+			particleReset(oldestParticle++);
 			if (oldestParticle == maxParticle)
 				oldestParticle = 0;
 		}
 	}
 	for (int i = 0; i < particles.size(); i++) {
-		particleUpdate(i, dt, glm::vec3(0.0f), 1.0f);
+		particleUpdate(i, dt, velocity, scale);
 	}
 }
 
-std::vector<Particle*> ParticleEmitter::getParticleArray() const
+std::vector<Particle> ParticleEmitter::getParticleArray() const
 {
 	return particles;
 }

@@ -65,16 +65,16 @@ void Pipeline::drawParticle(ParticleManager& particleManager)
 		glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 
-		glGenBuffers(1, &particles_position_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+		glGenBuffers(1, &particleDataBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
 		// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 10 * sizeof(float), NULL, GL_STREAM_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW);
 	}
 	p = false;
 	if (particleManager.getParticleCount() != 0) {
-		glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
-		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * 10 * sizeof(float), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
-		glBufferSubData(GL_ARRAY_BUFFER, 0, particleManager.getParticleCount() * sizeof(float) * 10, particleManager.getParticleArray()[0]);
+		glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
+		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		particleManager.updateBuffer();
 	}
 
 	// 1rst attribute buffer : vertices
@@ -91,30 +91,42 @@ void Pipeline::drawParticle(ParticleManager& particleManager)
 
 	// 2nd attribute buffer : positions of particles' centers
 	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, particles_position_buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
 	glVertexAttribPointer(
 		1, // attribute. No particular reason for 1, but must match the layout in the shader.
 		4, // size : x + y + z + size => 4
 		GL_FLOAT, // type
 		GL_FALSE, // normalized?
-		sizeof(Particle) - sizeof(float) * 4, // stride
+		sizeof(Particle), // stride
 		(void*)0 // array buffer offset
+	);
+
+	// 2nd attribute buffer : positions of particles' centers
+	glEnableVertexAttribArray(2);
+	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
+	glVertexAttribPointer(
+		2, // attribute. No particular reason for 1, but must match the layout in the shader.
+		3, // size : x + y + z + size => 4
+		GL_FLOAT, // type
+		GL_FALSE, // normalized?
+		sizeof(Particle), // stride
+		(void*)(sizeof(glm::vec3) + sizeof(float)) // array buffer offset
 	);
 
 	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
 	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
+	glVertexAttribDivisor(2, 1); // positions : one per quad (its center) -> 1
 
 
 	this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->particleShader->setUniform3f("cameraUp", this->camera->getUp().x, this->camera->getUp().y, this->camera->getUp().z);
-	this->particleShader->setUniform3f("cameraRight", this->camera->getRight().x, this->camera->getRight().y, this->camera->getRight().z);
-
-	std::cout << this->camera->getForward().x << " : " << this->camera->getForward().y << " : " << this->camera->getForward().z << std::endl;
+	this->particleShader->setUniform3f("cameraUp", this->camera->getV()[0][1], this->camera->getV()[1][1], this->camera->getV()[2][1]);
+	this->particleShader->setUniform3f("cameraRight", this->camera->getV()[0][0], this->camera->getV()[1][0], this->camera->getV()[2][0]);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
 
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
+	glDisableVertexAttribArray(0);
+	glDisableVertexAttribArray(1);
+	glDisableVertexAttribArray(2);
 
 	this->particleShader->unbind();
 }
