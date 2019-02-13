@@ -7,6 +7,7 @@ CollisionHandler::CollisionHandler()
 {
 	// Set default values
 	this->takenBodies = 0;
+	this->player = nullptr;
 
 	// Set settings for world
 	rp3d::WorldSettings settings;
@@ -21,18 +22,15 @@ CollisionHandler::~CollisionHandler()
 {
 	delete this->world;
 
-	//for (size_t i = 0; i < this->bodies.size(); i++)
-	//{
-	//	removeCollisionBody(this->bodies[this->bodies.size()]);
-	//}
+	this->bodies.clear();
 }
 
 void CollisionHandler::update(const float & dt)
 {
-	this->world->testCollision(&this->collision);
-	
-	//for (int i = 0; i < this->bodies.size(); i++)
-	//	LOG_INFO("POSITIONS: (%f, %f)", this->bodies[i]->getTransform().getPosition().x, this->bodies[i]->getTransform().getPosition().y);
+	if (player)
+		this->world->testCollision(this->player, &this->collision);
+	else
+		this->world->testCollision(&this->collision);
 }
 
 void CollisionHandler::createCollisionBodies(int num)
@@ -60,7 +58,7 @@ rp3d::CollisionBody * CollisionHandler::getUnusedBody()
 		return this->bodies[this->takenBodies++];
 }
 
-void CollisionHandler::addCollisionToEntity(Entity * entity, Shape shape)
+void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 {
 	rp3d::CollisionBody* entityBody = getUnusedBody();
 
@@ -73,18 +71,20 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, Shape shape)
 	*/
 	switch (shape)
 	{
-	case Shape::ARROW:
+	case SHAPE::ARROW:
+	{
 		this->player = entityBody;
 		// SET SHAPE!
 		break;
-	case Shape::BOX:
+	}
+	case SHAPE::BOX:
 	{
 		// Set shapes
 		rp3d::Transform transform = rp3d::Transform::identity();
 		rp3d::ProxyShape* boxShape = entityBody->addCollisionShape(&this->shape, transform);
 		break;
 	}
-	case Shape::DRONE:
+	case SHAPE::DRONE:
 		// SET SHAPE!
 		break;
 	default:
@@ -98,6 +98,33 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, Shape shape)
 
 void CollisionHandler::removeCollisionBody(rp3d::CollisionBody * body)
 {
+	for (size_t i = 0; i < this->bodies.size(); i++)
+	{
+		if (this->bodies[i] == body)
+		{
+			this->world->destroyCollisionBody(body);
+			this->bodies[i] = this->bodies[this->bodies.size() - 1];
+			this->bodies.pop_back();
+			this->takenBodies--;
+
+		}
+	}
+}
+
+void CollisionHandler::removeCollisionBody(Entity * entity)
+{
+	rp3d::CollisionBody* body = entity->getCollisionBody();
+	for (size_t i = 0; i < this->bodies.size(); i++)
+	{
+		if (this->bodies[i] == body)
+		{
+			this->world->destroyCollisionBody(body);
+			this->bodies[i] = this->bodies[this->bodies.size() - 1];
+			this->bodies.pop_back();
+			this->takenBodies--;
+			entity->setCollisionBody(nullptr);
+		}
+	}
 }
 
 rp3d::Vector3 CollisionHandler::toReactVec(const glm::vec3 & vec)

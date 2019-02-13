@@ -6,7 +6,7 @@
 #include "glm/glm.hpp"
 
 // Enum for the shapes for the CollisionBodies
-enum class Shape {
+enum class SHAPE {
 	DRONE,
 	BOX,
 	ARROW
@@ -28,9 +28,11 @@ public:
 	// Returns an unused collision body, nullptr if noone is available.
 	rp3d::CollisionBody* getUnusedBody();
 	// Add collision body to an entity with a predefined shape
-	void addCollisionToEntity(Entity * entity, Shape shape);
+	void addCollisionToEntity(Entity * entity, SHAPE shape);
 	// Remove a collision body from the world, this will stop collision checking and destory the pointer
 	void removeCollisionBody(rp3d::CollisionBody * body);
+	// Remove collision from an entity
+	void removeCollisionBody(Entity * entity);
 
 	rp3d::Vector3 toReactVec(const glm::vec3& vec);
 	glm::vec3 toGlmVec(const rp3d::Vector3& vec);
