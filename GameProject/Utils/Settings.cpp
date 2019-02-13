@@ -29,9 +29,13 @@ bool Settings::readFile(std::string fileName)
 	return true;
 }
 
-bool Settings::writeFile(std::string fileName)
+void Settings::writeFile(std::string fileName)
 {
-	return false;
+	jsonFile["Volume"] = volume;
+	jsonFile["ScreenWidth"] = screenWidth;
+	jsonFile["ScreenHeight"] = screenHeight;
+	std::ofstream oStream(fileName);
+	oStream << std::setw(4) << jsonFile << std::endl;
 }
 
 void Settings::readVolume()
@@ -81,8 +85,9 @@ Settings::Settings()
 
 Settings::~Settings()
 {
-	//Add flag if changes are made, to make sure that the file only changes if necessary
-	writeFile();
+	if (changed == true) {
+		writeFile();
+	}
 }
 
 float Settings::getVolume()
@@ -90,12 +95,28 @@ float Settings::getVolume()
 	return this->volume;
 }
 
+void Settings::setVolume(float volume)
+{
+	this->volume = volume;
+	changed = true;
+}
+
 int Settings::getScreenWidth()
 {
 	return this->screenWidth;
 }
 
+void Settings::setScreenWidth(int screenWidth)
+{
+	this->screenWidth = screenWidth;
+}
+
 int Settings::getScreenHeight()
 {
 	return this->screenHeight;
+}
+
+void Settings::setScreenHeight(int screenHeight)
+{
+	this->screenHeight = screenHeight;
 }

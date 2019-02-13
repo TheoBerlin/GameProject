@@ -15,12 +15,13 @@ namespace json = nlohmann;
 class Settings 
 {
 private:
+	bool changed = false;
 	float volume;
-	int screenWidth = 1;
-	int screenHeight = 1;
+	int screenWidth;
+	int screenHeight;
 
 	bool readFile(std::string fileName = "./Utils/Settings.json");
-	bool writeFile(std::string fileName = "./Utils/Settings.json");
+	void writeFile(std::string fileName = "./Utils/Settings.json");
 
 	void readVolume();
 	void readScreenWidth();
@@ -33,8 +34,11 @@ public:
 	~Settings();
 
 	float getVolume();
+	void setVolume(float volume = 0.5f);
 	int getScreenWidth();
+	void setScreenWidth(int screenWidth = 1280);
 	int getScreenHeight();
+	void setScreenHeight(int screenHeight = 720);
 };
 
 
