@@ -2,6 +2,7 @@
 
 #include "../../Engine/States/State.h"
 #include "../../Engine/Level/LevelParser.h"
+#include "../../Game/GameLogic.h"
 
 class GameState : public State
 {
@@ -17,4 +18,5 @@ public:
 
 private:
 	LevelParser levelParser;
+	GameLogic gameLogic;
 };

@@ -26,7 +26,7 @@ private:
 	void readEntityTargets(EntityManager *entityManager);
 	void readEntityBoxes(EntityManager *entityManager);
 	void readEntityWalls(EntityManager *entityManager);
-	void readEntityArrow(EntityManager *entityManager);
+	void readEntityFloor(EntityManager *entityManager);
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
