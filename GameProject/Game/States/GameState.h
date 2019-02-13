@@ -2,6 +2,7 @@
 
 #include "../../Engine/States/State.h"
 #include "../../Engine/Level/LevelParser.h"
+#include "../../Game/GameLogic.h"
 #include "Engine/Collision/CollisionHandler.h"
 
 class GameState : public State
@@ -18,5 +19,6 @@ public:
 
 private:
 	LevelParser levelParser;
+	GameLogic gameLogic;
 	CollisionHandler* collisionHandler;
 };

@@ -52,7 +52,7 @@ enum TextureType {
 
 class Texture;
 struct Material {
-	glm::vec3 Ka;
-	glm::vec3 Ks;
+	glm::vec4 Kd;
+	glm::vec4 Ks_factor;
 	std::vector<Texture*> textures;
 };
