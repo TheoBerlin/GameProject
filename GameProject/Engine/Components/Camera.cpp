@@ -113,5 +113,7 @@ void Camera::setForward(const glm::vec3 & forward)
 void Camera::updatePosition()
 {
 	glm::vec3 hostPos = getHost()->getTransform()->getPosition();
-	this->pos = hostPos + (this->r * this->offset.x + this->u * this->offset.y + this->f * this->offset.z);
+	Transform* transform = host->getTransform();
+
+	this->pos = hostPos + (transform->getRight() * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
 }
