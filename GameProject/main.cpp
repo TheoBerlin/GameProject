@@ -1,6 +1,7 @@
 #include <crtdbg.h>
 
 #include "Utils/Logger.h"
+#include "Utils/Settings.h"
 #include "Game/Game.h"
 #include "Engine/AssetManagement/ModelLoader.h"
 
@@ -22,6 +23,8 @@ int main() {
 	//sound.loadSound("Game/assets/sound/dream_catcher.wav");
 	//sound.setLoopState(true);
 	//sound.playSound();
+
+	float x = Settings::get().volume();
 
 	Game game;
 	game.start();

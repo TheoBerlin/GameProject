@@ -107,7 +107,7 @@ void LevelParser::readEntityWalls(EntityManager * entityManager)
 	//Add read for walls
 }
 
-void LevelParser::readEntityPlayer(EntityManager * entityManager)
+void LevelParser::readEntityArrow(EntityManager * entityManager)
 {
 	Model *model = nullptr;
 	model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
@@ -172,7 +172,7 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 		readEntityTargets(entityManager);
 		readEntityBoxes(entityManager);
 		readEntityWalls(entityManager);
-		readEntityPlayer(entityManager);
+		readEntityArrow(entityManager);
 	}
 	else
 	{
