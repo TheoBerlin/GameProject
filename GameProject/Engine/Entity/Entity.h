@@ -24,6 +24,16 @@ public:
 	void setModel(Model* model);
 	Model* getModel();
 
+	/*
+		Attaches entity to model, entity attaches itself to renderingGroup of model if models is set
+	*/
+	void attachToModel();
+
+	/*
+		Detaches entity from model, entity keeps models but stops being drawn
+	*/
+	void detachFromModel();
+		
 	void setRenderingGroupIndex(unsigned index);
 	unsigned getRenderingGroupIndex();
 
@@ -51,6 +61,6 @@ private:
 	/*
 		Used to identify position in models renderingGroup, so entites can remove themselves from being rendered. -1 indicates not model attached
 	*/
-	unsigned renderingGroupIndex;
+	int renderingGroupIndex;
 	Model* model;
 };

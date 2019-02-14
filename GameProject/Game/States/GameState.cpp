@@ -25,10 +25,24 @@ GameState::~GameState()
 
 void GameState::start()
 {
+	/*
+		All entities in this state puts themselves in the rendering group of their model
+	*/
+	EntityManager& entityManager = this->getEntityManager();
+	std::vector<Entity*>& entities = entityManager.getAll();
+	for (Entity* entity : entities)
+		entity->attachToModel();
 }
 
 void GameState::end()
 {
+	/*
+		All entities removes themselves from the rendering group of their model
+	*/
+	EntityManager& entityManager = this->getEntityManager();
+	std::vector<Entity*>& entities = entityManager.getAll();
+	for (Entity* entity : entities)
+		entity->detachFromModel();
 }
 
 void GameState::update(const float dt)

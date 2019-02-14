@@ -6,6 +6,7 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 
 	this->renderingGroupIndex = -1;
 	this->hasMoved = false;
+	this->model = nullptr;
 }
 
 Entity::~Entity()
@@ -87,6 +88,14 @@ void Entity::setModel(Model * model)
 	this->model->updateInstancingData();
 }
 
+void Entity::detachFromModel()
+{
+	if (this->model != nullptr)
+		this->model->removeEntity(this->renderingGroupIndex);
+
+	this->renderingGroupIndex = -1;
+}
+
 void Entity::setRenderingGroupIndex(unsigned index)
 {
 	this->renderingGroupIndex = index;
@@ -100,6 +109,12 @@ unsigned Entity::getRenderingGroupIndex()
 Model * Entity::getModel()
 {
 	return this->model;
+}
+
+void Entity::attachToModel()
+{
+	if (this->model != nullptr)
+		this->renderingGroupIndex = this->model->addEntity(this);
 }
 
 void Entity::hasMovedThisFrame()
