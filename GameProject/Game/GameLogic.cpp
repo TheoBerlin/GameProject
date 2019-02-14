@@ -154,5 +154,5 @@ void GameLogic::playerCollisionCallback(PlayerCollisionEvent * ev)
 	else
 		entity = ev->entity2;
 
-	entity->getTransform()->translate({ 5.0, 0.0, 5.0 });
+	entity->getTransform()->translate({ -1.0, 0.0, -1.0 });
 }
