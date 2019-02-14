@@ -14,8 +14,10 @@ GameState::GameState() : gameLogic(&this->getEntityManager(), &this->collisionHa
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
-	this->collisionHandler.createCollisionBodies(2);
+	this->collisionHandler.createCollisionBodies(4);
 	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target1"), SHAPE::BOX);
+	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target2"), SHAPE::BOX);
+	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target3"), SHAPE::BOX);
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
