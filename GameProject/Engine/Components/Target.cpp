@@ -1,6 +1,6 @@
 #include "Target.h"
 
-void Target::setUnactive(CollisionEvent * evnt)
+void Target::setUnactive(PlayerCollisionEvent * evnt)
 {
 	flag = false;
 }
