@@ -7,9 +7,9 @@
 
 // Enum for the shapes for the CollisionBodies
 enum class SHAPE {
-	DRONE,
-	BOX,
-	ARROW
+	DRONE = 0,
+	BOX = 1,
+	ARROW = 2
 };
 
 // Forward declerations
@@ -44,7 +44,9 @@ private:
 
 	Collision collision;
 
-	// Shapes
+	// Creates all the shapes which will be used in the scene
+	void createShapes();
+	std::vector<rp3d::CollisionShape*> shapes;
 	rp3d::BoxShape shape = { { 2.0, 2.0, 2.0 } };
 
 	int takenBodies;
