@@ -13,6 +13,14 @@ Transform::Transform()
 	this->position = glm::vec3(0, 0, 0);
 }
 
+void Transform::getMatrix(glm::mat4 * mat) const
+{
+	*mat = glm::mat4_cast(rotationQuat) * glm::scale(scaleFactor);
+	(*mat)[3][0] = position.x;
+	(*mat)[3][1] = position.y;
+	(*mat)[3][2] = position.z;
+}
+
 glm::mat4 Transform::getMatrix() const
 {
 	glm::mat4 ret = glm::mat4_cast(rotationQuat) * glm::scale(scaleFactor);

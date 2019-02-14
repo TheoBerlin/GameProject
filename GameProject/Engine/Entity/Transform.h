@@ -18,7 +18,8 @@ private:
 
 public:
 	Transform();
-
+	//Get combined matrix of world and model by passing pointer
+	void getMatrix(glm::mat4 * mat) const;
 	//Get combined matrix of world and model
 	glm::mat4 getMatrix() const;
 	//Get position in world
