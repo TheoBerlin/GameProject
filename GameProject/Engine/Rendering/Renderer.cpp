@@ -32,6 +32,7 @@ void Renderer::drawAll()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	this->pipeline.calcDirLightDepth(this->renderingList);
 	/*
 		Z-prepass stage
 	*/

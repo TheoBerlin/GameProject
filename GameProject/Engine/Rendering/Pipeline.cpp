@@ -18,10 +18,13 @@ Pipeline::Pipeline()
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
 	Display& display = Display::get();
-	int width = display.getWidth();
-	int height = display.getHeight();
+	width = display.getWidth();
+	height = display.getHeight();
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
+
+	shadowWidth, shadowHeight = 1024;
+	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
 	this->uniformBuffers.resize(7);
@@ -166,6 +169,28 @@ void Pipeline::drawTextureToQuad(Texture * tex)
 	glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 
 	this->quadShader->unbind();
+}
+
+Texture * Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
+{
+	int displayWidth = Display::get().getWidth();
+	int displayHeight = Display::get().getHeight();
+
+	Display::get().updateView(shadowWidth, shadowHeight);
+	this->fbo.bind();
+	this->prePassDepthOn();
+	this->ZprePassShader->bind();
+
+	//Draw renderingList
+	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	draw(renderingList);
+
+	this->ZprePassShader->unbind();
+	this->prePassDepthOff();
+	this->fbo.unbind();
+	Display::get().updateView(displayWidth, displayHeight);
+
+	return this->shadowFbo.getDepthTexture();
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
