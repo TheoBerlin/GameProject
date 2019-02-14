@@ -5,10 +5,11 @@
 #include "GUI/FontManager.h"
 #include "Config.h"
 #include <string>
+#include "../Utils/Settings.h"
 
 IGame::IGame()
 {
-	Display::get().init(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_TITLE);
+	Display::get().init(Settings::get().getScreenWidth(), Settings::get().getScreenHeight(), DEFAULT_TITLE);
 }
 
 IGame::~IGame()
