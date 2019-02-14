@@ -4,6 +4,7 @@
 
 #include <vector>
 #include "glm/glm.hpp"
+#include <unordered_map>
 
 // Enum for the shapes for the CollisionBodies
 enum class SHAPE {
@@ -47,7 +48,7 @@ private:
 	// Creates all the shapes which will be used in the scene
 	void createShapes();
 	std::vector<rp3d::CollisionShape*> shapes;
-	rp3d::BoxShape shape = { { 2.0, 2.0, 2.0 } };
+	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
 	int takenBodies;
 

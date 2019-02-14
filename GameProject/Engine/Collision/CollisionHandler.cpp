@@ -9,6 +9,9 @@ CollisionHandler::CollisionHandler()
 	this->takenBodies = 0;
 	this->player = nullptr;
 
+	// Give pointer to entites to collision
+	this->collision.setEntitesPointer(&this->entities);
+
 	// Set settings for world
 	rp3d::WorldSettings settings;
 	settings.defaultVelocitySolverNbIterations = 20;
@@ -115,7 +118,10 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 
 	entityBody->setTransform(transform);
 
+	// Set the body for the entity
 	entity->setCollisionBody(entityBody);
+	// Save the pair of entity and body for collision detection later
+	this->entities[entityBody] = entity;
 }
 
 void CollisionHandler::removeCollisionBody(rp3d::CollisionBody * body)
