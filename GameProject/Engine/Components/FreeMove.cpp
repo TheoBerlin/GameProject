@@ -51,9 +51,9 @@ void FreeMove::update(const float & dt)
 	if (this->pressedKeys[GLFW_KEY_S])
 		newPosition += this->dt * -mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_SPACE])
-		newPosition += this->dt * mat->getUp() * this->speed;
+		newPosition += this->dt * GLOBAL_UP_VECTOR * this->speed;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
-		newPosition += this->dt * -mat->getUp() * this->speed;
+		newPosition += this->dt * -GLOBAL_UP_VECTOR * this->speed;
 
 	mat->setPosition(newPosition);
 
@@ -61,16 +61,13 @@ void FreeMove::update(const float & dt)
 	{
 		if (this->xPos != 0.0 || this->yPos != 0.0)
 		{
-			Transform * mat = getHost()->getTransform();
-			glm::vec3 oldForward = mat->getForward();
+			float yaw = -(float)xPos * this->dt * this->sensitivity;
+			float pitch = -(float)yPos * this->dt * this->sensitivity;
 
-			oldForward = glm::rotate(oldForward, -(float)xPos * this->dt * this->sensitivity, mat->getUp());
-			oldForward = glm::rotate(oldForward, -(float)yPos * this->dt * this->sensitivity, mat->getRight());
+			host->getTransform()->rotate(yaw, pitch);
 
 			this->xPos = 0.0;
 			this->yPos = 0.0;
-
-			getHost()->getTransform()->setForward(oldForward);
 		}
 	}
 }

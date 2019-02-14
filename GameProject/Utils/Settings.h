@@ -29,6 +29,7 @@ private:
 	void readScreenHeight();
 
 	json::json jsonFile;
+
 public:
 	static Settings& get();
 	Settings();
