@@ -190,6 +190,7 @@ Texture * Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/
 	this->fbo.unbind();
 	Display::get().updateView(displayWidth, displayHeight);
 
+	if(shadowFbo.getDepthTexture() != nullptr)
 	return this->shadowFbo.getDepthTexture();
 }
 
