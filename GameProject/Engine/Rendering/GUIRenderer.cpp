@@ -4,6 +4,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "Utils/Logger.h"
 
+#include "../GUI/GUIManager.h"
+
 GUIRenderer::GUIRenderer()
 {
 	this->textShader = new Shader("./Engine/Rendering/Shaders/TexShader.vert", "./Engine/Rendering/Shaders/TexShader.frag");
@@ -18,6 +20,14 @@ GUIRenderer::~GUIRenderer()
 	delete this->textShader;
 	delete this->panelShader;
 	delete this->whiteOnePixTexture;
+}
+
+void GUIRenderer::draw(GUIManager & guiManger)
+{
+	prepareTextRendering();
+	std::vector<Panel*>& panelList = guiManger.getPanelList();
+	for (Panel* panel : panelList)
+		draw(panel);
 }
 
 void GUIRenderer::bakeText(Text & text, float scale)
@@ -136,6 +146,8 @@ void GUIRenderer::bakePanel(Panel * panel)
 {
 	std::vector<std::pair<Text*, glm::vec2>>& textList = panel->getTextList();
 
+	// TODO:
+	// Bake sub-panels and their text.
 
 	fb.updateDimensions(0, panel->getSize().x, panel->getSize().y);
 	fb.bind();
@@ -143,9 +155,9 @@ void GUIRenderer::bakePanel(Panel * panel)
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// TODO:
-	// Draw sub-panel and their text.
 	// Draw panel.
 	// Draw text.
+	// Draw sub-panels baked texture.
 
 	fb.unbind();
 	panel->setBakedTexture(fb.getColorTexture(0));

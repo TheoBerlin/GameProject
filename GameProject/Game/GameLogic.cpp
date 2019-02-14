@@ -9,9 +9,17 @@
 #include "../Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Events/EventBus.h"
 
-GameLogic::GameLogic(EntityManager * em)
+GameLogic::GameLogic(EntityManager * em, GUIManager* guiManager)
 {
 	this->em = em;
+	this->guiManager = guiManager;
+
+	Panel* panel = new Panel();
+	panel->setPosition({ 0.0f, 0.5f });
+	panel->setSize({0.2f, 0.2f});
+	panel->addText("NO PHASE", 0.0f, 0.0f, 2.0f, "arial");
+	guiManager->addPanel(panel);
+
 	/*
 		Start game in phase 1
 	*/
@@ -79,6 +87,7 @@ void GameLogic::enterPhaseOne(const glm::vec3 & cameraPos, const glm::vec3 & cam
 
 	Display::get().getRenderer().setActiveCamera(camera);
 
+	guiManager->getPanel(0)->updateText(0, "[PHASE ONE]");
 }
 
 void GameLogic::enterPhaseTwo(const glm::vec3 & playerPos)
@@ -105,6 +114,8 @@ void GameLogic::enterPhaseTwo(const glm::vec3 & playerPos)
 	arrow->startGuiding();
 
 	Display::get().getRenderer().setActiveCamera(camera);
+
+	guiManager->getPanel(0)->updateText(0, "[PHASE TWO]");
 }
 
 void GameLogic::leavePhaseOne()

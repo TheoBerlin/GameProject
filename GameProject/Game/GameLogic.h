@@ -4,10 +4,12 @@
 #include "glm/glm.hpp"
 #include "Engine/Events/Events.h"
 
+#include "Engine/GUI/GUIManager.h"
+
 class GameLogic
 {
 public:
-	GameLogic(EntityManager * em);
+	GameLogic(EntityManager * em, GUIManager* guiManger);
 	~GameLogic();
 
 	enum Phases { PHASE_ONE, PHASE_TWO, PHASE_THREE };
@@ -28,5 +30,6 @@ private:
 	Entity* player;
 
 	EntityManager* em;
+	GUIManager* guiManager;
 };
 

@@ -5,11 +5,17 @@
 #include "../GUI/Text.h"
 #include "../GUI/Panel.h"
 
+class GUIManager;
 class GUIRenderer
 {
 public:
 	GUIRenderer();
 	virtual ~GUIRenderer();
+
+	/*
+	Draw all elements in guiManager.
+	*/
+	void draw(GUIManager& guiManger);
 
 	/*
 	Bake text into texture.

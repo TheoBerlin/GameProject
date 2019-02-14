@@ -16,11 +16,17 @@ MenuState::MenuState() : State()
 	this->font = FontManager::getFont("arial");
 	test.setText("------", this->font);
 	test.setColor({1.0f, 1.0f, 1.0f, 1.0f});
+
+	GUIManager& guiManager = this->getGUIManager();
+	Panel* panel = new Panel();
+	panel->setSize({ 0.2f, 0.2f });
+	panel->setPosition({ 0.5f, 0.5f });
+	panel->addText("Test", 0.0f, 0.0f, 2.0f, "arial");
+	guiManager.addPanel(panel);
 }
 
 MenuState::~MenuState()
 {
-	delete this->panel;
 }
 
 void MenuState::start()
@@ -29,12 +35,12 @@ void MenuState::start()
 	Display& display = Display::get();
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
-	guiRenderer.prepareTextRendering();
-	guiRenderer.bakeText(test, 2.0f);
-
 	this->panel = new Panel();
+	this->panel->setSize({ 0.2f, 0.2f });
+	this->panel->setPosition({-0.5f, -0.5f});
 	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-	this->panel->addText("Play", 0.0f, 0.0f, 1.0f, "arial");
+	this->panel->addText("Play", 0.0f, 0.0f, 2.0f, "arial");
+	this->getGUIManager().addPanel(this->panel);
 }
 
 void MenuState::end()
@@ -43,12 +49,11 @@ void MenuState::end()
 
 void MenuState::update(const float dt)
 {
-	
 	static float time = 0.0f;
 	time += dt;
 	if (time > 0.1f)
 	{
-		test.updateText("FPS: " + std::to_string((int)(1.0f / dt)), 2.0f);
+		this->panel->updateText(0, "FPS: " + std::to_string((int)(1.0f / dt)));
 		time = 0.0f;
 	}
 }
@@ -65,10 +70,13 @@ void MenuState::render()
 	Display& display = Display::get();
 	
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
-
+	guiRenderer.draw(this->getGUIManager());
+	
+	/*
 	guiRenderer.prepareTextRendering();
 	guiRenderer.draw(this->panel);
 
 	guiRenderer.drawBaked(test, -1.0f, 0.5f);
+	*/
 	//guiRenderer.draw(test, -1.0, -0.5, 2.0f);
 }

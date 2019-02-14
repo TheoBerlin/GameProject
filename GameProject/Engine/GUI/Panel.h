@@ -21,14 +21,15 @@ public:
 	void setColor(glm::vec4 color);
 	glm::vec4 getColor() const;
 
-	void setPoistion(glm::vec2 pos);
+	void setPosition(glm::vec2 pos);
 	glm::vec2 getPosition() const;
 
 	void setSize(glm::vec2 size);
 	glm::vec2 getSize() const;
 
 	void addText(const std::string& str, float x, float y, float scale, const std::string& font, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
-	void updateText(unsigned int index, const std::string& str, float x, float y, float scale);
+	void updateText(unsigned int index, const std::string& str, float x, float y, float scale = -1.0f);
+	void updateText(unsigned int index, const std::string& str, float scale = 0.0f);
 	void setTextColor(unsigned int index, const glm::vec4& color);
 
 	std::vector<std::pair<Text*, glm::vec2>>& getTextList();

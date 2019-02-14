@@ -39,7 +39,7 @@ public:
 		scale: The scale of the text. This is not the same as the font size.
 		font: A pointer to the font, which will be used. If font is nullptr, an error will occur.
 	*/
-	void updateText(const std::string& str, float scale = 2.0f, Font* font = nullptr);
+	void updateText(const std::string& str, float scale = -1.0f, Font* font = nullptr);
 
 	/*
 	Update the data and bake it into a texture.
