@@ -20,5 +20,5 @@ public:
 private:
 	LevelParser levelParser;
 	GameLogic gameLogic;
-	CollisionHandler* collisionHandler;
+	CollisionHandler collisionHandler;
 };

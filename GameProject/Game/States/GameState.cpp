@@ -9,23 +9,19 @@
 #include "../../Engine/Components/Camera.h"
 #include "../../Engine/InputHandler.h"
 
-GameState::GameState() : gameLogic(&this->getEntityManager())
+GameState::GameState() : gameLogic(&this->getEntityManager(), &this->collisionHandler)
 {
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
-	this->collisionHandler = new CollisionHandler();
-	this->collisionHandler->createCollisionBodies(2);
-	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Camera"), SHAPE::BOX);
-	this->collisionHandler->addCollisionToEntity(entityManager.getTracedEntity("Target1"), SHAPE::BOX);
-	//this->collisionHandler->removeCollisionBody(entityManager.getTracedEntity("Target1"));
+	this->collisionHandler.createCollisionBodies(2);
+	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target1"), SHAPE::BOX);
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
 
 GameState::~GameState()
 {
-	delete this->collisionHandler;
 }
 
 void GameState::start()
@@ -46,7 +42,7 @@ void GameState::update(const float dt)
 
 void GameState::updateLogic()
 {
-	this->collisionHandler->update(1);
+	this->collisionHandler.update(1);
 }
 
 void GameState::render()

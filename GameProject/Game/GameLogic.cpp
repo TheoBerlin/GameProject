@@ -8,10 +8,12 @@
 #include "../Engine/Components/ArrowGuider.h"
 #include "../Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Events/EventBus.h"
+#include "Engine/Collision/CollisionHandler.h"
 
-GameLogic::GameLogic(EntityManager * em)
+GameLogic::GameLogic(EntityManager * em, CollisionHandler * ch)
 {
 	this->em = em;
+	this->ch = ch;
 	/*
 		Start game in phase 1
 	*/
@@ -91,6 +93,7 @@ void GameLogic::enterPhaseTwo(const glm::vec3 & playerPos)
 	entity->getTransform()->setPosition(playerPos);
 	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 	entity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
+	ch->addCollisionToEntity(entity, SHAPE::BOX);
 
 	/*
 		Add camera to arrow entity
@@ -114,8 +117,8 @@ void GameLogic::leavePhaseOne()
 
 void GameLogic::leavePhaseTwo()
 {
+	this->ch->removeCollisionBody(this->em->getTracedEntity("Player"));
 	this->em->removeTracedEntity("Player");
-
 }
 
 void GameLogic::changePhaseCallback(KeyEvent * ev)
