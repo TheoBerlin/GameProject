@@ -134,18 +134,21 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 
 	// Copy path
 	Entity* oldPlayerEntity = this->em->getTracedEntity("Player");
-	Component* tmpPtr = oldPlayerEntity->getComponent("ArrowGuider");
-	ArrowGuider* oldArrowGuider = dynamic_cast<ArrowGuider*>(tmpPtr);
 
-	oldArrowGuider->stopGuiding();
+	if (oldPlayerEntity) {
+		Component* tmpPtr = oldPlayerEntity->getComponent("ArrowGuider");
+		ArrowGuider* oldArrowGuider = dynamic_cast<ArrowGuider*>(tmpPtr);
 
-	// Add path treader to entity
-	PathTreader* arrow = new PathTreader(arrowEntity, oldArrowGuider->getPath());
-	arrow->startTreading();
+		oldArrowGuider->stopGuiding();
 
-	// Add path visualizer for debugging
-	PathVisualizer* pathVisualizer = new PathVisualizer(arrowEntity, this->em);
-	pathVisualizer->addPath(oldArrowGuider->getPath());
+		// Add path treader to entity
+		PathTreader* arrow = new PathTreader(arrowEntity, oldArrowGuider->getPath());
+		arrow->startTreading();
+
+		// Add path visualizer for debugging
+		PathVisualizer* pathVisualizer = new PathVisualizer(arrowEntity, this->em);
+		pathVisualizer->addPath(oldArrowGuider->getPath());
+	}
 
 	Display::get().getRenderer().setActiveCamera(camera);
 }
@@ -164,9 +167,13 @@ void GameLogic::leaveReplayPhase()
 {
 	Entity* oldPlayerEntity = this->em->getTracedEntity("ArrowReplay");
 	Component* tmpPtr = oldPlayerEntity->getComponent("PathVisualizer");
-	PathVisualizer* pathVisualizer = dynamic_cast<PathVisualizer*>(tmpPtr);
 
-	pathVisualizer->removeVisualizers();
+	if (tmpPtr) {
+		PathVisualizer* pathVisualizer = dynamic_cast<PathVisualizer*>(tmpPtr);
+
+		pathVisualizer->removeVisualizers();
+
+	}
 
 	this->em->removeTracedEntity("ArrowReplay");
 	this->em->removeTracedEntity("PlayerCamera");
