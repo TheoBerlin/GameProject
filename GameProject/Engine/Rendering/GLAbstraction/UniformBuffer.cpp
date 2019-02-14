@@ -15,7 +15,14 @@ UniformBuffer::~UniformBuffer()
 	glDeleteBuffers(1, &this->id);
 }
 
+void UniformBuffer::bind(unsigned bindingPoint)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, this->id);
+	// Bind buffer to binding point
+	glBindBufferBase(GL_UNIFORM_BUFFER, this->bindingPoint, this->id);
 
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
 
 void UniformBuffer::bindShader(unsigned shaderID, const char* blockName, unsigned bindingPoint)
 {
@@ -31,9 +38,6 @@ void UniformBuffer::bindShader(unsigned shaderID, const char* blockName, unsigne
 
 	// Bind shader block to binding point
 	glUniformBlockBinding(shaderID, index, this->bindingPoint);
-
-	// Bind buffer to binding point
-	glBindBufferBase(GL_UNIFORM_BUFFER, this->bindingPoint, this->id);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
