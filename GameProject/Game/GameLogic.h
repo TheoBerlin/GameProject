@@ -1,8 +1,10 @@
 #pragma once
 
+#include <Engine/Components/FreeMove.h>
 #include "Engine/Entity/EntityManager.h"
-#include "glm/glm.hpp"
 #include "Engine/Events/Events.h"
+#include <Game/Components/PathVisualizer.h>
+#include "glm/glm.hpp"
 
 class GameLogic
 {
@@ -10,14 +12,16 @@ public:
 	GameLogic(EntityManager * em);
 	~GameLogic();
 
-	enum Phases { PHASE_ONE, PHASE_TWO, PHASE_THREE };
+	enum Phases { PHASE_OVERVIEW, PHASE_GUIDING, PHASE_REPLAY };
 	void changePhase(Phases phase);
 
-	void enterPhaseOne(const glm::vec3 & cameraPos, const glm::vec3 & cameraDir);
-	void enterPhaseTwo(const glm::vec3 & playerPos);
+	void enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 & cameraDir);
+	void enterGuidingPhase(const glm::vec3 & playerPos);
+	void enterReplayPhase(const glm::vec3 & arrowPos);
 
-	void leavePhaseOne();
-	void leavePhaseTwo();
+	void leaveOverviewPhase();
+	void leaveGuidingPhase();
+	void leaveReplayPhase();
 
 private:
 	void changePhaseCallback(KeyEvent * ev);

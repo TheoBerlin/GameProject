@@ -6,14 +6,13 @@
 #include "../Entity/EntityManager.h"
 #include "../../Utils/Logger.h"
 #include "../AssetManagement/ModelLoader.h"
+#include "Utils/Settings.h"
 
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 
 namespace json = nlohmann;
-
-#define CLASS_NAME "LEVEL_PARSER"
 
 class LevelParser {
 private:

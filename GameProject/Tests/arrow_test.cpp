@@ -57,16 +57,16 @@ TEST_CASE("Arrow guider") {
             REQUIRE(Approx(posStoreFrequency - arrowGuider->getPosStoreFrequency()) == 0.0f);
 
             // Check that the positions are stored
-            std::vector<glm::vec3> storedPositions = arrowGuider->getStoredPositions();
+            std::vector<KeyPoint> storedPositions = arrowGuider->getPath();
 
             REQUIRE(storedPositions.size() == expectedPositions.size());
 
             // Check that the positions are correct
             // (with some error margin because predicting the exact points is difficult)
             for (unsigned int i = 0; i < updateCount; i += 1) {
-                REQUIRE(Approx(storedPositions.at(i).x - expectedPositions.at(i).x) <= 0.2f);
-                REQUIRE(Approx(storedPositions.at(i).y - expectedPositions.at(i).y) <= 0.2f);
-                REQUIRE(Approx(storedPositions.at(i).z - expectedPositions.at(i).z) <= 0.2f);
+                REQUIRE(Approx(storedPositions.at(i).Position.x - expectedPositions.at(i).x) <= 0.2f);
+                REQUIRE(Approx(storedPositions.at(i).Position.y - expectedPositions.at(i).y) <= 0.2f);
+                REQUIRE(Approx(storedPositions.at(i).Position.z - expectedPositions.at(i).z) <= 0.2f);
             }
 
             arrowGuider->stopGuiding();
