@@ -1,5 +1,6 @@
 #pragma once
 #include "../Utils/Logger.h"
+#include "./Engine/Events/EventBus.h"
 
 #include "glm/glm.hpp"
 #include "nlohmann/json.hpp"
@@ -36,9 +37,9 @@ public:
 	float getVolume();
 	void setVolume(float volume = 0.5f);
 	int getScreenWidth();
-	void setScreenWidth(int screenWidth = 1280);
 	int getScreenHeight();
-	void setScreenHeight(int screenHeight = 720);
+	void setResolution(int width, int height);
+	void handleResizeEvent(WindowResizeEvent * evnt)
 };
 
 

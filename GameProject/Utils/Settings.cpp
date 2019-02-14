@@ -80,6 +80,7 @@ Settings& Settings::get()
 
 Settings::Settings()
 {
+	EventBus::get().subscribe(this, &Settings::handleResizeEvent);
 	readFile();
 }
 
@@ -106,17 +107,19 @@ int Settings::getScreenWidth()
 	return this->screenWidth;
 }
 
-void Settings::setScreenWidth(int screenWidth)
-{
-	this->screenWidth = screenWidth;
-}
-
 int Settings::getScreenHeight()
 {
 	return this->screenHeight;
 }
 
-void Settings::setScreenHeight(int screenHeight)
+void Settings::handleResizeEvent(WindowResizeEvent * evnt)
 {
-	this->screenHeight = screenHeight;
+	setResolution(evnt->width, evnt->height);
+}
+
+
+void Settings::setResolution(int width, int height)
+{
+	this->screenWidth = width;
+	this->screenHeight = height;
 }
