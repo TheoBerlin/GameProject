@@ -60,38 +60,41 @@ void ArrowGuider::update(const float& dt)
         storedPositions.push_back(host->getTransform()->getPosition());
     }
 
-    // Update camera settings using turn factors
-    // Camera FOV
-    float currentFOV = arrowCamera->getFOV();
+	if (arrowCamera) {
 
-    // Linearly interpolate between min and max FOV
-    float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
+		// Update camera settings using turn factors
+		// Camera FOV
+		float currentFOV = arrowCamera->getFOV();
 
-    // Gradually increase FOV
-    float deltaFOV = (desiredFOV - currentFOV) * dt;
+		// Linearly interpolate between min and max FOV
+		float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
 
-    // Limit FOV change per second
-    if (std::abs(deltaFOV) > FOVChangeMax) {
-        deltaFOV *= deltaFOV / FOVChangeMax;
-    }
+		// Gradually increase FOV
+		float deltaFOV = (desiredFOV - currentFOV) * dt;
 
-    arrowCamera->setFOV(currentFOV + deltaFOV);
+		// Limit FOV change per second
+		if (std::abs(deltaFOV) > FOVChangeMax) {
+			deltaFOV *= deltaFOV / FOVChangeMax;
+		}
 
-    // Camera offset
-    glm::vec3 currentOffset = arrowCamera->getOffset();
+		arrowCamera->setFOV(currentFOV + deltaFOV);
 
-    // Linearly interpolate between min and max offset
-    glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
+		// Camera offset
+		glm::vec3 currentOffset = arrowCamera->getOffset();
 
-    // Gradually increase offset
-    glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
+		// Linearly interpolate between min and max offset
+		glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
 
-    // Limit offset change per second
-    if (glm::length(deltaOffset) > offsetChangeMax) {
-        deltaOffset *= deltaOffset / offsetChangeMax;
-    }
+		// Gradually increase offset
+		glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
 
-    arrowCamera->setOffset(currentOffset + deltaOffset);
+		// Limit offset change per second
+		if (glm::length(deltaOffset) > offsetChangeMax) {
+			deltaOffset *= deltaOffset / offsetChangeMax;
+		}
+
+		arrowCamera->setOffset(currentOffset + deltaOffset);
+	}
 
     // Update arrow position
     Transform* transform = host->getTransform();
@@ -100,6 +103,10 @@ void ArrowGuider::update(const float& dt)
 	glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
 
     transform->setPosition(newPos);
+	/*
+		Used to indicate movement for update vertex buffer. Must be called to get entity to move
+	*/
+	this->getHost()->hasMovedThisFrame();
 }
 
 void ArrowGuider::startGuiding()
@@ -109,19 +116,19 @@ void ArrowGuider::startGuiding()
     arrowCamera = dynamic_cast<Camera*>(tempPtr);
 
     if (!arrowCamera) {
-        LOG_WARNING("Arrow Guider failed to find Camera component, will not start guiding");
-        return;
+        LOG_WARNING("Arrow Guider failed to find Camera component, will still guide arrow with mouse");
     }
+	else {
+		// Set camera settings
+		arrowCamera->setFOV(minFOV);
+		arrowCamera->setOffset(minCamOffset);
+	}
 
     isGuiding = true;
 
     // Clear previous path and store starting position
     storedPositions.clear();
     storedPositions.push_back(host->getTransform()->getPosition());
-
-    // Set camera settings
-    arrowCamera->setFOV(minFOV);
-    arrowCamera->setOffset(minCamOffset);
 
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
