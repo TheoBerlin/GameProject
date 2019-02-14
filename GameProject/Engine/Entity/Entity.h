@@ -24,6 +24,14 @@ public:
 	void setModel(Model* model);
 	Model* getModel();
 
+	void setRenderingGroupIndex(unsigned index);
+	unsigned getRenderingGroupIndex();
+
+	/*
+		Must be used when entity moves!! resets in update to false. 
+	*/
+	void hasMovedThisFrame();
+
 	void setName(const std::string& name);
 	const std::string getName();
 	Transform* getTransform();
@@ -34,5 +42,15 @@ private:
 	std::string name;
 	Transform transform;
 
+
+	/*
+		hasMoved is used for checking if vertex buffer with model matrices should be updated for model.
+	*/
+	bool hasMoved;
+
+	/*
+		Used to identify position in models renderingGroup, so entites can remove themselves from being rendered. -1 indicates not model attached
+	*/
+	unsigned renderingGroupIndex;
 	Model* model;
 };
