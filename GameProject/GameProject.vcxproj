@@ -92,6 +92,7 @@
     <ClInclude Include="Engine\Level\Level.h" />
     <ClInclude Include="Engine\Level\LevelParser.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />

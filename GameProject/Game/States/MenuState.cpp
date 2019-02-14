@@ -14,11 +14,8 @@ MenuState::MenuState() : State()
 	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 52);
 	FontManager::addFont("segoeScript", "./Game/assets/fonts/SegoeScript/segoesc.ttf", 22);
 	this->font = FontManager::getFont("arial");
-	test.setText("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 (Testing text rendering!) [%&'-'\"+\"]", this->font);
+	test.setText("------", this->font);
 	test.setColor({1.0f, 1.0f, 1.0f, 1.0f});
-
-	this->panel = new Panel();
-	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 }
 
 MenuState::~MenuState()
@@ -28,12 +25,16 @@ MenuState::~MenuState()
 
 void MenuState::start()
 {
-	//this->pushState(new GameState());
+	this->pushState(new GameState());
 	Display& display = Display::get();
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.prepareTextRendering();
 	guiRenderer.bakeText(test, 2.0f);
+
+	this->panel = new Panel();
+	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+	this->panel->addText("Play", 0.0f, 0.0f, 1.0f, "arial");
 }
 
 void MenuState::end()
@@ -65,8 +66,9 @@ void MenuState::render()
 	
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
-	guiRenderer.draw(this->panel);
 	guiRenderer.prepareTextRendering();
+	guiRenderer.draw(this->panel);
+
 	guiRenderer.drawBaked(test, -1.0f, 0.5f);
 	//guiRenderer.draw(test, -1.0, -0.5, 2.0f);
 }

@@ -65,10 +65,11 @@ glm::vec2 Panel::getSize() const
 	return this->size;
 }
 
-void Panel::addText(const std::string & str, float x, float y, float scale, const std::string& font)
+void Panel::addText(const std::string & str, float x, float y, float scale, const std::string& font, const glm::vec4& color)
 {
-	Text* text = new Text(str, FontManager::getFont(font));
-	text->setScale(scale);
+	Text* text = new Text();
+	text->setColor(color);
+	text->updateText(str, scale, FontManager::getFont(font));
 	glm::vec2 relativePos = glm::vec2(x, y);
 	this->textList.push_back(std::pair<Text*, glm::vec2>(text, relativePos));
 }
@@ -79,6 +80,20 @@ void Panel::updateText(unsigned int index, const std::string & str, float x, flo
 	{
 		this->textList[index].first->updateText(str, scale);
 		this->textList[index].second = glm::vec2(x, y);
+	}
+	else
+	{
+		LOG_WARNING("Index out of bounds");
+		return;
+	}
+}
+
+void Panel::setTextColor(unsigned int index, const glm::vec4 & color)
+{
+	if (index >= 0 && index < this->textList.size())
+	{
+		this->textList[index].first->setColor(color);
+		this->textList[index].first->update();
 	}
 	else
 	{

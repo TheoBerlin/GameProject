@@ -24,7 +24,7 @@ public:
 	/*
 	Draw each character. One draw call for each character.
 	*/
-	void draw(Text & text, float x, float y, float scale);
+	void draw(Text & text, float x, float y, float scale = -1.0f);
 
 	/*
 	Cunstruct all character bitmap and draw each character. One draw call for each character.

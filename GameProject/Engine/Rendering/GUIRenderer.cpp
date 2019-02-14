@@ -33,7 +33,7 @@ void GUIRenderer::bakeText(Text & text, float scale)
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawToBake(text);
 	fb.unbind();
-	text.setBakedTexture(fb.getColorTexture(0));
+	text.setBakedTexture(*fb.getColorTexture(0));
 
 	glViewport(0, 0, display.getWidth(), display.getHeight());
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -63,7 +63,7 @@ void GUIRenderer::draw(Text & text, float x, float y, float scale)
 	Font* font = text.getFont();
 	Display& display = Display::get();
 
-	float currentScale = scale < 0.0f ? text.getScale() : scale;
+	float currentScale = scale <= 0.0f ? text.getScale() : scale;
 
 	float sx = display.getPixelXScale();
 	float sy = display.getPixelYScale();
@@ -187,6 +187,14 @@ void GUIRenderer::draw(Panel * panel)
 
 	this->vaQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	for (auto& element : panel->getTextList())
+	{
+		float x = panel->getPosition().x + element.second.x;
+		float y = panel->getPosition().y + element.second.y;
+		drawBaked(*element.first, x, y);
+		//draw(*element.first, x, y);
+	}
 }
 
 void GUIRenderer::drawToBake(Text & text)

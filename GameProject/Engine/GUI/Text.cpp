@@ -3,12 +3,12 @@
 #include "Utils/Logger.h"
 #include "../Rendering/GUIRenderer.h"
 
-Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), bakedTexture(nullptr), scale(2.0f)
+Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), scale(2.0f)
 {
 	this->font = nullptr;
 }
 
-Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), bakedTexture(nullptr), scale(2.0f)
+Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), scale(2.0f)
 {
 	setText(str, font);
 }
@@ -98,6 +98,15 @@ void Text::updateText(const std::string & str, float scale, Font * font)
 	}
 }
 
+void Text::update()
+{
+	Display& display = Display::get();
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+
+	guiRenderer.prepareTextRendering();
+	guiRenderer.bakeText(*this, this->scale);
+}
+
 void Text::setScale(float scale)
 {
 	this->scale = scale;
@@ -128,14 +137,14 @@ float Text::getBearingY() const
 	return this->bearingY;
 }
 
-void Text::setBakedTexture(Texture * texture)
+void Text::setBakedTexture(const Texture& texture)
 {
 	this->bakedTexture = texture;
 }
 
 Texture* Text::getBakedTexture()
 {
-	return this->bakedTexture;
+	return &this->bakedTexture;
 }
 
 Font * Text::getFont()

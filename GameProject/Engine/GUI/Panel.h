@@ -27,8 +27,9 @@ public:
 	void setSize(glm::vec2 size);
 	glm::vec2 getSize() const;
 
-	void addText(const std::string& str, float x, float y, float scale, const std::string& font);
+	void addText(const std::string& str, float x, float y, float scale, const std::string& font, const glm::vec4& color = { 1.0f, 1.0f, 1.0f, 1.0f });
 	void updateText(unsigned int index, const std::string& str, float x, float y, float scale);
+	void setTextColor(unsigned int index, const glm::vec4& color);
 
 	std::vector<std::pair<Text*, glm::vec2>>& getTextList();
 

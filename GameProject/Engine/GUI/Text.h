@@ -42,6 +42,11 @@ public:
 	void updateText(const std::string& str, float scale = 2.0f, Font* font = nullptr);
 
 	/*
+	Update the data and bake it into a texture.
+	*/
+	void update();
+
+	/*
 	Set the scale of the text. This is not the same as setting the font size.
 	*/
 	void setScale(float scale);
@@ -70,9 +75,9 @@ public:
 	float getBearingY() const;
 
 	/*
-	Set the baked texture.
+	Set the baked texture as a copy of the argument.
 	*/
-	void setBakedTexture(Texture* texture);
+	void setBakedTexture(const Texture& texture);
 	/*
 	Get a pointer to the baked texture.
 	*/
@@ -104,7 +109,7 @@ private:
 
 	float scale;
 
-	Texture* bakedTexture;
+	Texture bakedTexture;
 	Font* font;
 	std::vector<CharacterDrawData> charactersDrawData;
 };
