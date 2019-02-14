@@ -52,7 +52,17 @@ void ArrowGuider::update(const float& dt)
 
     // Update position storing frequency based on turning factors
     float turnFactorsLength = glm::length(turnFactors);
-    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    // Gradually increase storing frequency
+    float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
+
+    if (std::abs(deltaFrequency) > maxStoreFrequencyDelta) {
+        deltaFrequency *= deltaFrequency / maxStoreFrequencyDelta;
+    }
+
+    posStoreFrequency += deltaFrequency;
 
     // Update position store timer
     posStoreTimer += dt;
