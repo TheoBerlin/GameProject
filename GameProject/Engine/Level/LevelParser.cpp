@@ -4,6 +4,7 @@
 #include "../../Engine/Rendering/Renderer.h"
 #include "../../Engine/Components/FreeMove.h"
 #include "../../Engine/Components/Camera.h"
+#include <Game/Components/RollNullifier.h>
 
 void LevelParser::readEntityTargets(EntityManager * entityManager)
 {
@@ -37,10 +38,14 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 			break;
 		}
 
+		// If the target is mobile
 		if (!path.empty()) {
 			PathTreader* treader = new PathTreader(entity, path);
 			treader->startTreading();
+
 			position = path.at(0).Position;
+
+			new RollNullifier(entity);
 		}
 
 		Transform* transform = entity->getTransform();
