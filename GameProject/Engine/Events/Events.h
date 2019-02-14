@@ -11,7 +11,7 @@
 // THE SYNTAX FOR UNSUBSCRIBE IS THE SAME AS FOR SUBSCRIBE
 
 /// Forward declerations
-namespace reactphysics3d { class CollisionBody; }
+class Entity;
 
 /// Class to inherit from
 class Event
@@ -46,11 +46,11 @@ struct MouseClickEvent : public Event
 	int action;
 };
 
-struct CollisionEvent : public Event
+struct PlayerCollisionEvent : public Event
 {
-	CollisionEvent(reactphysics3d::CollisionBody* entityOne, reactphysics3d::CollisionBody* entityTwo) : entityOne{ entityOne }, entityTwo{ entityTwo } {};
-	reactphysics3d::CollisionBody* entityOne;
-	reactphysics3d::CollisionBody* entityTwo;
+	PlayerCollisionEvent(Entity* entity1, Entity* entity2) : entity1{ entity1 }, entity2{ entity2 } {};
+	Entity* entity1;
+	Entity* entity2;
 };
 
 struct ResetEvent : public Event
