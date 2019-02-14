@@ -29,6 +29,7 @@ private:
 	void readScreenHeight();
 
 	json::json jsonFile;
+
 public:
 	static Settings& get();
 	Settings();
@@ -39,7 +40,7 @@ public:
 	int getScreenWidth();
 	int getScreenHeight();
 	void setResolution(int width, int height);
-	void handleResizeEvent(WindowResizeEvent * evnt)
+	void handleResizeEvent(WindowResizeEvent * evnt);
 };
 
 
