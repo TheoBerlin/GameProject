@@ -20,7 +20,7 @@ public:
 	/*
 	Calls updatedLogic on top state.
 	*/
-	void updateLogic();
+	void updateLogic(const float dt);
 
 	/*
 	Calls render on top state.

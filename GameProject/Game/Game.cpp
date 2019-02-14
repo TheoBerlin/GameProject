@@ -13,7 +13,7 @@ void Game::onUpdate(float dt)
 {
 }
 
-void Game::onUpdateLogic()
+void Game::onUpdateLogic(const float dt)
 {
 }
 

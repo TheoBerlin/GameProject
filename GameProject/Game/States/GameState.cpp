@@ -14,6 +14,8 @@ GameState::GameState() : gameLogic(&this->getEntityManager())
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
+	Display::get().getRenderer().initInstancing();
+
 	InputHandler ih(Display::get().getWindowPtr());
 }
 
@@ -37,18 +39,30 @@ void GameState::update(const float dt)
 		entity->update(dt);
 }
 
-void GameState::updateLogic()
+void GameState::updateLogic(const float dt)
 {
+	
 }
 
 void GameState::render()
 {
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	//EntityManager& entityManager = this->getEntityManager();
+	//std::vector<Entity*>& entities = entityManager.getAll();
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
-	for (Entity* entity : entities)
+	
+	/*
+		Old rendering
+	*/
+
+	/*for (Entity* entity : entities)
 		renderer.push(entity);
-	renderer.drawAll();
+	renderer.drawAll();*/
+
+
+	/*
+		New rendering
+	*/
+	renderer.drawAllInstanced();
 }

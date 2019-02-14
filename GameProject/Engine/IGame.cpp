@@ -49,8 +49,8 @@ void IGame::gameLoop()
 
 		// Update logic in a fixed interval
 		if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
-			this->stateManager.updateLogic();
-			onUpdateLogic();
+			this->stateManager.updateLogic(totalTime);
+			onUpdateLogic(totalTime);
 			totalTime = 0.0f;
 			ups++;
 		}

@@ -17,10 +17,10 @@ void StateManager::update(const float dt)
 		this->stack.top()->update(dt);
 }
 
-void StateManager::updateLogic()
+void StateManager::updateLogic(const float dt)
 {
 	if (!isEmpty())
-		this->stack.top()->updateLogic();
+		this->stack.top()->updateLogic(dt);
 }
 
 void StateManager::render()

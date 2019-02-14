@@ -49,7 +49,7 @@ void TestState::update(const float dt)
 	this->entity->update(dt);
 }
 
-void TestState::updateLogic()
+void TestState::updateLogic(const float dt)
 {
 }
 
