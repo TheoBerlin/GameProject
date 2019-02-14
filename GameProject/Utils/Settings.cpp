@@ -89,6 +89,7 @@ Settings::~Settings()
 	if (changed == true) {
 		writeFile();
 	}
+	changed = false;
 }
 
 float Settings::getVolume()
@@ -122,4 +123,5 @@ void Settings::setResolution(int width, int height)
 {
 	this->screenWidth = width;
 	this->screenHeight = height;
+	changed = true;
 }
