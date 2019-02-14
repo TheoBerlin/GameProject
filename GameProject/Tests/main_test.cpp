@@ -15,15 +15,13 @@
 
 int main(int argc, char* argv[]) {
 	// Global setup
-	Display* window = new Display();
-	window->get();
-	window->updateView(640, 480);
+	Display::get().init(640, 480, "Tests");
 
 	// Run tests
 	int result = Catch::Session().run(argc, argv);
 
 	// Global clean-up
-	delete window;
+	Display::get().~Display();
 
 	// Keep console open
 	std::getchar();

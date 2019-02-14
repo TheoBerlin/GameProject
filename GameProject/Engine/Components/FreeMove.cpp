@@ -41,7 +41,7 @@ void FreeMove::update(const float & dt)
 
 	glm::vec3 newPosition = mat->getPosition();
 
-	// Check keyboard input (WASD) to calculate new position
+	// Check keyboard input to calculate new position
 	if (this->pressedKeys[GLFW_KEY_W])
 		newPosition += this->dt * mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_A])
@@ -86,7 +86,7 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 	if (evnt->key == GLFW_KEY_C && evnt->action == GLFW_PRESS)
 	{
 		this->mouseLock = !this->mouseLock;
-		
+
 		if (this->mouseLock)
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		else

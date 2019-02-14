@@ -23,16 +23,23 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
-	/*
-		Set up main uniform buffer for material settings
-	*/
-	this->uniformBuffer = new UniformBuffer();
-	this->uniformBuffer->setShader(this->testShader->getID(), "Material", 0);
-	Material emptyMaterial;
-	emptyMaterial.Ka = glm::vec3(0.1f);
-	emptyMaterial.Ks = glm::vec3(1.0f);
-	this->uniformBuffer->setData((void*)(&emptyMaterial), sizeof(emptyMaterial) - sizeof(emptyMaterial.textures));
 
+	this->uniformBuffers.resize(7);
+	for (UniformBuffer* ubo : this->uniformBuffers)
+		ubo = nullptr;
+
+	/*
+		Set up uniform buffers for shaders
+	*/
+	this->addUniformBuffer(0, this->testShader->getID(), "Material");
+	this->addUniformBuffer(1, this->testShader->getID(), "DirectionalLight");
+
+	/*
+		Set up Directional Light
+	*/
+	this->mainLight.direction = glm::normalize(glm::vec4(0.5f, -1.0f, -0.5f, 1.0f));
+	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);
 }
 
 
@@ -41,12 +48,17 @@ Pipeline::~Pipeline()
 	delete this->quadShader;
 	delete this->ZprePassShader;
 	delete this->testShader;
-	delete this->uniformBuffer;
+
+	for(UniformBuffer* ubo : this->uniformBuffers)
+		delete ubo;
+
+	this->uniformBuffers.clear();
 }
 
-void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
+void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)
 {
-	this->fbo.bind();
+	if(!toScreen)
+		this->fbo.bind();
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
@@ -56,7 +68,8 @@ void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
 	
 	this->ZprePassShader->unbind();
 	this->prePassDepthOff();
-	this->fbo.unbind();
+	if (!toScreen)
+		this->fbo.unbind();
 }
 
 void Pipeline::prePassDepthOn()
@@ -76,6 +89,30 @@ void Pipeline::prePassDepthOff()
 	glDepthFunc(GL_LEQUAL);
 	glColorMask(1, 1, 1, 1);
 	glDepthMask(GL_FALSE);
+}
+
+void Pipeline::addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName)
+{
+	UniformBuffer * ubo = nullptr;
+	try {
+		ubo = this->uniformBuffers.at(bindingPoint);
+	}
+	catch (const std::out_of_range& e) {
+		LOG_ERROR("Out of Range error, no Uniform buffer can exist at that bindingpoint, 7 bindingpoints allowed.");
+		return;
+	}
+
+	if (this->uniformBuffers.at(bindingPoint) == nullptr) {
+		ubo = new UniformBuffer();
+
+		ubo->bindShader(shaderID, blockName, bindingPoint);
+
+		this->uniformBuffers[bindingPoint] = ubo;
+	}
+	else {
+		LOG_ERROR("A uniform buffer is already bound to %d", bindingPoint);
+		return;
+	}
 }
 
 void Pipeline::drawToScreen(const std::vector<Entity*>& renderingList)
@@ -104,6 +141,7 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
 	draw(renderingList, this->testShader);
 
@@ -190,15 +228,15 @@ void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 
 void Pipeline::drawModel(Model * model, Shader* shader)
 {
+
 	for (size_t i = 0; i < model->meshCount(); i++)
 	{
 		Mesh* mesh = model->getMesh(i);
-		mesh->bindMaterial(this->uniformBuffer);
 
 		unsigned int materialIndex = mesh->getMaterialIndex();
 		Material& material = model->getMaterial(materialIndex);
 
-		this->uniformBuffer->setSubData((void*)(&material), sizeof(material) - sizeof(material.textures), 0);
+		this->uniformBuffers[0]->setSubData((void*)&material, sizeof(material) - sizeof(material.textures), 0);
 
 		for (Texture* texture : material.textures) {
 			shader->setTexture2D("tex", 0, texture->getID());

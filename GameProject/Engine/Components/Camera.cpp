@@ -56,6 +56,21 @@ glm::mat4 Camera::getVP() const
 	return this->proj * this->view;
 }
 
+glm::mat4 Camera::getView() const
+{
+	return this->view;
+}
+
+glm::mat4 Camera::getProj() const
+{
+	return this->proj;
+}
+
+glm::vec3 Camera::getPosition() const
+{
+	return this->pos;
+}
+
 float Camera::getFOV() const
 {
 	return fov;
@@ -98,5 +113,7 @@ void Camera::setForward(const glm::vec3 & forward)
 void Camera::updatePosition()
 {
 	glm::vec3 hostPos = getHost()->getTransform()->getPosition();
-	this->pos = hostPos + (this->r * this->offset.x + this->u * this->offset.y + this->f * this->offset.z);
+	Transform* transform = host->getTransform();
+
+	this->pos = hostPos + (transform->getRight() * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
 }
