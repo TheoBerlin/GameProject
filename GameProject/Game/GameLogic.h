@@ -23,6 +23,7 @@ public:
 
 private:
 	void changePhaseCallback(KeyEvent * ev);
+	void playerCollisionCallback(PlayerCollisionEvent * ev);
 
 	Phases currentPhase;
 

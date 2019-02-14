@@ -24,12 +24,18 @@ GameLogic::GameLogic(EntityManager * em, CollisionHandler * ch)
 		Change between phases using key 1 and 2.
 	*/
 	EventBus::get().subscribe(this, &GameLogic::changePhaseCallback);
+
+	/*
+		Do stuff when collision happens
+	*/
+	EventBus::get().subscribe(this, &GameLogic::playerCollisionCallback);
 }
 
 
 GameLogic::~GameLogic()
 {
 	EventBus::get().unsubscribe(this, &GameLogic::changePhaseCallback);
+	EventBus::get().unsubscribe(this, &GameLogic::playerCollisionCallback);
 }
 
 void GameLogic::changePhase(Phases phase)
@@ -89,22 +95,22 @@ void GameLogic::enterPhaseTwo(const glm::vec3 & playerPos)
 	/*
 		Create arrow entity
 	*/
-	Entity * entity = this->em->addTracedEntity("Player");
-	entity->getTransform()->setPosition(playerPos);
-	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
-	entity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
-	ch->addCollisionToEntity(entity, SHAPE::BOX);
+	this->player = this->em->addTracedEntity("Player");
+	this->player->getTransform()->setPosition(playerPos);
+	this->player->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
+	this->player->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
+	ch->addCollisionToEntity(this->player, SHAPE::ARROW);
 
 	/*
 		Add camera to arrow entity
 	*/
-	Camera* camera = new Camera(entity, "Camera", { 0.0f, 0.5f, -1.0f });
+	Camera* camera = new Camera(this->player, "Camera", { 0.0f, 0.5f, -1.0f });
 	camera->init();
 
 	/*
 		Add arrowguider to entity
 	*/
-	ArrowGuider* arrow = new ArrowGuider(entity, 2.0f);
+	ArrowGuider* arrow = new ArrowGuider(this->player, 2.0f);
 	arrow->startGuiding();
 
 	Display::get().getRenderer().setActiveCamera(camera);
@@ -137,4 +143,16 @@ void GameLogic::changePhaseCallback(KeyEvent * ev)
 	//	this->changePhase(Phases::PHASE_THREE);
 	//}
 
+}
+
+void GameLogic::playerCollisionCallback(PlayerCollisionEvent * ev)
+{
+	// Entity1 should always be player, but to be on the safe side...
+	Entity* entity;
+	if (ev->entity1 != this->player)
+		entity = ev->entity1;
+	else
+		entity = ev->entity2;
+
+	entity->getTransform()->translate({ 5.0, 0.0, 5.0 });
 }
