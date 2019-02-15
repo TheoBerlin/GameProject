@@ -12,10 +12,14 @@
 #include <Game/Components/PathTreader.h>
 #include "Engine/Collision/CollisionHandler.h"
 
-GameLogic::GameLogic(EntityManager * em, CollisionHandler * ch)
+GameLogic::GameLogic()
 {
-	this->em = em;
-	this->ch = ch;
+}
+
+void GameLogic::init(Level& level)
+{
+	this->em = level.entityManager;
+	this->targetManager = level.targetManager;
 	/*
 		Start game in phase 1
 	*/
@@ -32,7 +36,6 @@ GameLogic::GameLogic(EntityManager * em, CollisionHandler * ch)
 	*/
 	EventBus::get().subscribe(this, &GameLogic::playerCollisionCallback);
 }
-
 
 GameLogic::~GameLogic()
 {
@@ -87,6 +90,9 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
+	// Reset targets
+	targetManager->resetTargets();
+
 	Display::get().getRenderer().setActiveCamera(camera);
 
 }
@@ -115,7 +121,8 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	ArrowGuider* arrow = new ArrowGuider(this->player, 2.0f);
 	arrow->startGuiding();
 
-	new PlayerCollision(this->player);
+	// Reset targets
+	targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
 }
@@ -141,10 +148,6 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 	arrowEntity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 	arrowEntity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
-	// Add camera to arrow entity
-	//Camera* camera = new Camera(arrowEntity, "Camera", { 0.0f, 0.5f, -1.0f });
-	//camera->init();
-
 	// Copy path
 	Entity* oldPlayerEntity = this->em->getTracedEntity("Player");
 
@@ -162,6 +165,9 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 		PathVisualizer* pathVisualizer = new PathVisualizer(arrowEntity, this->em);
 		pathVisualizer->addPath(oldArrowGuider->getPath());
 	}
+
+	// Reset targets
+	targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
 }

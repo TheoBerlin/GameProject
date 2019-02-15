@@ -4,6 +4,7 @@
 #include "Engine/Entity/EntityManager.h"
 #include "Engine/Events/Events.h"
 #include <Game/Components/PathVisualizer.h>
+#include <Game/Level/Level.h>
 #include "glm/glm.hpp"
 
 class CollisionHandler;
@@ -11,7 +12,8 @@ class CollisionHandler;
 class GameLogic
 {
 public:
-	GameLogic(EntityManager * em, CollisionHandler * ch);
+	GameLogic();
+	void init(Level& level);
 	~GameLogic();
 
 	enum Phases { PHASE_OVERVIEW, PHASE_GUIDING, PHASE_REPLAY };
@@ -35,6 +37,7 @@ private:
 	Entity* player;
 
 	EntityManager* em;
+	TargetManager* targetManager;
 	CollisionHandler * ch;
 };
 
