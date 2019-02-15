@@ -14,6 +14,8 @@ private:
 	glm::vec3 f, r, u;
 	const glm::vec3 defaultForward = glm::vec3(0.0f, 0.0f, -1.0f);
 
+	bool isUpdated;
+
 	glm::quat rotationQuat;
 
 public:
@@ -34,6 +36,11 @@ public:
 	glm::vec3 getRight() const;
 	//Get up vector
 	glm::vec3 getUp() const;
+	
+	/*
+		get status if transform has been changed, reset status if it has.
+	*/
+	bool getStatus();
 
 	/*
 	Any function with the 'set' prefix applies an absolute transformation

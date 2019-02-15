@@ -5,7 +5,6 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 	transform.setForward(forward);
 
 	this->renderingGroupIndex = -1;
-	this->hasMoved = false;
 	this->model = nullptr;
 }
 
@@ -27,15 +26,13 @@ Entity::~Entity()
 
 void Entity::update(const float dt)
 {
-	this->hasMoved = false;
-
 	for (auto& it : this->components)
 		it.second->update(dt);
 
 	/*
-		Updates vertex buffer of model if a component has moved the entity
+		Updates vertex buffer of model, if it exists and a component has moved the entity
 	*/
-	if (this->model && this->hasMoved)
+	if (this->model && this->getTransform()->getStatus())
 		this->model->updateInstancingSpecificData(this->renderingGroupIndex);
 }
 
@@ -115,11 +112,6 @@ void Entity::attachToModel()
 {
 	if (this->model != nullptr && renderingGroupIndex == -1)
 		this->renderingGroupIndex = this->model->addEntity(this);
-}
-
-void Entity::hasMovedThisFrame()
-{
-	this->hasMoved = true;
 }
 
 void Entity::setName(const std::string & name)
