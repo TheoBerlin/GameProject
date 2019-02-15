@@ -6,6 +6,8 @@
 #include "../Engine/Components/Component.h"
 #include "../Engine/Components/Camera.h"
 #include "../Engine/Components/ArrowGuider.h"
+#include "../Engine/Components/Target.h"
+#include "../Engine/Components/PlayerCollision.h"
 #include "../Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Events/EventBus.h"
 #include "Engine/Collision/CollisionHandler.h"
@@ -113,6 +115,11 @@ void GameLogic::enterPhaseTwo(const glm::vec3 & playerPos)
 	ArrowGuider* arrow = new ArrowGuider(this->player, 2.0f);
 	arrow->startGuiding();
 
+	/*
+		Add player to entity
+	*/
+	new PlayerCollision(this->player);
+
 	Display::get().getRenderer().setActiveCamera(camera);
 }
 
@@ -148,11 +155,29 @@ void GameLogic::changePhaseCallback(KeyEvent * ev)
 void GameLogic::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
 	// Entity1 should always be player, but to be on the safe side...
-	Entity* entity;
+	Entity* otherEntity;
+	const rp3d::ProxyShape* playerShape;
+	const rp3d::ProxyShape* otherShape;
 	if (ev->entity1 != this->player)
-		entity = ev->entity1;
+	{
+		otherEntity = ev->entity1;
+		otherShape = ev->shape1;
+		playerShape = ev->shape2;
+	}
 	else
-		entity = ev->entity2;
+	{
+		otherEntity = ev->entity2;
+		otherShape = ev->shape2;
+		playerShape = ev->shape1;
+	}
 
-	entity->getTransform()->translate({ -1.0, 0.0, -1.0 });
+	// Handle collision for the entity the arrow hit
+	CollisionComponent* collision = dynamic_cast<CollisionComponent*>(otherEntity->getComponent("Collision"));
+	if (collision != nullptr)
+		collision->handleCollision(otherShape, playerShape);
+
+	// Handle collision for the player arrow
+	CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->player->getComponent("Collision"));
+	if (playerCollision != nullptr)
+		playerCollision->handleCollision(playerShape, otherShape);
 }
