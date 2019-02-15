@@ -17,7 +17,7 @@ VertexArray::~VertexArray()
 
 void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes)
 {
-	this->vbos.push_back(vbo);
+	this->buffers.push_back(vbo);
 
 	vbo->bind();
 	bind();
@@ -38,9 +38,9 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset)
 {
 	this->bind();
-	if (vboIndex < this->vbos.size()) {
+	if (vboIndex < this->buffers.size()) {
 
-		VertexBuffer* vbo = this->vbos[vboIndex];
+		VertexBuffer* vbo = this->buffers[vboIndex];
 		if (dataSize + offset <= vbo->getDataSize()) {
 
 			vbo->updateData(data, dataSize, offset);
