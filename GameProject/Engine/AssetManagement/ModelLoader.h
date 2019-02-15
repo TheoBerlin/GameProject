@@ -6,7 +6,6 @@
 #include <assimp/postprocess.h>
 #include "TextureManager.h"
 #include <map>
-#include "../../Utils/Logger.h"
 
 class ModelLoader
 {

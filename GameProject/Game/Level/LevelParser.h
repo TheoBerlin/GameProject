@@ -7,7 +7,6 @@
 #include <Game/Level/Level.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/AssetManagement/ModelLoader.h>
-#include <Utils/Logger.h>
 
 #include <fstream>
 #include <iostream>

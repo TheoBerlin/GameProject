@@ -1,5 +1,4 @@
 #pragma once
-#include "../Utils/Logger.h"
 #include "./Engine/Events/EventBus.h"
 
 #include "glm/glm.hpp"

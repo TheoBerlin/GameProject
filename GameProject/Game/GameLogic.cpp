@@ -4,7 +4,6 @@
 #include "../Engine/Rendering/Renderer.h"
 #include "../Engine/Components/Component.h"
 #include "../Engine/Components/Camera.h"
-#include "../Engine/Components/Target.h"
 #include "../Engine/Components/PlayerCollision.h"
 #include "../Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Events/EventBus.h"

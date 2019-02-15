@@ -6,7 +6,6 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Game/components/ComponentResources.h>
-#include <Utils/Logger.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtc/quaternion.hpp>

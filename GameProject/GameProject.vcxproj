@@ -26,7 +26,7 @@
     <ClCompile Include="Engine\Components\CollisionComponent.cpp" />
     <ClCompile Include="Engine\Collision\Collision.cpp" />
     <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
-    <ClCompile Include="Engine\Components\Target.cpp" />
+    <ClCompile Include="Engine\Components\TargetCollision.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -81,7 +81,7 @@
     <ClInclude Include="Engine\Components\CollisionComponent.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
-    <ClInclude Include="Engine\Components\Target.h" />
+    <ClInclude Include="Engine\Components\TargetCollision.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />

@@ -5,6 +5,7 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
+#include <Utils/Logger.h>
 
 void LevelParser::readEntityTargets(Level& level)
 {

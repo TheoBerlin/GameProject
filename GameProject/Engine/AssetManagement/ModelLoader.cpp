@@ -1,6 +1,7 @@
 #include "ModelLoader.h"
 
 #include "Mesh.h"
+#include "../../Utils/Logger.h"
 
 std::map<std::string, Model*> ModelLoader::loadedModels = std::map<std::string, Model*>();
 

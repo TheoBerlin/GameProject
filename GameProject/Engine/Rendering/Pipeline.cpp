@@ -3,6 +3,7 @@
 #include "Engine/AssetManagement/Mesh.h"
 #include "Engine/Entity/Entity.h"
 #include "Engine/Events/EventBus.h"
+#include "Utils/Logger.h"
 
 Pipeline::Pipeline()
 {

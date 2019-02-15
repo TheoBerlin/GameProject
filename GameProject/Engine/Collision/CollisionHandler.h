@@ -22,7 +22,7 @@ public:
 	CollisionHandler();
 	virtual ~CollisionHandler();
 
-	void update(const float& dt);
+	void checkCollision();
 
 	// Creates the amount of bodies needed for the level. Done once to have it all after each other in memory.
 	void createCollisionBodies(int num);

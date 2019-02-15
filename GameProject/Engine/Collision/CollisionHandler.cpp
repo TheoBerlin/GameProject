@@ -37,7 +37,7 @@ CollisionHandler::~CollisionHandler()
 		delete shape;
 }
 
-void CollisionHandler::update(const float & dt)
+void CollisionHandler::checkCollision()
 {
 	if (player)
 		this->world->testCollision(this->player, &this->collision);
@@ -74,7 +74,7 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 {
 	if (entity == nullptr)
 	{
-		LOG_ERROR("Nullptr as entity!");
+		LOG_WARNING("Nullptr as entity!");
 		return;
 	}
 
@@ -87,34 +87,11 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 	/*
 	SET SHAPE TO COLLISIONBODY. IF SHAPE IS ARROW/PLAYER SAVE THE POINTER FOR COLLISION CHECK
 	*/
-	rp3d::ProxyShape* proxy;
-	switch (shape)
-	{
-	case SHAPE::ARROW:
-	{
+
+	if (shape == SHAPE::ARROW)
 		this->player = entityBody;
-		// SET SHAPE!
-		rp3d::Transform transform = rp3d::Transform::identity();
-		proxy = entityBody->addCollisionShape(this->shapes[(size_t)shape], transform);
-		break;
-	}
-	case SHAPE::BOX:
-	{
-		// Set shapes
-		rp3d::Transform transform = rp3d::Transform::identity();
-		proxy = entityBody->addCollisionShape(this->shapes[(size_t)shape], transform);
-		break;
-	}
-	case SHAPE::DRONE:
-	{
-		// SET SHAPE!
-		rp3d::Transform transform = rp3d::Transform::identity();
-		proxy = entityBody->addCollisionShape(this->shapes[(size_t)shape], transform);
-		break;
-	}
-	default:
-		LOG_ERROR("Unknown shape");
-	}
+
+	entityBody->addCollisionShape(this->shapes[(size_t)shape], transform);
 
 	entityBody->setTransform(transform);
 
@@ -134,7 +111,6 @@ void CollisionHandler::removeCollisionBody(rp3d::CollisionBody * body)
 			this->bodies[i] = this->bodies[this->bodies.size() - 1];
 			this->bodies.pop_back();
 			this->takenBodies--;
-
 		}
 	}
 }

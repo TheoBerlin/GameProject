@@ -3,8 +3,7 @@
 #include <vector>
 #include <unordered_map>
 
-#include "../../Utils/Logger.h"
-#include "Entity.h"
+class Entity;
 
 class EntityManager
 {
