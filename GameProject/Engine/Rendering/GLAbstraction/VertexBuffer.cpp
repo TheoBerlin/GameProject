@@ -36,7 +36,16 @@ void VertexBuffer::unbind()
 
 void VertexBuffer::updateData(const void * const data, const size_t & dataSize, int offset)
 {
-	this->dataSize = dataSize;
 	bind();
 	glBufferSubData(GL_ARRAY_BUFFER, (GLintptr)offset, dataSize, data);
+}
+
+void VertexBuffer::setDataSize(size_t size)
+{
+	this->dataSize = size;
+}
+
+size_t VertexBuffer::getDataSize() const
+{
+	return this->dataSize;
 }
