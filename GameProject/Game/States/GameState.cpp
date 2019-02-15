@@ -22,15 +22,16 @@ GameState::GameState() : gameLogic(&this->getEntityManager())
 
 	particleManger.addEmitter(&emitter);
 	emitter.setPosition(glm::vec3(0, 2.0f, -0.0f));
-	emitter.setSpread(1.0f);
+	emitter.setSpread(0.0f);
 	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 	emitter.setAcceleration(glm::vec3(0.0f, 0.0f, 0.0f));
-	emitter.setMaxParticle(100);
+	emitter.setMaxParticle(1000);
 	emitter.setSpawnRate(100);
-	emitter.setStartColour(glm::vec4(1.0f, 1.0f, 0.0f, 0.5f));
-	emitter.setLifeTime(1.0f);
+	emitter.setStartColour(glm::vec4(0.8f, 0.0f, 1.0f, 1.0f));
+	emitter.setEndColour(glm::vec4(0.8f, 0.0f, 1.0f, 0.0f));
+	emitter.setLifeTime(10.0f);
 	emitter.setScaleChange(1.0f);
-	emitter.setScale(0.5f);
+	emitter.setScale(0.1f);
 
 
 }
@@ -63,8 +64,13 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
+	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
+		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
+		emitter.playEmitter(0);
+	}
 	for (Entity* entity : entities)
 		entity->update(dt);
 }

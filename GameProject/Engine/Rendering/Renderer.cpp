@@ -77,8 +77,18 @@ void Renderer::drawAllInstanced()
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	pipeline.getFbo()->bind();
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	std::vector<Model*> models = ModelLoader::getModels();
 	for (Model* model : models) {
 		this->pipeline.drawInstanced(model);
 	}
+	postProcessTexture = *pipeline.getFbo()->getColorTexture(0);
+	pipeline.getFbo()->unbind();
+
+	tex = *pipeline.drawParticle(*particleManager);
+
+	this->pipeline.drawTextureToQuad(&postProcessTexture, &tex);
 }

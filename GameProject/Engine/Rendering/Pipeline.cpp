@@ -72,6 +72,7 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 		-0.5f, 0.5f, 0.0f,
 		0.5f, 0.5f, 0.0f,
 	};
+	
 	this->particleShader->bind();
 	if (p) {
 
@@ -90,29 +91,28 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW);
 		particleManager.updateBuffer();
 	}
-
+	
 	// Quad
-	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(4);
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
 	// Position + Scale
-	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(5);
 	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
+	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
 
 	// Colour
-	glEnableVertexAttribArray(2);
+	glEnableVertexAttribArray(6);
 	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(glm::vec3) + sizeof(float)));
+	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(glm::vec3) + sizeof(float)));
 	
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDepthMask(GL_FALSE);
 
-	glVertexAttribDivisor(0, 0); // Reuse quad for every vertex
-	glVertexAttribDivisor(1, 1); // Use one Position + scale per quad
-	glVertexAttribDivisor(2, 1); // Use one colour per quad
+	glVertexAttribDivisor(4, 0); // Reuse quad for every vertex
+	glVertexAttribDivisor(5, 1); // Use one Position + scale per quad
+	glVertexAttribDivisor(6, 1); // Use one colour per quad
 
 
 	this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
@@ -124,15 +124,15 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 	glDepthMask(GL_TRUE);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
-	glDepthMask(GL_FALSE);
 
 	fbo.unbind();
 
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
+	glDisableVertexAttribArray(4);
+	glDisableVertexAttribArray(5);
+	glDisableVertexAttribArray(6);
 
 	this->particleShader->unbind();
+	
 	return fbo.getColorTexture(0);
 }
 

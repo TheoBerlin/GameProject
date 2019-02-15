@@ -55,6 +55,8 @@ public:
 	void playEmitter(float duration);
 	//Stop emitter
 	void stopEmitter();
+	//Clear all particles
+	void clearEmitter();
 
 	std::vector<Particle> getParticleArray() const;
 

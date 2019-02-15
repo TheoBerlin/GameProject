@@ -142,6 +142,12 @@ void ParticleEmitter::stopEmitter()
 	duration = 0;
 }
 
+void ParticleEmitter::clearEmitter()
+{
+	particles.clear();
+	oldestParticle = 0;
+}
+
 std::vector<Particle> ParticleEmitter::getParticleArray() const
 {
 	return particles;
