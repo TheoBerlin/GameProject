@@ -32,10 +32,10 @@ void StateManager::render()
 void StateManager::pop()
 {
 	State* top = this->stack.top();
-	State* state = top;
-	state->end();
-	delete state;
+	top->end();
+	delete top;
 	this->stack.pop();
+
 
 	if (this->lowerStates.empty() == false) {
 		this->lowerStates.pop();
@@ -65,4 +65,9 @@ State * StateManager::getLowerState()
 	if (this->lowerStates.empty())
 		return nullptr;
 	return this->lowerStates.top();
+}
+
+size_t StateManager::getStackSize()
+{
+	return this->stack.size();
 }

@@ -52,6 +52,12 @@ public:
 	*/
 	State* getLowerState();
 
+	/*
+	Returns the state which is one lower than the top.
+	If the top state is the only state, then this will return a nullptr.
+	*/
+	size_t getStackSize();
+
 private:
 	// Stack which holds all the states and a bool which tells if it should be deleted.
 	std::stack<State*> stack;
