@@ -17,9 +17,11 @@ void Collision::notifyContact(const CollisionCallbackInfo & info)
 {
 	Entity* entity1 = (*this->entites)[info.body1];
 	Entity* entity2 = (*this->entites)[info.body2];
+	const rp3d::ProxyShape * shape1 = info.proxyShape1;
+	const rp3d::ProxyShape * shape2 = info.proxyShape2;
 
 	//LOG_INFO("Collision: %s, %s", entity1->getName().c_str(), entity2->getName().c_str());
-	EventBus::get().publish(&PlayerCollisionEvent(entity1, entity2));
+	EventBus::get().publish(&PlayerCollisionEvent(entity1, entity2, shape1, shape2));
 }
 
 void Collision::setEntitesPointer(std::unordered_map<rp3d::CollisionBody*, Entity*>* entites)

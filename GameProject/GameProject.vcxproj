@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Components\CollisionComponent.cpp" />
     <ClCompile Include="Engine\Collision\Collision.cpp" />
     <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
     <ClCompile Include="Engine\Components\Target.cpp" />
@@ -62,11 +63,13 @@
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\UniformBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\Pipeline.cpp" />
+    <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Components\CollisionComponent.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
     <ClInclude Include="Engine\Components\Target.h" />
@@ -116,6 +119,7 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Engine\Rendering\Pipeline.h" />
+    <ClInclude Include="Engine\Components\PlayerCollision.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Utils\stb_image.h" />

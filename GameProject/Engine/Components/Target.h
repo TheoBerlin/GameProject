@@ -1,15 +1,24 @@
 #pragma once
-#include "Component.h"
+#include "CollisionComponent.h"
 #include "../Events/EventBus.h"
 
-class Target : public Component
+/*
+	This class is added to all of the targets (drones and whatnot) that should react when a collision to them has happened.
+*/
+
+class Target : public CollisionComponent
 {
+public:
+	Target(Entity * parentEntity, const std::string& tagName = "Collision");
+	virtual ~Target();
+	bool getFlag();
+
+	// This function handles the collision for targets which has this component.
+	void handleCollision(const reactphysics3d::ProxyShape* self, const reactphysics3d::ProxyShape* other);
+	void update(const float& dt);
+
 private:
 	bool flag;
 	void setUnactive(PlayerCollisionEvent * evnt);
-	void setActive(ResetEvent * evnt);
-public:
-	Target(Entity * parentEntity, const std::string& tagName = "Target");
-	virtual ~Target();
-	bool getFlag();
+	//void setActive(ResetEvent * evnt);
 };

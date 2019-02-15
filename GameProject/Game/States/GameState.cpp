@@ -9,12 +9,18 @@
 #include "../../Engine/Components/Camera.h"
 #include "../../Engine/InputHandler.h"
 
+// ---- TEMP ----
+#include "../../Engine/Components/Target.h"
+
 GameState::GameState() : gameLogic(&this->getEntityManager(), &this->collisionHandler)
 {
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
 
 	this->collisionHandler.createCollisionBodies(4);
+	new Target(entityManager.getTracedEntity("Target1"));
+	new Target(entityManager.getTracedEntity("Target2"));
+	new Target(entityManager.getTracedEntity("Target3"));
 	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target1"), SHAPE::BOX);
 	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target2"), SHAPE::BOX);
 	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target3"), SHAPE::BOX);
