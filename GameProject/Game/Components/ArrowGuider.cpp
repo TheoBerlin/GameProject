@@ -123,10 +123,6 @@ void ArrowGuider::update(const float& dt)
 	glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
 
     transform->setPosition(newPos);
-	/*
-		Used to indicate movement for update vertex buffer. Must be called to get entity to move
-	*/
-	this->getHost()->hasMovedThisFrame();
 }
 
 void ArrowGuider::startGuiding()
