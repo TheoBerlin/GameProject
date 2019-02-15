@@ -49,9 +49,6 @@ struct MouseClickEvent : public Event
 
 struct PlayerCollisionEvent : public Event
 {
-	//PlayerCollisionEvent(Entity* entity1, Entity* entity2) : entity1{ entity1 }, entity2{ entity2 } {};
-	//Entity* entity1;
-	//Entity* entity2;
 	PlayerCollisionEvent(Entity* entity1, Entity* entity2, const reactphysics3d::ProxyShape * shape1, const reactphysics3d::ProxyShape * shape2) : entity1{ entity1 }, entity2{ entity2 }, shape1{ shape1 }, shape2{ shape2 } {};
 	Entity* entity1;
 	Entity* entity2;
