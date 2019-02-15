@@ -7,25 +7,19 @@ void ParticleManager::updateEmitter(ParticleEmitter* emitter, float dt)
 
 void ParticleManager::update(float dt)
 {
-	int half = std::ceil((float)emitters.size() / 2.0f);
+	//int half = std::ceil((float)emitters.size() / 2.0f);
 
-	ParticleManager * p = new ParticleManager();
+	//ParticleManager * p = new ParticleManager();
 
-	std::thread first(&ParticleManager::updateEmitter, p, emitters[0], dt);
-	std::thread second(&ParticleManager::updateEmitter, p, emitters[1], dt);
-	std::thread third(&ParticleManager::updateEmitter, p, emitters[2], dt);
-	std::thread fourth(&ParticleManager::updateEmitter, p, emitters[3], dt);
+	//std::thread first(&ParticleManager::updateEmitter, p, emitters[0], dt);
 
-	first.join();
-	second.join();
-	third.join();
-	fourth.join();
+	//first.join();
 
-	delete p;
+	//delete p;
 
-	//for (int i = 0; i < emitters.size(); i++) {
-	//	emitters[i]->update(dt);
-	//}
+	for (int i = 0; i < emitters.size(); i++) {
+		emitters[i]->update(dt);
+	}
 }
 
 void ParticleManager::addEmitter(ParticleEmitter* emitter)

@@ -117,8 +117,8 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glDepthMask(GL_TRUE);
 
-
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
+	glDepthMask(GL_FALSE);
 
 	fbo.unbind();
 

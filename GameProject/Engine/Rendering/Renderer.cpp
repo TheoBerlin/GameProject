@@ -42,16 +42,16 @@ void Renderer::drawAll()
 	*/
 	this->pipeline.prePassDepth(this->renderingList);
 
-	Texture tex = *this->pipeline.drawParticle(*particleManager);
-	
 	///*
 	//	Drawing stage with pre existing depth buffer to texture
 	//*/
-	Texture * postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
+	postProcessTexture = *this->pipeline.drawToTexture(this->renderingList);
+
+	tex = *this->pipeline.drawParticle(*particleManager);
 	///*
 	//	Draw texture of scene to quad for postprocessing
 	//*/
-	this->pipeline.drawTextureToQuad(postProcessTexture, &tex);
+	this->pipeline.drawTextureToQuad(&postProcessTexture, &tex);
 
 
 

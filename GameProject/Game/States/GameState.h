@@ -25,8 +25,5 @@ private:
 	LevelParser levelParser;
 	ParticleManager particleManger;
 	ParticleEmitter emitter;
-	ParticleEmitter emitter1;
-	ParticleEmitter emitter2;
-	ParticleEmitter emitter3;
 	GameLogic gameLogic;
 };

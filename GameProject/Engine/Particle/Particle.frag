@@ -1,6 +1,6 @@
 #version 420
 
-out vec4 FragColour;
+layout(location = 0) out vec4 FragColour;
 
 in vec4 fColour;
 

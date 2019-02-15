@@ -69,8 +69,10 @@ void ParticleEmitter::particleReset(unsigned int index)
 	particles[index].scale = startScale;
 	particlesInfo[index].velocity = startVelocity;
 	particlesInfo[index].life = lifeTime;
-	std::uniform_real_distribution<> r(-spread, spread);
-	particlesInfo[index].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
+	if (spread != 0) {
+		std::uniform_real_distribution<> r(-spread, spread);
+		particlesInfo[index].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
+	}
 }
 
 void ParticleEmitter::interpolateColour(unsigned int index)
@@ -100,8 +102,10 @@ void ParticleEmitter::update(float dt)
 				particlesInfo.push_back(ParticleUpdateInfo());
 				particlesInfo[particlesInfo.size() - 1].velocity = startVelocity;
 				particlesInfo[particlesInfo.size() - 1].life = lifeTime;
-				std::uniform_real_distribution<> r(-spread, spread);
-				particlesInfo[particlesInfo.size() - 1].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
+				if (spread != 0) {
+					std::uniform_real_distribution<> r(-spread, spread);
+					particlesInfo[particlesInfo.size() - 1].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
+				}
 			}
 			else {
 				particleReset(oldestParticle++);
