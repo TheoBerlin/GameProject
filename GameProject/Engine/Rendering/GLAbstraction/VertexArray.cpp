@@ -9,17 +9,13 @@ VertexArray::VertexArray() : nextLocation(0)
 
 VertexArray::~VertexArray()
 {
-	// Delete VBOs
-	for (unsigned int i = 0; i < vbos.size(); i += 1) {
-		delete vbos.at(i);
-	}
-
-	//delete indexBuffer;
-
+	for (VertexBuffer* vb : this->buffers)
+		delete vb;
+	this->buffers.clear();
 	glDeleteVertexArrays(1, &this->id);
 }
 
-void VertexArray::addBuffer(VertexBuffer * vbo, const AttributeLayout& attributes)
+void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes)
 {
 	this->vbos.push_back(vbo);
 
@@ -29,6 +25,7 @@ void VertexArray::addBuffer(VertexBuffer * vbo, const AttributeLayout& attribute
 		AttributeSettings attrib = attributes.attribs[i];
 
 		glEnableVertexAttribArray(this->nextLocation);
+		//vbo->setLocation(attrib.location, i);
 		glVertexAttribPointer(this->nextLocation, attrib.size, GL_FLOAT, GL_FALSE, attributes.stride * sizeof(float), (void*)attrib.offset);
 		glVertexAttribDivisor(this->nextLocation, attrib.divisor);
 		this->nextLocation++;

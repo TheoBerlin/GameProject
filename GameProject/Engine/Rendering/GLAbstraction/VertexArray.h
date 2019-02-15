@@ -31,6 +31,5 @@ public:
 private:
 	unsigned id;
 	unsigned nextLocation;
-
-	std::vector<VertexBuffer*> vbos;
+	std::vector<VertexBuffer*> buffers;
 };

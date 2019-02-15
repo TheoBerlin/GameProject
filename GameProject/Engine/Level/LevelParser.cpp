@@ -5,7 +5,6 @@
 #include "../../Engine/Components/FreeMove.h"
 #include "../../Engine/Components/Camera.h"
 
-
 void LevelParser::readEntityTargets(EntityManager * entityManager)
 {
 	Model *model = nullptr;
@@ -34,19 +33,19 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 						position[j] = target["Position"][j];
 					}
 					catch (const std::exception& e) {
-						LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+						LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 						break;
 					}
 				}
 				else {
 					//Default position
 					position[j] = 0.0;
-					LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, j, entity->getName().c_str());
+					LOG_WARNING("Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", j, entity->getName().c_str());
 				}
 			}
 		}
 		else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 		entity->getTransform()->setPosition(position);
@@ -82,19 +81,19 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 						position[j] = box["Position"][j];
 					}
 					catch (const std::exception& e) {
-						LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+						LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 						break;
 					}
 				}
 				else {
 					//Default position
 					position[j] = 0.0;
-					LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, j, entity->getName().c_str());
+					LOG_WARNING("Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", j, entity->getName().c_str());
 				}
 			}
 		}
 		else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 		entity->getTransform()->setPosition(position);
@@ -117,7 +116,7 @@ void LevelParser::readEntityFloor(EntityManager * entityManager)
 	glm::vec3 position;
 
 	json::json& floor = jsonFile["Floor"];
-	//Every object requires a name
+	
 	entity = entityManager->addEntity();
 	for (int i = 0; i < 3; i++) {
 		//If object exists go ahead otherwise do default position
@@ -126,14 +125,14 @@ void LevelParser::readEntityFloor(EntityManager * entityManager)
 				position[i] = floor["Position"][i];
 			}
 			catch (const std::exception& e) {
-				LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+				LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 				break;
 			}
 		}
 		else {
 			//Default position
 			position[i] = 0.0;
-			LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, i, entity->getName().c_str());
+			LOG_WARNING("Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", i, entity->getName().c_str());
 		}
 
 	}
@@ -152,7 +151,7 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 			iFile >> jsonFile;
 		}
 		catch (const std::exception e) {
-			LOG_ERROR("%s: Failed to read JSON file with error: %s", CLASS_NAME, e.what());
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
 			return;
 		}
 
