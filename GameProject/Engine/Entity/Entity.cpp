@@ -36,7 +36,6 @@ void Entity::update(const float dt)
 	*/
 	if (this->model && this->getTransform()->getStatus())
 		this->model->updateInstancingSpecificData(this->renderingGroupIndex);
-}
 
 	if (this->body != nullptr) {
 		glm::vec3 pos = this->transform.getPosition();

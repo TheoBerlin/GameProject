@@ -9,7 +9,7 @@
 #include "../../Engine/Components/Camera.h"
 #include "../../Engine/InputHandler.h"
 
-// ---- TEMP ----
+// ---- TEMP - THIS SHOULD BE IN LEVELPARSER IN THE FUTURE --------
 #include "../../Engine/Components/Target.h"
 
 GameState::GameState() : gameLogic(&this->getEntityManager(), &this->collisionHandler)
