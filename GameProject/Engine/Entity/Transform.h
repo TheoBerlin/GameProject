@@ -70,5 +70,5 @@ public:
 	//Set forward vector
 	void setForward(const glm::vec3& forward);
 
-	void rotate(const float yaw, const float pitch);
+	void rotate(const float yaw, const float pitch, const float roll = 0.0f);
 };

@@ -75,9 +75,9 @@ bool Transform::getStatus()
 void Transform::rotate(const glm::vec3& rotation)
 {
 	glm::quat rotQuat = glm::quat(rotation);
-	this->f = rotationQuat * this->f;
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
+	this->f = rotQuat * this->f;
+	this->r = rotQuat * this->r;
+	this->u = rotQuat * this->u;
 
 	rotationQuat = rotQuat * rotationQuat;
 	this->isUpdated = true;
@@ -110,9 +110,9 @@ void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCente
 void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
 	glm::quat axisRotation = glm::rotate(rotationQuat, radians, glm::normalize(axis));
-	this->f = rotationQuat * this->f;
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
+	this->f = axisRotation * this->f;
+	this->r = axisRotation * this->r;
+	this->u = axisRotation * this->u;
 
 	rotationQuat = axisRotation * rotationQuat;
 	this->isUpdated = true;
@@ -199,25 +199,31 @@ void Transform::setForward(const glm::vec3 & forward)
 	}
 
 	this->f = rotQuat * this->f;
-	this->r = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
+	this->r = rotQuat * this->r;
 	this->u = glm::cross(this->r, this->f);
 
 	rotationQuat = rotQuat * rotationQuat;
 	this->isUpdated = true;
 }
 
-void Transform::rotate(const float yaw, const float pitch)
+void Transform::rotate(const float yaw, const float pitch, const float roll)
 {
 	// Apply yaw
 	glm::quat yawQuat = glm::angleAxis(yaw, GLOBAL_UP_VECTOR);
 	this->f = glm::normalize(yawQuat * this->f);
-	this->r = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
+	this->r = glm::normalize(yawQuat * this->r);
 
 	// Apply pitch
 	glm::quat pitchQuat = glm::angleAxis(pitch, this->r);
 	this->f = glm::normalize(pitchQuat * this->f);
 	this->u = glm::cross(this->r, this->f);
 
-	rotationQuat = pitchQuat * yawQuat * rotationQuat;
+	// Apply roll
+	glm::quat rollQuat = glm::angleAxis(roll, this->f);
+	this->r = glm::normalize(rollQuat * this->r);
+	this->u = glm::normalize(rollQuat * this->u);
+
+	rotationQuat = rollQuat * pitchQuat * yawQuat * rotationQuat;
+
 	this->isUpdated = true;
 }
