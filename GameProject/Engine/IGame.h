@@ -10,7 +10,7 @@ public:
 
 	void start();
 	virtual void onUpdate(float dt) {};
-	virtual void onUpdateLogic() {};
+	virtual void onUpdateLogic(const float dt) {};
 	virtual void onRender() {};
 
 	StateManager& getStateManager();

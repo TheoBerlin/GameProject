@@ -39,6 +39,11 @@ public:
 	void drawTextureToQuad(Texture* tex);
 
 	/*
+		Draws models using instancing - seperate drawing method from functions above
+	*/
+	void drawInstanced(Model * model);
+
+	/*
 		Generates depth texture for shadows, input entities who should give away shadows
 	*/
 	Texture* calcDirLightDepth(const std::vector<Entity*>& renderingList, const glm::vec3& lightDir);
@@ -64,6 +69,7 @@ private:
 
 	Shader* ZprePassShader;
 	Shader* testShader;
+	Shader* entityShaderInstanced;
 	Shader* quadShader;
 
 	Model* quad;

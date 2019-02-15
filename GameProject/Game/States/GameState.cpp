@@ -25,6 +25,8 @@ GameState::GameState() : gameLogic(&this->getEntityManager(), &this->collisionHa
 	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target2"), SHAPE::BOX);
 	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target3"), SHAPE::BOX);
 
+	Display::get().getRenderer().initInstancing();
+
 	InputHandler ih(Display::get().getWindowPtr());
 }
 
@@ -34,10 +36,24 @@ GameState::~GameState()
 
 void GameState::start()
 {
+	/*
+		All entities in this state puts themselves in the rendering group of their model
+	*/
+	EntityManager& entityManager = this->getEntityManager();
+	std::vector<Entity*>& entities = entityManager.getAll();
+	for (Entity* entity : entities)
+		entity->attachToModel();
 }
 
 void GameState::end()
 {
+	/*
+		All entities removes themselves from the rendering group of their model
+	*/
+	EntityManager& entityManager = this->getEntityManager();
+	std::vector<Entity*>& entities = entityManager.getAll();
+	for (Entity* entity : entities)
+		entity->detachFromModel();
 }
 
 void GameState::update(const float dt)
@@ -48,19 +64,30 @@ void GameState::update(const float dt)
 		entity->update(dt);
 }
 
-void GameState::updateLogic()
+void GameState::updateLogic(const float dt)
 {
 	this->collisionHandler.update(1);
 }
 
 void GameState::render()
 {
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	//EntityManager& entityManager = this->getEntityManager();
+	//std::vector<Entity*>& entities = entityManager.getAll();
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
-	for (Entity* entity : entities)
+	
+	/*
+		Old rendering
+	*/
+
+	/*for (Entity* entity : entities)
 		renderer.push(entity);
-	renderer.drawAll();
+	renderer.drawAll();*/
+
+
+	/*
+		New rendering
+	*/
+	renderer.drawAllInstanced();
 }
