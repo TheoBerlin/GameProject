@@ -12,7 +12,7 @@
 #include <Game/GameLogic/TargetManager.h>
 
 // ---- TEMP - THIS SHOULD BE IN LEVELPARSER IN THE FUTURE --------
-#include "../../Engine/Components/Target.h"
+#include "../../Engine/Components/TargetCollision.h"
 
 GameState::GameState()
 {
@@ -23,15 +23,16 @@ GameState::GameState()
 	EntityManager* entityManager = &this->getEntityManager();
 	level.entityManager = entityManager;
 	level.targetManager = targetManager;
+	//level.collisionHandler = &this->collisionHandler;
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
 	gameLogic.init(level, &this->collisionHandler);
 
 	this->collisionHandler.createCollisionBodies(4);
-	new Target(entityManager->getTracedEntity("Target1"));
-	new Target(entityManager->getTracedEntity("Target2"));
-	new Target(entityManager->getTracedEntity("Target3"));
+	new TargetCollision(entityManager->getTracedEntity("Target1"));
+	new TargetCollision(entityManager->getTracedEntity("Target2"));
+	new TargetCollision(entityManager->getTracedEntity("Target3"));
 	this->collisionHandler.addCollisionToEntity(entityManager->getTracedEntity("Target1"), SHAPE::BOX);
 	this->collisionHandler.addCollisionToEntity(entityManager->getTracedEntity("Target2"), SHAPE::BOX);
 	this->collisionHandler.addCollisionToEntity(entityManager->getTracedEntity("Target3"), SHAPE::BOX);
@@ -78,7 +79,7 @@ void GameState::update(const float dt)
 
 void GameState::updateLogic(const float dt)
 {
-	this->collisionHandler.update(1);
+	this->collisionHandler.checkCollision();
 }
 
 void GameState::render()
