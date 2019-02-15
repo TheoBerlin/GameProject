@@ -1,30 +1,56 @@
 #include "ParticleEmitter.h"
 
-ParticleEmitter::ParticleEmitter(glm::vec3 position, glm::vec3 velocity, glm::vec3 startColour, float startScale, int maxParticle, int spawnRate, float spread, glm::vec3 endColour)
+ParticleEmitter::ParticleEmitter()
 {
-	this->position = position;
-	this->startVelocity = velocity;
-	this->maxParticle = maxParticle;
-	this->spawnRate = spawnRate;
-	this->spread = spread;
-	this->startColour = startColour;
-	this->endColour = endColour;
-	this->startScale = startScale;
-	this->spread = spread;
+	this->position = glm::vec3(0.0f);
+	this->startVelocity = glm::vec3(0.0f);
+	this->maxParticle = 100;
+	this->spawnRate = 10;
+	this->spread = 0.0f;
+	this->startColour = glm::vec4(1.0f);
+	this->endColour = glm::vec4(1.0f);
+	this->startScale = 1.0f;
+	this->lifeTime = 10.0f;
 
 	particles.reserve(maxParticle);
 
+	loop = false;
+	duration = 0;
 	oldestParticle = 0;
 	emissionTime = 0;
 }
 
-void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 velocity, float scale)
+void ParticleEmitter::operator=(ParticleEmitter & oldEmitter)
 {
+	this->position = oldEmitter.getPosition();
+	this->startVelocity = oldEmitter.getVelocity();
+	this->maxParticle = oldEmitter.getMaxParticle();;
+	this->spawnRate = oldEmitter.getSpawnRate();
+	this->spread = oldEmitter.getSpread();
+	this->startColour = oldEmitter.getStartColour();;
+	this->endColour = oldEmitter.getEndColour();
+	this->startScale = oldEmitter.getScale();
+	this->lifeTime = oldEmitter.getLifeTime();
+	this->acceleration = oldEmitter.getAcceleration();
+	this->scaleChange = oldEmitter.getScaleChange();
+
+	particles.reserve(maxParticle);
+
+	loop = false;
+	duration = 0;
+	oldestParticle = 0;
+	emissionTime = 0;
+}
+
+void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 acceleration, float scale)
+{
+	//Update position
 	particles[index].position += (particlesInfo[index].velocity + particlesInfo[index].spread) * dt;
-	if (velocity != glm::vec3(0.0f)) {
-		particlesInfo[index].velocity += velocity * dt;
+	if (acceleration != glm::vec3(0.0f)) {
+		//update speed
+		particlesInfo[index].velocity += acceleration * dt;
 	}
-	particlesInfo[index].lifeTime -= dt;
+	particlesInfo[index].life -= dt;
 	if (startColour != endColour) {
 		interpolateColour(index);
 	}
@@ -42,42 +68,74 @@ void ParticleEmitter::particleReset(unsigned int index)
 	particles[index].colour = startColour;
 	particles[index].scale = startScale;
 	particlesInfo[index].velocity = startVelocity;
-	particlesInfo[index].lifeTime = maxParticle / spawnRate;
+	particlesInfo[index].life = lifeTime;
 	std::uniform_real_distribution<> r(-spread, spread);
-	particlesInfo[index].spread = glm::vec3(r(ran), r(ran), r(ran));
+	particlesInfo[index].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
 }
 
 void ParticleEmitter::interpolateColour(unsigned int index)
 {
-	float maxLife = maxParticle / spawnRate;
-	particles[index].colour = startColour * (particlesInfo[index].lifeTime / maxLife) + endColour * (1 - particlesInfo[index].lifeTime / maxLife);;
+	particles[index].colour = startColour * (particlesInfo[index].life / lifeTime) + endColour * (1 - particlesInfo[index].life / lifeTime);;
 }
 
-void ParticleEmitter::update(float dt, glm::vec3 velocity, float scale)
+void ParticleEmitter::update(float dt)
 {
-	emissionTime += dt;
-	while (emissionTime >= ((float)1 / spawnRate)) {
-		emissionTime -= ((float)1 / spawnRate);
-		if (particles.size() < maxParticle) {
-			particles.push_back(Particle());
-			particles[particles.size() - 1].position = position;
-			particles[particles.size() - 1].colour = startColour;
-			particles[particles.size() - 1].scale = startScale;
-			particlesInfo.push_back(ParticleUpdateInfo());
-			particlesInfo[particlesInfo.size() - 1].velocity = startVelocity;
-			particlesInfo[particlesInfo.size() - 1].lifeTime = maxParticle/spawnRate;
-			std::uniform_real_distribution<> r(-spread, spread);
-			particlesInfo[particlesInfo.size() - 1].spread = glm::vec3(r(ran), r(ran), r(ran));
+	//If not looping reduce duration
+	if (!loop)
+		duration -= dt;
+
+	if (loop || duration > 0) {
+		emissionTime += dt;
+		//Since logic update is caped, we can spawn multiple particals per frame
+		//Keep spawning particles to accieve appropiate spawn rate
+		while (emissionTime >= ((float)1 / spawnRate)) {
+			emissionTime -= ((float)1 / spawnRate);
+			//If all particles have not been spawned create a new one, else reset the oldest particle
+			if (particles.size() < maxParticle) {
+				//Create a new particle
+				particles.push_back(Particle());
+				particles[particles.size() - 1].position = position;
+				particles[particles.size() - 1].colour = startColour;
+				particles[particles.size() - 1].scale = startScale;
+				particlesInfo.push_back(ParticleUpdateInfo());
+				particlesInfo[particlesInfo.size() - 1].velocity = startVelocity;
+				particlesInfo[particlesInfo.size() - 1].life = lifeTime;
+				std::uniform_real_distribution<> r(-spread, spread);
+				particlesInfo[particlesInfo.size() - 1].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
+			}
+			else {
+				particleReset(oldestParticle++);
+				if (oldestParticle == maxParticle)
+					oldestParticle = 0;
+			}
+		}
+	}
+	//Update all particles
+	for (int i = 0; i < particles.size(); i++) {
+		//Particle is dead if life is 0 or less
+		if (particlesInfo[i].life > 0) {
+			particleUpdate(i, dt, acceleration, scaleChange);
 		}
 		else {
-			particleReset(oldestParticle++);
-			if (oldestParticle == maxParticle)
-				oldestParticle = 0;
+			particles[i].scale = 0;
 		}
 	}
-	for (int i = 0; i < particles.size(); i++) {
-		particleUpdate(i, dt, velocity, scale);
+}
+
+void ParticleEmitter::playEmitter(float duration)
+{
+	if (duration == 0) {
+		loop = true;
 	}
+	else {
+		this->duration = duration;
+	}
+}
+
+void ParticleEmitter::stopEmitter()
+{
+	loop = false;
+	duration = 0;
 }
 
 std::vector<Particle> ParticleEmitter::getParticleArray() const
@@ -85,7 +143,114 @@ std::vector<Particle> ParticleEmitter::getParticleArray() const
 	return particles;
 }
 
+void ParticleEmitter::setPosition(const glm::vec3 position)
+{
+	this->position = position;
+}
+
+glm::vec3 ParticleEmitter::getPosition() const
+{
+	return position;
+}
+
+void ParticleEmitter::setVelocity(const glm::vec3 velocity)
+{
+	this->startVelocity = velocity;
+}
+
+glm::vec3 ParticleEmitter::getVelocity() const
+{
+	return startVelocity;
+}
+
+void ParticleEmitter::setAcceleration(const glm::vec3 acceleration)
+{
+	this->acceleration = acceleration;
+}
+
+glm::vec3 ParticleEmitter::getAcceleration() const
+{
+	return acceleration;
+}
+
+void ParticleEmitter::setScale(float scale)
+{
+	this->startScale = scale;
+}
+
+float ParticleEmitter::getScale() const
+{
+	return startScale;
+}
+
+void ParticleEmitter::setScaleChange(float scaleChange)
+{
+	this->scaleChange = scaleChange;
+}
+
+float ParticleEmitter::getScaleChange() const
+{
+	return scaleChange;
+}
+
+void ParticleEmitter::setMaxParticle(const int maxParticle)
+{
+	this->maxParticle = maxParticle;
+	particles.reserve(maxParticle);
+}
+
 int ParticleEmitter::getMaxParticle() const
 {
 	return maxParticle;
+}
+
+void ParticleEmitter::setSpawnRate(const int spawnRate)
+{
+	this->spawnRate = spawnRate;
+}
+
+int ParticleEmitter::getSpawnRate() const
+{
+	return spawnRate;
+}
+
+void ParticleEmitter::setSpread(const float spread)
+{
+	this->spread = spread;
+}
+
+int ParticleEmitter::getSpread() const
+{
+	return spread;
+}
+
+void ParticleEmitter::setLifeTime(const float lifeTime)
+{
+	this->lifeTime = lifeTime;
+}
+
+float ParticleEmitter::getLifeTime() const
+{
+	return lifeTime;
+}
+
+void ParticleEmitter::setStartColour(const glm::vec4 startColour)
+{
+	this->startColour = startColour;
+	this->endColour = startColour;
+}
+
+glm::vec4 ParticleEmitter::getStartColour() const
+{
+	return startColour;
+}
+
+void ParticleEmitter::setEndColour(const glm::vec4 endColour)
+{
+	this->endColour = endColour;
+}
+
+glm::vec4 ParticleEmitter::getEndColour() const
+{
+	return endColour;
 }

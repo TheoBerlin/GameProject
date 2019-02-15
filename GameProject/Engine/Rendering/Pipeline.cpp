@@ -17,7 +17,6 @@ Pipeline::Pipeline()
 	this->quadShader = new Shader("./Engine/Rendering/Shaders/PostProcessVert.vert", "./Engine/Rendering/Shaders/PostProcessFrag.frag");
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
-
 	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
 
 	Display& display = Display::get();
@@ -45,12 +44,10 @@ Pipeline::~Pipeline()
 	delete this->ZprePassShader;
 	delete this->testShader;
 	delete this->uniformBuffer;
-
-	//PARTICLE TEST
 	delete this->particleShader;
 }
 
-void Pipeline::drawParticle(ParticleManager& particleManager)
+Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 {
 	static const GLfloat g_vertex_buffer_data[] = {
 		-0.5f, -0.5f, 0.0f,
@@ -73,62 +70,53 @@ void Pipeline::drawParticle(ParticleManager& particleManager)
 	p = false;
 	if (particleManager.getParticleCount() != 0) {
 		glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW); // Buffer orphaning, a common way to improve streaming perf. See above link for details.
+		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW);
 		particleManager.updateBuffer();
 	}
 
-	// 1rst attribute buffer : vertices
+	// Quad
 	glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glVertexAttribPointer(
-		0, // attribute. No particular reason for 0, but must match the layout in the shader.
-		3, // size
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		0, // stride
-		(void*)0 // array buffer offset
-	);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-	// 2nd attribute buffer : positions of particles' centers
+	// Position + Scale
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-	glVertexAttribPointer(
-		1, // attribute. No particular reason for 1, but must match the layout in the shader.
-		4, // size : x + y + z + size => 4
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		sizeof(Particle), // stride
-		(void*)0 // array buffer offset
-	);
+	glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
 
-	// 2nd attribute buffer : positions of particles' centers
+	// Colour
 	glEnableVertexAttribArray(2);
 	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-	glVertexAttribPointer(
-		2, // attribute. No particular reason for 1, but must match the layout in the shader.
-		3, // size : x + y + z + size => 4
-		GL_FLOAT, // type
-		GL_FALSE, // normalized?
-		sizeof(Particle), // stride
-		(void*)(sizeof(glm::vec3) + sizeof(float)) // array buffer offset
-	);
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(glm::vec3) + sizeof(float)));
+	
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDepthMask(GL_FALSE);
 
-	glVertexAttribDivisor(0, 0); // particles vertices : always reuse the same 4 vertices -> 0
-	glVertexAttribDivisor(1, 1); // positions : one per quad (its center) -> 1
-	glVertexAttribDivisor(2, 1); // positions : one per quad (its center) -> 1
+	glVertexAttribDivisor(0, 0); // Reuse quad for every vertex
+	glVertexAttribDivisor(1, 1); // Use one Position + scale per quad
+	glVertexAttribDivisor(2, 1); // Use one colour per quad
 
 
 	this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	this->particleShader->setUniform3f("cameraUp", this->camera->getV()[0][1], this->camera->getV()[1][1], this->camera->getV()[2][1]);
 	this->particleShader->setUniform3f("cameraRight", this->camera->getV()[0][0], this->camera->getV()[1][0], this->camera->getV()[2][0]);
 
+	fbo.bind();
+	glClear(GL_COLOR_BUFFER_BIT);
+	glDepthMask(GL_TRUE);
+
+
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
+
+	fbo.unbind();
 
 	glDisableVertexAttribArray(0);
 	glDisableVertexAttribArray(1);
 	glDisableVertexAttribArray(2);
 
 	this->particleShader->unbind();
+	return fbo.getColorTexture(0);
 }
 
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList)
@@ -200,13 +188,14 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	return this->fbo.getColorTexture(0);
 }
 
-void Pipeline::drawTextureToQuad(Texture * tex)
+void Pipeline::drawTextureToQuad(Texture * tex, Texture *text)
 {
 
 	glDisable(GL_DEPTH_TEST);
 
 	this->quadShader->bind();
 	this->quadShader->setTexture2D("tex", 0, tex->getID());
+	this->quadShader->setTexture2D("particles", 1, text->getID());
 
 	Mesh* mesh = this->quad->getMesh(0);
 	mesh->bindVertexBuffer();

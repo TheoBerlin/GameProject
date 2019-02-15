@@ -19,7 +19,7 @@ public:
 	~Pipeline();
 
 	//PARTICLE TEST
-	void drawParticle(ParticleManager& particleManager);
+	Texture* drawParticle(ParticleManager& particleManager);
 
 
 	/*
@@ -39,7 +39,7 @@ public:
 	/*
 		Use texture to draw to quad which cover the whole screen
 	*/
-	void drawTextureToQuad(Texture* tex);
+	void drawTextureToQuad(Texture* tex, Texture* texture);
 
 	/*
 		Generates depth texture for shadows, input entities who should give away shadows
