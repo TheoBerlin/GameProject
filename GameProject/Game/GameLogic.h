@@ -13,7 +13,7 @@ class GameLogic
 {
 public:
 	GameLogic();
-	void init(Level& level);
+	void init(Level& level, CollisionHandler * ch);
 	~GameLogic();
 
 	enum Phases { PHASE_OVERVIEW, PHASE_GUIDING, PHASE_REPLAY };
@@ -38,6 +38,6 @@ private:
 
 	EntityManager* em;
 	TargetManager* targetManager;
-	CollisionHandler * ch;
+	CollisionHandler* ch;
 };
 

@@ -20,20 +20,21 @@ GameState::GameState()
 
 	targetManager = new TargetManager();
 
-	level.entityManager = &this->getEntityManager();
+	EntityManager* entityManager = &this->getEntityManager();
+	level.entityManager = entityManager;
 	level.targetManager = targetManager;
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
-	gameLogic.init(level);
+	gameLogic.init(level, &this->collisionHandler);
 
 	this->collisionHandler.createCollisionBodies(4);
-	new Target(entityManager.getTracedEntity("Target1"));
-	new Target(entityManager.getTracedEntity("Target2"));
-	new Target(entityManager.getTracedEntity("Target3"));
-	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target1"), SHAPE::BOX);
-	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target2"), SHAPE::BOX);
-	this->collisionHandler.addCollisionToEntity(entityManager.getTracedEntity("Target3"), SHAPE::BOX);
+	new Target(entityManager->getTracedEntity("Target1"));
+	new Target(entityManager->getTracedEntity("Target2"));
+	new Target(entityManager->getTracedEntity("Target3"));
+	this->collisionHandler.addCollisionToEntity(entityManager->getTracedEntity("Target1"), SHAPE::BOX);
+	this->collisionHandler.addCollisionToEntity(entityManager->getTracedEntity("Target2"), SHAPE::BOX);
+	this->collisionHandler.addCollisionToEntity(entityManager->getTracedEntity("Target3"), SHAPE::BOX);
 
 	Display::get().getRenderer().initInstancing();
 

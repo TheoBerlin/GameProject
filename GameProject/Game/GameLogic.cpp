@@ -16,10 +16,15 @@ GameLogic::GameLogic()
 {
 }
 
-void GameLogic::init(Level& level)
+void GameLogic::init(Level& level, CollisionHandler * ch)
 {
+	/*
+		Init the handlers and managers
+	*/
+	this->ch = ch;
 	this->em = level.entityManager;
 	this->targetManager = level.targetManager;
+
 	/*
 		Start game in phase 1
 	*/
@@ -120,6 +125,8 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	*/
 	ArrowGuider* arrow = new ArrowGuider(this->player, 2.0f);
 	arrow->startGuiding();
+
+	new PlayerCollision(this->player);
 
 	// Reset targets
 	targetManager->resetTargets();
