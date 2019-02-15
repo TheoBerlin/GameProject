@@ -2,49 +2,69 @@
   "Target": [
     {
       "Name": "Target1",
-      "Position": [ -5, 2, -5 ]
+      "Position": [ -5, 1, -5 ]
     },
     {
       "Name": "Target2",
-      "Position": [ -5, 2, 5 ]
+      "Position": [ -5, 1, 5 ]
     },
     {
       "Name": "Target3",
-      "Position": [ 5, 2, -5 ]
+      "Position": [ 5, 1, -5 ]
     },
     {
       "Name": "Target4",
-      "Position": [ 5, 2, 5 ]
+      "Position": [ 5, 1, 5 ]
     },
     {
       "Name": "Target5",
-      "Position": [ 0, 2, 0 ]
+      "Position": [ 0, 1, 0 ]
+    },
+    {
+      "Name": "Target6",
+      "Path": [
+        {
+          "Position": [0, 3, -5],
+          "Time": 0
+        },
+        {
+          "Position": [5, 5, 0],
+          "Time": 3
+        },
+        {
+          "Position": [0, 2, 5],
+          "Time": 6
+        },
+        {
+          "Position": [-5, 4, 0],
+          "Time": 9
+        }
+      ]
     }
   ],
   "Boxes": [
     {
       "Name": "Box1",
-      "Position": [ -5, 0, -5 ]
+      "Position": [ -5, 0.25, -5 ]
     },
     {
       "Name": "Box2",
-      "Position": [ -5, 0, 5 ]
+      "Position": [ -5, 0.25, 5 ]
     },
     {
       "Name": "Box3",
-      "Position": [ 5, 0, -5 ]
+      "Position": [ 5, 0.25, -5 ]
     },
     {
       "Name": "Box4",
-      "Position": [ 5, 0, 5 ]
+      "Position": [ 5, 0.25, 5 ]
     },
     {
       "Name": "Box5",
-      "Position": [ 0, 0, 0 ]
+      "Position": [ 0, -0.25, 0 ]
     }
   ],
-  "Player": {
-    "Name":  "Camera",
-    "Position": [ 0, 2.2, 10 ]
+  "Floor": {
+    "Position": [ 0, 0, 0 ]
   }
-} 
+}

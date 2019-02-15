@@ -3,17 +3,17 @@
 #include "glm/glm.hpp"
 #include "nlohmann/json.hpp"
 
+#include <Game/Components/PathTreader.h>
 #include "../Entity/EntityManager.h"
 #include "../../Utils/Logger.h"
 #include "../AssetManagement/ModelLoader.h"
+#include "Utils/Settings.h"
 
 #include <fstream>
 #include <iostream>
 #include <iomanip>
 
 namespace json = nlohmann;
-
-#define CLASS_NAME "LEVEL_PARSER"
 
 class LevelParser {
 private:
@@ -25,7 +25,10 @@ private:
 	void readEntityTargets(EntityManager *entityManager);
 	void readEntityBoxes(EntityManager *entityManager);
 	void readEntityWalls(EntityManager *entityManager);
-	void readEntityPlayer(EntityManager *entityManager);
+	void readEntityFloor(EntityManager *entityManager);
+
+	void readPosition(json::json& file, Entity* entity, glm::vec3& position);
+	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);

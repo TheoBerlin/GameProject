@@ -1,45 +1,21 @@
 #define GLM_FORCE_SWIZZLE
 #include "Transform.h"
 
-glm::vec3 Transform::modulusRotation(glm::vec3 rotation)
-{
-	rotation.x = (float)fmod(rotation.x, 2.0f * 3.1415f);
-	rotation.y = (float)fmod(rotation.y, 2.0f * 3.1415f);
-	rotation.z = (float)fmod(rotation.z, 2.0f * 3.1415f);
-
-	return rotation;
-}
-
-void Transform::updateForwardRightUp()
-{
-	glm::mat4 rotMat = glm::mat4(1.0f);
-	if (rotation.x > 0)
-		rotMat = glm::rotate(rotMat, rotation.x, glm::vec3(1, 0, 0));
-	if (rotation.y > 0)
-		rotMat = glm::rotate(rotMat, rotation.y, glm::vec3(0, 1, 0));
-	if (rotation.z > 0)
-		rotMat = glm::rotate(rotMat, rotation.z, glm::vec3(0, 0, 1));
-	this->f = (rotMat * glm::vec4(defaultForward, 1.0f)).xyz();
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
-}
-
 Transform::Transform()
 {
-	this->scaleFactor = glm::vec3(1, 1, 1);
-	this->rotation = glm::vec3(0, 0, 0);
+	rotationQuat = glm::quat_cast(glm::mat4(1.0f));
+
+	this->f = defaultForward;
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
+
+	this->scaleFactor = glm::vec3(1.0f, 1.0f, 1.0f);
 	this->position = glm::vec3(0, 0, 0);
-	setForward(glm::vec3(1, 0, 0));
 }
 
 glm::mat4 Transform::getMatrix() const
 {
-	glm::mat4 ret = glm::mat4(1);
-	if(rotation != glm::vec3(0.0f)) {
-		ret = glm::rotate(ret, rotation.x + rotation.y + rotation.z, glm::normalize(rotation));
-	}
-
-	ret = glm::scale(ret, scaleFactor);
+	glm::mat4 ret = glm::mat4_cast(rotationQuat) * glm::scale(scaleFactor);
 	ret[3][0] = position.x;
 	ret[3][1] = position.y;
 	ret[3][2] = position.z;
@@ -53,7 +29,7 @@ glm::vec3 Transform::getPosition() const
 
 glm::vec3 Transform::getRotation() const
 {
-	return this->rotation;
+	return glm::eulerAngles(rotationQuat);
 }
 
 glm::vec3 Transform::getScale() const
@@ -78,44 +54,54 @@ glm::vec3 Transform::getUp() const
 
 void Transform::rotate(const glm::vec3& rotation)
 {
-	this->rotation = modulusRotation(this->rotation + rotation);
-	updateForwardRightUp();
+	glm::quat rotQuat = glm::quat(rotation);
+	this->f = rotQuat * this->f;
+	this->r = rotQuat * this->r;
+	this->u = rotQuat * this->u;
+
+	rotationQuat = rotQuat * rotationQuat;
 }
 
 void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
 	if(rotation != glm::vec3(0.0f)) {
-		glm::mat4 rotationMatrix = glm::mat4(1);
+		glm::mat4 rotMat = glm::mat4(1);
 
 		//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
-		rotationMatrix = glm::translate(rotationMatrix, rotationCenter - position);
+		rotMat = glm::translate(rotMat, rotationCenter - position);
 
 		if (glm::abs(rotation.x) > 0) {
-			rotationMatrix = glm::rotate(rotationMatrix, rotation.x, glm::vec3(1, 0, 0));
+			rotMat = glm::rotate(rotMat, rotation.x, glm::vec3(1, 0, 0));
 		}
 		if (glm::abs(rotation.y) > 0) {
-			rotationMatrix = glm::rotate(rotationMatrix, rotation.y, glm::vec3(0, 1, 0));
+			rotMat = glm::rotate(rotMat, rotation.y, glm::vec3(0, 1, 0));
 		}
 		if (glm::abs(rotation.z) > 0) {
-			rotationMatrix = glm::rotate(rotationMatrix, rotation.z, glm::vec3(0, 0, 1));
+			rotMat = glm::rotate(rotMat, rotation.z, glm::vec3(0, 0, 1));
 		}
 
-		rotationMatrix = glm::translate(rotationMatrix, position - rotationCenter);
-		position = (rotationMatrix * glm::vec4(position, 1.0f)).xyz();
+		rotMat = glm::translate(rotMat, position - rotationCenter);
+		position = (rotMat * glm::vec4(position, 1.0f)).xyz();
 	}
 }
 
 void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 {
-	rotation += normalize(axis) * radians;
-	updateForwardRightUp();
+	glm::quat axisRotation = glm::rotate(rotationQuat, radians, glm::normalize(axis));
+	this->f = axisRotation * this->f;
+	this->r = axisRotation * this->r;
+	this->u = axisRotation * this->u;
+
+	rotationQuat = axisRotation * rotationQuat;
 }
 
 void Transform::setRotation(const glm::vec3 &rotation)
 {
-	this->rotation = modulusRotation(rotation);
-	f = defaultForward;
-	updateForwardRightUp();
+	rotationQuat = glm::quat(rotation);
+
+	this->f = rotationQuat * defaultForward;
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 }
 
 void Transform::translate(const glm::vec3& vector)
@@ -160,8 +146,50 @@ void Transform::setScale(const float& scale)
 
 void Transform::setForward(const glm::vec3 & forward)
 {
-	this->f = normalize(forward);
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	glm::vec3 normForward = glm::normalize(forward);
+	// Create rotation quaternion based on new forward
+	// Beware of the cases where the new forward vector is parallell to the old one
+	float cosAngle = glm::dot(normForward, this->f);
+	glm::quat rotQuat = glm::quat_cast(glm::mat4(1));
+
+	if (cosAngle >= 1.0f - FLT_EPSILON) {
+		// The new forward is identical to the old one, do nothing
+		return;
+	} else if (cosAngle <= -1.0f + FLT_EPSILON) {
+		// The new forward is parallell to the old one, create a 180 degree rotation quarternion
+		// around any axis
+		rotQuat = glm::angleAxis(glm::pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
+	} else {
+		// Calculate rotation quaternion
+		glm::vec3 axis = glm::normalize(glm::cross(this->f, normForward));
+		float angle = std::acosf(cosAngle);
+
+		rotQuat = glm::angleAxis(angle, axis);
+	}
+
+	this->f = rotQuat * this->f;
+	this->r = rotQuat * this->r;
 	this->u = glm::cross(this->r, this->f);
-	defaultForward = f;
+
+	rotationQuat = rotQuat * rotationQuat;
+}
+
+void Transform::rotate(const float yaw, const float pitch, const float roll)
+{
+	// Apply yaw
+	glm::quat yawQuat = glm::angleAxis(yaw, GLOBAL_UP_VECTOR);
+	this->f = glm::normalize(yawQuat * this->f);
+	this->r = glm::normalize(yawQuat * this->r);
+
+	// Apply pitch
+	glm::quat pitchQuat = glm::angleAxis(pitch, this->r);
+	this->f = glm::normalize(pitchQuat * this->f);
+	this->u = glm::cross(this->r, this->f);
+
+	// Apply roll
+	glm::quat rollQuat = glm::angleAxis(roll, this->f);
+	this->r = glm::normalize(rollQuat * this->r);
+	this->u = glm::normalize(rollQuat * this->u);
+
+	rotationQuat = rollQuat * pitchQuat * yawQuat * rotationQuat;
 }

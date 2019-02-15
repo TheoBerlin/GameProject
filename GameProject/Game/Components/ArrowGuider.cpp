@@ -2,16 +2,10 @@
 
 #include <Engine/Entity/Entity.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, const Transform& startingTransform, glm::vec3 startingDirection,
-
-    float movementSpeed, float maxTurnSpeed)
+ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
-    *(host->getTransform()) = startingTransform;
-
     isGuiding = false;
-
-    this->direction = startingDirection;
 
     this->movementSpeed = movementSpeed;
 
@@ -27,12 +21,18 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, const Transform& startingTransfor
     posStoreTimer = 0.0f;
 
     arrowCamera = nullptr;
+
+    currentPitch = 0.0f;
+
+    flightTime = 0.0f;
 }
 
 ArrowGuider::~ArrowGuider()
 {
     EventBus::get().unsubscribe(this, &ArrowGuider::handleWindowResize);
-    EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+    if (isGuiding) {
+        EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+    }
 }
 
 void ArrowGuider::update(const float& dt)
@@ -42,35 +42,42 @@ void ArrowGuider::update(const float& dt)
         return;
     }
 
-    // Update arrow position
-    glm::vec3 currentPos = getPosition();
-    glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
-
-    setPosition(newPos);
+    glm::vec3 direction = host->getTransform()->getForward();
 
     // Update turn factors (proportionally slow down turning)
     turnFactors.x /= 1.0f + turnFactorFalloff * dt;
     turnFactors.y /= 1.0f + turnFactorFalloff * dt;
 
-    applyTurn();
+    applyTurn(dt);
 
     // Update position storing frequency based on turning factors
     float turnFactorsLength = glm::length(turnFactors);
-    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    // Gradually increase storing frequency
+    float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
+
+    if (std::abs(deltaFrequency) > maxStoreFrequencyDelta) {
+        deltaFrequency *= deltaFrequency / maxStoreFrequencyDelta;
+    }
+
+    posStoreFrequency += deltaFrequency;
 
     // Update position store timer
     posStoreTimer += dt;
 
+    flightTime += dt;
+
     if (posStoreTimer > 1.0f/posStoreFrequency) {
         // Store position and reset timer
-        std::fmod(posStoreTimer, posStoreFrequency);
+        posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
 
-        storedPositions.push_back(getPosition());
-    }
+        KeyPoint newKeyPoint;
+        newKeyPoint.Position = host->getTransform()->getPosition();
+        newKeyPoint.t = flightTime;
 
-    if (!arrowCamera) {
-        LOG_WARNING("Arrow guider is missing a camera");
-        return;
+        path.push_back(newKeyPoint);
     }
 
     // Update camera settings using turn factors
@@ -105,30 +112,56 @@ void ArrowGuider::update(const float& dt)
     }
 
     arrowCamera->setOffset(currentOffset + deltaOffset);
+
+    // Update arrow position
+    Transform* transform = host->getTransform();
+
+    glm::vec3 currentPos = transform->getPosition();
+	glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
+
+    transform->setPosition(newPos);
 }
 
 void ArrowGuider::startGuiding()
 {
-    isGuiding = true;
-
-    EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
-
-    // Clear previous path and store starting position
-    storedPositions.clear();
-    storedPositions.push_back(getPosition());
-
     // Get camera pointer from parent entity
     Component* tempPtr = host->getComponent("Camera");
     arrowCamera = dynamic_cast<Camera*>(tempPtr);
 
     if (!arrowCamera) {
-        LOG_WARNING("Arrow Guider failed to find Camera component");
+        LOG_WARNING("Arrow Guider failed to find Camera component, will not start guiding");
         return;
     }
+
+    isGuiding = true;
+    flightTime = 0.0f;
+
+    // Clear previous path and store starting position
+    path.clear();
+
+    KeyPoint startingKeyPoint;
+    startingKeyPoint.Position = host->getTransform()->getPosition();
+    startingKeyPoint.t = 0.0f;
+
+    path.push_back(startingKeyPoint);
 
     // Set camera settings
     arrowCamera->setFOV(minFOV);
     arrowCamera->setOffset(minCamOffset);
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // Get cursor position
+    double* cursorX = new double, *cursorY = new double;
+    glfwGetCursorPos(Display::get().getWindowPtr(), cursorX, cursorY);
+
+    mousePos = glm::vec2((float)*cursorX, (float)*cursorY);
+
+    delete cursorX;
+    delete cursorY;
+
+    EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
 }
 
 void ArrowGuider::stopGuiding()
@@ -141,15 +174,30 @@ void ArrowGuider::stopGuiding()
     turnFactors.y = 0.0f;
 
     posStoreTimer = 0.0f;
+
+    // Store end point
+    KeyPoint newKeyPoint;
+    newKeyPoint.Position = host->getTransform()->getPosition();
+    newKeyPoint.t = flightTime;
+
+    path.push_back(newKeyPoint);
+
+    // Unlock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 {
-    // Divide by window height to separate turns from the screen resolution
-    // Divide by max mouse move to get the turn factor [-1,1]
-    float turnFactorYaw = (float)event->moveX / (windowHeight * maxMouseMove);
-    // Invert Y as input treats Y as pointing downwards
-    float turnFactorPitch = (float)-event->moveY / (windowHeight * maxMouseMove);
+    // Calculate relative mouse position
+    float moveX = (float)event->moveX - mousePos.x;
+    float moveY = (float)event->moveY - mousePos.y;
+
+    mousePos.x = (float)event->moveX;
+    mousePos.y = (float)event->moveY;
+
+    // Divide by window height to separate turn speed from screen resolution
+    float turnFactorYaw = moveX / (windowHeight * maxMouseMove);
+    float turnFactorPitch = moveY / (windowHeight * maxMouseMove);
 
     // Update turnFactors
     turnFactors.x += turnFactorYaw;
@@ -177,26 +225,6 @@ void ArrowGuider::setMaxTurnSpeed(const float maxTurnSpeed)
     this->maxTurnSpeed = maxTurnSpeed;
 }
 
-glm::vec3 ArrowGuider::getDirection()
-{
-    return direction;
-}
-
-void ArrowGuider::setDirection(const glm::vec3 direction)
-{
-    this->direction = direction;
-}
-
-glm::vec3 ArrowGuider::getPosition()
-{
-    return host->getTransform()->getPosition();
-}
-
-void ArrowGuider::setPosition(const glm::vec3 position)
-{
-    host->getTransform()->setPosition(position);
-}
-
 float ArrowGuider::getMovementSpeed()
 {
     return movementSpeed;
@@ -212,9 +240,9 @@ float ArrowGuider::getPosStoreFrequency()
     return posStoreFrequency;
 }
 
-std::vector<glm::vec3>& ArrowGuider::getStoredPositions()
+std::vector<KeyPoint>& ArrowGuider::getPath()
 {
-    return storedPositions;
+    return path;
 }
 
 float ArrowGuider::getTurningSpeed()
@@ -222,37 +250,22 @@ float ArrowGuider::getTurningSpeed()
     return glm::length(turnFactors) * maxTurnSpeed;
 }
 
-void ArrowGuider::applyTurn()
+void ArrowGuider::applyTurn(const float& dt)
 {
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
-    float yaw = turnFactors.x * maxTurnSpeed;
-    float pitch = turnFactors.y * maxTurnSpeed;
+    float yaw = -turnFactors.x * maxTurnSpeed * dt;
+    float pitch = -turnFactors.y * maxTurnSpeed * dt;
 
-    // Redirect arrow
-    glm::vec3 upDir(0.0f, 1.0f, 0.0f);
-    glm::vec3 rightVec = glm::cross(direction, upDir);
+    // Limit pitch
+    float newPitch = currentPitch + pitch;
 
-    // vec4 is required for multiplication with matrices
-    glm::vec4 tempDirection(direction.x, direction.y, direction.z, 1.0f);
+    if (newPitch > maxPitch) {
+        pitch = maxPitch - currentPitch;
+    } else if (newPitch < -maxPitch) {
+        pitch = -maxPitch - currentPitch;
+    }
 
-    // Yaw
-    glm::mat4 rotMatrix = glm::rotate(turnFactors.x, upDir);
-    tempDirection = tempDirection * rotMatrix;
+    currentPitch += pitch;
 
-    // Pitch
-    rotMatrix = glm::rotate(turnFactors.y, rightVec);
-    tempDirection = tempDirection * rotMatrix;
-
-    // Used for calculation of entity rotation
-    //glm::vec3 normOldDirection = glm::normalize(direction);
-
-    direction = glm::vec3(tempDirection);
-
-    // TODO: Rotate the entity (rotation around axis needs to be implemented in EntityMatrix first)
-    /*
-    glm::vec3 normNewDirection = glm::normalize(direction);
-    glm::vec3 rotationAxis = glm::cross(normOldDirection, normNewDirection);
-
-    float rotationAngle = glm::dot(normOldDirection, normNewDirection);
-    */
+    host->getTransform()->rotate(yaw, pitch);
 }

@@ -12,6 +12,11 @@
 
 class Entity;
 
+struct DirectionalLight {
+	glm::vec4 direction;
+	glm::vec4 color_intensity;
+};
+
 class Pipeline
 {
 public:
@@ -25,7 +30,7 @@ public:
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
-	void prePassDepth(const std::vector<Entity*>& renderingList);
+	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false);
 
 	/*
 		Draw directly to the screen
@@ -53,7 +58,6 @@ public:
 private:
 	Camera * camera;
 	unsigned width, height;
-	UniformBuffer* uniformBuffer;
 	Framebuffer fbo;
 
 	void draw(const std::vector<Entity*>& renderingList);
@@ -76,5 +80,13 @@ private:
 
 	Model* quad;
 
+	DirectionalLight mainLight;
+
+	std::vector<UniformBuffer*> uniformBuffers;
+
+	/*
+		Generates uniform buffer with shaders uniform blocks size and data specified, bound to bindingpoint specified.
+	*/
+	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
 };
 

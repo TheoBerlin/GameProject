@@ -10,7 +10,7 @@ Renderer::Renderer()
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 
-	glClearColor(0.1, 0.1, 0.1, 1.0);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 }
 
 Renderer::~Renderer()

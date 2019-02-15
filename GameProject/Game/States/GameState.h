@@ -5,6 +5,7 @@
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Events/EventBus.h"
 #include "Engine/Events/Events.h"
+#include "../../Game/GameLogic.h"
 
 class GameState : public State
 {
@@ -27,4 +28,5 @@ private:
 	ParticleEmitter emitter1;
 	ParticleEmitter emitter2;
 	ParticleEmitter emitter3;
+	GameLogic gameLogic;
 };

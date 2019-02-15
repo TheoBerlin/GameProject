@@ -2,10 +2,13 @@
 
 #include "Events/EventBus.h"
 
-//action = [GLFW_PRESS, GLFW_REPEAT, GLFW_RELEASE]
+//action = [GLFW_PRESS, GLFW_RELEASE]
 void InputHandler::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods)
 {
-	EventBus::get().publish(&KeyEvent(key, action));
+	if (action != GLFW_REPEAT)
+	{
+		EventBus::get().publish(&KeyEvent(key, action));
+	}
 }
 
 void InputHandler::mouseMoveCallback(GLFWwindow * window, double xpos, double ypos)

@@ -1,6 +1,7 @@
 #include <crtdbg.h>
 
 #include "Utils/Logger.h"
+#include "Utils/Settings.h"
 #include "Game/Game.h"
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Config.h"
@@ -13,6 +14,7 @@
 
 #include "Engine/Sound/SoundContext.h"
 #include "Engine/Sound/Sound.h"
+#include "Utils/Settings.h"
 
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
