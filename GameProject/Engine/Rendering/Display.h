@@ -3,8 +3,12 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+#include "ft2build.h"
+#include FT_FREETYPE_H
+
 #include <string>
 
+class GUIRenderer;
 class Renderer;
 class Display
 {
@@ -28,8 +32,11 @@ public:
 	float getPixelYScale() const;
 	std::string getTitle() const;
 
+	FT_Library& getFTLibrary();
+
 	GLFWwindow* getWindowPtr();
 	Renderer& getRenderer();
+	GUIRenderer& getGUIRenderer();
 
 	~Display();
 
@@ -42,5 +49,8 @@ private:
 	int width;
 	int height;
 
+	FT_Library ftLibrary;
+
 	Renderer* renderer;
+	GUIRenderer* guiRenderer;
 };

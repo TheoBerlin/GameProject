@@ -21,6 +21,10 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTur
     posStoreTimer = 0.0f;
 
     arrowCamera = nullptr;
+
+    currentPitch = 0.0f;
+
+    flightTime = 0.0f;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -48,16 +52,32 @@ void ArrowGuider::update(const float& dt)
 
     // Update position storing frequency based on turning factors
     float turnFactorsLength = glm::length(turnFactors);
-    posStoreFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+
+    // Gradually increase storing frequency
+    float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
+
+    if (std::abs(deltaFrequency) > maxStoreFrequencyDelta) {
+        deltaFrequency *= deltaFrequency / maxStoreFrequencyDelta;
+    }
+
+    posStoreFrequency += deltaFrequency;
 
     // Update position store timer
     posStoreTimer += dt;
 
+    flightTime += dt;
+
     if (posStoreTimer > 1.0f/posStoreFrequency) {
         // Store position and reset timer
-        std::fmod(posStoreTimer, posStoreFrequency);
+        posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
 
-        storedPositions.push_back(host->getTransform()->getPosition());
+        KeyPoint newKeyPoint;
+        newKeyPoint.Position = host->getTransform()->getPosition();
+        newKeyPoint.t = flightTime;
+
+        path.push_back(newKeyPoint);
     }
 
     // Update camera settings using turn factors
@@ -114,10 +134,16 @@ void ArrowGuider::startGuiding()
     }
 
     isGuiding = true;
+    flightTime = 0.0f;
 
     // Clear previous path and store starting position
-    storedPositions.clear();
-    storedPositions.push_back(host->getTransform()->getPosition());
+    path.clear();
+
+    KeyPoint startingKeyPoint;
+    startingKeyPoint.Position = host->getTransform()->getPosition();
+    startingKeyPoint.t = 0.0f;
+
+    path.push_back(startingKeyPoint);
 
     // Set camera settings
     arrowCamera->setFOV(minFOV);
@@ -148,6 +174,13 @@ void ArrowGuider::stopGuiding()
     turnFactors.y = 0.0f;
 
     posStoreTimer = 0.0f;
+
+    // Store end point
+    KeyPoint newKeyPoint;
+    newKeyPoint.Position = host->getTransform()->getPosition();
+    newKeyPoint.t = flightTime;
+
+    path.push_back(newKeyPoint);
 
     // Unlock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -207,9 +240,9 @@ float ArrowGuider::getPosStoreFrequency()
     return posStoreFrequency;
 }
 
-std::vector<glm::vec3>& ArrowGuider::getStoredPositions()
+std::vector<KeyPoint>& ArrowGuider::getPath()
 {
-    return storedPositions;
+    return path;
 }
 
 float ArrowGuider::getTurningSpeed()

@@ -95,7 +95,7 @@ void Camera::setOffset(const glm::vec3& offset)
 
 void Camera::updateView()
 {
-	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getTransform()->getForward(), this->u);
+	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getTransform()->getForward(), GLOBAL_UP_VECTOR);
 }
 
 void Camera::updateProj(WindowResizeEvent * evnt)
@@ -115,5 +115,8 @@ void Camera::updatePosition()
 	glm::vec3 hostPos = getHost()->getTransform()->getPosition();
 	Transform* transform = host->getTransform();
 
-	this->pos = hostPos + (transform->getRight() * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
+	// Calculate a horizontal right vector
+	glm::vec3 rightVec = glm::normalize(glm::cross(transform->getForward(), GLOBAL_UP_VECTOR));
+
+	this->pos = hostPos + (rightVec * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
 }

@@ -30,7 +30,7 @@ Framebuffer::~Framebuffer()
 	glDeleteFramebuffers(1, &this->id);
 }
 
-Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height, const AttachmentType& attachmentTYPE)
+Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height, const AttachmentType& attachmentTYPE, unsigned internalFormat, unsigned format)
 {
 	Texture* tex = new Texture();
 	
@@ -38,7 +38,7 @@ Texture* Framebuffer::attachTexture(const GLuint & width, const GLuint & height,
 	case AttachmentType::COLOR:
 	{
 		if (this->colorAttachments.size() < 7) {
-			tex->recreate(NULL, width, height);
+			tex->recreate(NULL, width, height, internalFormat, format);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, this->id);
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + this->colorAttachments.size(), GL_TEXTURE_2D, tex->getID(), 0);
@@ -110,7 +110,7 @@ void Framebuffer::attachRenderBuffer(const GLuint & width, const GLuint & height
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const GLuint & height)
+void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const GLuint & height, unsigned internalFormat, unsigned format)
 {
 	if (this->depthAttachment != nullptr) {
 		this->depthAttachment->resize(width, height, GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT);
@@ -119,7 +119,8 @@ void Framebuffer::updateDimensions(unsigned index, const GLuint & width, const G
 
 	if (index >= 0 && index <= this->colorAttachments.size() - 1) {
 		Texture* tex = this->colorAttachments.at(index);
-		tex->resize(width, height);
+		tex->resize(width, height, internalFormat, format);
+		glViewport(0, 0, width, height);
 	}
 	else {
 		LOG_WARNING("Index out of range, cannot update dimensions of non existent color attachment!");
