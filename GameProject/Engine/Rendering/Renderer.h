@@ -28,14 +28,30 @@ public:
 	void push(Entity* entity);
 
 	/*
-	Draw all entites in the rendering list and clear it.
+		Draw all entites in the rendering list and clear it.
 	*/
 	void drawAll();
+
+	/*
+		inits vertex buffer for meshes rendering groups transforms
+	*/
+	void initInstancing();
+
+	/*
+		Updates vertex buffer for models meshes rendering groups transforms
+	*/
+	void updateInstancingData(Model * model);
+
+
+	/*
+		Draw all entites in the rendering list, assumes that all entities in rendering list uses the same model
+	*/
+	void drawAllInstanced();
 
 
 private:
 	Pipeline pipeline;
 
-
 	std::vector<Entity*> renderingList;
+
 };

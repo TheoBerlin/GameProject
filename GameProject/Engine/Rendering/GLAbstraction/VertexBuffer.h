@@ -30,6 +30,9 @@ public:
 	void setAttribCount(unsigned count) { this->attribCount = count; };
 	unsigned getAttribCount() { return this->attribCount; };
 
+	void setDataSize(size_t size);
+	size_t getDataSize() const;
+
 private:
 	unsigned id, attribCount;
 	size_t dataSize;

@@ -87,11 +87,11 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	/*
 		Create arrow entity
 	*/
+	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
 	Entity * entity = this->em->addTracedEntity("Player");
 	entity->getTransform()->setPosition(playerPos);
 	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
-	entity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
-
+	entity->setModel(model);
 	/*
 		Add camera to arrow entity
 	*/
