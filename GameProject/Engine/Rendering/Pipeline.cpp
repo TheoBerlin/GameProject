@@ -104,6 +104,7 @@ void Pipeline::addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, 
 		ubo = this->uniformBuffers.at(bindingPoint);
 	}
 	catch (const std::out_of_range& e) {
+		(void)e;
 		LOG_ERROR("Out of Range error, no Uniform buffer can exist at that bindingpoint, 7 bindingpoints allowed.");
 		return;
 	}
