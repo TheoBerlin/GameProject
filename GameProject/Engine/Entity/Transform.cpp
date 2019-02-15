@@ -89,7 +89,7 @@ void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCente
 		glm::mat4 rotMat = glm::mat4(1);
 
 		//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
-		rotMat = glm::translate(rotMat, rotationCenter - position);
+		rotMat = glm::translate(rotMat, -rotationCenter);
 
 		if (glm::abs(rotation.x) > 0) {
 			rotMat = glm::rotate(rotMat, rotation.x, glm::vec3(1, 0, 0));
@@ -101,7 +101,7 @@ void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCente
 			rotMat = glm::rotate(rotMat, rotation.z, glm::vec3(0, 0, 1));
 		}
 
-		rotMat = glm::translate(rotMat, position - rotationCenter);
+		rotMat = glm::translate(rotMat, rotationCenter);
 		position = (rotMat * glm::vec4(position, 1.0f)).xyz();
 		this->isUpdated = true;
 	}
