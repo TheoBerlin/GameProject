@@ -34,7 +34,7 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 				readPath(target, entity, path);
 			}
 		} else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
@@ -82,7 +82,7 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 				readPosition(box, entity, position);
 			}
 		} else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
@@ -155,7 +155,7 @@ void LevelParser::readPath(json::json& file, Entity* entity, std::vector<KeyPoin
 			keyPoint.t = file["Path"][pointIndex]["Time"];
 		}
 		catch (const std::exception& e) {
-			LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+			LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 			break;
 		}
 
