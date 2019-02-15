@@ -1,14 +1,9 @@
 #pragma once
 
 #include <Engine/Entity/EntityManager.h>
+#include <Game/GameLogic/TargetManager.h>
 
-class Level
-{
-public:
-	Level();
-	~Level();
-
-private:
+struct Level {
 	EntityManager* entityManager;
-
+	TargetManager* targetManager;
 };

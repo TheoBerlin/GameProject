@@ -50,7 +50,13 @@ bool Entity::removeComponent(const std::string& componentName)
 Component* Entity::getComponent(const std::string& componentName)
 {
 	// Returns nullptr if component is not found
-	return this->components[componentName];
+	auto elem = this->components.find(componentName);
+
+	if (elem != this->components.end()) {
+		return elem->second;
+	} else {
+		return nullptr;
+	}
 }
 
 void Entity::setModel(Model * model)

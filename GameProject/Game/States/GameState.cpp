@@ -1,24 +1,35 @@
 #include "GameState.h"
 
-#include "../../Engine/States/StateManager.h"
-#include "../../Engine/Entity/EntityManager.h"
-#include "../../Engine/Rendering/Display.h"
-#include "../../Engine/Rendering/Renderer.h"
+#include <Engine/States/StateManager.h>
+#include <Engine/Entity/EntityManager.h>
+#include <Engine/Rendering/Display.h>
+#include <Engine/Rendering/Renderer.h>
 
-#include "../../Engine/Components/FreeMove.h"
-#include "../../Engine/Components/Camera.h"
-#include "../../Engine/InputHandler.h"
+#include <Engine/Components/FreeMove.h>
+#include <Engine/Components/Camera.h>
+#include <Engine/InputHandler.h>
 
-GameState::GameState() : gameLogic(&this->getEntityManager())
+#include <Game/GameLogic/TargetManager.h>
+
+GameState::GameState()
 {
-	EntityManager& entityManager = this->getEntityManager();
-	levelParser.readEntites("./Engine/Level/level.json", &entityManager);
+	Level level;
+
+	targetManager = new TargetManager();
+
+	level.entityManager = &this->getEntityManager();
+	level.targetManager = targetManager;
+
+	levelParser.readLevel("./Game/Level/level.json", level);
+
+	gameLogic.init(level);
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
 
 GameState::~GameState()
 {
+	delete targetManager;
 }
 
 void GameState::start()

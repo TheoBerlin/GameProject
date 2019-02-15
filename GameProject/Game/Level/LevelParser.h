@@ -4,9 +4,10 @@
 #include "nlohmann/json.hpp"
 
 #include <Game/Components/PathTreader.h>
-#include "../Entity/EntityManager.h"
-#include "../../Utils/Logger.h"
-#include "../AssetManagement/ModelLoader.h"
+#include <Game/Level/Level.h>
+#include <Engine/Entity/EntityManager.h>
+#include <Engine/AssetManagement/ModelLoader.h>
+#include <Utils/Logger.h>
 
 #include <fstream>
 #include <iostream>
@@ -23,16 +24,16 @@ private:
 	/*void writePosition(int index, glm::vec3 position);
 	void writeName(int index, std::string name);*/
 
-	void readEntityTargets(EntityManager *entityManager);
-	void readEntityBoxes(EntityManager *entityManager);
-	void readEntityWalls(EntityManager *entityManager);
-	void readEntityFloor(EntityManager *entityManager);
+	void readEntityTargets(Level& level);
+	void readEntityBoxes(Level& level);
+	void readEntityWalls(Level& level);
+	void readEntityFloor(Level& level);
 
 	void readPosition(json::json& file, Entity* entity, glm::vec3& position);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
-	void readEntites(std::string file, EntityManager *entityManager);
+	void readLevel(std::string file, Level& level);
 
 };
