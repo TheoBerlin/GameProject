@@ -115,6 +115,8 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	ArrowGuider* arrow = new ArrowGuider(this->player, 2.0f);
 	arrow->startGuiding();
 
+	new PlayerCollision(this->player);
+
 	Display::get().getRenderer().setActiveCamera(camera);
 }
 
