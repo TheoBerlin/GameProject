@@ -19,6 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\GUI\Font.cpp" />
+    <ClCompile Include="Engine\GUI\FontManager.cpp" />
+    <ClCompile Include="Engine\GUI\Panel.cpp" />
+    <ClCompile Include="Engine\GUI\Text.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -45,6 +49,7 @@
     <ClCompile Include="Engine\AssetManagement\Model.cpp" />
     <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="Engine\Rendering\GUIRenderer.cpp" />
     <ClCompile Include="Engine\Sound\Sound.cpp" />
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
@@ -64,6 +69,7 @@
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
+    <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -71,6 +77,10 @@
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\Events\EventBus.h" />
+    <ClInclude Include="Engine\GUI\Font.h" />
+    <ClInclude Include="Engine\GUI\FontManager.h" />
+    <ClInclude Include="Engine\GUI\Panel.h" />
+    <ClInclude Include="Engine\GUI\Text.h" />
     <ClInclude Include="Engine\Imgui\imconfig.h" />
     <ClInclude Include="Engine\Imgui\imgui.h" />
     <ClInclude Include="Engine\Imgui\imgui_impl_glfw.h" />
@@ -90,8 +100,6 @@
     <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
     <ClInclude Include="Engine\AssetManagement\TextureManager.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\Rendering\Renderer.h" />
     <ClInclude Include="Engine\Rendering\Pipeline.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\RenderingResources.h" />
@@ -100,6 +108,10 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
+    <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
     <ClInclude Include="Engine\States\State.h" />
@@ -119,6 +131,7 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
+    <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />

@@ -34,7 +34,7 @@ void LevelParser::readEntityTargets(Level& level)
 				readPath(target, entity, path);
 			}
 		} else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
@@ -74,7 +74,7 @@ void LevelParser::readEntityBoxes(Level& level)
 				readPosition(box, entity, position);
 			}
 		} else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
@@ -119,13 +119,13 @@ void LevelParser::readPosition(json::json& file, Entity* entity, glm::vec3& posi
 				position[j] = file["Position"][j];
 			}
 			catch (const std::exception& e) {
-				LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+				LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 				break;
 			}
 		} else {
 			// Default position
 			position[j] = 0.0;
-			LOG_WARNING("%s: Did not find Position %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", CLASS_NAME, j, entity->getName().c_str());
+			LOG_WARNING("Did not find Position component %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", j, entity->getName().c_str());
 		}
 	}
 }
@@ -147,7 +147,7 @@ void LevelParser::readPath(json::json& file, Entity* entity, std::vector<KeyPoin
 			keyPoint.t = file["Path"][pointIndex]["Time"];
 		}
 		catch (const std::exception& e) {
-			LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+			LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 			break;
 		}
 
@@ -165,7 +165,7 @@ void LevelParser::readLevel(std::string file, Level& level)
 			iFile >> jsonFile;
 		}
 		catch (const std::exception e) {
-			LOG_ERROR("%s: Failed to read JSON file with error: %s", CLASS_NAME, e.what());
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
 			return;
 		}
 

@@ -11,6 +11,10 @@ public:
 	UniformBuffer();
 	~UniformBuffer();
 	/*
+		Binds uniform buffer to binding point
+	*/
+	void bind(unsigned bindingPoint);
+	/*
 		Bind uniform buffer to bindingpoint and allocate space for the block buffer in shader given as input.
 	*/
 	void bindShader(unsigned shaderID, const char* blockName, unsigned bindingPoint);

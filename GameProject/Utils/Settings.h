@@ -1,42 +1,46 @@
 #pragma once
 #include "../Utils/Logger.h"
+#include "./Engine/Events/EventBus.h"
+
+#include "glm/glm.hpp"
+#include "nlohmann/json.hpp"
+
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+
+namespace json = nlohmann;
+
+#define CLASS_NAME "SETTINGS"
 
 class Settings 
 {
 private:
-	bool readFile(std::string fileName = "Settings.json");
-	bool writeFile(std::string fileName = "Settings.json");
+	bool changed = false;
+	float volume;
+	int screenWidth;
+	int screenHeight;
+
+	bool readFile(std::string fileName = "./Utils/Settings.json");
+	void writeFile(std::string fileName = "./Utils/Settings.json");
+
+	void readVolume();
+	void readScreenWidth();
+	void readScreenHeight();
+
+	json::json jsonFile;
+
 public:
 	static Settings& get();
 	Settings();
 	~Settings();
 
-	float volume();
+	float getVolume();
+	void setVolume(float volume = 0.5f);
+	int getScreenWidth();
+	int getScreenHeight();
+	void setResolution(int width, int height);
+	void handleResizeEvent(WindowResizeEvent * evnt);
 };
 
-inline bool Settings::readFile(std::string fileName)
-{
-	return false;
-}
 
-inline bool Settings::writeFile(std::string fileName)
-{
-	return false;
-}
-
-inline Settings& Settings::get()
-{
-	static Settings instance;
-	return instance;
-}
-
-inline Settings::Settings()
-{
-	readFile();
-}
-
-inline Settings::~Settings()
-{
-	//Add flag if changes are made, to make sure that the file only changes if necessary
-	writeFile();
-}

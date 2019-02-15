@@ -13,12 +13,15 @@ public:
     Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
     ~Mesh();
 
-    void bindVertexBuffer();
+    void bindVertexArray();
 	IndexBuffer& getIndexBuffer();
 
     // Inserts material data into a uniform buffer
     void bindMaterial(UniformBuffer* uniformBuffer);
     unsigned short getMaterialIndex();
+
+	void initInstancing(const void * data, size_t dataSize);
+	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0);
 
 private:
     void createBuffers();

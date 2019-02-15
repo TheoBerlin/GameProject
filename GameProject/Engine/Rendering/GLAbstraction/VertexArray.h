@@ -15,7 +15,12 @@ public:
 		Important to push attributes to attributeHandler in order of how they lay in the vertex buffer
 	*/
 	void addBuffer(VertexBuffer* vbo, const AttributeLayout& layout);
-	//void setIndexBuffer(IndexBuffer* indexBuffer);
+
+	/*
+		Update existing buffer, with new layout, if size don't use default parameter the whole buffer will be reallocated and new memory has to be sent in
+	*/
+	void updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset = 0);
+
 
 	/*
 		used before drawing
@@ -26,6 +31,5 @@ public:
 private:
 	unsigned id;
 	unsigned nextLocation;
-
-	std::vector<VertexBuffer*> vbos;
+	std::vector<VertexBuffer*> buffers;
 };

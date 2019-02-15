@@ -15,8 +15,6 @@
 
 namespace json = nlohmann;
 
-#define CLASS_NAME "LEVEL_PARSER"
-
 class LevelParser {
 private:
 	json::json jsonFile;
