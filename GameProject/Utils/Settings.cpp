@@ -80,7 +80,6 @@ Settings& Settings::get()
 
 Settings::Settings()
 {
-	EventBus::get().subscribe(this, &Settings::handleResizeEvent);
 	readFile();
 }
 
@@ -112,12 +111,6 @@ int Settings::getScreenHeight()
 {
 	return this->screenHeight;
 }
-
-void Settings::handleResizeEvent(WindowResizeEvent * evnt)
-{
-	setResolution(evnt->width, evnt->height);
-}
-
 
 void Settings::setResolution(int width, int height)
 {

@@ -11,7 +11,7 @@
 MenuState::MenuState() : State()
 {
 	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 22);
-	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 52);
+	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 18);
 	FontManager::addFont("segoeScript", "./Game/assets/fonts/SegoeScript/segoesc.ttf", 22);
 	this->font = FontManager::getFont("arial");
 	test.setText("------", this->font);

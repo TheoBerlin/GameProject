@@ -59,17 +59,17 @@ bool Text::setText(const std::string & str, Font * font)
 		{
 			Font::Character character = this->font->getCharacter(*c);
 
-			float x2 = x + character.bearingX;
-			float y2 = -character.height + character.bearingY;
-			float w = character.width;
-			float h = character.height;
+			float x2 = x + (float)character.bearingX;
+			float y2 = -(float)character.height + (float)character.bearingY;
+			float w = (float)character.width;
+			float h = (float)character.height;
 			this->width = w;
 
 			// Save the highest and the lowest distances to the line.
 			if (min < (character.height - character.bearingY))
-				min = character.height - character.bearingY;
+				min = (float)character.height - (float)character.bearingY;
 			if (this->bearingY < character.bearingY)
-				this->bearingY = character.bearingY;
+				this->bearingY = (float)character.bearingY;
 
 			CharacterDrawData characterData;
 			characterData.pos = { x2, y2 };

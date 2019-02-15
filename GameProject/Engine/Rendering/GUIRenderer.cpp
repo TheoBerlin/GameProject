@@ -6,6 +6,9 @@
 
 #include "../GUI/GUIManager.h"
 
+#include "../Config.h"
+#include "../Imgui/imgui.h"
+
 GUIRenderer::GUIRenderer()
 {
 	this->textShader = new Shader("./Engine/Rendering/Shaders/TexShader.vert", "./Engine/Rendering/Shaders/TexShader.frag");
@@ -27,7 +30,10 @@ void GUIRenderer::draw(GUIManager & guiManger)
 	prepareTextRendering();
 	std::vector<Panel*>& panelList = guiManger.getPanelList();
 	for (Panel* panel : panelList)
+	{
 		draw(panel);
+		drawBaked(panel);
+	}
 }
 
 void GUIRenderer::bakeText(Text & text, float scale)
@@ -37,32 +43,30 @@ void GUIRenderer::bakeText(Text & text, float scale)
 	if (scale > 0.0f)
 		text.setScale(scale);
 
-	fb.updateDimensions(0, text.getWidth(), text.getHeight());
+	fb.updateDimensions(0, (GLuint)text.getWidth(), (GLuint)text.getHeight());
 	fb.bind();
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 	drawToBake(text);
 	fb.unbind();
 	text.setBakedTexture(*fb.getColorTexture(0));
+	text.getBakedTexture()->bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glViewport(0, 0, display.getWidth(), display.getHeight());
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void GUIRenderer::drawBaked(Text & text, float x, float y)
+void GUIRenderer::drawBaked(Text & text, float x, float y, float sx, float sy)
 {
-	Display& display = Display::get();
-
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
-
-	float scaleX = sx * text.getScale();
-	float scaleY = sy * text.getScale();
+	float scaleX = sx * text.getScale()*0.5f;
+	float scaleY = sy * text.getScale()*0.5f;
 
 	this->textShader->bind();
 	this->textShader->setTexture2D("tex", 0, *text.getBakedTexture());
-	this->textShader->setUniform2f("pos", x + text.getWidth()*scaleX*0.5f, y + text.getHeight()*scaleY*0.5f);
-	this->textShader->setUniform2f("scale", text.getWidth()*scaleX*0.5f, text.getHeight()*scaleY*0.5f);
+	this->textShader->setUniform2f("pos", x + text.getWidth()*scaleX, y + text.getHeight()*scaleY);
+	this->textShader->setUniform2f("scale", text.getWidth()*scaleX, text.getHeight()*scaleY);
 	this->vaFullQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	this->textShader->unbind();
@@ -144,46 +148,107 @@ void GUIRenderer::prepareTextRendering()
 
 void GUIRenderer::bakePanel(Panel * panel)
 {
-	std::vector<std::pair<Text*, glm::vec2>>& textList = panel->getTextList();
-
-	// TODO:
+	LOG_WARNING("BAKED PANEL");
 	// Bake sub-panels and their text.
-
-	fb.updateDimensions(0, panel->getSize().x, panel->getSize().y);
-	fb.bind();
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	// TODO:
-	// Draw panel.
-	// Draw text.
-	// Draw sub-panels baked texture.
-
-	fb.unbind();
-	panel->setBakedTexture(fb.getColorTexture(0));
+	std::vector<Panel*>& children = panel->getChildren();
+	for (Panel* child : children)
+		bakePanel(child);
 
 	Display& display = Display::get();
-	glViewport(0, 0, display.getWidth(), display.getHeight());
+	GLuint windowWidth = (GLuint)display.getWidth();
+	GLuint windowHeight = (GLuint)display.getHeight();
+
+	GLuint fbW = (GLuint)(panel->getSize().x*windowWidth*0.5f);
+	GLuint fbH = (GLuint)(panel->getSize().y*windowHeight*0.5f);
+
+	for (auto& element : panel->getTextList())
+		bakeText(*element.first, -1.0f);
+
+	fb.updateDimensions(0, fbW, fbH);
+	fb.bind();
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Render current panel
+	this->panelShader->bind();
+	this->panelShader->setUniform2f("pos", 0.0f, 0.0f);
+	this->panelShader->setUniform2f("size", 2.0f, 2.0f);
+	this->panelShader->setUniform4f("color", panel->getColor().x, panel->getColor().y, panel->getColor().z, panel->getColor().w);
+	Texture* texture = panel->getBackgroundTexture();
+	if (texture == nullptr)
+		texture = this->whiteOnePixTexture;
+	this->panelShader->setTexture2D("tex", 0, *texture);
+
+	this->vaQuad->bind();
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	// Draw text.
+	for (auto& element : panel->getTextList())
+	{
+		float x = element.second.x;
+		float y = element.second.y;
+		element.first->getBakedTexture()->bind();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		drawBaked(*element.first, x, y, 1.0f/(float)fbW, 1.0f/(float)fbH);
+	}
+
+	// Draw sub-panels baked texture.
+	for (Panel* child : children)
+		drawBaked(child, panel->getPosition());
+
+	fb.unbind();
+	panel->setBakedTexture(*fb.getColorTexture(0));
+	panel->getBakedTexture()->bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	glViewport(0, 0, windowWidth, windowHeight);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
-void GUIRenderer::drawBaked(Panel * panel)
+void GUIRenderer::drawBaked(Panel * panel, const glm::vec2& relativePos)
 {
 	Display& display = Display::get();
 
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
+	float windowWidth = display.getWidth();
+	float windowHeight = display.getHeight();
 
-	float x = panel->getPosition().x;
-	float y = panel->getPosition().y;
+	float x = relativePos.x + panel->getPosition().x;
+	float y = relativePos.y + panel->getPosition().y;
 
 	this->textShader->bind();
 	this->textShader->setTexture2D("tex", 0, *panel->getBakedTexture());
-	this->textShader->setUniform2f("pos", x + panel->getSize().x*sx*0.5f, y + panel->getSize().y*sy*0.5f);
-	this->textShader->setUniform2f("scale", panel->getSize().x*sx*0.5f, panel->getSize().y*sy*0.5f);
+	this->textShader->setUniform2f("pos", x, y);
+	this->textShader->setUniform2f("scale", panel->getSize().x*0.5f, panel->getSize().y*0.5f);
 	this->vaFullQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	this->textShader->unbind();
+
+
+	#ifdef IMGUI
+		auto renderTexture = [](Texture* texture) {
+			Display& display = Display::get();
+			ImTextureID texID = (ImTextureID)texture->getID();
+			float ratio = (float)texture->getWidth() / (float)texture->getHeight();
+			ImGui::Image(texID, ImVec2(50, 50 / ratio), ImVec2(0, 1), ImVec2(1, 0));
+			if (false)
+				ImGui::SameLine();
+			if (ImGui::IsItemHovered())
+			{
+				ImGui::BeginTooltip();
+				ImGui::Image(texID, ImVec2(display.getWidth()*0.5f, display.getWidth()*0.5f/ratio), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+				ImGui::EndTooltip();
+			}
+			ImGui::SameLine();
+			ImGui::Text("Size: %d, %d", texture->getWidth(), texture->getHeight());
+		};
+		//Create new frame for ImGui
+		ImGui::Begin("GUI textures");
+		renderTexture(panel->getTextList()[0].first->getBakedTexture());
+		renderTexture(panel->getBakedTexture());
+		ImGui::End();
+	#endif /* IMGUI */
 }
 
 void GUIRenderer::draw(Panel * panel)
@@ -200,12 +265,15 @@ void GUIRenderer::draw(Panel * panel)
 	this->vaQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+	Display& display = Display::get();
+	float sx = display.getPixelXScale();
+	float sy = display.getPixelYScale();
+
 	for (auto& element : panel->getTextList())
 	{
 		float x = panel->getPosition().x + element.second.x;
 		float y = panel->getPosition().y + element.second.y;
-		drawBaked(*element.first, x, y);
-		//draw(*element.first, x, y);
+		drawBaked(*element.first, x, y, sx, sy);
 	}
 }
 
@@ -267,6 +335,9 @@ void GUIRenderer::initTextRendering()
 	
 	Display& display = Display::get();
 	this->fb.attachTexture(display.getWidth(), display.getHeight(), AttachmentType::COLOR);
+	this->fb.getColorTexture(0)->bind();
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	std::vector<unsigned char> data = { 0xFF, 0xFF, 0xFF, 0xFF };
 	this->whiteOnePixTexture = new Texture(data.data(), 1, 1);

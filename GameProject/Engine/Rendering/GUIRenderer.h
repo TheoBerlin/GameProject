@@ -25,7 +25,7 @@ public:
 	/*
 	Draw the text with its internal baked texture.
 	*/
-	void drawBaked(Text & text, float x, float y);
+	void drawBaked(Text & text, float x, float y, float sx, float sy);
 
 	/*
 	Draw each character. One draw call for each character.
@@ -43,7 +43,7 @@ public:
 	void prepareTextRendering();
 
 	void bakePanel(Panel* panel);
-	void drawBaked(Panel* panel);
+	void drawBaked(Panel* panel, const glm::vec2& relativePos = { 0.0f, 0.0f });
 	void draw(Panel* panel);
 
 private:

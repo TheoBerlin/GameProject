@@ -6,13 +6,15 @@
 #include "../Rendering/GLAbstraction/VertexArray.h"
 #include "Text.h"
 
+#include "../Events/Events.h"
+
 class Panel
 {
 public:
 	Panel();
 	virtual ~Panel();
 
-	void setBakedTexture(Texture* texture);
+	void setBakedTexture(const Texture& texture);
 	Texture* getBakedTexture();
 
 	void setBackgroundTexture(Texture* texture);
@@ -32,15 +34,21 @@ public:
 	void updateText(unsigned int index, const std::string& str, float scale = 0.0f);
 	void setTextColor(unsigned int index, const glm::vec4& color);
 
+	void addChild(Panel* panel);
+
+	void rebake();
+
 	std::vector<std::pair<Text*, glm::vec2>>& getTextList();
+	std::vector<Panel*>& getChildren();
 
 private:
 	void init();
+	void rebakeCallback(WindowResizeEvent* evnt);
 
-	std::vector<Panel*> panels;
+	std::vector<Panel*> children;
 	std::vector<std::pair<Text*, glm::vec2>> textList;
 
-	Texture* bakedTexture;
+	Texture bakedTexture;
 	Texture* backgroundTexture;
 
 	glm::vec4 color;

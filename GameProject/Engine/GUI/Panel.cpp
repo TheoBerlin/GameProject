@@ -3,26 +3,36 @@
 #include "FontManager.h"
 #include "Utils/Logger.h"
 
-Panel::Panel() : backgroundTexture(nullptr), bakedTexture(nullptr)
+#include "../Rendering/GUIRenderer.h"
+
+#include "../Events/EventBus.h"
+
+Panel::Panel() : backgroundTexture(nullptr)
 {
 	init();
 }
 
 Panel::~Panel()
 {
+	// Delete all text in panel
 	for (auto& text : this->textList)
 		delete text.first;
 	this->textList.clear();
+
+	// Delete children.
+	for (Panel* child : this->children)
+		delete child;
+	this->children.clear();
 }
 
-void Panel::setBakedTexture(Texture * texture)
+void Panel::setBakedTexture(const Texture& texture)
 {
 	this->bakedTexture = texture;
 }
 
 Texture * Panel::getBakedTexture()
 {
-	return this->bakedTexture;
+	return &this->bakedTexture;
 }
 
 void Panel::setBackgroundTexture(Texture * texture)
@@ -58,6 +68,7 @@ glm::vec2 Panel::getPosition() const
 void Panel::setSize(glm::vec2 size)
 {
 	this->size = size;
+	rebake();
 }
 
 glm::vec2 Panel::getSize() const
@@ -79,6 +90,7 @@ void Panel::updateText(unsigned int index, const std::string & str, float x, flo
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].first->updateText(str, scale);
 		this->textList[index].second = glm::vec2(x, y);
+		rebake();
 	}
 	else
 	{
@@ -91,6 +103,7 @@ void Panel::updateText(unsigned int index, const std::string & str, float scale)
 {
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].first->updateText(str, scale);
+		rebake();
 	}
 	else
 	{
@@ -113,9 +126,27 @@ void Panel::setTextColor(unsigned int index, const glm::vec4 & color)
 	}
 }
 
+void Panel::addChild(Panel * panel)
+{
+	this->children.push_back(panel);
+}
+
+void Panel::rebake()
+{
+	Display& display = Display::get();
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+	guiRenderer.prepareTextRendering();
+	guiRenderer.bakePanel(this);
+}
+
 std::vector<std::pair<Text*, glm::vec2>>& Panel::getTextList()
 {
 	return textList;
+}
+
+std::vector<Panel*>& Panel::getChildren()
+{
+	return this->children;
 }
 
 void Panel::init()
@@ -123,4 +154,11 @@ void Panel::init()
 	this->pos = { 0.0f, 0.0f };
 	this->size = { 1.0f, 1.0f };
 	this->color = { 0.4f, 0.4f, 0.4f, 1.0f };
+
+	EventBus::get().subscribe(this, &Panel::rebakeCallback);
+}
+
+void Panel::rebakeCallback(WindowResizeEvent * evnt)
+{
+	rebake();
 }

@@ -16,8 +16,9 @@ GameLogic::GameLogic(EntityManager * em, GUIManager* guiManager)
 
 	Panel* panel = new Panel();
 	panel->setPosition({ 0.0f, 0.5f });
-	panel->setSize({0.2f, 0.2f});
-	panel->addText("NO PHASE", 0.0f, 0.0f, 2.0f, "arial");
+	panel->setSize({1.0f, 1.0f});
+	panel->setColor({ 0.0f, 0.0f, 0.5f, 0.0f });
+	panel->addText("NO PHASE", -1.0f, 0.0f, 1.0f, "arial");
 	guiManager->addPanel(panel);
 
 	/*

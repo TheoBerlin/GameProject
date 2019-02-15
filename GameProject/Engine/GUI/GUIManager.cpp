@@ -1,6 +1,8 @@
 #include "GUIManager.h"
 
 #include "Utils/Logger.h"
+#include "Engine/Rendering/Display.h"
+#include "Engine/Rendering/GUIRenderer.h"
 
 GUIManager::GUIManager()
 {
@@ -15,6 +17,7 @@ GUIManager::~GUIManager()
 
 void GUIManager::addPanel(Panel * panel)
 {
+	panel->rebake();
 	this->panelList.push_back(panel);
 }
 
