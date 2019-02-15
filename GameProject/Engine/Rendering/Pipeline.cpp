@@ -110,8 +110,8 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 
 
 	this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->particleShader->setUniform3f("cameraUp", this->camera->getV()[0][1], this->camera->getV()[1][1], this->camera->getV()[2][1]);
-	this->particleShader->setUniform3f("cameraRight", this->camera->getV()[0][0], this->camera->getV()[1][0], this->camera->getV()[2][0]);
+	this->particleShader->setUniform3f("cameraUp", this->camera->getView()[0][1], this->camera->getView()[1][1], this->camera->getView()[2][1]);
+	this->particleShader->setUniform3f("cameraRight", this->camera->getView()[0][0], this->camera->getView()[1][0], this->camera->getView()[2][0]);
 
 	fbo.bind();
 	glClear(GL_COLOR_BUFFER_BIT);
