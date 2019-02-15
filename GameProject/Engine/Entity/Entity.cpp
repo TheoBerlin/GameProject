@@ -32,7 +32,7 @@ void Entity::update(const float dt)
 	/*
 		Updates vertex buffer of model, if it exists and a component has moved the entity
 	*/
-	if (this->model && this->getTransform()->getStatus())
+	if (this->model && this->getTransform()->getStatus() && this->renderingGroupIndex != -1)
 		this->model->updateInstancingSpecificData(this->renderingGroupIndex);
 }
 
