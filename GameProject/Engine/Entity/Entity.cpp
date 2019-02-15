@@ -113,7 +113,7 @@ Model * Entity::getModel()
 
 void Entity::attachToModel()
 {
-	if (this->model != nullptr)
+	if (this->model != nullptr && renderingGroupIndex == -1)
 		this->renderingGroupIndex = this->model->addEntity(this);
 }
 
