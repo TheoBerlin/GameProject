@@ -9,7 +9,6 @@
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
 	EventBus::get().subscribe(this, &FreeMove::moveKeyboard);
-	EventBus::get().subscribe(this, &FreeMove::moveMouse);
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
 	this->speed = 5.0f;
@@ -19,8 +18,16 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	this->yPos = 0.0;
 	this->preXPos = 0.0;
 	this->preYPos = 0.0;
-}
 
+	// Calculate pitch
+	glm::vec3 forward = host->getTransform()->getForward();
+	glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
+
+	this->currentPitch = std::acosf(glm::dot(horizontalForward, forward));
+
+	// Determine pitch sign
+	this->currentPitch = (forward.y > 0.0f) ? currentPitch : -currentPitch;
+}
 
 FreeMove::~FreeMove()
 {
@@ -57,18 +64,26 @@ void FreeMove::update(const float & dt)
 
 	mat->setPosition(newPosition);
 
-	if (this->mouseLock)
+	if (this->xPos != 0.0 || this->yPos != 0.0)
 	{
-		if (this->xPos != 0.0 || this->yPos != 0.0)
-		{
-			float yaw = -(float)xPos * this->dt * this->sensitivity;
-			float pitch = -(float)yPos * this->dt * this->sensitivity;
+		float yaw = -(float)xPos * this->dt * this->sensitivity;
+		float pitch = -(float)yPos * this->dt * this->sensitivity;
 
-			host->getTransform()->rotate(yaw, pitch);
+		// Limit pitch
+		float newPitch = currentPitch + pitch;
 
-			this->xPos = 0.0;
-			this->yPos = 0.0;
+		if (newPitch > maxPitch) {
+			pitch = maxPitch - currentPitch;
+		} else if (newPitch < -maxPitch) {
+			pitch = -maxPitch - currentPitch;
 		}
+
+		currentPitch += pitch;
+
+		host->getTransform()->rotate(yaw, pitch);
+
+		this->xPos = 0.0;
+		this->yPos = 0.0;
 	}
 }
 
@@ -84,10 +99,24 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 	{
 		this->mouseLock = !this->mouseLock;
 
-		if (this->mouseLock)
+		if (this->mouseLock) {
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		else
+
+			// Get cursor position
+			double* cursorX = new double, *cursorY = new double;
+			glfwGetCursorPos(Display::get().getWindowPtr(), cursorX, cursorY);
+
+			this->preXPos = *cursorX;
+			this->preYPos = *cursorY;
+
+			delete cursorX;
+			delete cursorY;
+
+			EventBus::get().subscribe(this, &FreeMove::moveMouse);
+		} else {
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
+		}
 	}
 }
 
