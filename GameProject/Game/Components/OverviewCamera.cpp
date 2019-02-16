@@ -16,13 +16,17 @@ OverviewCamera::OverviewCamera(Entity* host)
     // Set the forward vector to be horizontal, then pitch it
     Transform* transform = host->getTransform();
 
+    // Set the desired pitch
     glm::vec3 forward = transform->getForward();
     glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
 
-    transform->setForward(horizontalForward);
-    host->getTransform()->rotate(0.0f, pitch, 0.0f);
+    float currentPitch = std::acosf(glm::dot(horizontalForward, forward));
 
-    glm::vec3 newForward = transform->getForward();
+    currentPitch = (forward.y > 0.0f) ? currentPitch : -currentPitch;
+
+    float deltaPitch = pitch - currentPitch;
+
+    transform->rotate(0.0f, deltaPitch);
 
     EventBus::get().subscribe(this, &OverviewCamera::handleMouseMove);
     EventBus::get().subscribe(this, &OverviewCamera::handleKeyInput);
@@ -39,18 +43,20 @@ void OverviewCamera::update(const float& dt)
     Transform* transform = host->getTransform();
 
     glm::vec3 forward = transform->getForward();
+    glm::vec3 right = transform->getRight();
 
     // Move camera horizontally
     glm::vec3 newPosition = transform->getPosition();
 
     glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
+    glm::vec3 horizontalRight = glm::normalize(glm::vec3(right.x, 0.0f, right.z));
 
     if (this->pressedKeys[GLFW_KEY_W])
 		newPosition += dt * horizontalForward * maxMovementSpeed;
 	if (this->pressedKeys[GLFW_KEY_A])
-		newPosition += dt * -transform->getRight() * maxMovementSpeed;
+		newPosition += dt * -horizontalRight * maxMovementSpeed;
 	if (this->pressedKeys[GLFW_KEY_D])
-		newPosition += dt * transform->getRight() * maxMovementSpeed;
+		newPosition += dt * horizontalRight * maxMovementSpeed;
 	if (this->pressedKeys[GLFW_KEY_S])
 		newPosition += dt * -horizontalForward * maxMovementSpeed;
 	if (this->pressedKeys[GLFW_KEY_SPACE])

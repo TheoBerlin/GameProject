@@ -1,13 +1,14 @@
 #include "GameLogic.h"
 
-#include "../Engine/Rendering/Display.h"
-#include "../Engine/Rendering/Renderer.h"
-#include "../Engine/Components/Component.h"
-#include "../Engine/Components/Camera.h"
-#include "../Engine/AssetManagement/ModelLoader.h"
-#include "Engine/Events/EventBus.h"
+#include <Engine/Rendering/Display.h>
+#include <Engine/Rendering/Renderer.h>
+#include <Engine/Components/Component.h>
+#include <Engine/Components/Camera.h>
+#include <Engine/AssetManagement/ModelLoader.h>
+#include <Engine/Events/EventBus.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathTreader.h>
+#include <Game/Components/OverviewCamera.h>
 
 GameLogic::GameLogic(EntityManager * em)
 {
@@ -23,7 +24,6 @@ GameLogic::GameLogic(EntityManager * em)
 	*/
 	EventBus::get().subscribe(this, &GameLogic::changePhaseCallback);
 }
-
 
 GameLogic::~GameLogic()
 {
@@ -77,8 +77,9 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
-	Display::get().getRenderer().setActiveCamera(camera);
+	OverviewCamera* overviewCam = new OverviewCamera(this->camera);
 
+	Display::get().getRenderer().setActiveCamera(camera);
 }
 
 void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
