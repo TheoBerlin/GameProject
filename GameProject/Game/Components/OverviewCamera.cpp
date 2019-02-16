@@ -13,6 +13,10 @@ OverviewCamera::OverviewCamera(Entity* host)
 
     mouseSensitivity = Settings::get().getMouseSensitivity();
 
+    rotateFactor = 0.0f;
+
+    windowHeight = Display::get().getHeight();
+
     // Set the forward vector to be horizontal, then pitch it
     Transform* transform = host->getTransform();
 
@@ -28,14 +32,26 @@ OverviewCamera::OverviewCamera(Entity* host)
 
     transform->rotate(0.0f, deltaPitch);
 
+    // Lock mouse and get mouse position
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    double* cursorPos = new double;
+    glfwGetCursorPos(Display::get().getWindowPtr(), cursorPos, nullptr);
+
+    this->prevMousePosX = (float)*cursorPos;
+
+    delete cursorPos;
+
     EventBus::get().subscribe(this, &OverviewCamera::handleMouseMove);
     EventBus::get().subscribe(this, &OverviewCamera::handleKeyInput);
+    EventBus::get().subscribe(this, &OverviewCamera::handleWindowResize);
 }
 
 OverviewCamera::~OverviewCamera()
 {
     EventBus::get().unsubscribe(this, &OverviewCamera::handleMouseMove);
     EventBus::get().unsubscribe(this, &OverviewCamera::handleKeyInput);
+    EventBus::get().unsubscribe(this, &OverviewCamera::handleWindowResize);
 }
 
 void OverviewCamera::update(const float& dt)
@@ -45,41 +61,45 @@ void OverviewCamera::update(const float& dt)
     glm::vec3 forward = transform->getForward();
     glm::vec3 right = transform->getRight();
 
-    // Move camera horizontally
-    glm::vec3 newPosition = transform->getPosition();
-
-    glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
-    glm::vec3 horizontalRight = glm::normalize(glm::vec3(right.x, 0.0f, right.z));
+    // Update move factors
+    moveFactors /= 1.0f + moveFactorFalloff * dt;
 
     if (this->pressedKeys[GLFW_KEY_W])
-		newPosition += dt * horizontalForward * maxMovementSpeed;
+		moveFactors.z = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_A])
-		newPosition += dt * -horizontalRight * maxMovementSpeed;
+		moveFactors.x = -1.0f;
 	if (this->pressedKeys[GLFW_KEY_D])
-		newPosition += dt * horizontalRight * maxMovementSpeed;
+		moveFactors.x = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_S])
-		newPosition += dt * -horizontalForward * maxMovementSpeed;
+		moveFactors.z = -1.0f;
 	if (this->pressedKeys[GLFW_KEY_SPACE])
-		newPosition += dt * GLOBAL_UP_VECTOR * maxMovementSpeed;
+		moveFactors.y = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
-		newPosition += dt * -GLOBAL_UP_VECTOR * maxMovementSpeed;
+		moveFactors.y = -1.0f;
 
-    transform->setPosition(newPosition);
+    // Keep the length of moveFactors with [0,1]
+    float moveFactorsLength = glm::length(moveFactors);
+
+    if (moveFactorsLength > 1.0f) {
+        moveFactors /= moveFactorsLength;
+    }
+
+    // Apply movement
+    glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
+    glm::vec3 horizontalRight = glm::cross(horizontalForward, GLOBAL_UP_VECTOR);
+
+    glm::vec3 move = horizontalRight * moveFactors.x + GLOBAL_UP_VECTOR * moveFactors.y +
+    horizontalForward * moveFactors.z;
+
+    move *= maxMovementSpeed * dt;
+
+    transform->translate(move);
+
+    // Decrease rotation factor over time
+    rotateFactor /= 1.0f + rotateFactorFalloff * dt;
 
     // Apply mouse movement
-    if (std::abs(mouseMoveX) > FLT_EPSILON * 10.0f) {
-        // Rotate around a point in front of the camera
-        float rotationAngle = -mouseMoveX * mouseSensitivity * dt;
-
-        glm::vec3 focusPoint = transform->getPosition() + forward * rotationDistance;
-
-        // Reposition then rotate camera
-        transform->rotate(glm::vec3(0.0f, rotationAngle, 0.0f), focusPoint);
-
-        transform->rotate(rotationAngle, 0.0f);
-
-        mouseMoveX = 0.0f;
-    }
+    applyRotation(dt);
 }
 
 void OverviewCamera::handleMouseMove(MouseMoveEvent* event)
@@ -87,6 +107,12 @@ void OverviewCamera::handleMouseMove(MouseMoveEvent* event)
     mouseMoveX += (float)event->moveX - prevMousePosX;
 
     prevMousePosX = (float)event->moveX;
+
+    // Divide by window height to separate turn speed from screen resolution
+    rotateFactor += mouseSensitivity * mouseMoveX / windowHeight;
+
+    // Keep rotateFactor within [-1,1]
+    rotateFactor = glm::clamp(rotateFactor, -1.0f, 1.0f);
 }
 
 void OverviewCamera::handleKeyInput(KeyEvent* event)
@@ -96,4 +122,30 @@ void OverviewCamera::handleKeyInput(KeyEvent* event)
     } else if (event->action == GLFW_RELEASE) {
 		this->pressedKeys[event->key] = false;
     }
+}
+
+void OverviewCamera::handleWindowResize(WindowResizeEvent* event)
+{
+    windowHeight = event->height;
+}
+
+void OverviewCamera::applyRotation(const float& dt)
+{
+    if (std::abs(rotateFactor) < FLT_EPSILON * 10.0f) {
+        return;
+    }
+
+    Transform* transform = host->getTransform();
+
+    // Rotate around a point in front of the camera
+    float rotationAngle = -rotateFactor * maxRotation * dt;
+
+    glm::vec3 focusPoint = transform->getPosition() + transform->getForward() * rotationDistance;
+
+    // Reposition then rotate camera
+    transform->rotate(glm::vec3(0.0f, rotationAngle, 0.0f), focusPoint);
+
+    transform->rotate(rotationAngle, 0.0f);
+
+    mouseMoveX = 0.0f;
 }

@@ -55,7 +55,7 @@ void ArrowGuider::update(const float& dt)
 
     float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
 
-    // Gradually increase storing frequency
+    // Gradually increase/decrease storing frequency
     float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
 
     if (std::abs(deltaFrequency) > maxStoreFrequencyDelta) {
