@@ -25,8 +25,8 @@ GameState::GameState() : gameLogic(&this->getEntityManager())
 	emitter.setSpread(0.0f);
 	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 	emitter.setAcceleration(glm::vec3(0.0f, 0.0f, 0.0f));
-	emitter.setMaxParticle(1000);
-	emitter.setSpawnRate(100);
+	emitter.setMaxParticle(3000);
+	emitter.setSpawnRate(300);
 	emitter.setStartColour(glm::vec4(0.8f, 0.0f, 1.0f, 1.0f));
 	emitter.setEndColour(glm::vec4(0.8f, 0.0f, 1.0f, 0.0f));
 	emitter.setLifeTime(10.0f);
@@ -62,22 +62,27 @@ void GameState::end()
 		entity->detachFromModel();
 }
 
+#include "Game/components/ArrowGuider.h"
+
 void GameState::update(const float dt)
 {
 
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
+	if (entityManager.getTracedEntity("Player") != nullptr)
+		dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
 	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
 		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
 		emitter.playEmitter(0);
 	}
 	for (Entity* entity : entities)
 		entity->update(dt);
+	particleManger.update(dt);
 }
 
 void GameState::updateLogic(const float dt)
 {
-	particleManger.update(1 / (float)FRAMES_PER_SECOND);
+
 }
 
 void GameState::render()

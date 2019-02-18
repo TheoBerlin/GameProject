@@ -23,6 +23,7 @@ private:
 	};
 
 	glm::vec3 position;
+	glm::vec3 prevPosition;
 	glm::vec3 startVelocity;
 	glm::vec3 acceleration;
 	glm::vec4 startColour;

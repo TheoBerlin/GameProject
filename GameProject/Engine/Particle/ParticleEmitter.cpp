@@ -3,6 +3,7 @@
 ParticleEmitter::ParticleEmitter()
 {
 	this->position = glm::vec3(0.0f);
+	this->prevPosition = glm::vec3(0.0f);
 	this->startVelocity = glm::vec3(0.0f);
 	this->maxParticle = 100;
 	this->spawnRate = 10;
@@ -88,15 +89,23 @@ void ParticleEmitter::update(float dt)
 
 	if (loop || duration > 0) {
 		emissionTime += dt;
+		int totalSpawn = 0;
+
 		//Since logic update is caped, we can spawn multiple particals per frame
 		//Keep spawning particles to accieve appropiate spawn rate
 		while (emissionTime >= ((float)1 / spawnRate)) {
+			totalSpawn++;
 			emissionTime -= ((float)1 / spawnRate);
+		}
+
+		glm::vec3 dif = position - prevPosition;
+
+		for (int i = 0; i < totalSpawn; i++) {
 			//If all particles have not been spawned create a new one, else reset the oldest particle
 			if (particles.size() < maxParticle) {
 				//Create a new particle
 				particles.push_back(Particle());
-				particles[particles.size() - 1].position = position;
+				particles[particles.size() - 1].position = position - (dif * ((float)(i + 1) / (float)totalSpawn));
 				particles[particles.size() - 1].colour = startColour;
 				particles[particles.size() - 1].scale = startScale;
 				particlesInfo.push_back(ParticleUpdateInfo());
@@ -155,6 +164,7 @@ std::vector<Particle> ParticleEmitter::getParticleArray() const
 
 void ParticleEmitter::setPosition(const glm::vec3 position)
 {
+	this->prevPosition = this->position;
 	this->position = position;
 }
 
