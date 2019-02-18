@@ -42,6 +42,11 @@ glm::vec3 Transform::getRotation() const
 	return glm::eulerAngles(rotationQuat);
 }
 
+glm::quat Transform::getRotationQuat() const
+{
+	return this->rotationQuat;
+}
+
 glm::vec3 Transform::getScale() const
 {
 	return this->scaleFactor;

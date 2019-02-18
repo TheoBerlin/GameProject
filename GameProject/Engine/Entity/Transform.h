@@ -28,6 +28,8 @@ public:
 	glm::vec3 getPosition() const;
 	//Get radians of rotation around itself
 	glm::vec3 getRotation() const;
+	//Get rotation quaternion
+	glm::quat getRotationQuat() const;
 	//Get scaling factor
 	glm::vec3 getScale() const;
 	//Get forward vector

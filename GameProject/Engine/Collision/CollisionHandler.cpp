@@ -86,7 +86,9 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 	}
 
 	rp3d::Vector3 pos = toReactVec(entity->getTransform()->getPosition());
-	rp3d::Quaternion rotation = rp3d::Quaternion::identity(); //<--------CHANGE THIS TO ENTITY ROTATION WHEN WE HAVE QUATERNIONS
+	rp3d::Quaternion rotation;
+	glm::quat q = entity->getTransform()->getRotationQuat();
+	rotation.setAllValues(q.x, q.y, q.z, q.w);
 	rp3d::Transform transform(pos, rotation);
 
 	/*
