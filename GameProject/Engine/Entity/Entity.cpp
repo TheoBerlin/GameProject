@@ -39,9 +39,11 @@ void Entity::update(const float dt)
 
 	if (this->body != nullptr) {
 		glm::vec3 pos = this->transform.getPosition();
-		rp3d::Vector3 initPosition({ pos.x, pos.y, pos.z });
-		rp3d::Quaternion initOrientation = rp3d::Quaternion::identity();
-		rp3d::Transform transform(initPosition, initOrientation);
+		rp3d::Vector3 newPos({ pos.x, pos.y, pos.z });
+		rp3d::Quaternion newRot;
+		glm::quat q = this->transform.getRotationQuat();
+		newRot.setAllValues(q.x, q.y, q.z, q.w);
+		rp3d::Transform transform(newPos, newRot);
 		this->body->setTransform(transform);
 	}
 }
