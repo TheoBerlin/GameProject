@@ -23,7 +23,9 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
-	shadowWidth, shadowHeight = 1024;
+	shadowWidth = 1024;
+	shadowHeight = 1024;
+	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::COLOR);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
@@ -61,7 +63,7 @@ Pipeline::~Pipeline()
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)
 {
 	if(!toScreen)
-		this->fbo.bind();
+		this->fbo.bind();;
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
@@ -144,7 +146,11 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->testShader->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
 	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+
+	Texture * shadowTex = getShadowFbo()->getDepthTexture();
+	this->testShader->setTexture2D("shadowTex", 0, shadowTex->getID());
 
 	draw(renderingList, this->testShader);
 
@@ -171,27 +177,32 @@ void Pipeline::drawTextureToQuad(Texture * tex)
 	this->quadShader->unbind();
 }
 
-Texture * Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
+void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
 {
+	
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
 	Display::get().updateView(shadowWidth, shadowHeight);
-	this->fbo.bind();
+
+
+	this->shadowFbo.bind();;
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
+	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
+	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+	lightSpaceMatrix = lightProjection * lightView;
+
 	//Draw renderingList
-	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
 	draw(renderingList);
 
 	this->ZprePassShader->unbind();
 	this->prePassDepthOff();
-	this->fbo.unbind();
-	Display::get().updateView(displayWidth, displayHeight);
+	this->shadowFbo.unbind();
 
-	if(shadowFbo.getDepthTexture() != nullptr)
-	return this->shadowFbo.getDepthTexture();
+	Display::get().updateView(displayWidth, displayHeight);
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
@@ -202,6 +213,11 @@ void Pipeline::setActiveCamera(Camera * camera)
 Framebuffer * Pipeline::getFbo()
 {
 	return &this->fbo;
+}
+
+Framebuffer * Pipeline::getShadowFbo()
+{
+	return &this->shadowFbo;
 }
 
 void Pipeline::draw(const std::vector<Entity*>& renderingList)

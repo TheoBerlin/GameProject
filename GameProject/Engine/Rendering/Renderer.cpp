@@ -46,7 +46,7 @@ void Renderer::drawAll()
 	/*
 		Draw texture of scene to quad for postprocessing
 	*/
-	this->pipeline.drawTextureToQuad(postProcessTexture);
+	this->pipeline.drawTextureToQuad(postProcessTexture);//postProcessTexture;
 
 	this->renderingList.clear();
 }
