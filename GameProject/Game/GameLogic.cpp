@@ -15,12 +15,12 @@ GameLogic::GameLogic()
 {
 }
 
-void GameLogic::init(Level& level, CollisionHandler * ch)
+void GameLogic::init(Level& level)
 {
 	/*
 		Init the handlers and managers
 	*/
-	this->ch = ch;
+	this->ch = level.collisionHandler;
 	this->em = level.entityManager;
 	this->targetManager = level.targetManager;
 
@@ -112,6 +112,7 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	this->player->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 	this->player->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 	ch->addCollisionToEntity(this->player, SHAPE::ARROW);
+	new PlayerCollision(this->player);
 
 	/*
 		Add camera to arrow entity
@@ -125,7 +126,6 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	ArrowGuider* arrow = new ArrowGuider(this->player, 2.0f);
 	arrow->startGuiding();
 
-	new PlayerCollision(this->player);
 
 	// Reset targets
 	targetManager->resetTargets();
@@ -220,11 +220,6 @@ void GameLogic::changePhaseCallback(KeyEvent * ev)
 	{
 		this->changePhase(Phases::PHASE_REPLAY);
 	}
-	//else if (ev->key == GLFW_KEY_3 && ev->action == GLFW_PRESS && this->currentPhase != Phases::PHASE_THREE) 
-	//{
-	//	this->changePhase(Phases::PHASE_THREE);
-	//}
-
 }
 
 void GameLogic::playerCollisionCallback(PlayerCollisionEvent * ev)
