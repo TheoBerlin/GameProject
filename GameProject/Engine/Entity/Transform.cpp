@@ -62,6 +62,21 @@ glm::vec3 Transform::getUp() const
 	return this->u;
 }
 
+glm::quat Transform::getRotationQuat() const
+{
+	return this->rotationQuat;
+}
+
+void Transform::setRotationQuat(const glm::quat& newQuat)
+{
+	this->rotationQuat = newQuat;
+
+	// Apply rotation
+	this->f = newQuat * defaultForward;
+	this->u = newQuat * GLOBAL_UP_VECTOR;
+	this->r = glm::normalize(glm::cross(this->f, this->u));
+}
+
 bool Transform::getStatus()
 {
 	if (this->isUpdated) {

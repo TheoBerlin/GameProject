@@ -8,6 +8,8 @@
 #include "Engine/Events/EventBus.h"
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathTreader.h>
+#include <Game/Components/CameraTransition.h>
+#include <Utils/Logger.h>
 
 GameLogic::GameLogic()
 {
@@ -74,18 +76,19 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 	/*
 		Create camera entity
 	*/
-	this->camera = this->em->addTracedEntity("PhaseOneCamera");
-	this->camera->getTransform()->setPosition(cameraPos);
-	this->camera->getTransform()->setForward(cameraDir);
+	this->camera = this->em->addTracedEntity("PlayerCamera");
+
+	this->camera->removeAllComponents();
 
 	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
+
+	CameraTransition* camTransition = new CameraTransition(this->camera, cameraPos, cameraDir, 2.0f);
 
 	// Reset targets
 	targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
-
 }
 
 void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
@@ -95,20 +98,26 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 		Create arrow entity
 	*/
 	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
-	Entity * entity = this->em->addTracedEntity("Player");
-	entity->getTransform()->setPosition(playerPos);
-	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
-	entity->setModel(model);
+	this->camera->setModel(model);
+
+	this->camera->removeAllComponents();
+
 	/*
 		Add camera to arrow entity
 	*/
-	Camera* camera = new Camera(entity, "Camera", { 0.0f, 0.5f, -1.0f });
+	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -1.0f });
 	camera->init();
+
+	glm::vec3 playerDir = this->camera->getTransform()->getForward();
+
+	CameraTransition* camTransition = new CameraTransition(this->camera, playerPos, playerDir, 2.0f);
+
+	this->camera->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	/*
 		Add arrowguider to entity
 	*/
-	ArrowGuider* arrow = new ArrowGuider(entity, 2.0f);
+	ArrowGuider* arrow = new ArrowGuider(this->camera, 2.0f);
 	arrow->startGuiding();
 
 	// Reset targets
@@ -164,12 +173,10 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 
 void GameLogic::leaveOverviewPhase()
 {
-	this->em->removeTracedEntity("PhaseOneCamera");
 }
 
 void GameLogic::leaveGuidingPhase()
 {
-	this->em->removeTracedEntity("Player");
 }
 
 void GameLogic::leaveReplayPhase()

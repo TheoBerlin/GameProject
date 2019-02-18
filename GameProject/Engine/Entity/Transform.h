@@ -36,7 +36,10 @@ public:
 	glm::vec3 getRight() const;
 	//Get up vector
 	glm::vec3 getUp() const;
-	
+
+	glm::quat getRotationQuat() const;
+	void setRotationQuat(const glm::quat& newQuat);
+
 	/*
 		get status if transform has been changed, reset status if it has.
 	*/
