@@ -32,7 +32,7 @@ void Entity::update(const float dt)
 	/*
 		Updates vertex buffer of model, if it exists and a component has moved the entity
 	*/
-	if (this->model && this->getTransform()->getStatus())
+	if (this->model && this->getTransform()->getStatus() && this->renderingGroupIndex != -1)
 		this->model->updateInstancingSpecificData(this->renderingGroupIndex);
 }
 
@@ -66,10 +66,12 @@ Component* Entity::getComponent(const std::string& componentName)
 {
 	// Returns nullptr if component is not found
 	auto elem = this->components.find(componentName);
-	if (elem != this->components.end())
+
+	if (elem != this->components.end()) {
 		return elem->second;
-	else
+	} else {
 		return nullptr;
+	}
 }
 
 void Entity::setModel(Model * model)
