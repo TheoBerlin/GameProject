@@ -5,6 +5,7 @@
 #include "Engine/Events/Events.h"
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Level/Level.h>
+#include <Game/GameLogic/Phase.h>
 #include "glm/glm.hpp"
 
 class GameLogic
@@ -28,6 +29,9 @@ public:
 private:
 	void changePhaseCallback(KeyEvent * ev);
 
+	Level level;
+
+	Phase* phase;
 	Phases currentPhase;
 
 	Entity* camera;

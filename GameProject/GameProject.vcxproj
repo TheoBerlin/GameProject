@@ -60,6 +60,9 @@
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
+    <ClCompile Include="Game\GameLogic\GuidingPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\OverviewPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\Phase.cpp" />
     <ClCompile Include="Game\GameLogic\TargetManager.cpp" />
     <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
@@ -120,6 +123,9 @@
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
+    <ClInclude Include="Game\GameLogic\GuidingPhase.h" />
+    <ClInclude Include="Game\GameLogic\OverviewPhase.h" />
+    <ClInclude Include="Game\GameLogic\Phase.h" />
     <ClInclude Include="Game\GameLogic\TargetManager.h" />
     <ClInclude Include="Game\Level\Level.h" />
     <ClInclude Include="Game\Level\LevelParser.h" />
