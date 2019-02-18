@@ -2,6 +2,9 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+// Define IMGUI
+#define IMGUI
+
 // Common defines
 #define EPSILON 0.0000001
 
