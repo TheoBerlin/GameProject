@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Entity/EntityManager.h"
-#include "../GUI/GUIManager.h"
+#include "../GUI/GUI.h"
 
 class StateManager;
 class State
@@ -37,10 +37,10 @@ public:
 
 	StateManager& getStateManager();
 	EntityManager& getEntityManager();
-	GUIManager& getGUIManager();
+	GUI& getGUI();
 
 private:
 	StateManager* stateManager;
 	EntityManager entityManager;
-	GUIManager guiManager;
+	GUI gui;
 };

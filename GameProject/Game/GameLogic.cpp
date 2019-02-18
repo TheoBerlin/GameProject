@@ -9,17 +9,17 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathTreader.h>
 
-GameLogic::GameLogic(EntityManager * em, GUIManager* guiManager)
+GameLogic::GameLogic(EntityManager * em, GUI* gui)
 {
 	this->em = em;
-	this->guiManager = guiManager;
+	this->gui = gui;
 
 	Panel* panel = new Panel();
-	panel->setPosition({ 0.0f, 0.5f });
-	panel->setSize({1.0f, 1.0f});
-	panel->setColor({ 0.0f, 0.0f, 0.5f, 0.0f });
-	panel->addText("NO PHASE", -1.0f, 0.0f, 1.0f, "arial");
-	guiManager->addPanel(panel);
+	panel->setPosition({ 300.0f, 300.0f });
+	panel->setSize({300.0f, 300.0f});
+	panel->setColor({ 0.0f, 0.0f, 0.5f, 0.5f });
+	panel->addText("NO PHASE", 0.0f, 0.0f, "arial");
+	gui->addPanel(panel);
 
 	/*
 		Start game in phase 1
@@ -88,7 +88,7 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 
 	Display::get().getRenderer().setActiveCamera(camera);
 
-	guiManager->getPanel(0)->updateText(0, "[PHASE ONE]");
+	gui->getPanel(0)->updateText(0, "[PHASE ONE]");
 }
 
 void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
@@ -116,7 +116,7 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 
 	Display::get().getRenderer().setActiveCamera(camera);
 
-	guiManager->getPanel(0)->updateText(0, "[PHASE TWO]");
+	gui->getPanel(0)->updateText(0, "[PHASE TWO]");
 }
 
 void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)

@@ -3,12 +3,12 @@
 #include "Utils/Logger.h"
 #include "../Rendering/GUIRenderer.h"
 
-Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), scale(2.0f)
+Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 {
 	this->font = nullptr;
 }
 
-Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), scale(2.0f)
+Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 {
 	setText(str, font);
 }
@@ -20,6 +20,7 @@ Text::~Text()
 void Text::setColor(const glm::vec4 & color)
 {
 	this->color = color;
+	this->shouldUpdate = true;
 }
 
 bool Text::setText(const std::string & str, Font * font)
@@ -42,6 +43,8 @@ bool Text::setText(const std::string & str, Font * font)
 	// Only update text if the string or the font is different.
 	if (this->str != str || isFontDifferent)
 	{
+		this->shouldUpdate = true;
+
 		// Clear character set.
 		this->charactersDrawData.clear();
 		this->str = str;
@@ -77,7 +80,8 @@ bool Text::setText(const std::string & str, Font * font)
 			characterData.textureID = character.textureID;
 			this->charactersDrawData.push_back(characterData);
 
-			x += (character.advance >> 6);
+			if(*(c+1))
+				x += (character.advance >> 6);
 		}
 		this->width += x;
 		this->height = min + this->bearingY;
@@ -86,35 +90,22 @@ bool Text::setText(const std::string & str, Font * font)
 	return false;
 }
 
-void Text::updateText(const std::string & str, float scale, Font * font)
+void Text::updateText(const std::string & str, Font * font)
 {
-	if (setText(str, font))
+	setText(str, font);
+}
+
+void Text::rebake()
+{
+	if (this->shouldUpdate)
 	{
 		Display& display = Display::get();
 		GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 		guiRenderer.prepareTextRendering();
-		guiRenderer.bakeText(*this, scale);
+		guiRenderer.bakeText(*this);
+		this->shouldUpdate = false;
 	}
-}
-
-void Text::update()
-{
-	Display& display = Display::get();
-	GUIRenderer& guiRenderer = display.getGUIRenderer();
-
-	guiRenderer.prepareTextRendering();
-	guiRenderer.bakeText(*this, this->scale);
-}
-
-void Text::setScale(float scale)
-{
-	this->scale = scale;
-}
-
-float Text::getScale() const
-{
-	return this->scale;
 }
 
 glm::vec4 Text::getColor() const
@@ -160,4 +151,9 @@ void Text::setFont(Font * font)
 std::vector<Text::CharacterDrawData>& Text::getCharactersDrawData()
 {
 	return this->charactersDrawData;
+}
+
+bool Text::hasUpdated() const
+{
+	return this->shouldUpdate;
 }

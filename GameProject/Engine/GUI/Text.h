@@ -36,25 +36,14 @@ public:
 	Update the text like setText but will only do this if the string or the font is different.
 	Arguments:
 		str: The string which will be converted to characters.
-		scale: The scale of the text. This is not the same as the font size.
 		font: A pointer to the font, which will be used. If font is nullptr, an error will occur.
 	*/
-	void updateText(const std::string& str, float scale = -1.0f, Font* font = nullptr);
+	void updateText(const std::string& str, Font* font = nullptr);
 
 	/*
-	Update the data and bake it into a texture.
+	Bake the data into a texture.
 	*/
-	void update();
-
-	/*
-	Set the scale of the text. This is not the same as setting the font size.
-	*/
-	void setScale(float scale);
-
-	/*
-	Get the current scale.
-	*/
-	float getScale() const;
+	void rebake();
 
 	/*
 	Get the color as rgba.
@@ -98,16 +87,18 @@ public:
 	*/
 	std::vector<CharacterDrawData>& getCharactersDrawData();
 
+	bool hasUpdated() const;
+
 private:
 	std::string str;
+
+	bool shouldUpdate;
 
 	float line;
 	float width;
 	float height;
 	float bearingY;
 	glm::vec4 color;
-
-	float scale;
 
 	Texture bakedTexture;
 	Font* font;

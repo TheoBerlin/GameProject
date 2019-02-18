@@ -1,27 +1,27 @@
-#include "GUIManager.h"
+#include "GUI.h"
 
 #include "Utils/Logger.h"
 #include "Engine/Rendering/Display.h"
 #include "Engine/Rendering/GUIRenderer.h"
+#include "Panel.h"
 
-GUIManager::GUIManager()
+GUI::GUI()
 {
 }
 
-GUIManager::~GUIManager()
+GUI::~GUI()
 {
 	for (Panel* panel : this->panelList)
 		delete panel;
 	this->panelList.clear();
 }
 
-void GUIManager::addPanel(Panel * panel)
+void GUI::addPanel(Panel * panel)
 {
-	panel->rebake();
 	this->panelList.push_back(panel);
 }
 
-Panel * GUIManager::getPanel(unsigned int index)
+Panel * GUI::getPanel(unsigned int index)
 {
 	if (index < this->panelList.size())
 		return this->panelList[index];
@@ -29,11 +29,11 @@ Panel * GUIManager::getPanel(unsigned int index)
 	return nullptr;
 }
 
-void GUIManager::update()
+void GUI::update()
 {
 }
 
-std::vector<Panel*>& GUIManager::getPanelList()
+std::vector<Panel*>& GUI::getPanelList()
 {
 	return this->panelList;
 }

@@ -4,8 +4,9 @@
 #include "GLAbstraction/Framebuffer.h"
 #include "../GUI/Text.h"
 #include "../GUI/Panel.h"
+#include "../Events/EventBus.h"
 
-class GUIManager;
+class GUI;
 class GUIRenderer
 {
 public:
@@ -13,29 +14,19 @@ public:
 	virtual ~GUIRenderer();
 
 	/*
-	Draw all elements in guiManager.
+	Draw all elements in gui.
 	*/
-	void draw(GUIManager& guiManger);
+	void draw(GUI& gui);
 
 	/*
 	Bake text into texture.
 	*/
-	void bakeText(Text& text, float scale);
+	void bakeText(Text& text);
 
 	/*
 	Draw the text with its internal baked texture.
 	*/
-	void drawBaked(Text & text, float x, float y, float sx, float sy);
-
-	/*
-	Draw each character. One draw call for each character.
-	*/
-	void draw(Text & text, float x, float y, float scale = -1.0f);
-
-	/*
-	Cunstruct all character bitmap and draw each character. One draw call for each character.
-	*/
-	void draw(const std::string& str, float x, float y, const glm::vec4& color, const std::string& fontName, float scale);
+	void drawBaked(Text & text, float x, float y);
 
 	/*
 	Enable and set the blend function.
@@ -43,8 +34,7 @@ public:
 	void prepareTextRendering();
 
 	void bakePanel(Panel* panel);
-	void drawBaked(Panel* panel, const glm::vec2& relativePos = { 0.0f, 0.0f });
-	void draw(Panel* panel);
+	void drawBaked(Panel* panel);
 
 private:
 	/*
@@ -53,6 +43,11 @@ private:
 	void drawToBake(Text& text);
 
 	void initTextRendering();
+
+	void resizeCallback(WindowResizeEvent* evnt);
+
+	glm::mat4 orthoText;
+	glm::mat4 orthoDisplay;
 
 	VertexArray* vaFullQuad;
 	VertexBuffer* vbFullQuad;
