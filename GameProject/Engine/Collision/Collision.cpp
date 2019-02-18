@@ -1,6 +1,5 @@
 #include "Collision.h"
 
-#include "Utils/Logger.h"
 #include "Engine/Events/EventBus.h"
 #include "Engine/Entity/Entity.h"
 
@@ -20,7 +19,6 @@ void Collision::notifyContact(const CollisionCallbackInfo & info)
 	const rp3d::ProxyShape * shape1 = info.proxyShape1;
 	const rp3d::ProxyShape * shape2 = info.proxyShape2;
 
-	//LOG_INFO("Collision: %s, %s", entity1->getName().c_str(), entity2->getName().c_str());
 	EventBus::get().publish(&PlayerCollisionEvent(entity1, entity2, shape1, shape2));
 }
 

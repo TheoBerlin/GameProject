@@ -39,7 +39,7 @@ CollisionHandler::~CollisionHandler()
 
 void CollisionHandler::checkCollision()
 {
-	if (player)
+	if (this->player)
 		this->world->testCollision(this->player, &this->collision);
 	else
 		this->world->testCollision(&this->collision);
@@ -79,6 +79,11 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 	}
 
 	rp3d::CollisionBody* entityBody = getUnusedBody();
+	if (!entityBody)
+	{
+		LOG_WARNING("No empty collisionBodies!");
+		return;
+	}
 
 	rp3d::Vector3 pos = toReactVec(entity->getTransform()->getPosition());
 	rp3d::Quaternion rotation = rp3d::Quaternion::identity(); //<--------CHANGE THIS TO ENTITY ROTATION WHEN WE HAVE QUATERNIONS
@@ -91,7 +96,11 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 	if (shape == SHAPE::ARROW)
 		this->player = entityBody;
 
-	entityBody->addCollisionShape(this->shapes[(size_t)shape], transform);
+	rp3d::Vector3 shapePos({ 0.0, 0.0, 0.0 });
+	rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
+	rp3d::Transform shapeTransform(shapePos, shapeRot);
+
+	entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform);
 
 	entityBody->setTransform(transform);
 
@@ -161,14 +170,14 @@ void CollisionHandler::createShapes()
 	// Create and add shapes to the shapes vector. Order is important!
 
 	// DRONE = 0 ---- CHANGE TO A MESH WHEN DONE
-	rp3d::BoxShape* drone = new rp3d::BoxShape({ 1.0, 1.0, 1.0 });
+	rp3d::BoxShape* drone = new rp3d::BoxShape({ 0.25, 0.25, 0.25 });
 	this->shapes.push_back(drone);
 
 	// BOX = 1
-	rp3d::BoxShape * box = new rp3d::BoxShape({ 1.0, 1.0, 1.0 });
+	rp3d::BoxShape * box = new rp3d::BoxShape({ 0.25, 0.25, 0.25 });
 	this->shapes.push_back(box);
 
 	// ARROW = 2 ---- CHANGE TO A MESH WHEN DOWN
-	rp3d::SphereShape* arrow = new rp3d::SphereShape(1.0);
+	rp3d::SphereShape* arrow = new rp3d::SphereShape(0.25);
 	this->shapes.push_back(arrow);
 }
