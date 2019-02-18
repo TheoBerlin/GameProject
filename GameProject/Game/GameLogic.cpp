@@ -246,8 +246,11 @@ void GameLogic::playerCollisionCallback(PlayerCollisionEvent * ev)
 	if (collision != nullptr)
 		collision->handleCollision(otherShape, playerShape);
 
-	// Handle collision for the player arrow
-	CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->player->getComponent("Collision"));
-	if (playerCollision != nullptr)
-		playerCollision->handleCollision(playerShape, otherShape);
+	// Only check if there is a player assigned
+	if (this->player) {
+		// Handle collision for the player arrow
+		CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->player->getComponent("Collision"));
+		if (playerCollision != nullptr)
+			playerCollision->handleCollision(playerShape, otherShape);
+	}
 }
