@@ -29,6 +29,8 @@ private:
 	void readPosition(json::json& file, Entity* entity, glm::vec3& position);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 
+	void createCollisionBodies(Level& level);
+
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
 	void readLevel(std::string file, Level& level);
