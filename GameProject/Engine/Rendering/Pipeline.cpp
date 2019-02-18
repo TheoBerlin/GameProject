@@ -25,6 +25,7 @@ Pipeline::Pipeline()
 	int width = display.getWidth();
 	int height = display.getHeight();
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
+	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
 
@@ -47,6 +48,8 @@ Pipeline::Pipeline()
 	this->mainLight.direction = glm::normalize(glm::vec4(0.5f, -1.0f, -0.5f, 1.0f));
 	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);
+
+
 }
 
 
@@ -106,9 +109,6 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 	glEnableVertexAttribArray(6);
 	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
 	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(glm::vec3) + sizeof(float)));
-	
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glVertexAttribDivisor(4, 0); // Reuse quad for every vertex
 	glVertexAttribDivisor(5, 1); // Use one Position + scale per quad
@@ -119,13 +119,10 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 	this->particleShader->setUniform3f("cameraUp", this->camera->getView()[0][1], this->camera->getView()[1][1], this->camera->getView()[2][1]);
 	this->particleShader->setUniform3f("cameraRight", this->camera->getView()[0][0], this->camera->getView()[1][0], this->camera->getView()[2][0]);
 
-	fbo.bind();
-	glClear(GL_COLOR_BUFFER_BIT);
 	glDepthMask(GL_TRUE);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
 
-	fbo.unbind();
 
 	glDisableVertexAttribArray(4);
 	glDisableVertexAttribArray(5);
@@ -133,7 +130,7 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 
 	this->particleShader->unbind();
 	
-	return fbo.getColorTexture(0);
+	return fbo.getColorTexture(1);
 }
 
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)

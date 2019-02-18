@@ -45,13 +45,13 @@ void Renderer::drawAll()
 	///*
 	//	Drawing stage with pre existing depth buffer to texture
 	//*/
-	postProcessTexture = *this->pipeline.drawToTexture(this->renderingList);
+	postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
 
-	tex = *this->pipeline.drawParticle(*particleManager);
+	tex = this->pipeline.drawParticle(*particleManager);
 	///*
 	//	Draw texture of scene to quad for postprocessing
 	//*/
-	this->pipeline.drawTextureToQuad(&postProcessTexture, &tex);
+	this->pipeline.drawTextureToQuad(postProcessTexture, tex);
 
 
 
@@ -78,17 +78,22 @@ void Renderer::drawAllInstanced()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	pipeline.getFbo()->bind();
-
+	GLenum buf[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, buf);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
 	std::vector<Model*> models = ModelLoader::getModels();
 	for (Model* model : models) {
 		this->pipeline.drawInstanced(model);
 	}
-	postProcessTexture = *pipeline.getFbo()->getColorTexture(0);
-	pipeline.getFbo()->unbind();
-	
-	tex = *pipeline.drawParticle(*particleManager);
 
-	this->pipeline.drawTextureToQuad(&postProcessTexture, &tex);
+	pipeline.drawParticle(*particleManager);
+	
+	postProcessTexture = pipeline.getFbo()->getColorTexture(0);
+	tex = pipeline.getFbo()->getColorTexture(1);
+
+	pipeline.getFbo()->unbind();
+
+	this->pipeline.drawTextureToQuad(postProcessTexture, tex);
 }

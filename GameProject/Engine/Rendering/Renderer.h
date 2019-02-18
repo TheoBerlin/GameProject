@@ -60,8 +60,8 @@ private:
 	Pipeline pipeline;
 
 	ParticleManager* particleManager;
-	Texture postProcessTexture;
-	Texture tex;
+	Texture* postProcessTexture;
+	Texture* tex;
 
 	std::vector<Entity*> renderingList;
 

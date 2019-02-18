@@ -25,8 +25,8 @@ GameState::GameState() : gameLogic(&this->getEntityManager())
 	emitter.setSpread(0.0f);
 	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 	emitter.setAcceleration(glm::vec3(0.0f, 0.0f, 0.0f));
-	emitter.setMaxParticle(3000);
-	emitter.setSpawnRate(300);
+	emitter.setMaxParticle(600);
+	emitter.setSpawnRate(60);
 	emitter.setStartColour(glm::vec4(0.8f, 0.0f, 1.0f, 1.0f));
 	emitter.setEndColour(glm::vec4(0.8f, 0.0f, 1.0f, 0.0f));
 	emitter.setLifeTime(10.0f);
@@ -75,6 +75,9 @@ void GameState::update(const float dt)
 		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
 		emitter.playEmitter(0);
 	}
+	else {
+		emitter.stopEmitter();
+	}
 	for (Entity* entity : entities)
 		entity->update(dt);
 	particleManger.update(dt);
@@ -114,6 +117,4 @@ void GameState::render()
 
 void GameState::emit(KeyEvent * evnt)
 {
-	if (evnt->key == GLFW_KEY_B)
-		emitter.playEmitter(0);
 }
