@@ -103,14 +103,11 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 			// Get cursor position
-			double* cursorX = new double, *cursorY = new double;
-			glfwGetCursorPos(Display::get().getWindowPtr(), cursorX, cursorY);
+			double cursorX, cursorY;
+			glfwGetCursorPos(Display::get().getWindowPtr(), &cursorX, &cursorY);
 
-			this->preXPos = *cursorX;
-			this->preYPos = *cursorY;
-
-			delete cursorX;
-			delete cursorY;
+			this->preXPos = cursorX;
+			this->preYPos = cursorY;
 
 			EventBus::get().subscribe(this, &FreeMove::moveMouse);
 		} else {
