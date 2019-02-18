@@ -57,7 +57,7 @@
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
-    <ClCompile Include="Game\Components\OverviewCamera.cpp" />
+    <ClCompile Include="Game\Components\OversightController.cpp" />
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
@@ -119,7 +119,7 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
-    <ClInclude Include="Game\Components\OverviewCamera.h" />
+    <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
     <ClInclude Include="Game\GameLogic\TargetManager.h" />

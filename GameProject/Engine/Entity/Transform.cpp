@@ -182,9 +182,6 @@ void Transform::setForward(const glm::vec3 & forward)
 	} else {
 		// Calculate rotation quaternion
 		glm::vec3 axis = glm::normalize(glm::cross(this->f, normForward));
-		if (axis.x != axis.x) {
-			int i = 0;
-		}
 		float angle = std::acosf(cosAngle);
 
 		rotQuat = glm::angleAxis(angle, axis);

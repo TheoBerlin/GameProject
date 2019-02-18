@@ -8,7 +8,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathTreader.h>
-#include <Game/Components/OverviewCamera.h>
+#include <Game/Components/OversightController.h>
 
 GameLogic::GameLogic()
 {
@@ -82,12 +82,10 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
-	OverviewCamera* overviewCam = new OverviewCamera(this->camera);
+	OversightController* overviewCam = new OversightController(this->camera);
 
 	// Reset targets
 	targetManager->resetTargets();
-
-	Display::get().getRenderer().setActiveCamera(camera);
 
 	Display::get().getRenderer().setActiveCamera(camera);
 }

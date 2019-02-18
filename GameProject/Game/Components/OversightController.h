@@ -6,11 +6,11 @@
 #include <glm/glm.hpp>
 #include <unordered_map>
 
-class OverviewCamera : public Component
+class OversightController : public Component
 {
 public:
-    OverviewCamera(Entity* host);
-    ~OverviewCamera();
+    OversightController(Entity* host);
+    ~OversightController();
 
     void update(const float& dt);
 

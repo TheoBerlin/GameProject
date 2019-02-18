@@ -1,11 +1,11 @@
-#include "OverviewCamera.h"
+#include "OversightController.h"
 
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Utils/Logger.h>
 #include <Utils/Settings.h>
 
-OverviewCamera::OverviewCamera(Entity* host)
+OversightController::OversightController(Entity* host)
     :Component(host, "OverviewCamera")
 {
     prevMousePosX = 0.0f;
@@ -35,26 +35,24 @@ OverviewCamera::OverviewCamera(Entity* host)
     // Lock mouse and get mouse position
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    double* cursorPos = new double;
-    glfwGetCursorPos(Display::get().getWindowPtr(), cursorPos, nullptr);
+    double cursorPos;
+    glfwGetCursorPos(Display::get().getWindowPtr(), &cursorPos, nullptr);
 
-    this->prevMousePosX = (float)*cursorPos;
+    this->prevMousePosX = (float)cursorPos;
 
-    delete cursorPos;
-
-    EventBus::get().subscribe(this, &OverviewCamera::handleMouseMove);
-    EventBus::get().subscribe(this, &OverviewCamera::handleKeyInput);
-    EventBus::get().subscribe(this, &OverviewCamera::handleWindowResize);
+    EventBus::get().subscribe(this, &OversightController::handleMouseMove);
+    EventBus::get().subscribe(this, &OversightController::handleKeyInput);
+    EventBus::get().subscribe(this, &OversightController::handleWindowResize);
 }
 
-OverviewCamera::~OverviewCamera()
+OversightController::~OversightController()
 {
-    EventBus::get().unsubscribe(this, &OverviewCamera::handleMouseMove);
-    EventBus::get().unsubscribe(this, &OverviewCamera::handleKeyInput);
-    EventBus::get().unsubscribe(this, &OverviewCamera::handleWindowResize);
+    EventBus::get().unsubscribe(this, &OversightController::handleMouseMove);
+    EventBus::get().unsubscribe(this, &OversightController::handleKeyInput);
+    EventBus::get().unsubscribe(this, &OversightController::handleWindowResize);
 }
 
-void OverviewCamera::update(const float& dt)
+void OversightController::update(const float& dt)
 {
     Transform* transform = host->getTransform();
 
@@ -102,7 +100,7 @@ void OverviewCamera::update(const float& dt)
     applyRotation(dt);
 }
 
-void OverviewCamera::handleMouseMove(MouseMoveEvent* event)
+void OversightController::handleMouseMove(MouseMoveEvent* event)
 {
     mouseMoveX += (float)event->moveX - prevMousePosX;
 
@@ -115,7 +113,7 @@ void OverviewCamera::handleMouseMove(MouseMoveEvent* event)
     rotateFactor = glm::clamp(rotateFactor, -1.0f, 1.0f);
 }
 
-void OverviewCamera::handleKeyInput(KeyEvent* event)
+void OversightController::handleKeyInput(KeyEvent* event)
 {
     if (event->action == GLFW_PRESS) {
 		this->pressedKeys[event->key] = true;
@@ -124,12 +122,12 @@ void OverviewCamera::handleKeyInput(KeyEvent* event)
     }
 }
 
-void OverviewCamera::handleWindowResize(WindowResizeEvent* event)
+void OversightController::handleWindowResize(WindowResizeEvent* event)
 {
     windowHeight = event->height;
 }
 
-void OverviewCamera::applyRotation(const float& dt)
+void OversightController::applyRotation(const float& dt)
 {
     if (std::abs(rotateFactor) < FLT_EPSILON * 10.0f) {
         return;
