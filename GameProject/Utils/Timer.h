@@ -16,7 +16,7 @@ public:
 	void stop();
 
 	// Restart the timer.
-	void restart();
+	double restart();
 
 	// Update delta time.
 	void update();

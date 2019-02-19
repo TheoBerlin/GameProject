@@ -72,6 +72,7 @@
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
+    <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Engine\Components\PlayerCollision.h" />
     <ClInclude Include="Utils\Logger.h" />
