@@ -10,11 +10,12 @@
 	drawOption choose between GL_STATIC_DRAW, GL_DYNAMIC_DRAW and GL_STREAM_DRAW
 */
 struct AttributeSettings {
-	AttributeSettings(unsigned size, unsigned offset = 0)
-		: size(size), offset(offset) {}
+	AttributeSettings(unsigned size, unsigned offset = 0, unsigned divisor = 0)
+		: size(size), offset(offset), divisor(divisor) {}
 
 	unsigned size;
 	unsigned offset;
+	unsigned divisor;
 };
 
 struct AttributeLayout {
@@ -25,13 +26,12 @@ struct AttributeLayout {
 		Specifies new attribute in the vbo, calculates stride, offset and location depending on the pushes
 		Location in shader is based upon pushing order
 	*/
-	void push(const unsigned& size) {
+	void push(const unsigned& size, const unsigned& divisor = 0) {
 
-		AttributeSettings attribute(size, this->stride*sizeof(float));
+		AttributeSettings attribute(size, this->stride*sizeof(float), divisor);
 		this->stride += size;
 
 		this->attribs.push_back(attribute);
-
 	};
 
 	unsigned stride;
@@ -53,7 +53,7 @@ enum TextureType {
 
 class Texture;
 struct Material {
-	glm::vec3 Ka;
-	glm::vec3 Ks;
+	glm::vec4 Kd;
+	glm::vec4 Ks_factor;
 	std::vector<Texture*> textures;
 };

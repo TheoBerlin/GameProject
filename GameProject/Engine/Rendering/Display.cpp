@@ -1,6 +1,5 @@
 #include "Display.h"
 
-#include "../Config.h"
 #include "../../Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
@@ -9,15 +8,11 @@
 #include "../Imgui/imgui_impl_opengl3.h"
 
 #include "Renderer.h"
+#include "GUIRenderer.h"
 
 Display & Display::get()
 {
-	static bool isFirst = true;
 	static Display display;
-	if (isFirst) {
-		display.init(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_TITLE);
-		isFirst = false;
-	}
 	return display;
 }
 
@@ -35,8 +30,6 @@ bool Display::isOpen() const
 
 void Display::startFrame()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	#ifdef IMGUI
 	//Create new frame for ImGui
 	ImGui_ImplOpenGL3_NewFrame();
@@ -97,6 +90,11 @@ std::string Display::getTitle() const
 	return this->title;
 }
 
+FT_Library & Display::getFTLibrary()
+{
+	return this->ftLibrary;
+}
+
 GLFWwindow * Display::getWindowPtr()
 {
 	return this->window;
@@ -105,6 +103,11 @@ GLFWwindow * Display::getWindowPtr()
 Renderer & Display::getRenderer()
 {
 	return *this->renderer;
+}
+
+GUIRenderer & Display::getGUIRenderer()
+{
+	return *this->guiRenderer;
 }
 
 Display::~Display()
@@ -117,6 +120,10 @@ Display::~Display()
 	#endif /* IMGUI */
 
 	delete this->renderer;
+	delete this->guiRenderer;
+
+	FT_Done_FreeType(this->ftLibrary);
+
 	glfwDestroyWindow(this->window);
 	glfwTerminate();
 }
@@ -164,7 +171,7 @@ void Display::init(int width, int height, const std::string& title)
 	}
 
 	glfwMakeContextCurrent(this->window);
-	glfwSwapInterval(1); // Enable vsync
+	//glfwSwapInterval(1); // Enable vsync
 
 	// --------------- INIT GLEW ---------------
 	glewExperimental = true; // Needed in core profile
@@ -179,7 +186,7 @@ void Display::init(int width, int height, const std::string& title)
 	glfwSetWindowSizeCallback(this->window, resizeCallback);
 
 	#ifdef IMGUI
-	//---------------INIT ImGui------------------
+	// ----------------- INIT ImGui -----------------
 	//Context and init
 	const char* glsl_version = "#version 430";
 	ImGui::CreateContext();
@@ -190,5 +197,16 @@ void Display::init(int width, int height, const std::string& title)
 	ImGui::StyleColorsDark();
 	#endif /* IMGUI */
 
+	// ----------------- INIT FreeType-----------------
+	if (FT_Init_FreeType(&this->ftLibrary))
+	{
+		LOG_ERROR("Failed to initialize FreeType library");
+		exit(EXIT_FAILURE);
+	}
+
+	// Disable byte-alignment restriction
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
 	this->renderer = new Renderer();
+	this->guiRenderer = new GUIRenderer();
 }

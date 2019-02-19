@@ -5,6 +5,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "../Events/EventBus.h"
 #include "Utils/Logger.h"
+#include <Utils/Settings.h>
 
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
@@ -13,14 +14,13 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
 	this->speed = 5.0f;
-	this->sensitivity = 0.5f;
+	this->sensitivity = Settings::get().getMouseSensitivity();
 	this->mouseLock = false;
 	this->xPos = 0.0;
 	this->yPos = 0.0;
 	this->preXPos = 0.0;
 	this->preYPos = 0.0;
 }
-
 
 FreeMove::~FreeMove()
 {
@@ -41,7 +41,7 @@ void FreeMove::update(const float & dt)
 
 	glm::vec3 newPosition = mat->getPosition();
 
-	// Check keyboard input (WASD) to calculate new position
+	// Check keyboard input to calculate new position
 	if (this->pressedKeys[GLFW_KEY_W])
 		newPosition += this->dt * mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_A])
@@ -51,9 +51,9 @@ void FreeMove::update(const float & dt)
 	if (this->pressedKeys[GLFW_KEY_S])
 		newPosition += this->dt * -mat->getForward() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_SPACE])
-		newPosition += this->dt * mat->getUp() * this->speed;
+		newPosition += this->dt * GLOBAL_UP_VECTOR * this->speed;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
-		newPosition += this->dt * -mat->getUp() * this->speed;
+		newPosition += this->dt * -GLOBAL_UP_VECTOR * this->speed;
 
 	mat->setPosition(newPosition);
 
@@ -61,16 +61,13 @@ void FreeMove::update(const float & dt)
 	{
 		if (this->xPos != 0.0 || this->yPos != 0.0)
 		{
-			Transform * mat = getHost()->getTransform();
-			glm::vec3 oldForward = mat->getForward();
+			float yaw = -(float)xPos * this->dt * this->sensitivity;
+			float pitch = -(float)yPos * this->dt * this->sensitivity;
 
-			oldForward = glm::rotate(oldForward, -(float)xPos * this->dt * this->sensitivity, mat->getUp());
-			oldForward = glm::rotate(oldForward, -(float)yPos * this->dt * this->sensitivity, mat->getRight());
+			host->getTransform()->rotate(yaw, pitch);
 
 			this->xPos = 0.0;
 			this->yPos = 0.0;
-
-			getHost()->getTransform()->setForward(oldForward);
 		}
 	}
 }
@@ -86,7 +83,7 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 	if (evnt->key == GLFW_KEY_C && evnt->action == GLFW_PRESS)
 	{
 		this->mouseLock = !this->mouseLock;
-		
+
 		if (this->mouseLock)
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		else

@@ -4,17 +4,42 @@
 
 #include "../../../Utils/Logger.h"
 
-UniformBuffer::UniformBuffer(unsigned shaderID, const std::string & blockName, unsigned bindingPoint)
+UniformBuffer::UniformBuffer()
 {
-	this->bindingPoint = bindingPoint;
-	unsigned int index = glGetUniformBlockIndex(shaderID, blockName.c_str());
-	glUniformBlockBinding(shaderID, index, bindingPoint);
+	
 	glGenBuffers(1, &this->id);
 }
 
 UniformBuffer::~UniformBuffer()
 {
 	glDeleteBuffers(1, &this->id);
+}
+
+void UniformBuffer::bind(unsigned bindingPoint)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, this->id);
+	// Bind buffer to binding point
+	glBindBufferBase(GL_UNIFORM_BUFFER, this->bindingPoint, this->id);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void UniformBuffer::bindShader(unsigned shaderID, const char* blockName, unsigned bindingPoint)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, this->id);
+	this->bindingPoint = bindingPoint;
+	unsigned int index = glGetUniformBlockIndex(shaderID, blockName);
+
+	int blockSize = 0;
+
+	glGetActiveUniformBlockiv(shaderID, index, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+
+	this->setData(NULL, blockSize);
+
+	// Bind shader block to binding point
+	glUniformBlockBinding(shaderID, index, this->bindingPoint);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void UniformBuffer::setData(const void* const data, size_t dataSize)
@@ -24,14 +49,13 @@ void UniformBuffer::setData(const void* const data, size_t dataSize)
 	glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 
 	glBufferData(GL_UNIFORM_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_UNIFORM_BUFFER, this->bindingPoint, this->id);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 bool UniformBuffer::setSubData(const void* const data, size_t dataSize, unsigned offset)
 {
-	if (offset + dataSize < this->currentSize) {
+	if (offset + dataSize <= this->currentSize) {
 		glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, data);

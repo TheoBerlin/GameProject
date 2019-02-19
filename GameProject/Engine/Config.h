@@ -6,8 +6,8 @@
 #define EPSILON 0.0000001
 
 // Window defines
-#define DEFAULT_WIDTH 640
-#define DEFAULT_HEIGHT 480
+#define DEFAULT_WIDTH 1280
+#define DEFAULT_HEIGHT 720
 #define DEFAULT_TITLE "Little Game Project"
 
 #define FRAMES_PER_SECOND 30

@@ -3,24 +3,25 @@
 #include "glm/glm.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtc/constants.hpp"
-#include "../Config.h"
+#include <Engine/Config.h>
+#include <glm/gtc/quaternion.hpp>
 
 class Transform
 {
 private:
 	glm::vec3 position;
-	glm::vec3 rotation;
 	glm::vec3 scaleFactor;
 	glm::vec3 f, r, u;
-	glm::vec3 defaultForward;
+	const glm::vec3 defaultForward = glm::vec3(0.0f, 0.0f, -1.0f);
 
-	// Fixes the rotation to always be between 0 to 2π radians
-	glm::vec3 modulusRotation(glm::vec3 rotation);
-	void updateForwardRightUp();
+	bool isUpdated;
+
+	glm::quat rotationQuat;
 
 public:
 	Transform();
-
+	//Get combined matrix of world and model by passing pointer
+	void getMatrix(glm::mat4 * mat) const;
 	//Get combined matrix of world and model
 	glm::mat4 getMatrix() const;
 	//Get position in world
@@ -35,6 +36,11 @@ public:
 	glm::vec3 getRight() const;
 	//Get up vector
 	glm::vec3 getUp() const;
+	
+	/*
+		get status if transform has been changed, reset status if it has.
+	*/
+	bool getStatus();
 
 	/*
 	Any function with the 'set' prefix applies an absolute transformation
@@ -63,4 +69,6 @@ public:
 	void setScale(const float& scale);
 	//Set forward vector
 	void setForward(const glm::vec3& forward);
+
+	void rotate(const float yaw, const float pitch, const float roll = 0.0f);
 };

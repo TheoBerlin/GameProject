@@ -30,3 +30,8 @@ StateManager& State::getStateManager()
 {
 	return *this->stateManager;
 }
+
+EntityManager & State::getEntityManager()
+{
+	return this->entityManager;
+}

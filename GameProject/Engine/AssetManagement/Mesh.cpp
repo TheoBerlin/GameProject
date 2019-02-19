@@ -22,7 +22,7 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 	this->ib = new IndexBuffer((void*)&((*vertexIndices)[0]), vertexIndices->size());
 }
 
-void Mesh::bindVertexBuffer()
+void Mesh::bindVertexArray()
 {
     this->vao->bind();
 }
@@ -35,7 +35,7 @@ IndexBuffer & Mesh::getIndexBuffer()
 void Mesh::bindMaterial(UniformBuffer* uniformBuffer)
 {
     Material* material = &parentModel->getMaterial(this->materialIndex);
-    uniformBuffer->setData((void*)material, sizeof(*material) - sizeof(material->textures));
+    uniformBuffer->setSubData((void*)material, sizeof(*material) - sizeof(material->textures), 0);
 }
 
 Mesh::~Mesh()
@@ -51,6 +51,30 @@ Mesh::~Mesh()
 unsigned short Mesh::getMaterialIndex()
 {
     return this->materialIndex;
+}
+
+void Mesh::initInstancing(const void * data, size_t dataSize)
+{
+	/*
+		Creating vbo for model/transform matrices 
+	*/
+	this->vao->bind();
+	VertexBuffer* vbo = new VertexBuffer(data, dataSize, GL_DYNAMIC_DRAW);
+	AttributeLayout layout;
+	layout.push(4, 1); // vec4 row one in matrix
+	layout.push(4, 1); // vec4 row two in matrix
+	layout.push(4, 1); // vec4 row three in matrix
+	layout.push(4, 1); // vec4 row four in matrix
+	this->vao->addBuffer(vbo, layout);
+
+}
+
+void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned offset)
+{
+	/*
+		Update second vbo contaning the matrices
+	*/
+	this->vao->updateBuffer(1, data, dataSize, offset);
 }
 
 void Mesh::createBuffers()

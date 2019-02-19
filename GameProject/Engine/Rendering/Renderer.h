@@ -3,6 +3,7 @@
 #include "../Components/Camera.h"
 #include "GLAbstraction/UniformBuffer.h"
 #include "GLAbstraction/Shader.h"
+#include "Pipeline.h"
 
 class Model;
 class Entity;
@@ -27,16 +28,30 @@ public:
 	void push(Entity* entity);
 
 	/*
-	Draw all entites in the rendering list and clear it.
+		Draw all entites in the rendering list and clear it.
 	*/
 	void drawAll();
 
-	void draw(Entity* entity);
-	void draw(Model* model);
+	/*
+		inits vertex buffer for meshes rendering groups transforms
+	*/
+	void initInstancing();
+
+	/*
+		Updates vertex buffer for models meshes rendering groups transforms
+	*/
+	void updateInstancingData(Model * model);
+
+
+	/*
+		Draw all entites in the rendering list, assumes that all entities in rendering list uses the same model
+	*/
+	void drawAllInstanced();
+
 
 private:
-	Camera* activeCamera;
-	UniformBuffer* uniformBuffer;
-	Shader* testShader;
+	Pipeline pipeline;
+
 	std::vector<Entity*> renderingList;
+
 };
