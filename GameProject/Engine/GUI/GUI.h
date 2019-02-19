@@ -117,12 +117,9 @@ public:
 		OPTIONS_MAX
 	};
 
-	// A strcut to hold the value of the option. Can be a bool, float, int or unsigned int. 
+	// A strcut to hold the value of the option. 
 	struct OPTION_VALUE
 	{
-		bool b = false;
-		float f = 0.0f;
-		int i = 0;
 		unsigned int ui = 0u;
 	};
 

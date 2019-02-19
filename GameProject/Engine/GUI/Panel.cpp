@@ -57,33 +57,33 @@ glm::vec4 Panel::getColor() const
 	return this->color;
 }
 
-void Panel::setPosition(glm::vec2 pos)
+void Panel::setPosition(glm::uvec2 pos)
 {
 	this->pos = pos;
 }
 
-glm::vec2 Panel::getPosition() const
+glm::uvec2 Panel::getPosition() const
 {
 	return this->pos;
 }
 
-void Panel::setSize(glm::vec2 size)
+void Panel::setSize(glm::uvec2 size)
 {
 	this->size = size;
 	this->shouldUpdate = true;
 }
 
-glm::vec2 Panel::getSize() const
+glm::uvec2 Panel::getSize() const
 {
 	return this->size;
 }
 
 void Panel::addText(const std::string & str, const std::string & font, const glm::vec4 & color)
 {
-	addText(str, 0.0f, 0.0f, font, color);
+	addText(str, 0, 0, font, color);
 }
 
-void Panel::addText(const std::string & str, float x, float y, const std::string& font, const glm::vec4& color)
+void Panel::addText(const std::string & str, unsigned int x, unsigned int y, const std::string& font, const glm::vec4& color)
 {
 	// Construct the text.
 	Text* text = new Text();
@@ -91,17 +91,17 @@ void Panel::addText(const std::string & str, float x, float y, const std::string
 	text->updateText(str, FontManager::getFont(font));
 
 	// Set its position and add it to the textList.
-	glm::vec2 relativePos = glm::vec2(x, y);
+	glm::vec2 relativePos = glm::uvec2(x, y);
 	this->textList.push_back(std::pair<Text*, glm::vec2>(text, relativePos));
 
 	this->shouldUpdate = true;
 }
 
-void Panel::updateText(unsigned int index, const std::string & str, float x, float y)
+void Panel::updateText(unsigned int index, const std::string & str, unsigned int x, unsigned int y)
 {
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].first->updateText(str);
-		this->textList[index].second = glm::vec2(x, y);
+		this->textList[index].second = glm::uvec2(x, y);
 		this->shouldUpdate = true;
 	}
 	else
@@ -111,10 +111,10 @@ void Panel::updateText(unsigned int index, const std::string & str, float x, flo
 	}
 }
 
-void Panel::updateText(unsigned int index, float x, float y)
+void Panel::updateText(unsigned int index, unsigned int x, unsigned int y)
 {
 	if (index >= 0 && index < this->textList.size()) {
-		this->textList[index].second = glm::vec2(x, y);
+		this->textList[index].second = glm::uvec2(x, y);
 		this->shouldUpdate = true;
 	}
 	else
@@ -171,7 +171,7 @@ void Panel::rebake()
 	}
 }
 
-std::vector<std::pair<Text*, glm::vec2>>& Panel::getTextList()
+std::vector<std::pair<Text*, glm::uvec2>>& Panel::getTextList()
 {
 	return textList;
 }
@@ -194,7 +194,7 @@ void Panel::setParent(Panel * parent)
 void Panel::setOption(GUI::OPTION option)
 {
 	GUI::OPTION_VALUE v;
-	v.f = 0.0f;
+	v.ui = 0;
 	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);
 	this->shouldUpdate = true;
 }
@@ -218,8 +218,8 @@ bool Panel::hasUpdated() const
 
 void Panel::init()
 {
-	this->pos = { 0.0f, 0.0f };
-	this->size = { 1.0f, 1.0f };
+	this->pos = { 0, 0 };
+	this->size = { 100, 100 };
 	this->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	this->shouldUpdate = false;
 	this->parent = nullptr;
@@ -245,63 +245,63 @@ void Panel::processOption(GUI::OPTION_VALUE option, unsigned int index)
 	{
 	// ---------------- Size related -------------------
 	case GUI::OPTION::SCALE_TO_TEXT_X:
-		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_X, option.f);
+		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_X, option.ui);
 		break;
 	case GUI::OPTION::SCALE_TO_TEXT_Y:
-		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.f);
+		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.ui);
 		break;
 
 	// -------------- Position related -----------------
 	case GUI::OPTION::FLOAT_LEFT:
-		processPositionOption(GUI::OPTION::FLOAT_LEFT, option.f);
+		processPositionOption(GUI::OPTION::FLOAT_LEFT, option.ui);
 		break;
 	case GUI::OPTION::FLOAT_RIGHT:
-		processPositionOption(GUI::OPTION::FLOAT_RIGHT, option.f);
+		processPositionOption(GUI::OPTION::FLOAT_RIGHT, option.ui);
 		break;
 	case GUI::OPTION::FLOAT_UP:
-		processPositionOption(GUI::OPTION::FLOAT_UP, option.f);
+		processPositionOption(GUI::OPTION::FLOAT_UP, option.ui);
 		break;
 	case GUI::OPTION::FLOAT_DOWN:
-		processPositionOption(GUI::OPTION::FLOAT_DOWN, option.f);
+		processPositionOption(GUI::OPTION::FLOAT_DOWN, option.ui);
 		break;
 	case GUI::OPTION::CENTER_X:
-		processPositionOption(GUI::OPTION::CENTER_X, 0.0f);
+		processPositionOption(GUI::OPTION::CENTER_X, 0);
 		break;
 	case GUI::OPTION::CENTER_Y:
-		processPositionOption(GUI::OPTION::CENTER_Y, 0.0f);
+		processPositionOption(GUI::OPTION::CENTER_Y, 0);
 		break;
 
 	case GUI::OPTION::FIT_X:
-		processFitOption(GUI::OPTION::FIT_X, 0.0f);
+		processFitOption(GUI::OPTION::FIT_X, 0);
 		break;
 	case GUI::OPTION::FIT_Y:
-		processFitOption(GUI::OPTION::FIT_Y, 0.0f);
+		processFitOption(GUI::OPTION::FIT_Y, 0);
 		break;
 
 	// ---------------- Text related --------------------
 	case GUI::OPTION::TEXT_CENTER_X:
-		processTextPositionOption(GUI::OPTION::TEXT_CENTER_X, 0.0f);
+		processTextPositionOption(GUI::OPTION::TEXT_CENTER_X, 0);
 		break;
 	case GUI::OPTION::TEXT_CENTER_Y:
-		processTextPositionOption(GUI::OPTION::TEXT_CENTER_Y, 0.0f);
+		processTextPositionOption(GUI::OPTION::TEXT_CENTER_Y, 0);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_LEFT:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_LEFT, option.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_LEFT, option.ui);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_RIGHT:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_RIGHT, option.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_RIGHT, option.ui);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_UP:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_UP, option.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_UP, option.ui);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_DOWN:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_DOWN, option.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_DOWN, option.ui);
 		break;
 
 	}
 }
 
-void Panel::processPositionOption(unsigned int index, float v)
+void Panel::processPositionOption(unsigned int index, unsigned int v)
 {
 	if (index == GUI::FLOAT_LEFT)
 		this->pos.x = v;
@@ -309,8 +309,8 @@ void Panel::processPositionOption(unsigned int index, float v)
 		this->pos.y = v;
 
 	Display& display = Display::get();
-	float w = (float)display.getWidth();
-	float h = (float)display.getHeight();
+	unsigned int w = (unsigned int)display.getWidth();
+	unsigned int h = (unsigned int)display.getHeight();
 	if (this->parent != nullptr)
 	{
 		w = this->parent->getSize().x;
@@ -322,12 +322,12 @@ void Panel::processPositionOption(unsigned int index, float v)
 	if (index == GUI::FLOAT_UP)
 		this->pos.y = h - this->size.y - v;
 	if (index == GUI::CENTER_X)
-		this->pos.x = std::floor(w * 0.5f - this->size.x*0.5f);
+		this->pos.x = w / 2 - this->size.x / 2;
 	if (index == GUI::CENTER_Y)
-		this->pos.y = std::floor(h * 0.5f - this->size.y*0.5f);
+		this->pos.y = h / 2 - this->size.y / 2;
 }
 
-void Panel::processTextPositionOption(unsigned int index, float v)
+void Panel::processTextPositionOption(unsigned int index, unsigned int v)
 {
 	bool centerX = false;
 	bool centerY = false;
@@ -346,9 +346,9 @@ void Panel::processTextPositionOption(unsigned int index, float v)
 	{
 		Text* text = t.first;
 		if (centerX)
-			t.second.x = std::floor(this->getSize().x*0.5f - text->getWidth()*0.5f);
+			t.second.x = this->getSize().x/2 - text->getWidth()/2;
 		if (centerY)
-			t.second.y = std::floor(this->getSize().y*0.5f - text->getHeight()*0.5f);
+			t.second.y = this->getSize().y/2 - text->getHeight()/2;
 
 		if (horizontal == 1)
 			t.second.x = v;
@@ -362,11 +362,11 @@ void Panel::processTextPositionOption(unsigned int index, float v)
 	}
 }
 
-void Panel::processFitOption(unsigned int index, float v)
+void Panel::processFitOption(unsigned int index, unsigned int v)
 {
 	Display& display = Display::get();
-	float w = (float)display.getWidth();
-	float h = (float)display.getHeight();
+	unsigned int w = (unsigned int)display.getWidth();
+	unsigned int h = (unsigned int)display.getHeight();
 	if (this->parent != nullptr)
 	{
 		w = this->parent->getSize().x;
@@ -376,40 +376,40 @@ void Panel::processFitOption(unsigned int index, float v)
 	if (index == GUI::FIT_X)
 	{
 		this->size.x = w;
-		this->pos.x = 0.0f;
+		this->pos.x = 0;
 	}
 
 	if (index == GUI::FIT_Y)
 	{
 		this->size.y = h;
-		this->pos.y = 0.0f;
+		this->pos.y = 0;
 	}
 }
 
-void Panel::processScaleToTextOption(unsigned int index, float v)
+void Panel::processScaleToTextOption(unsigned int index, unsigned int v)
 {
 	if (index == GUI::SCALE_TO_TEXT_X)
 	{
-		float maxX = 0.0f;
+		unsigned int maxX = 0;
 		for (auto& t : this->textList)
 		{
-			float w = t.first->getWidth();
+			unsigned int w = t.first->getWidth();
 			if (w > maxX) maxX = w;
 		}
 		this->size.x = maxX + v;
-		this->pos.x = 0.0f;
+		this->pos.x = 0;
 	}
 
 	if (index == GUI::SCALE_TO_TEXT_Y)
 	{
-		float maxY = 0.0f;
+		unsigned int maxY = 0;
 		for (auto& t : this->textList)
 		{
-			float h = t.first->getHeight();
+			unsigned int h = t.first->getHeight();
 			if (h > maxY) maxY = h;
 		}
 		this->size.y = maxY + v;
-		this->pos.y = 0.0f;
+		this->pos.y = 0;
 	}
 }
 

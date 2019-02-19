@@ -7,7 +7,7 @@
 #include "Text.h"
 #include "GUI.h"
 
-class WindowResizeEvent;
+struct WindowResizeEvent;
 class Panel
 {
 public:
@@ -49,22 +49,22 @@ public:
 	/*
 	Set the poisition in pixels. This will not rebake the texture!
 	*/
-	void setPosition(glm::vec2 pos);
+	void setPosition(glm::uvec2 pos);
 
 	/*
 	Get the position in pixels.
 	*/
-	glm::vec2 getPosition() const;
+	glm::uvec2 getPosition() const;
 
 	/*
 	Set the size in pixels. This will not rebake the texture!
 	*/
-	void setSize(glm::vec2 size);
+	void setSize(glm::uvec2 size);
 
 	/*
 	Get the size in pixels.
 	*/
-	glm::vec2 getSize() const;
+	glm::uvec2 getSize() const;
 
 	/*
 	Add a text to the panel. This will not rebake the texture!
@@ -79,31 +79,31 @@ public:
 	Add a text to the panel. This will not rebake the texture!
 	Arguments:
 		str: The string to the converted and rendered.
-		x: The x coordinate in pixels. 0.0f is the left side.
-		y: The y coordinate in pixels. 0.0f is the right side.
+		x: The x coordinate in pixels. 0 is the left side.
+		y: The y coordinate in pixels. 0 is the right side.
 		font: The font to use when converting the string to a character set.
 		color: The color of the text when rendering.
 	*/
-	void addText(const std::string& str, float x, float y, const std::string& font, const glm::vec4& color = { 0.0f, 0.0f, 0.0f, 1.0f });
+	void addText(const std::string& str, unsigned int x, unsigned int y, const std::string& font, const glm::vec4& color = { 0.0f, 0.0f, 0.0f, 1.0f });
 
 	/*
 	Update the string and position for an already added text. This will not rebake the texture!
 	Arguments:
 		index: The index in which the text in was added.
 		str: The new string to be converted and renered.
-		x: The x coordinate in pixels. 0.0f is the left side.
-		y: The y coordinate in pixels. 0.0f is the right side.
+		x: The x coordinate in pixels. 0 is the left side.
+		y: The y coordinate in pixels. 0 is the right side.
 	*/
-	void updateText(unsigned int index, const std::string& str, float x, float y);
+	void updateText(unsigned int index, const std::string& str, unsigned int x, unsigned int y);
 
 	/*
 	Update the position for an already added text. This will not rebake the texture!
 	Arguments:
 	index: The index in which the text in was added.
-		x: The x coordinate in pixels. 0.0f is the left side.
-		y: The y coordinate in pixels. 0.0f is the right side.
+		x: The x coordinate in pixels. 0 is the left side.
+		y: The y coordinate in pixels. 0 is the right side.
 	*/
-	void updateText(unsigned int index, float x, float y);
+	void updateText(unsigned int index, unsigned int x, unsigned int y);
 
 	/*
 	Update the string for an already added text. This will not rebake the texture!
@@ -136,7 +136,7 @@ public:
 	Return:
 		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
 	*/
-	std::vector<std::pair<Text*, glm::vec2>>& getTextList();
+	std::vector<std::pair<Text*, glm::uvec2>>& getTextList();
 
 	/*
 	Get a list of the current children attached to the panel.
@@ -202,7 +202,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processPositionOption(unsigned int index, float v);
+	void processPositionOption(unsigned int index, unsigned int v);
 
 	/*
 	Process the options related to positioning the text in the panel.
@@ -210,7 +210,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processTextPositionOption(unsigned int index, float v);
+	void processTextPositionOption(unsigned int index, unsigned int v);
 
 	/*
 	Process the options related to fit the panel in its parent of display if not parent.
@@ -218,7 +218,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processFitOption(unsigned int index, float v);
+	void processFitOption(unsigned int index, unsigned int v);
 
 	/*
 	Process the options related to scaling the panel to match the text.
@@ -226,7 +226,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processScaleToTextOption(unsigned int index, float v);
+	void processScaleToTextOption(unsigned int index, unsigned int v);
 
 	/*
 	A callback for when the window is resized. This will updated all the option and rebaked the panel.
@@ -238,15 +238,15 @@ protected:
 
 	Panel* parent;
 	std::vector<Panel*> children;
-	std::vector<std::pair<Text*, glm::vec2>> textList;
+	std::vector<std::pair<Text*, glm::uvec2>> textList;
 
 	Texture bakedTexture;
 	Texture* backgroundTexture;
 
 	glm::vec4 color;
 
-	glm::vec2 pos;
-	glm::vec2 size;
+	glm::uvec2 pos;
+	glm::uvec2 size;
 
 	std::vector<std::pair<bool, GUI::OPTION_VALUE>> options;
 };
@@ -255,12 +255,6 @@ template<typename T>
 inline void Panel::setOption(GUI::OPTION option, T value)
 {
 	GUI::OPTION_VALUE v;
-	if (typeid(T) == typeid(bool))
-		v.b = (bool)value;
-	if (typeid(T) == typeid(float))
-		v.f = (float)value;
-	if (typeid(T) == typeid(int))
-		v.i = (int)value;
 	if (typeid(T) == typeid(unsigned int))
 		v.ui = (unsigned int)value;
 	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);

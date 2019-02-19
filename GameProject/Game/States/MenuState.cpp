@@ -22,8 +22,8 @@ MenuState::MenuState() : State()
 
 	GUI& gui = this->getGUI();
 	this->button = new Button();
-	this->button->setOption(GUI::SCALE_TO_TEXT_X, 5.0f);
-	this->button->setOption(GUI::SCALE_TO_TEXT_Y, 5.0f);
+	this->button->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	this->button->setOption(GUI::SCALE_TO_TEXT_Y, 5);
 	this->button->setOption(GUI::CENTER_X);
 	this->button->setOption(GUI::CENTER_Y);
 	this->button->setOption(GUI::TEXT_CENTER_X);
@@ -44,26 +44,25 @@ MenuState::~MenuState()
 
 void MenuState::start()
 {
-	//this->pushState(new GameState());
 	Display& display = Display::get();
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	this->panel = new Panel();
-	this->panel->setSize({ 100.0f, 100.0f });
+	this->panel->setSize({ 100, 100 });
 	this->panel->setOption(GUI::FLOAT_UP);
 	this->panel->setOption(GUI::FLOAT_RIGHT);
 	this->panel->setOption(GUI::TEXT_CENTER_X);
 	this->panel->setOption(GUI::TEXT_FLOAT_DOWN);
 	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-	this->panel->addText("Play", 0.0f, 0.0f, "arial");
+	this->panel->addText("Play", "arial", { 0.0f, 1.0f, 0.0f, 1.0f });
 	this->getGUI().addPanel(this->panel);
 
 	Panel* p = new Panel();
-	p->setSize({ 50.0f, 50.0f });
-	p->setOption(GUI::FLOAT_LEFT, 5.0f);
-	p->setOption(GUI::FLOAT_UP, 10.0f);
+	p->setSize({ 50, 50 });
+	p->setOption(GUI::FLOAT_LEFT, 5);
+	p->setOption(GUI::FLOAT_UP, 10);
 	p->setBackgroundTexture(TextureManager::loadTexture("./Game/assets/heaven.png", TextureType::TXTYPE_DIFFUSE));
-	p->addText("Inner", 0.0f, 0.0f, "arial");
+	p->addText("Inner", "arial");
 	this->panel->addChild(p);
 }
 

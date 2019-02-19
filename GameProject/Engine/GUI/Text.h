@@ -9,8 +9,8 @@ public:
 	struct CharacterDrawData
 	{
 		GLuint textureID;
-		glm::vec2 pos;
-		glm::vec2 scale;
+		glm::ivec2 pos;
+		glm::ivec2 size;
 	};
 
 	Text();
@@ -53,15 +53,15 @@ public:
 	/*
 	Get the width in pixels.
 	*/
-	float getWidth() const;
+	unsigned int getWidth() const;
 	/*
 	Get the height in pixels.
 	*/
-	float getHeight() const;
+	unsigned int getHeight() const;
 	/*
 	Get the bearing in pixels.
 	*/
-	float getBearingY() const;
+	unsigned int getBearingY() const;
 
 	/*
 	Set the baked texture as a copy of the argument.
@@ -94,10 +94,10 @@ private:
 
 	bool shouldUpdate;
 
-	float line;
-	float width;
-	float height;
-	float bearingY;
+	unsigned int line;
+	unsigned int width;
+	unsigned int height;
+	unsigned int bearingY;
 	glm::vec4 color;
 
 	Texture bakedTexture;

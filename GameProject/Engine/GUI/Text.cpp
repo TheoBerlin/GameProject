@@ -49,41 +49,41 @@ bool Text::setText(const std::string & str, Font * font)
 		this->charactersDrawData.clear();
 		this->str = str;
 
-		this->width = 0.0f;
-		this->height = 0.0f;
+		this->width = 0;
+		this->height = 0;
 
-		float min = 0.0f;
-		this->bearingY = 0.0f;
+		unsigned int min = 0;
+		this->bearingY = 0;
 
 		// Loop through all characters and calculate their position and scale.
-		float x = 0.0f;
+		int x = 0;
 		const char* c;
 		for (c = str.c_str(); *c; c++)
 		{
 			Font::Character character = this->font->getCharacter(*c);
 
-			float x2 = x + (float)character.bearingX;
-			float y2 = -(float)character.height + (float)character.bearingY;
-			float w = (float)character.width;
-			float h = (float)character.height;
+			int x2 = x + (int)character.bearingX;
+			int y2 = -(int)character.height + (int)character.bearingY;
+			unsigned int w = character.width;
+			unsigned int h = character.height;
 			this->width = w;
 
 			// Save the highest and the lowest distances to the line.
 			if (min < (character.height - character.bearingY))
-				min = (float)character.height - (float)character.bearingY;
+				min = character.height - character.bearingY;
 			if (this->bearingY < character.bearingY)
-				this->bearingY = (float)character.bearingY;
+				this->bearingY = character.bearingY;
 
 			CharacterDrawData characterData;
 			characterData.pos = { x2, y2 };
-			characterData.scale = { w, h };
+			characterData.size = { w, h };
 			characterData.textureID = character.textureID;
 			this->charactersDrawData.push_back(characterData);
 
 			if(*(c+1))
-				x += (character.advance >> 6);
+				x += (int)(character.advance >> 6);
 		}
-		this->width += x;
+		this->width += (unsigned int)x;
 		this->height = min + this->bearingY;
 		return true;
 	}
@@ -113,17 +113,17 @@ glm::vec4 Text::getColor() const
 	return this->color;
 }
 
-float Text::getWidth() const
+unsigned int Text::getWidth() const
 {
 	return this->width;
 }
 
-float Text::getHeight() const
+unsigned int Text::getHeight() const
 {
 	return this->height;
 }
 
-float Text::getBearingY() const
+unsigned int Text::getBearingY() const
 {
 	return this->bearingY;
 }

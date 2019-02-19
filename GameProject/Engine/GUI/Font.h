@@ -10,11 +10,11 @@ public:
 	struct Character
 	{
 		GLuint textureID;
-		int width;			// Glyph size in X.
-		int height;			// Glyph size in Y.
-		int bearingX;		// Distance from origin to left side of glyph.
-		int bearingY;		// Distance from origin to top side of glyph.
-		GLuint advance;		// How far to advance when drawing a new character.
+		unsigned int width;		// Glyph size in X.
+		unsigned int height;	// Glyph size in Y.
+		unsigned int bearingX;	// Distance from origin to left side of glyph.
+		unsigned int bearingY;	// Distance from origin to top side of glyph.
+		GLuint advance;			// How far to advance when drawing a new character.
 	};
 
 	Font();

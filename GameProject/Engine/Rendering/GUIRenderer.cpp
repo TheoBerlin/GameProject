@@ -43,7 +43,7 @@ void GUIRenderer::bakeText(Text & text)
 {
 	// Update framebuffer dimension.
 	fb.updateDimensions(0, (GLuint)text.getWidth(), (GLuint)text.getHeight());
-	this->orthoText = glm::ortho(0.0f, text.getWidth(), 0.0f, text.getHeight());
+	this->orthoText = glm::ortho(0.0f, (float)text.getWidth(), 0.0f, (float)text.getHeight());
 
 	fb.bind();
 
@@ -70,7 +70,7 @@ void GUIRenderer::drawBaked(Text & text, float x, float y)
 	this->textShader->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
 	this->textShader->setTexture2D("tex", 0, *text.getBakedTexture());
 	this->textShader->setUniform2f("pos", x, y);
-	this->textShader->setUniform2f("scale", text.getWidth(), text.getHeight());
+	this->textShader->setUniform2f("scale", (float)text.getWidth(), (float)text.getHeight());
 	this->vaFullQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	this->textShader->unbind();
@@ -95,7 +95,7 @@ void GUIRenderer::bakePanel(Panel * panel)
 		element.first->rebake();
 
 	// Update framebuffer dimensions.
-	this->orthoText = glm::ortho(0.0f, panel->getSize().x, 0.0f, panel->getSize().y);
+	this->orthoText = glm::ortho(0.0f, (float)panel->getSize().x, 0.0f, (float)panel->getSize().y);
 	fb.updateDimensions(0, (GLuint)panel->getSize().x, (GLuint)panel->getSize().y);
 
 	fb.bind();
@@ -107,7 +107,7 @@ void GUIRenderer::bakePanel(Panel * panel)
 	// Render current panel
 	this->panelShader->bind();
 	this->panelShader->setUniform2f("pos", 0.0f, 0.0f);
-	this->panelShader->setUniform2f("size", panel->getSize().x, panel->getSize().y);
+	this->panelShader->setUniform2f("size", (float)panel->getSize().x, (float)panel->getSize().y);
 	this->panelShader->setUniform4f("color", panel->getColor().x, panel->getColor().y, panel->getColor().z, panel->getColor().w);
 	this->panelShader->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
 
@@ -125,7 +125,7 @@ void GUIRenderer::bakePanel(Panel * panel)
 	for (auto& element : panel->getTextList())
 	{
 		element.first->getBakedTexture()->bind();
-		drawBaked(*element.first, element.second.x, element.second.y);
+		drawBaked(*element.first, (float)element.second.x, (float)element.second.y);
 	}
 
 	// Draw sub-panels baked texture.
@@ -143,14 +143,14 @@ void GUIRenderer::bakePanel(Panel * panel)
 
 void GUIRenderer::drawBaked(Panel * panel)
 {
-	float x = panel->getPosition().x;
-	float y = panel->getPosition().y;
+	float x = (float)panel->getPosition().x;
+	float y = (float)panel->getPosition().y;
 
 	this->textShader->bind();
 	this->textShader->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
 	this->textShader->setTexture2D("tex", 0, *panel->getBakedTexture());
 	this->textShader->setUniform2f("pos", x, y);
-	this->textShader->setUniform2f("scale", panel->getSize().x, panel->getSize().y);
+	this->textShader->setUniform2f("scale", (float)panel->getSize().x, (float)panel->getSize().y);
 	this->vaFullQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	this->textShader->unbind();
@@ -160,7 +160,7 @@ void GUIRenderer::drawToBake(Text & text)
 {
 	Font* font = text.getFont();
 
-	float y = text.getHeight() - text.getBearingY();
+	float y = (float)text.getHeight() - (float)text.getBearingY();
 	
 	font->getShader()->bind();
 	font->getShader()->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
@@ -173,8 +173,8 @@ void GUIRenderer::drawToBake(Text & text)
 
 		font->getShader()->setUniform4fv("color", 1, &text.getColor()[0]);
 		font->getShader()->setTexture2D("tex", 0, character.textureID);
-		font->getShader()->setUniform2f("scale", character.scale.x, character.scale.y);
-		font->getShader()->setUniform2f("pos", character.pos.x, character.pos.y + y);
+		font->getShader()->setUniform2f("scale", (float)character.size.x, (float)character.size.y);
+		font->getShader()->setUniform2f("pos", (float)character.pos.x, (float)character.pos.y + y);
 
 		this->vaFullQuad->bind();
 		this->vbFullQuad->bind();
