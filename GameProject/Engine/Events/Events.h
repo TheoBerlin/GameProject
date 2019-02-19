@@ -41,3 +41,11 @@ struct MouseClickEvent : public Event
 	int button;
 	int action;
 };
+
+class Phase;
+
+struct PhaseChangeEvent : public Event
+{
+	PhaseChangeEvent(Phase* newPhase) : newPhase{ newPhase } {};
+	Phase* newPhase;
+};
