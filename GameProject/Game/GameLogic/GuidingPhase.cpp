@@ -6,6 +6,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/OverviewPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
 #include <Utils/Logger.h>
@@ -19,6 +20,19 @@ GuidingPhase::GuidingPhase(OverviewPhase* other)
 GuidingPhase::GuidingPhase(ReplayPhase* other)
     :Phase((Phase*)other)
 {
+
+    // Remove path visualizers
+    PathVisualizer* pathVisualizer = other->getPathVisualizer();
+
+    if (pathVisualizer) {
+        other->getPathVisualizer()->removeVisualizers();
+    }
+
+    // Remove replay arrow
+    Entity* replayArrow = other->getReplayArrow();
+
+    level.entityManager->removeTracedEntity(replayArrow->getName());
+
     commonSetup();
 }
 
@@ -35,9 +49,12 @@ void GuidingPhase::commonSetup()
 	*/
 	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
 
-    player->getTransform()->setForward(playerDir);
-	player->getTransform()->setPosition(playerPos);
-	player->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
+    Transform* playerTransform = player->getTransform();
+
+    playerTransform->setForward(playerDir);
+    playerTransform->resetRoll();
+	playerTransform->setPosition(playerPos);
+	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	player->setModel(model);
 

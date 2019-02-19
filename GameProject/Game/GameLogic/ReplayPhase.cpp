@@ -16,12 +16,12 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
     /*
 		Create arrow entity
 	*/
-	Entity * arrowEntity = level.entityManager->addTracedEntity("ArrowReplay");
+	replayArrow = level.entityManager->addTracedEntity("ArrowReplay");
 
-	arrowEntity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
+	replayArrow->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
-    arrowEntity->getTransform()->setPosition(this->arrowPos);
-	arrowEntity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
+    replayArrow->getTransform()->setPosition(this->arrowPos);
+	replayArrow->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	// Stop arrow guider and copy arrow path from guider to path treader
 	Component* tmpPtr = player->getComponent("ArrowGuider");
@@ -30,11 +30,11 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
     oldArrowGuider->stopGuiding();
 
     // Add path treader to arrow entity
-    PathTreader* arrow = new PathTreader(arrowEntity, oldArrowGuider->getPath());
+    PathTreader* arrow = new PathTreader(replayArrow, oldArrowGuider->getPath());
     arrow->startTreading();
 
     // Add path visualizer for debugging
-    PathVisualizer* pathVisualizer = new PathVisualizer(arrowEntity, level.entityManager);
+    pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
     pathVisualizer->addPath(oldArrowGuider->getPath());
 
     // Set up the player camera
@@ -42,8 +42,11 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
     player->detachFromModel();
 
     // Create free camera
-	player->getTransform()->setPosition(glm::vec3(0.0f, 3.0f, 4.0f));
-	player->getTransform()->setForward(glm::vec3(0.0f, -0.7f, -0.7f));
+    Transform* playerTransform = player->getTransform();
+
+	playerTransform->setPosition(glm::vec3(0.0f, 3.0f, 4.0f));
+	playerTransform->setForward(glm::vec3(0.0f, -0.7f, -0.7f));
+    playerTransform->resetRoll();
 
 	Camera* camera = new Camera(player, "Camera");
 	camera->init();
@@ -58,14 +61,19 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
 
 ReplayPhase::~ReplayPhase()
 {
-    Entity* oldPlayerEntity = level.entityManager->getTracedEntity("ArrowReplay");
-	Component* tmpPtr = oldPlayerEntity->getComponent("PathVisualizer");
+    pathVisualizer = nullptr;
+    replayArrow = nullptr;
+    pathTreader = nullptr;
+}
 
-	if (tmpPtr) {
-		PathVisualizer* pathVisualizer = dynamic_cast<PathVisualizer*>(tmpPtr);
+Entity* ReplayPhase::getReplayArrow() const
+{
+    return replayArrow;
+}
 
-		pathVisualizer->removeVisualizers();
-	}
+PathVisualizer* ReplayPhase::getPathVisualizer() const
+{
+    return pathVisualizer;
 }
 
 void ReplayPhase::handleKeyInput(KeyEvent* event)
