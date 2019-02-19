@@ -14,10 +14,6 @@ Phase::Phase(Phase* other)
     this->player = other->player;
 }
 
-Phase::~Phase()
-{
-}
-
 void Phase::handleKeyInput(KeyEvent* event)
 {
 }

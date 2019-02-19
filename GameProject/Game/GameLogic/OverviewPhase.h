@@ -11,8 +11,6 @@ public:
     OverviewPhase(GuidingPhase* other);
     OverviewPhase(const Level& level);
 
-    ~OverviewPhase();
-
 private:
     void commonSetup();
     void handleKeyInput(KeyEvent* event);

@@ -36,10 +36,6 @@ GuidingPhase::GuidingPhase(ReplayPhase* other)
     commonSetup();
 }
 
-GuidingPhase::~GuidingPhase()
-{
-}
-
 void GuidingPhase::commonSetup()
 {
     player->removeAllComponents();

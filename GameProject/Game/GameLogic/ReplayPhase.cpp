@@ -59,13 +59,6 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
 	Display::get().getRenderer().setActiveCamera(camera);
 }
 
-ReplayPhase::~ReplayPhase()
-{
-    pathVisualizer = nullptr;
-    replayArrow = nullptr;
-    pathTreader = nullptr;
-}
-
 Entity* ReplayPhase::getReplayArrow() const
 {
     return replayArrow;

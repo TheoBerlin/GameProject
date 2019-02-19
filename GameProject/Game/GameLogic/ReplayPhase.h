@@ -11,8 +11,6 @@ class ReplayPhase : public Phase
 public:
     ReplayPhase(GuidingPhase* other);
 
-    ~ReplayPhase();
-
     Entity* getReplayArrow() const;
     PathVisualizer* getPathVisualizer() const;
 

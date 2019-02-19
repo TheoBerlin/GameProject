@@ -9,7 +9,6 @@ class Phase
 public:
     Phase(const Level& level);
     Phase(Phase* other);
-    virtual ~Phase();
 
     virtual void handleKeyInput(KeyEvent* event);
 

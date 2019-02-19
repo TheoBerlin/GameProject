@@ -13,8 +13,6 @@ public:
     GuidingPhase(OverviewPhase* other);
     GuidingPhase(ReplayPhase* other);
 
-    ~GuidingPhase();
-
 private:
     void commonSetup();
 

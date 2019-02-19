@@ -26,10 +26,6 @@ OverviewPhase::OverviewPhase(const Level& level)
     commonSetup();
 }
 
-OverviewPhase::~OverviewPhase()
-{
-}
-
 void OverviewPhase::commonSetup()
 {
     player->getTransform()->setPosition(cameraPos);
