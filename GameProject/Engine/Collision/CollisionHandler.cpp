@@ -94,15 +94,18 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 	/*
 	SET SHAPE TO COLLISIONBODY. IF SHAPE IS ARROW/PLAYER SAVE THE POINTER FOR COLLISION CHECK
 	*/
-
-	if (shape == SHAPE::ARROW)
-		this->player = entityBody;
-
 	rp3d::Vector3 shapePos({ 0.0, 0.0, 0.0 });
 	rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
 	rp3d::Transform shapeTransform(shapePos, shapeRot);
 
-	entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform);
+	if (shape == SHAPE::ARROW) {
+		this->player = entityBody;
+		entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform)->setCollisionCategoryBits(CATEGORY::ARROW);
+	}
+	else if (shape == SHAPE::DRONE)
+		entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform)->setCollisionCategoryBits(CATEGORY::DRONE_BODY);
+	else
+		entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform)->setCollisionCategoryBits(CATEGORY::STATIC);
 
 	entityBody->setTransform(transform);
 

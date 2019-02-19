@@ -13,6 +13,14 @@ enum class SHAPE {
 	ARROW = 2
 };
 
+enum CATEGORY
+{
+	ARROW = 0x0001,
+	STATIC = 0x0002,
+	DRONE_BODY = 0x0004,
+	DRONE_EYE = 0x0008
+};
+
 // Forward declerations
 class Entity;
 

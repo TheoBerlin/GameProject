@@ -251,6 +251,30 @@ void GameLogic::playerCollisionCallback(PlayerCollisionEvent * ev)
 		// Handle collision for the player arrow
 		CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->player->getComponent("Collision"));
 		if (playerCollision != nullptr)
+		{
+			// 
+			unsigned category = otherShape->getCollisionCategoryBits();
+			switch (category)
+			{
+			case CATEGORY::DRONE_BODY:
+			{
+				// Score point
+				break;
+			}
+			case CATEGORY::DRONE_EYE:
+			{
+				// Score bonus points
+				break;
+			}
+			case CATEGORY::STATIC:
+			{
+				// Arrow hit a static object - destory arrow
+				break;
+			}
+			default:
+				break;
+			}
 			playerCollision->handleCollision(playerShape, otherShape);
+		}
 	}
 }
