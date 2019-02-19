@@ -57,6 +57,8 @@ public:
 	void rotateAxis(const float& radians, const glm::vec3& axis);
 	//Set the rotation by (x,y,z)
 	void setRotation(const glm::vec3& rotation);
+	//Set the rotation quat
+	void setRotation(const glm::quat& rotation);
 	//Translate from current position plus given vector
 	void translate(const glm::vec3& vector);
 	//Set world position
