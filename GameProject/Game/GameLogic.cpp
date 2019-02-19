@@ -22,10 +22,6 @@ void GameLogic::init(Level& level)
 	/*
 		Start game in overview phase
 	*/
-
-	glm::vec3 cameraPos(-10.0f, 20.0f, 10.0f);
-	glm::vec3 cameraDir = glm::normalize(glm::vec3(0.5f, -1.0f, -0.5f));
-
 	phase = new OverviewPhase(level);
 
 	// Handle phase changes
