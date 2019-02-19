@@ -242,3 +242,9 @@ void Transform::rotate(const float yaw, const float pitch, const float roll)
 
 	this->isUpdated = true;
 }
+
+void Transform::resetRoll()
+{
+	this->r = glm::normalize(glm::vec3(r.x, 0.0f, r.z));
+	this->u = glm::cross(this->r, this->f);
+}
