@@ -3,18 +3,39 @@
 #include <Engine/Components/Camera.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Game/GameLogic/GuidingPhase.h>
+#include <Utils/Logger.h>
 
-OverviewPhase::OverviewPhase(const Level& level, const glm::vec3& cameraPos, const glm::vec3& cameraDir)
+OverviewPhase::OverviewPhase(GuidingPhase* other)
+    :Phase((Phase*)other)
+{
+    player->removeAllComponents();
+    player->detachFromModel();
+
+    commonSetup();
+}
+
+OverviewPhase::OverviewPhase(const Level& level)
     :Phase(level)
 {
 	/*
 		Create camera entity
 	*/
-	playerCamera = level.entityManager->addTracedEntity("PhaseOneCamera");
-	playerCamera->getTransform()->setPosition(cameraPos);
-	playerCamera->getTransform()->setForward(cameraDir);
+    player = level.entityManager->addTracedEntity("Player");
 
-	Camera* camera = new Camera(playerCamera, "Camera", { 0.0f, 0.5f, -2.0f });
+    commonSetup();
+}
+
+OverviewPhase::~OverviewPhase()
+{
+}
+
+void OverviewPhase::commonSetup()
+{
+    player->getTransform()->setPosition(cameraPos);
+	player->getTransform()->setForward(cameraDir);
+
+	Camera* camera = new Camera(player, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
 	// Reset targets
@@ -23,7 +44,14 @@ OverviewPhase::OverviewPhase(const Level& level, const glm::vec3& cameraPos, con
 	Display::get().getRenderer().setActiveCamera(camera);
 }
 
-OverviewPhase::~OverviewPhase()
+void OverviewPhase::handleKeyInput(KeyEvent* event)
 {
-    level.entityManager->removeTracedEntity("PhaseOneCamera");
+    if (event->action != GLFW_PRESS) {
+        return;
+    }
+
+    if (event->key == GLFW_KEY_2) {
+        Phase* guidingPhase = new GuidingPhase(this);
+        changePhase(guidingPhase);
+    }
 }

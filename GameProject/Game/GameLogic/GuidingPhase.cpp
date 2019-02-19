@@ -2,35 +2,55 @@
 
 #include <Engine/AssetManagement/ModelLoader.h>
 #include <Engine/Components/Camera.h>
+#include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/GameLogic/OverviewPhase.h>
+#include <Game/GameLogic/ReplayPhase.h>
+#include <Utils/Logger.h>
 
-GuidingPhase::GuidingPhase(const Level& level, const glm::vec3& playerPos)
-    :Phase(level)
+GuidingPhase::GuidingPhase(OverviewPhase* other)
+    :Phase((Phase*)other)
 {
+    commonSetup();
+}
+
+GuidingPhase::GuidingPhase(ReplayPhase* other)
+    :Phase((Phase*)other)
+{
+    commonSetup();
+}
+
+GuidingPhase::~GuidingPhase()
+{
+}
+
+void GuidingPhase::commonSetup()
+{
+    player->removeAllComponents();
+
 	/*
 		Create arrow entity
 	*/
 	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
 
-	Entity * entity = level.entityManager->addTracedEntity("Player");
+    player->getTransform()->setForward(playerDir);
+	player->getTransform()->setPosition(playerPos);
+	player->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
-	entity->getTransform()->setPosition(playerPos);
-	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
-
-	entity->setModel(model);
+	player->setModel(model);
 
 	/*
 		Add camera to arrow entity
 	*/
-	Camera* camera = new Camera(entity, "Camera", { 0.0f, 0.5f, -1.0f });
+	Camera* camera = new Camera(player, "Camera", { 0.0f, 0.5f, -1.0f });
 	camera->init();
 
 	/*
 		Add arrowguider to entity
 	*/
-	ArrowGuider* arrow = new ArrowGuider(entity, 2.0f);
+	ArrowGuider* arrow = new ArrowGuider(player, 2.0f);
 	arrow->startGuiding();
 
 	// Reset targets
@@ -39,7 +59,18 @@ GuidingPhase::GuidingPhase(const Level& level, const glm::vec3& playerPos)
 	Display::get().getRenderer().setActiveCamera(camera);
 }
 
-GuidingPhase::~GuidingPhase()
+void GuidingPhase::handleKeyInput(KeyEvent* event)
 {
-    level.entityManager->removeTracedEntity("Player");
+    if (event->action != GLFW_PRESS) {
+        return;
+    }
+
+    if (event->key == GLFW_KEY_1) {
+        Phase* overviewPhase = new OverviewPhase(this);
+        changePhase(overviewPhase);
+    } else if (event->key == GLFW_KEY_3) {
+        Phase* replayPhase = new ReplayPhase(this);
+        changePhase(replayPhase);
+    }
 }
+
