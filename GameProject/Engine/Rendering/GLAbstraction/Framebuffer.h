@@ -39,6 +39,7 @@ public:
 	void unbind() const;
 
 private:
+	static unsigned currentBindedId;
 	unsigned id, rbo;
 
 	std::vector<Texture*> colorAttachments;
