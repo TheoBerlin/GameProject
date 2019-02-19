@@ -29,10 +29,6 @@ Panel * GUI::getPanel(unsigned int index)
 	return nullptr;
 }
 
-void GUI::update()
-{
-}
-
 std::vector<Panel*>& GUI::getPanelList()
 {
 	return this->panelList;

@@ -11,7 +11,7 @@
 #include "../../Engine/Components/Camera.h"
 #include "../../Engine/InputHandler.h"
 
-GameState::GameState() : gameLogic(&this->getEntityManager(), &this->getGUI())
+GameState::GameState() : gameLogic(&this->getEntityManager())
 {
 	EntityManager& entityManager = this->getEntityManager();
 	levelParser.readEntites("./Engine/Level/level.json", &entityManager);

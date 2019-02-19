@@ -161,7 +161,7 @@ void Panel::rebake()
 {
 	if (this->shouldUpdate)
 	{
-		update();
+		processOptions();
 
 		Display& display = Display::get();
 		GUIRenderer& guiRenderer = display.getGUIRenderer();
@@ -199,16 +199,6 @@ void Panel::setOption(GUI::OPTION option)
 	this->shouldUpdate = true;
 }
 
-void Panel::update()
-{
-	for (unsigned int i = 0; i < GUI::OPTION::OPTIONS_MAX; i++)
-	{
-		auto& option = this->options[i];
-		if (option.first)
-			processOption(option, i);
-	}
-}
-
 bool Panel::hasUpdated() const
 {
 	if (this->shouldUpdate) return true;
@@ -235,32 +225,44 @@ void Panel::init()
 	this->parent = nullptr;
 
 	this->options.resize(GUI::OPTION::OPTIONS_MAX);
+
+	EventBus::get().subscribe(this, &Panel::resizeCallback);
 }
 
-void Panel::processOption(std::pair<bool, GUI::OPTION_VALUE> option, unsigned int index)
+void Panel::processOptions()
+{
+	for (unsigned int i = 0; i < GUI::OPTION::OPTIONS_MAX; i++)
+	{
+		auto& option = this->options[i];
+		if (option.first)
+			processOption(option.second, i);
+	}
+}
+
+void Panel::processOption(GUI::OPTION_VALUE option, unsigned int index)
 {
 	switch (index)
 	{
 	// ---------------- Size related -------------------
 	case GUI::OPTION::SCALE_TO_TEXT_X:
-		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_X, option.second.f);
+		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_X, option.f);
 		break;
 	case GUI::OPTION::SCALE_TO_TEXT_Y:
-		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.second.f);
+		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.f);
 		break;
 
 	// -------------- Position related -----------------
 	case GUI::OPTION::FLOAT_LEFT:
-		processPositionOption(GUI::OPTION::FLOAT_LEFT, option.second.f);
+		processPositionOption(GUI::OPTION::FLOAT_LEFT, option.f);
 		break;
 	case GUI::OPTION::FLOAT_RIGHT:
-		processPositionOption(GUI::OPTION::FLOAT_RIGHT, option.second.f);
+		processPositionOption(GUI::OPTION::FLOAT_RIGHT, option.f);
 		break;
 	case GUI::OPTION::FLOAT_UP:
-		processPositionOption(GUI::OPTION::FLOAT_UP, option.second.f);
+		processPositionOption(GUI::OPTION::FLOAT_UP, option.f);
 		break;
 	case GUI::OPTION::FLOAT_DOWN:
-		processPositionOption(GUI::OPTION::FLOAT_DOWN, option.second.f);
+		processPositionOption(GUI::OPTION::FLOAT_DOWN, option.f);
 		break;
 	case GUI::OPTION::CENTER_X:
 		processPositionOption(GUI::OPTION::CENTER_X, 0.0f);
@@ -284,16 +286,16 @@ void Panel::processOption(std::pair<bool, GUI::OPTION_VALUE> option, unsigned in
 		processTextPositionOption(GUI::OPTION::TEXT_CENTER_Y, 0.0f);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_LEFT:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_LEFT, option.second.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_LEFT, option.f);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_RIGHT:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_RIGHT, option.second.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_RIGHT, option.f);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_UP:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_UP, option.second.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_UP, option.f);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_DOWN:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_DOWN, option.second.f);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_DOWN, option.f);
 		break;
 
 	}
@@ -409,4 +411,10 @@ void Panel::processScaleToTextOption(unsigned int index, float v)
 		this->size.y = maxY + v;
 		this->pos.y = 0.0f;
 	}
+}
+
+void Panel::resizeCallback(WindowResizeEvent * evnt)
+{
+	this->shouldUpdate = true;
+	rebake();
 }

@@ -9,17 +9,9 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathTreader.h>
 
-GameLogic::GameLogic(EntityManager * em, GUI* gui)
+GameLogic::GameLogic(EntityManager * em)
 {
 	this->em = em;
-	this->gui = gui;
-
-	Panel* panel = new Panel();
-	panel->setPosition({ 300.0f, 300.0f });
-	panel->setSize({300.0f, 300.0f});
-	panel->setColor({ 0.0f, 0.0f, 0.5f, 0.5f });
-	panel->addText("NO PHASE", 0.0f, 0.0f, "arial");
-	gui->addPanel(panel);
 
 	/*
 		Start game in phase 1
@@ -87,8 +79,6 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 	camera->init();
 
 	Display::get().getRenderer().setActiveCamera(camera);
-
-	gui->getPanel(0)->updateText(0, "[PHASE ONE]");
 }
 
 void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
@@ -115,8 +105,6 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	arrow->startGuiding();
 
 	Display::get().getRenderer().setActiveCamera(camera);
-
-	gui->getPanel(0)->updateText(0, "[PHASE TWO]");
 }
 
 void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)

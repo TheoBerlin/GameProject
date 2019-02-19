@@ -28,7 +28,11 @@ MenuState::MenuState() : State()
 	this->button->setOption(GUI::CENTER_Y);
 	this->button->setOption(GUI::TEXT_CENTER_X);
 	this->button->setOption(GUI::TEXT_CENTER_Y);
+	this->button->setHoverColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+	this->button->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
+	this->button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 	this->button->addText("Play", "arialBig");
+	this->button->setCallback([](void) { LOG_ERROR("Pressed"); });
 	gui.addPanel(this->button);
 
 	InputHandler ih(Display::get().getWindowPtr());

@@ -6,13 +6,10 @@
 #include <Game/Components/PathVisualizer.h>
 #include "glm/glm.hpp"
 
-#include "Engine/GUI/GUI.h"
-#include "Engine/GUI/Panel.h"
-
 class GameLogic
 {
 public:
-	GameLogic(EntityManager * em, GUI* gui);
+	GameLogic(EntityManager * em);
 	~GameLogic();
 
 	enum Phases { PHASE_OVERVIEW, PHASE_GUIDING, PHASE_REPLAY };
@@ -35,6 +32,5 @@ private:
 	Entity* player;
 
 	EntityManager* em;
-	GUI* gui;
 };
 
