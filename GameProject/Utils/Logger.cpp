@@ -36,6 +36,19 @@ void Logger::logToFile(bool toFile)
 	writeToFile = toFile;
 }
 
+void Logger::startColorPass(CONSOLE_COLOR color)
+{
+	// Set current console color.
+	SetConsoleTextAttribute(hstdout, color);
+}
+
+void Logger::endColorPass()
+{	
+	// Reset console color.
+	FlushConsoleInputBuffer(hstdin);
+	SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+}
+
 bool Logger::shouldPrint(TYPE type)
 {
 	if (filter == 0)

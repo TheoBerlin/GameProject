@@ -147,6 +147,8 @@ void Display::glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 	// ignore non-significant error/warning codes
 	if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
 
+	LOG_START_COLOR_PASS(Logger::CONSOLE_COLOR::RED);
+
 	std::cout << "---------------" << std::endl;
 	std::cout << "Debug message (" << id << "): " << message << std::endl;
 
@@ -181,6 +183,8 @@ void Display::glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 	case GL_DEBUG_SEVERITY_NOTIFICATION: std::cout << "Severity: notification"; break;
 	} std::cout << std::endl;
 	std::cout << std::endl;
+
+	LOG_END_COLOR_PASS();
 }
 
 void Display::init(int width, int height, const std::string& title)
