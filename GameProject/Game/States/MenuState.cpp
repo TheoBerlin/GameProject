@@ -86,7 +86,7 @@ void MenuState::update(const float dt)
 	}
 }
 
-void MenuState::updateLogic()
+void MenuState::updateLogic(const float dt)
 {
 }
 

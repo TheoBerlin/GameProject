@@ -115,5 +115,8 @@ void Camera::updatePosition()
 	glm::vec3 hostPos = getHost()->getTransform()->getPosition();
 	Transform* transform = host->getTransform();
 
-	this->pos = hostPos + (transform->getRight() * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
+	// Calculate a horizontal right vector
+	glm::vec3 rightVec = glm::normalize(glm::cross(transform->getForward(), GLOBAL_UP_VECTOR));
+
+	this->pos = hostPos + (rightVec * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
 }

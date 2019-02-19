@@ -17,6 +17,12 @@ public:
 	void addBuffer(VertexBuffer* vbo, const AttributeLayout& layout);
 
 	/*
+		Update existing buffer, with new layout, if size don't use default parameter the whole buffer will be reallocated and new memory has to be sent in
+	*/
+	void updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset = 0);
+
+
+	/*
 		used before drawing
 	*/
 	void bind();

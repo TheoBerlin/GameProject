@@ -9,7 +9,7 @@ bool Settings::readFile(std::string fileName)
 			iFile >> jsonFile;
 		}
 		catch (const std::exception e) {
-			LOG_ERROR("%s: Failed to read JSON file with error: %s", CLASS_NAME, e.what());
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
 			return false;
 		}
 	}
@@ -21,6 +21,7 @@ bool Settings::readFile(std::string fileName)
 	readVolume();
 	readScreenWidth();
 	readScreenHeight();
+	readMouseSensitivity();
 
 	if (iFile.is_open()) {
 		iFile.close();
@@ -46,7 +47,7 @@ void Settings::readVolume()
 		volume = jsonVolume;
 	}
 	else {
-		LOG_ERROR("%s: Volume has no value", CLASS_NAME);
+		LOG_ERROR("%s: Volume has no value");
 	}
 }
 
@@ -57,7 +58,7 @@ void Settings::readScreenWidth()
 		screenWidth = jsonWidth;
 	}
 	else {
-		LOG_ERROR("%s: ScreenWidth has no value", CLASS_NAME);
+		LOG_ERROR("%s: ScreenWidth has no value");
 	}
 }
 
@@ -68,7 +69,17 @@ void Settings::readScreenHeight()
 		screenHeight = jsonHeight;
 	}
 	else {
-		LOG_ERROR("%s: Volume has no value", CLASS_NAME);
+		LOG_ERROR("%s: ScreenHeight has no value");
+	}
+}
+
+void Settings::readMouseSensitivity()
+{
+	json::json& jsonMouseSens = jsonFile["MouseSensitivity"];
+	if (!jsonMouseSens.empty()) {
+		mouseSensitivity = jsonMouseSens;
+	} else {
+		LOG_ERROR("MouseSensitivity has no value");
 	}
 }
 
@@ -117,4 +128,21 @@ void Settings::setResolution(int width, int height)
 	this->screenWidth = width;
 	this->screenHeight = height;
 	changed = true;
+}
+
+float Settings::getMouseSensitivity()
+{
+	return mouseSensitivity;
+}
+
+void Settings::setMouseSensitivity(const float mouseSensitivity)
+{
+	this->mouseSensitivity = mouseSensitivity;
+
+	changed = true;
+}
+
+void Settings::handleResizeEvent(WindowResizeEvent * evnt)
+{
+	setResolution(evnt->width, evnt->height);
 }

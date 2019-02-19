@@ -38,8 +38,6 @@
     <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Entity\Entity.cpp" />
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
-    <ClCompile Include="Engine\Level\Level.cpp" />
-    <ClCompile Include="Engine\Level\LevelParser.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Texture.cpp" />
@@ -63,6 +61,9 @@
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
+    <ClCompile Include="Game\Components\RollNullifier.cpp" />
+    <ClCompile Include="Game\GameLogic\TargetManager.cpp" />
+    <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
@@ -98,16 +99,11 @@
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
-    <ClInclude Include="Engine\Level\Level.h" />
-    <ClInclude Include="Engine\Level\LevelParser.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
     <ClInclude Include="Engine\AssetManagement\Model.h" />
     <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
     <ClInclude Include="Engine\AssetManagement\TextureManager.h" />
     <ClInclude Include="Engine\Rendering\Display.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
-    <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\Rendering\Renderer.h" />
     <ClInclude Include="Engine\Rendering\Pipeline.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\RenderingResources.h" />
@@ -116,6 +112,9 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\VertexBuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\Framebuffer.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\UniformBuffer.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\IndexBuffer.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
+    <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
     <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
@@ -124,6 +123,10 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
+    <ClInclude Include="Game\Components\RollNullifier.h" />
+    <ClInclude Include="Game\GameLogic\TargetManager.h" />
+    <ClInclude Include="Game\Level\Level.h" />
+    <ClInclude Include="Game\Level\LevelParser.h" />
     <ClInclude Include="Game\GameLogic.h" />
     <ClInclude Include="Game\Components\ArrowGuider.h" />
     <ClInclude Include="Game\Components\ComponentResources.h" />

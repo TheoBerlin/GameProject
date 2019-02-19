@@ -1,6 +1,6 @@
 #pragma once
-#include "../Utils/Logger.h"
-#include "./Engine/Events/EventBus.h"
+#include <Utils/Logger.h>
+#include <Engine/Events/EventBus.h>
 
 #include "glm/glm.hpp"
 #include "nlohmann/json.hpp"
@@ -11,8 +11,6 @@
 
 namespace json = nlohmann;
 
-#define CLASS_NAME "SETTINGS"
-
 class Settings 
 {
 private:
@@ -20,6 +18,7 @@ private:
 	float volume;
 	int screenWidth;
 	int screenHeight;
+	float mouseSensitivity;
 
 	bool readFile(std::string fileName = "./Utils/Settings.json");
 	void writeFile(std::string fileName = "./Utils/Settings.json");
@@ -27,6 +26,7 @@ private:
 	void readVolume();
 	void readScreenWidth();
 	void readScreenHeight();
+	void readMouseSensitivity();
 
 	json::json jsonFile;
 
@@ -40,6 +40,9 @@ public:
 	int getScreenWidth();
 	int getScreenHeight();
 	void setResolution(int width, int height);
+	float getMouseSensitivity();
+	void setMouseSensitivity(const float mouseSensitivity);
+	void handleResizeEvent(WindowResizeEvent * evnt);
 };
 
 

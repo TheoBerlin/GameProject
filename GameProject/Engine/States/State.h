@@ -22,7 +22,7 @@ public:
 	*/
 	virtual void end() {};
 	virtual void update(const float dt) {};
-	virtual void updateLogic() {};
+	virtual void updateLogic(const float dt) {};
 	virtual void render() {};
 
 	/*

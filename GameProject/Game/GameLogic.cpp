@@ -9,10 +9,14 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathTreader.h>
 
-GameLogic::GameLogic(EntityManager * em)
+GameLogic::GameLogic()
 {
-	this->em = em;
+}
 
+void GameLogic::init(Level& level)
+{
+	this->em = level.entityManager;
+	this->targetManager = level.targetManager;
 	/*
 		Start game in phase 1
 	*/
@@ -24,7 +28,6 @@ GameLogic::GameLogic(EntityManager * em)
 	*/
 	EventBus::get().subscribe(this, &GameLogic::changePhaseCallback);
 }
-
 
 GameLogic::~GameLogic()
 {
@@ -78,6 +81,9 @@ void GameLogic::enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 
 	Camera* camera = new Camera(this->camera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
+	// Reset targets
+	targetManager->resetTargets();
+
 	Display::get().getRenderer().setActiveCamera(camera);
 }
 
@@ -87,11 +93,11 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	/*
 		Create arrow entity
 	*/
+	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
 	Entity * entity = this->em->addTracedEntity("Player");
 	entity->getTransform()->setPosition(playerPos);
 	entity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
-	entity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
-
+	entity->setModel(model);
 	/*
 		Add camera to arrow entity
 	*/
@@ -103,6 +109,9 @@ void GameLogic::enterGuidingPhase(const glm::vec3 & playerPos)
 	*/
 	ArrowGuider* arrow = new ArrowGuider(entity, 2.0f);
 	arrow->startGuiding();
+
+	// Reset targets
+	targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
 }
@@ -128,10 +137,6 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 	arrowEntity->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 	arrowEntity->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
-	// Add camera to arrow entity
-	//Camera* camera = new Camera(arrowEntity, "Camera", { 0.0f, 0.5f, -1.0f });
-	//camera->init();
-
 	// Copy path
 	Entity* oldPlayerEntity = this->em->getTracedEntity("Player");
 
@@ -149,6 +154,9 @@ void GameLogic::enterReplayPhase(const glm::vec3 & arrowPos)
 		PathVisualizer* pathVisualizer = new PathVisualizer(arrowEntity, this->em);
 		pathVisualizer->addPath(oldArrowGuider->getPath());
 	}
+
+	// Reset targets
+	targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
 }
