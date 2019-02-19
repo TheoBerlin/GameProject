@@ -21,6 +21,7 @@ GameState::GameState()
 
 	level.entityManager = &this->getEntityManager();
 	level.targetManager = targetManager;
+	level.gui = &this->getGUI();
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
@@ -88,8 +89,8 @@ void GameState::render()
 	/*for (Entity* entity : entities)
 		renderer.push(entity);
 	renderer.drawAll();
-
 	*/
+
 	/*
 		New rendering
 	*/
@@ -99,5 +100,4 @@ void GameState::render()
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 	GUI& gui = this->getGUI();
 	guiRenderer.draw(gui);
-	renderer.drawAll();
 }
