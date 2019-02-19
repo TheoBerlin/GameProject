@@ -7,18 +7,18 @@
 
 #include <thread>
 
-class ParticleManager {
+static class ParticleManager {
 private:
-	std::vector<ParticleEmitter*> emitters;
+	static std::vector<ParticleEmitter*> emitters;
 
 	void updateEmitter(ParticleEmitter *emitter, float dt);
 public:
 	//Update all emitters
-	void update(float dt);
+	static void update(float dt);
 	/*
 		Add emitter
 	*/
-	void addEmitter(ParticleEmitter* emitter);
+	static void addEmitter(ParticleEmitter* emitter);
 	int getMaxParticles() const;
 	int getParticleCount() const;
 	void updateBuffer();

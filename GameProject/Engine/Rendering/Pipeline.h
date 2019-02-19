@@ -7,7 +7,7 @@
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
 
-//TEST TEST TEST REMOVE
+#include "Engine/Particle/ParticleRendering.h"
 #include "Engine/Particle/ParticleManager.h"
 
 class Entity;
@@ -79,7 +79,8 @@ private:
 	Shader* testShader;
 	Shader* entityShaderInstanced;
 	Shader* quadShader;
-	Shader* particleShader;
+
+	ParticleRendering particleShader;
 	bool p = true;
 	GLuint billboard_vertex_buffer;
 	GLuint particleDataBuffer;
