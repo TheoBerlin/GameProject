@@ -20,10 +20,11 @@ int main() {
 	Logger::init();
 	SoundContext::initSoundContext();
 	
-	/*Sound sound;
-	sound.loadSound("Game/assets/sound/dream_catcher.wav");
+	Sound sound;
+	sound.loadSound("Game/assets/sound/dream_catcherMono.wav");
 	sound.setLoopState(true);
-	sound.playSound();*/
+	sound.setPitch(1.25f);
+	sound.playSound();
 
 	Game game;
 	game.start();

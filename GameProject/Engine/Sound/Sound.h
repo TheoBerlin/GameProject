@@ -8,12 +8,18 @@
 #include "../../../include/OpenAL/alc.h"
 
 #pragma warning(disable:4996)
-enum soundType {SOUND_MUSIC = 0, SOUND_EFFECT = 1, SOUND_AMBIENT = 2, SOUND_VOICE = 3, SOUND_MISC = 4};
+enum SoundType {SOUND_MUSIC = 0, SOUND_EFFECT = 1, SOUND_AMBIENT = 2, SOUND_VOICE = 3, SOUND_MISC = 4};
 
 class Sound {
 private:
 	ALuint source;
 	ALuint buffer;
+
+	SoundType type;
+
+	unsigned int freq;
+	unsigned short int channels;
+	unsigned short int bitsPerSample;
 
 	bool errorCheck();
 public:
@@ -23,6 +29,9 @@ public:
 
 	void loadSound(std::string file);
 	void playSound();
+
+	void setSoundType(SoundType type);
+	SoundType getSoundType() const;
 
 	void setListener(const glm::vec3 listener);
 	glm::vec3 getListener() const;

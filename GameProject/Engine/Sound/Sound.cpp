@@ -48,12 +48,19 @@ void Sound::loadSound(std::string fileName)
 	}
 	//Read file size
 	fseek(file, 0, SEEK_END);
-	unsigned int size = ftell(file);
+	unsigned int size = ftell(file) - 44;
+
+	//Read number of audio channels
+	fseek(file, 22, SEEK_SET);
+	fread(&channels, 2, 1, file);
 
 	//Read audio frequezy
 	fseek(file, 24, SEEK_SET);
-	unsigned int freq;
 	fread(&freq, 4, 1, file);
+
+	//Read bits per sample
+	fseek(file, 34, SEEK_SET);
+	fread(&bitsPerSample, 2, 1, file);
 
 	//Read audio data
 	unsigned char* buf = new unsigned char[size];
@@ -61,7 +68,12 @@ void Sound::loadSound(std::string fileName)
 	fread(buf, sizeof(BYTE), size - 44, file);
 
 	//Read data to buffer, (-44) is sice of wav header.
-	alBufferData(buffer, AL_FORMAT_MONO16, buf, size - 44, freq);
+	if(channels == 1 && bitsPerSample == 8)
+		alBufferData(buffer, AL_FORMAT_MONO8, buf, size, freq);
+	if (channels == 1 && bitsPerSample == 16)
+		alBufferData(buffer, AL_FORMAT_MONO16, buf, size, freq);
+	if (channels == 2)
+		LOG_ERROR("OpenAL can't play stereo sound, convert it to Mono");
 	errorCheck();
 
 	alSourcei(source, AL_BUFFER, buffer);
@@ -73,6 +85,16 @@ void Sound::loadSound(std::string fileName)
 void Sound::playSound()
 {
 	alSourcePlay(source);
+}
+
+void Sound::setSoundType(SoundType type)
+{
+	this->type = type;
+}
+
+SoundType Sound::getSoundType() const
+{
+	return type;
 }
 
 void Sound::setListener(const glm::vec3 listener)
