@@ -81,9 +81,9 @@ void GameState::update(const float dt)
 
 	//Particle tracing TEST
 	//Increase movement speed
-	if (entityManager.getTracedEntity("Player") != nullptr)
-		if(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider") != nullptr)
-			dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
+	if (entityManager.getTracedEntity("PlayerArrow") != nullptr)
+		if(entityManager.getTracedEntity("PlayerArrow")->getComponent("ArrowGuider") != nullptr)
+			dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("PlayerArrow")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
 	//Get arrow replay position
 	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
 		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
