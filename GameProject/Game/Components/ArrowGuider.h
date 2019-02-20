@@ -58,8 +58,6 @@ private:
     // Mouse movement, relative to window height, required to reach max turn speed
     const float maxMouseMove = 0.5f;
 
-    glm::vec2 mousePos;
-
     // Used to create prolonged turns, i.e. slowly turning the arrow over time
     glm::vec2 turnFactors;
     // Defines how fast turn factors fall off over time (per second)
