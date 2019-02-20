@@ -54,7 +54,8 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 	if (evnt->action == GLFW_PRESS)
 	{
 		this->pressed = true;
-		toPressedStyle();
+		if(this->isHovering)
+			toPressedStyle();
 	}
 	else if (this->isHovering)
 	{
