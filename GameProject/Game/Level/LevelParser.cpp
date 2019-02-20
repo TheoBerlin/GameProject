@@ -83,7 +83,7 @@ void LevelParser::readEntityBoxes(Level& level)
 		}
 
 		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setScale(0.555f);
+		entity->getTransform()->setScale(0.5f);
 		entity->setModel(model);
 		level.collisionHandler->addCollisionToEntity(entity, SHAPE::BOX);
 	}
