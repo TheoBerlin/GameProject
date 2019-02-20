@@ -1,32 +1,29 @@
 #pragma once
 
+#include <Engine/Components/FreeMove.h>
 #include "Engine/Entity/EntityManager.h"
-#include "glm/glm.hpp"
 #include "Engine/Events/Events.h"
+#include <Game/Components/PathVisualizer.h>
+#include <Game/Level/Level.h>
+#include <Game/GameLogic/Phase.h>
+#include "glm/glm.hpp"
 
 class GameLogic
 {
 public:
-	GameLogic(EntityManager * em);
+	GameLogic();
+	void init(Level& level);
 	~GameLogic();
 
-	enum Phases { PHASE_ONE, PHASE_TWO, PHASE_THREE };
-	void changePhase(Phases phase);
-
-	void enterPhaseOne(const glm::vec3 & cameraPos, const glm::vec3 & cameraDir);
-	void enterPhaseTwo(const glm::vec3 & playerPos);
-
-	void leavePhaseOne();
-	void leavePhaseTwo();
-
 private:
-	void changePhaseCallback(KeyEvent * ev);
+	void changePhaseCallback(PhaseChangeEvent * event);
 
-	Phases currentPhase;
+	// Pass through input to the current phase
+	void handleKeyInput(KeyEvent* event);
+	void handleMouseClick(MouseClickEvent* event);
 
-	Entity* camera;
-	Entity* player;
+	Level level;
 
-	EntityManager* em;
+	Phase* phase;
 };
 

@@ -5,6 +5,7 @@
 #include <Engine/Entity/Transform.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
+#include <Game/components/ComponentResources.h>
 #include <Utils/Logger.h>
 #include <vector>
 #include <cmath>
@@ -20,7 +21,14 @@ public:
 
     void update(const float& dt);
 
+    // Enables aim but not movement
+    void startAiming();
+    // Disables aim but not movement
+    void stopAiming();
+
+    // Enables both aim and movement
     void startGuiding();
+    // Disables both aim and movement
     void stopGuiding();
 
     // Event handlers
@@ -34,7 +42,7 @@ public:
     void setMovementSpeed(const float speed);
 
     float getPosStoreFrequency();
-    std::vector<glm::vec3>& getStoredPositions();
+    std::vector<KeyPoint>& getPath();
 
     // Redirection measured in radians per second
     float getTurningSpeed();
@@ -59,15 +67,18 @@ private:
 
     glm::vec3 direction;
 
-    // Disables and enables the guider
-    bool isGuiding;
+    // Disables and enables functionality within the guider
+    bool isAiming, isGuiding;
 
     // Frequency at which the position is stored
     float posStoreFrequency;
-    const float minStoreFrequency = 5.0f, maxStoreFrequency = 20.0f;
+    const float minStoreFrequency = 0.5f, maxStoreFrequency = 1.0f;
+    const float maxStoreFrequencyDelta = 0.15f;
+
     // Time since position was stored
     float posStoreTimer;
-    std::vector<glm::vec3> storedPositions;
+    float flightTime;
+    std::vector<KeyPoint> path;
 
     // The pointer is retrieved when startGuiding() is called
     Camera* arrowCamera;
@@ -79,6 +90,6 @@ private:
     const float minFOV = 75.0f, maxFOV = 90.0f;
     const float FOVChangeMax = 15.0f;
 
-    float currentPitch = 0.0f;
-    const float maxPitch = glm::half_pi<float>() - FLT_EPSILON;
+    float currentPitch;
+    const float maxPitch = glm::half_pi<float>() - 0.01f;
 };

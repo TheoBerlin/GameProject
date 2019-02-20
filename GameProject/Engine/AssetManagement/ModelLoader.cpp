@@ -57,6 +57,17 @@ Model* ModelLoader::loadModel(std::string fileName)
     return loadedModel;
 }
 
+std::vector<Model*> ModelLoader::getModels()
+{
+	std::vector<Model*> models;
+
+	for (std::pair<std::string, Model*> pair : ModelLoader::loadedModels) {
+		models.push_back(pair.second);
+	}
+
+	return models;
+}
+
 void ModelLoader::unloadAllModels()
 {
     for (std::map<std::string, Model*>::iterator itr = loadedModels.begin(); itr != loadedModels.end(); itr++) {

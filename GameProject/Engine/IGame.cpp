@@ -2,16 +2,19 @@
 #include "../Utils/Timer.h"
 #include "Config.h"
 #include "Rendering/Display.h"
+#include "GUI/FontManager.h"
 #include "Config.h"
 #include <string>
+#include "../Utils/Settings.h"
 
 IGame::IGame()
 {
-	Display::get().init(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_TITLE);
+	Display::get().init(Settings::get().getScreenWidth(), Settings::get().getScreenHeight(), DEFAULT_TITLE);
 }
 
 IGame::~IGame()
 {
+	FontManager::free();
 }
 
 void IGame::start()
@@ -49,8 +52,8 @@ void IGame::gameLoop()
 
 		// Update logic in a fixed interval
 		if (totalTime >= 1.0f / (float)FRAMES_PER_SECOND) {
-			this->stateManager.updateLogic();
-			onUpdateLogic();
+			this->stateManager.updateLogic(totalTime);
+			onUpdateLogic(totalTime);
 			totalTime = 0.0f;
 			ups++;
 		}

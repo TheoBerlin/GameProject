@@ -5,7 +5,7 @@
 #include <Engine/Rendering/Renderer.h>
 #include <Engine/Entity/Entity.h>
 #include <Engine/Components/Camera.h>
-#include <Engine/Components/ArrowGuider.h>
+#include <Game/Components/ArrowGuider.h>
 #include <Engine/AssetManagement/ModelLoader.h>
 #include <Engine/InputHandler.h>
 
@@ -49,7 +49,7 @@ void TestState::update(const float dt)
 	this->entity->update(dt);
 }
 
-void TestState::updateLogic()
+void TestState::updateLogic(const float dt)
 {
 }
 

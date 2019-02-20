@@ -11,6 +11,6 @@ public:
 	virtual ~Game();
 
 	void onUpdate(float dt) override;
-	void onUpdateLogic() override;
+	void onUpdateLogic(const float dt) override;
 	void onRender() override;
 };

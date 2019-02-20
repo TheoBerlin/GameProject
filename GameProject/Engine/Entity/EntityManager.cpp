@@ -121,4 +121,6 @@ void EntityManager::removeEntities()
 		this->entities[i] = nullptr;
 	}
 	this->entities.clear();
+
+	this->tracedEntities.clear();
 }
