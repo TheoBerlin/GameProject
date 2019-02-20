@@ -20,8 +20,7 @@ GameState::GameState() : gameLogic(&this->getEntityManager())
 
 	EventBus::get().subscribe(this, &GameState::emit);
 
-	//PARTICLE EMITTER TEST
-	ParticleManager::addEmitter(&emitter);
+	particleManger.addEmitter(&emitter);
 	emitter.setPosition(glm::vec3(0, 2.0f, -0.0f));
 	emitter.setSpread(0.0f);
 	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -70,8 +69,6 @@ void GameState::update(const float dt)
 
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
-
-	//PARTICLE EMITTER TEST
 	if (entityManager.getTracedEntity("Player") != nullptr)
 		dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
 	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
@@ -81,12 +78,9 @@ void GameState::update(const float dt)
 	else {
 		emitter.stopEmitter();
 	}
-	ParticleManager::update(dt);
-
-
 	for (Entity* entity : entities)
 		entity->update(dt);
-
+	particleManger.update(dt);
 }
 
 void GameState::updateLogic(const float dt)
@@ -101,6 +95,8 @@ void GameState::render()
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
+
+	renderer.pushParticleManager(&this->particleManger);
 
 	//for (Entity* entity : entities)
 	

@@ -18,8 +18,7 @@ Pipeline::Pipeline()
 	this->quadShader = new Shader("./Engine/Rendering/Shaders/PostProcessVert.vert", "./Engine/Rendering/Shaders/PostProcessFrag.frag");
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
-
-	particleShader.init("./Engine/Rendering/Particle/Particle.vert", "./Engine/Rendering/Particle/Particle.frag");
+	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
 
 	Display& display = Display::get();
 
@@ -123,6 +122,11 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 	glDepthMask(GL_TRUE);
 
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
+
+
+	glDisableVertexAttribArray(4);
+	glDisableVertexAttribArray(5);
+	glDisableVertexAttribArray(6);
 
 	this->particleShader->unbind();
 	

@@ -23,6 +23,7 @@ public:
 
 private:
 	LevelParser levelParser;
+	ParticleManager particleManger;
 	ParticleEmitter emitter;
 	GameLogic gameLogic;
 };
