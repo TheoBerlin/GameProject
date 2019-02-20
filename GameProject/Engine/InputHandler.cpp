@@ -3,8 +3,8 @@
 #include "Events/EventBus.h"
 #include "Utils/Logger.h"
 
-int InputHandler::lastPosX = 0;
-int InputHandler::lastPosY = 0;
+double InputHandler::lastPosX = 0.0;
+double InputHandler::lastPosY = 0.0;
 
 // action = [GLFW_PRESS, GLFW_RELEASE]
 void InputHandler::keyCallback(GLFWwindow * window, int key, int scancode, int action, int mods)
@@ -18,13 +18,13 @@ void InputHandler::keyCallback(GLFWwindow * window, int key, int scancode, int a
 void InputHandler::mouseMoveCallback(GLFWwindow * window, double xpos, double ypos)
 {
 	// Calculate travel distance
-	int travelDistanceX = (int)xpos - lastPosX;
-	int travelDistanceY = (int)ypos - lastPosY;
-	lastPosX = (int)xpos;
-	lastPosY = (int)ypos;
+	double travelDistanceX = xpos - lastPosX;
+	double travelDistanceY = ypos - lastPosY;
+	lastPosX = xpos;
+	lastPosY = ypos;
 
 	// Send event when mouse is moved to EventBus
-	EventBus::get().publish(&MouseMoveEvent((int)xpos, (int)ypos, travelDistanceX, travelDistanceY));
+	EventBus::get().publish(&MouseMoveEvent(xpos, ypos, travelDistanceX, travelDistanceY));
 }
 
 // action = [GLFW_PRESS, GLFW_RELEASE]
