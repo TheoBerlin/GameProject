@@ -5,6 +5,8 @@
 // Debug openGL
 #define GL_DEBUG_LAYER
 
+#define IMGUI
+
 // Common defines
 #define EPSILON 0.0000001
 

@@ -71,8 +71,8 @@ void GameState::updateLogic(const float dt)
 
 void GameState::render()
 {
-	//EntityManager& entityManager = this->getEntityManager();
-	//std::vector<Entity*>& entities = entityManager.getAll();
+	EntityManager& entityManager = this->getEntityManager();
+	std::vector<Entity*>& entities = entityManager.getAll();
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
@@ -81,13 +81,13 @@ void GameState::render()
 		Old rendering
 	*/
 
-	/*for (Entity* entity : entities)
+	for (Entity* entity : entities)
 		renderer.push(entity);
-	renderer.drawAll();*/
+	renderer.drawAll();
 
 
 	/*
 		New rendering
 	*/
-	renderer.drawAllInstanced();
+	//renderer.drawAllInstanced();
 }
