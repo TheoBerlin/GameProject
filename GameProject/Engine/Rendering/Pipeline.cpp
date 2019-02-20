@@ -4,6 +4,9 @@
 #include "Engine/Entity/Entity.h"
 #include "Engine/Events/EventBus.h"
 
+#include "../Config.h"
+#include <Engine/Imgui/imgui.h>
+
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
@@ -23,9 +26,10 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
-	shadowWidth = 1024;
-	shadowHeight = 1024;
-	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::COLOR);
+	float shadowResScale = 4.0f;
+	shadowWidth = Display::get().getWidth() * shadowResScale;
+	shadowHeight = Display::get().getHeight() * shadowResScale;
+	//this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::COLOR);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
@@ -150,7 +154,7 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
 	Texture * shadowTex = getShadowFbo()->getDepthTexture();
-	this->testShader->setTexture2D("shadowTex", 0, shadowTex->getID());
+	this->testShader->setTexture2D("shadowTex", 1, shadowTex->getID());
 
 	draw(renderingList, this->testShader);
 
@@ -185,12 +189,13 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 
 	Display::get().updateView(shadowWidth, shadowHeight);
 
-
 	this->shadowFbo.bind();;
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
-	glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, 0.1f, 100.0f);
+	float orthoWidth = 20.0f;
+	float orthoHeight = 20.0f * Display::get().getRatio();
+	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth /2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
 	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpaceMatrix = lightProjection * lightView;
 
@@ -201,6 +206,28 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 	this->ZprePassShader->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
+
+#ifdef IMGUI
+	auto drawTexture = [](Texture* texture, bool nextLine = false) {
+		ImTextureID texID = (ImTextureID)texture->getID();
+		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
+		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
+		if (nextLine)
+			ImGui::SameLine();
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Image(texID, ImVec2(370 * ratio, 370), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+			ImGui::EndTooltip();
+		}
+	};
+
+	ImGui::Begin("Shadow buffer");
+
+	drawTexture(this->shadowFbo.getDepthTexture());
+
+	ImGui::End();
+#endif
 
 	Display::get().updateView(displayWidth, displayHeight);
 }

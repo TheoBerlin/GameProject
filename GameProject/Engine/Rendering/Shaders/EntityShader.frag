@@ -25,7 +25,7 @@ uniform vec3 camPos;
 
 float ShadowCalculation(vec4 fragLightSpace)
 {
-    float bias = max(0.05 * (1.0 - dot(fragNormal, dirLight.direction.xyz)), 0.005);  
+    float bias = 0.002;//max(0.005 * (1.0 - dot(fragNormal, dirLight.direction.xyz)), 0.005);  
     // perform perspective divide
     vec3 projCoords = fragLightSpace.xyz / fragLightSpace.w;
     // transform to [0,1] range
