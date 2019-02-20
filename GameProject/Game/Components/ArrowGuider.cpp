@@ -5,7 +5,7 @@
 ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
 {
-    isGuiding = false;
+    isGuiding = false, isAiming = false;
 
     this->movementSpeed = movementSpeed;
 
@@ -37,51 +37,54 @@ ArrowGuider::~ArrowGuider()
 
 void ArrowGuider::update(const float& dt)
 {
-    if (!isGuiding) {
+    if (!isGuiding && !isAiming) {
         // Do nothing if the guider is disabled
         return;
     }
 
-    glm::vec3 direction = host->getTransform()->getForward();
-
-    // Update turn factors (proportionally slow down turning)
-    turnFactors.x /= 1.0f + turnFactorFalloff * dt;
-    turnFactors.y /= 1.0f + turnFactorFalloff * dt;
+    Transform* transform = host->getTransform();
 
     applyTurn(dt);
 
-    // Update position storing frequency based on turning factors
     float turnFactorsLength = glm::length(turnFactors);
 
-    float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+    if (isGuiding) {
+        // Update position storage
+        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
 
-    // Gradually increase storing frequency
-    float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
+        // Gradually increase storing frequency
+        float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
 
-    if (std::abs(deltaFrequency) > maxStoreFrequencyDelta) {
-        deltaFrequency *= deltaFrequency / maxStoreFrequencyDelta;
-    }
+        if (std::abs(deltaFrequency) > maxStoreFrequencyDelta) {
+            deltaFrequency *= deltaFrequency / maxStoreFrequencyDelta;
+        }
 
-    posStoreFrequency += deltaFrequency;
+        posStoreFrequency += deltaFrequency;
 
-    // Update position store timer
-    posStoreTimer += dt;
+        // Update position store timer
+        posStoreTimer += dt;
 
-    flightTime += dt;
+        flightTime += dt;
 
-    if (posStoreTimer > 1.0f/posStoreFrequency) {
-        // Store position and reset timer
-        posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
+        if (posStoreTimer > 1.0f/posStoreFrequency) {
+            // Store position and reset timer
+            posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
 
-        KeyPoint newKeyPoint;
-        newKeyPoint.Position = host->getTransform()->getPosition();
-        newKeyPoint.t = flightTime;
+            KeyPoint newKeyPoint;
+            newKeyPoint.Position = transform->getPosition();
+            newKeyPoint.t = flightTime;
 
-        path.push_back(newKeyPoint);
+            path.push_back(newKeyPoint);
+        }
+
+        // Update arrow position
+        glm::vec3 currentPos = transform->getPosition();
+        glm::vec3 newPos = currentPos + transform->getForward() * movementSpeed * dt;
+
+        transform->setPosition(newPos);
     }
 
 	if (arrowCamera) {
-
 		// Update camera settings using turn factors
 		// Camera FOV
 		float currentFOV = arrowCamera->getFOV();
@@ -115,42 +118,23 @@ void ArrowGuider::update(const float& dt)
 
 		arrowCamera->setOffset(currentOffset + deltaOffset);
 	}
-
-    // Update arrow position
-    Transform* transform = host->getTransform();
-
-    glm::vec3 currentPos = transform->getPosition();
-	glm::vec3 newPos = currentPos + direction * movementSpeed * dt;
-
-    transform->setPosition(newPos);
 }
 
-void ArrowGuider::startGuiding()
+void ArrowGuider::startAiming()
 {
+    isAiming = true;
+
     // Get camera pointer from parent entity
     Component* tempPtr = host->getComponent("Camera");
     arrowCamera = dynamic_cast<Camera*>(tempPtr);
 
     if (!arrowCamera) {
         LOG_WARNING("Arrow Guider failed to find Camera component, will still guide arrow with mouse");
-    }
-	else {
+    } else {
 		// Set camera settings
 		arrowCamera->setFOV(minFOV);
 		arrowCamera->setOffset(minCamOffset);
 	}
-
-    isGuiding = true;
-    flightTime = 0.0f;
-
-    // Clear previous path and store starting position
-    path.clear();
-
-    KeyPoint startingKeyPoint;
-    startingKeyPoint.Position = host->getTransform()->getPosition();
-    startingKeyPoint.t = 0.0f;
-
-    path.push_back(startingKeyPoint);
 
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -164,16 +148,43 @@ void ArrowGuider::startGuiding()
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
 }
 
-void ArrowGuider::stopGuiding()
+void ArrowGuider::stopAiming()
 {
-    isGuiding = false;
+    isAiming = false;
 
     EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
 
     turnFactors.x = 0.0f;
     turnFactors.y = 0.0f;
 
-    posStoreTimer = 0.0f;
+    // Unlock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+}
+
+void ArrowGuider::startGuiding()
+{
+    if (!isAiming) {
+        startAiming();
+    }
+
+    isGuiding = true;
+    flightTime = 0.0f;
+
+    // Clear previous path and store starting position
+    path.clear();
+
+    KeyPoint startingKeyPoint;
+    startingKeyPoint.Position = host->getTransform()->getPosition();
+    startingKeyPoint.t = 0.0f;
+
+    path.push_back(startingKeyPoint);    
+}
+
+void ArrowGuider::stopGuiding()
+{
+    isGuiding = false;
+
+    stopAiming();
 
     // Store end point
     KeyPoint newKeyPoint;
@@ -181,9 +192,6 @@ void ArrowGuider::stopGuiding()
     newKeyPoint.t = flightTime;
 
     path.push_back(newKeyPoint);
-
-    // Unlock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
@@ -205,6 +213,7 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 
     // Keep the length of turnfactors within [0,1]
     float turnFactorLength = glm::length(turnFactors);
+
     if (turnFactorLength > 1.0f) {
         turnFactors /= turnFactorLength;
     }
@@ -252,6 +261,10 @@ float ArrowGuider::getTurningSpeed()
 
 void ArrowGuider::applyTurn(const float& dt)
 {
+    // Update turn factors (proportionally slow down turning)
+    turnFactors.x /= 1.0f + turnFactorFalloff * dt;
+    turnFactors.y /= 1.0f + turnFactorFalloff * dt;
+
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
     float yaw = -turnFactors.x * maxTurnSpeed * dt;
     float pitch = -turnFactors.y * maxTurnSpeed * dt;

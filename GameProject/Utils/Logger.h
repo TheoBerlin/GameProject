@@ -6,12 +6,16 @@
 #include <memory>
 #include <string>
 
-// Print function to for info, warnings and errors.
+// Print function for info, warnings and errors.
 #define LOG_INFO(...)				Logger::printInfo(__FILE__, __func__, __LINE__, __VA_ARGS__)
 #define LOG_PRINT(...)				LOG_INFO(__VA_ARGS__)
 #define LOG_WARNING(...)			Logger::printWarning(__FILE__, __func__, __LINE__, __VA_ARGS__)
 #define LOG_ERROR(...)				Logger::printError(__FILE__, __func__, __LINE__, __VA_ARGS__)
 #define LOG_SUCCESS(...)			Logger::printSuccess(__FILE__, __func__, __LINE__, __VA_ARGS__)
+
+// Functions to change the console color.
+#define LOG_START_COLOR_PASS(color) Logger::startColorPass(color)
+#define LOG_END_COLOR_PASS()		Logger::endColorPass();
 
 // Restrict printing by only print certain types. 
 #define LOG_SET_FILTER(...)			Logger::setFilter(__VA_ARGS__)
@@ -36,6 +40,16 @@ To only print warnings and errors:
 class Logger
 {
 public:
+	enum CONSOLE_COLOR
+	{
+		GREEN = 10,
+		BLUE = 11,
+		RED,
+		PURPLE,
+		YELLOW,
+		WHITE
+	};
+
 	/*
 	Initialize the logger.
 	*/
@@ -99,6 +113,18 @@ public:
 	*/
 	static void logToFile(bool toFile = true);
 
+	/*
+	Set the console color.
+	Arguments:
+		color: The color to use when coloring the text.
+	*/
+	static void startColorPass(CONSOLE_COLOR color);
+
+	/*
+	Reset the console color.
+	*/
+	static void endColorPass();
+
 	enum TYPE
 	{
 		TYPE_INFO = 1,
@@ -110,16 +136,6 @@ public:
 	~Logger();
 
 private:
-	enum CONSOLE_COLOR
-	{
-		GREEN = 10,
-		BLUE = 11,
-		RED,
-		PURPLE,
-		YELLOW,
-		WHITE
-	};
-
 	static bool shouldPrint(TYPE type);
 	static std::string getCurrentTime();
 
@@ -217,14 +233,9 @@ inline void Logger::formatPrint(TYPE type, const std::string & str, const std::s
 template<typename ...Args>
 inline void Logger::print(const std::string & str, CONSOLE_COLOR color, Args&& ...args)
 {
-	// Set current console color.
-	SetConsoleTextAttribute(hstdout, color);
-		
+	startColorPass(color);
 	printf(str.c_str(), args...);
-
-	// Reset console color.
-	FlushConsoleInputBuffer(hstdin);
-	SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+	endColorPass();
 }
 
 template<typename ...Args>
