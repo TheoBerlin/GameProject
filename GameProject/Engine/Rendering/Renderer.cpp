@@ -11,6 +11,11 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Cube.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/floor.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/droneTarget.fbx"));
 }
 
 Renderer::~Renderer()
@@ -21,6 +26,11 @@ Renderer::~Renderer()
 void Renderer::setActiveCamera(Camera * camera)
 {
 	this->pipeline.setActiveCamera(camera);
+}
+
+Camera * Renderer::getActiveCamera()
+{
+	return this->pipeline.getActiveCamera();
 }
 
 void Renderer::push(Entity * entity)
@@ -72,8 +82,8 @@ void Renderer::drawAllInstanced()
 	this->pipeline.getFbo()->bind();
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	std::vector<Model*> models = ModelLoader::getModels();
-	for (Model* model : models) {
+
+	for (Model* model : this->renderingModels) {
 		this->pipeline.drawInstanced(model);
 	}
 
@@ -81,3 +91,10 @@ void Renderer::drawAllInstanced()
 
 	this->pipeline.drawTextureToQuad(this->pipeline.getFbo()->getColorTexture(0));
 }
+
+void Renderer::drawModel(Model * model)
+{
+	glDisable(GL_DEPTH_TEST);
+	this->pipeline.drawInstanced(model);
+}
+
