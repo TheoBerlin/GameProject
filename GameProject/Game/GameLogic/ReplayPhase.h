@@ -1,5 +1,7 @@
 #pragma once
 
+#include <Engine/Components/FreeMove.h>
+#include <Engine/Events/Events.h>
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/PathVisualizer.h>
@@ -21,7 +23,10 @@ public:
 private:
     void handleKeyInput(KeyEvent* event);
 
+    void transitionToAim(CameraTransitionEvent* event);
+
     Entity* freeCam;
+    FreeMove* freeMove;
 
     Entity* replayArrow;
     PathTreader* pathTreader;

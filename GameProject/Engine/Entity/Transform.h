@@ -37,6 +37,8 @@ public:
 	//Get up vector
 	glm::vec3 getUp() const;
 
+	glm::vec3 getDefaultForward() const;
+
 	glm::quat getRotationQuat() const;
 	void setRotationQuat(const glm::quat& newQuat);
 

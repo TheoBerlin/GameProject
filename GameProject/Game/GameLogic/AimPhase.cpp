@@ -4,6 +4,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/Components/CameraTransition.h>
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/OverviewPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
@@ -105,7 +106,27 @@ void AimPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_1) {
+        // Create transition camera
+        transitionEntity = level.entityManager->addTracedEntity("TransitionCamera");
+
+        // Begin camera transition to the replay freecam
+        glm::vec3 newPos = level.player.oversightCamera.position;
+        glm::vec3 newForward = level.player.oversightCamera.direction;
+        float transitionLength = 2.0f;
+
+        CameraTransition* camTransition = new CameraTransition(transitionEntity, newPos, newForward, transitionLength);
+
+        EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
+
         Phase* overviewPhase = new OverviewPhase(this);
         changePhase(overviewPhase);
     }
+}
+
+void AimPhase::transitionToOverview(CameraTransitionEvent* event)
+{
+    EventBus::get().unsubscribe(this, &AimPhase::transitionToOverview);
+
+    Phase* overviewPhase = new OverviewPhase(this);
+    changePhase(overviewPhase);
 }

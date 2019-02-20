@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine/Events/Events.h>
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
 
@@ -21,6 +22,10 @@ private:
     void handleMouseClick(MouseClickEvent* event);
     void handleKeyInput(KeyEvent* event);
 
+    void transitionToOverview(CameraTransitionEvent* event);
+
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
+
+    Entity* transitionEntity;
 };

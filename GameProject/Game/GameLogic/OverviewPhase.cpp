@@ -1,9 +1,12 @@
 #include "OverviewPhase.h"
 
 #include <Engine/Components/Camera.h>
+#include <Engine/Events/EventBus.h>
+#include <Engine/Events/Events.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/GameLogic/AimPhase.h>
+#include <Game/Components/CameraTransition.h>
 #include <Game/Components/OversightController.h>
 #include <Utils/Logger.h>
 
@@ -41,7 +44,7 @@ void OverviewPhase::commonSetup()
 	camera->init();
 
     // Add oversight controller
-    OversightController* camOversight = new OversightController(overviewCamera);
+    oversightControl = new OversightController(overviewCamera);
 
 	// Reset targets
 	level.targetManager->resetTargets();
@@ -56,7 +59,24 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_2) {
-        Phase* guidingPhase = new AimPhase(this);
-        changePhase(guidingPhase);
+        // Remove oversight control
+        overviewCamera->removeComponent(oversightControl->getName());
+
+        // Begin camera transition to the arrow
+        glm::vec3 newPos = level.player.arrowCamera.position;
+        glm::vec3 newForward = level.player.arrowCamera.direction;
+        float transitionLength = 2.0f;
+
+        CameraTransition* camTransition = new CameraTransition(overviewCamera, newPos, newForward, transitionLength);
+
+        EventBus::get().subscribe(this, &OverviewPhase::transitionToAim);
     }
+}
+
+void OverviewPhase::transitionToAim(CameraTransitionEvent* event)
+{
+    EventBus::get().unsubscribe(this, &OverviewPhase::transitionToAim);
+
+    Phase* guidingPhase = new AimPhase(this);
+    changePhase(guidingPhase);
 }

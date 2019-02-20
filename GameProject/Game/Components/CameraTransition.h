@@ -16,6 +16,9 @@ private:
     glm::quat beginQuat, endQuat;
 
     glm::vec3 beginPos, endPos;
+    glm::vec3 defaultForward;
 
     float transitionTime, transitionLength;
+
+    bool isTransitioning;
 };

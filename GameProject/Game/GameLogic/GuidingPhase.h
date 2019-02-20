@@ -20,8 +20,13 @@ private:
 
     void handleKeyInput(KeyEvent* event);
 
+    void transitionToReplay(CameraTransitionEvent* event);
+
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
+
+    // Created to avoid dragging the arrow around when transitioning
+    Entity* transitionEntity;
 
     // TODO: These variables should be read from level during phase transitions
     const glm::vec3& playerPos = glm::vec3(1.0f, 1.0f, 12.0f);

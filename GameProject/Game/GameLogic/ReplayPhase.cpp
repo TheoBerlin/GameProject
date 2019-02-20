@@ -7,6 +7,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/Components/CameraTransition.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/AimPhase.h>
@@ -51,7 +52,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	Camera* camera = new Camera(freeCam, "Camera");
 	camera->init();
 
-	FreeMove* freeMove = new FreeMove(freeCam);
+	freeMove = new FreeMove(freeCam);
 
 	// Reset targets
 	level.targetManager->resetTargets();
@@ -81,7 +82,22 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_2) {
-        Phase* guidingPhase = new AimPhase(this);
-        changePhase(guidingPhase);
+        // Begin transition to aim phase
+        freeCam->removeComponent(freeMove->getName());
+
+        // Begin camera transition to the arrow
+        glm::vec3 newPos = level.player.arrowCamera.position;
+        glm::vec3 newForward = level.player.arrowCamera.direction;
+        float transitionLength = 2.0f;
+
+        CameraTransition* camTransition = new CameraTransition(freeCam, newPos, newForward, transitionLength);
+
+        EventBus::get().subscribe(this, &ReplayPhase::transitionToAim);
     }
+}
+
+void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
+{
+    Phase* guidingPhase = new AimPhase(this);
+    changePhase(guidingPhase);
 }

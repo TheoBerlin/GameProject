@@ -62,6 +62,11 @@ glm::vec3 Transform::getUp() const
 	return this->u;
 }
 
+glm::vec3 Transform::getDefaultForward() const
+{
+	return this->defaultForward;
+}
+
 glm::quat Transform::getRotationQuat() const
 {
 	return this->rotationQuat;
