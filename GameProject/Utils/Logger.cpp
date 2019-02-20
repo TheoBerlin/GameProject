@@ -21,11 +21,6 @@ void Logger::init()
 	file.open(PATH_TO_LOG_FILE);
 }
 
-void Logger::destroy()
-{
-	file.close();
-}
-
 void Logger::setFilter(unsigned int filterTypes)
 {
 	filter = filterTypes;
@@ -34,6 +29,11 @@ void Logger::setFilter(unsigned int filterTypes)
 void Logger::logToFile(bool toFile)
 {
 	writeToFile = toFile;
+}
+
+Logger::~Logger()
+{
+	file.close();
 }
 
 bool Logger::shouldPrint(TYPE type)
