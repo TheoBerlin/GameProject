@@ -16,8 +16,8 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	this->speed = 5.0f;
 	this->sensitivity = Settings::get().getMouseSensitivity();
 	this->mouseLock = false;
-	this->xPos = 0.0;
-	this->yPos = 0.0;
+	this->xPos = 0;
+	this->yPos = 0;
 }
 
 FreeMove::~FreeMove()
@@ -57,15 +57,15 @@ void FreeMove::update(const float & dt)
 
 	if (this->mouseLock)
 	{
-		if (this->xPos != 0.0 || this->yPos != 0.0)
+		if (this->xPos != 0 || this->yPos != 0)
 		{
 			float yaw = -(float)xPos * this->dt * this->sensitivity;
 			float pitch = -(float)yPos * this->dt * this->sensitivity;
 
 			host->getTransform()->rotate(yaw, pitch);
 
-			this->xPos = 0.0;
-			this->yPos = 0.0;
+			this->xPos = 0;
+			this->yPos = 0;
 		}
 	}
 }
