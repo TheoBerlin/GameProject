@@ -5,6 +5,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "../Events/EventBus.h"
 #include "Utils/Logger.h"
+#include <Utils/Settings.h>
 
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
@@ -12,7 +13,7 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
 	this->speed = 5.0f;
-	this->sensitivity = 0.5f;
+	this->sensitivity = Settings::get().getMouseSensitivity();
 	this->mouseLock = false;
 	this->xPos = 0.0;
 	this->yPos = 0.0;
