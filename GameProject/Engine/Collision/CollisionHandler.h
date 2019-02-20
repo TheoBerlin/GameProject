@@ -6,11 +6,31 @@
 #include "glm/glm.hpp"
 #include <unordered_map>
 
+#include "Engine/Config.h"
+
+#ifdef ENABLE_COLLISION_BOXES
+	#include "CollisionRenderer.h"
+
+
+	struct CollisionShapeDrawingData {
+		glm::vec3 color;
+		glm::vec3 scale;
+		glm::vec3 pos;
+		rp3d::CollisionShape * shape;
+	};
+#else
+	struct CollisionShapeDrawingData {
+		glm::vec3 pos;
+		rp3d::CollisionShape * shape;
+	};
+#endif
+
 // Enum for the shapes for the CollisionBodies
 enum class SHAPE {
 	DRONE = 0,
 	BOX = 1,
-	ARROW = 2
+	ARROW = 2,
+	SIZE
 };
 
 // Forward declerations
@@ -37,19 +57,41 @@ public:
 
 	rp3d::Vector3 toReactVec(const glm::vec3& vec);
 	glm::vec3 toGlmVec(const rp3d::Vector3& vec);
+	glm::quat toGlmQuat(const rp3d::Quaternion& vec);
+
+#ifdef ENABLE_COLLISION_BOXES
+	void updateDrawingData();
+
+	void drawCollisionBoxes();
+#endif
 
 private:
 	rp3d::CollisionWorld * world;
 	rp3d::CollisionBody * player;
 	std::vector<rp3d::CollisionBody*> bodies;
-
+	
 	Collision collision;
 
 	// Creates all the shapes which will be used in the scene
 	void createShapes();
-	std::vector<rp3d::CollisionShape*> shapes;
+	
 	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
 	int takenBodies;
+
+#ifdef ENABLE_COLLISION_BOXES
+	std::vector<glm::mat4> matrices;
+	std::vector<glm::vec3> colors;
+
+	void addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
+	std::vector<rp3d::ProxyShape*> proxyShapes;
+
+
+	CollisionRenderer cRenderer;
+#else
+	void addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
+#endif
 
 };
