@@ -33,8 +33,9 @@ Entity* OverviewPhase::getOverviewCamera() const
 void OverviewPhase::commonSetup()
 {
     overviewCamera = level.entityManager->addTracedEntity("OverviewCamera");
-    overviewCamera->getTransform()->setPosition(cameraPos);
-	overviewCamera->getTransform()->setForward(cameraDir);
+
+    overviewCamera->getTransform()->setPosition(level.player.oversightCamera.position);
+	overviewCamera->getTransform()->setForward(level.player.oversightCamera.direction);
 
 	Camera* camera = new Camera(overviewCamera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();

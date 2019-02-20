@@ -63,9 +63,9 @@ void AimPhase::commonSetup()
 
     Transform* playerTransform = playerArrow->getTransform();
 
-    playerTransform->setForward(playerDir);
+    playerTransform->setForward(level.player.arrowCamera.direction);
     playerTransform->resetRoll();
-	playerTransform->setPosition(playerPos);
+	playerTransform->setPosition(level.player.arrowCamera.position);
 	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);

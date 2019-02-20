@@ -20,8 +20,4 @@ private:
     void handleKeyInput(KeyEvent* event);
 
     Entity* overviewCamera;
-
-    // This should be read from the level struct in the future
-    const glm::vec3 cameraPos = glm::vec3(-10.0f, 20.0f, 10.0f);
-    const glm::vec3& cameraDir = glm::normalize(glm::vec3(0.5f, -1.0f, -0.5f));
 };

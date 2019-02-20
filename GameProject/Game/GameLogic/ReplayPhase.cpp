@@ -21,7 +21,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	replayArrow->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
-    replayArrow->getTransform()->setPosition(this->arrowPos);
+    replayArrow->getTransform()->setPosition(level.player.arrowCamera.position);
 	replayArrow->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	// Stop arrow guider and copy arrow path from guider to path treader
@@ -44,8 +44,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
     Transform* camTransform = freeCam->getTransform();
 
-	camTransform->setPosition(glm::vec3(0.0f, 3.0f, 4.0f));
-	camTransform->setForward(glm::vec3(0.0f, -0.7f, -0.7f));
+	camTransform->setPosition(level.player.replayCamera.position);
+	camTransform->setForward(level.player.replayCamera.direction);
     camTransform->resetRoll();
 
 	Camera* camera = new Camera(freeCam, "Camera");
