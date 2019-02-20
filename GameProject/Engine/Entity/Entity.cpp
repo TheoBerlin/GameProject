@@ -15,7 +15,7 @@ Entity::~Entity()
 	/*
 		Remove entity from models rendering group
 	*/
-	if (this->model != nullptr) {
+	if (this->model != nullptr && this->renderingGroupIndex != -1) {
 		this->model->removeEntity(this->renderingGroupIndex);
 	}
 }
@@ -95,7 +95,7 @@ void Entity::setModel(Model * model)
 
 void Entity::detachFromModel()
 {
-	if (this->model != nullptr)
+	if (this->model != nullptr && this->renderingGroupIndex != -1)
 		this->model->removeEntity(this->renderingGroupIndex);
 
 	this->renderingGroupIndex = -1;
