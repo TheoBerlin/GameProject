@@ -5,71 +5,32 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
-#include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
+#include <Game/GameLogic/AimPhase.h>
 #include <Game/GameLogic/OverviewPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
 #include <Utils/Logger.h>
 
-GuidingPhase::GuidingPhase(OverviewPhase* other)
-    :Phase((Phase*)other)
+GuidingPhase::GuidingPhase(AimPhase* aimPhase)
+    :Phase((Phase*)aimPhase)
 {
-    commonSetup();
+    playerArrow = aimPhase->getPlayerArrow();
+
+    // Start guiding the arrow
+    arrowGuider = aimPhase->getArrowGuider();
+    arrowGuider->startGuiding();
+
+    level.targetManager->resetTargets();
 }
 
-GuidingPhase::GuidingPhase(ReplayPhase* other)
-    :Phase((Phase*)other)
+Entity* GuidingPhase::getPlayerArrow() const
 {
-
-    // Remove path visualizers
-    PathVisualizer* pathVisualizer = other->getPathVisualizer();
-
-    if (pathVisualizer) {
-        other->getPathVisualizer()->removeVisualizers();
-    }
-
-    // Remove replay arrow
-    Entity* replayArrow = other->getReplayArrow();
-
-    level.entityManager->removeTracedEntity(replayArrow->getName());
-
-    commonSetup();
+    return playerArrow;
 }
 
-void GuidingPhase::commonSetup()
+ArrowGuider* GuidingPhase::getArrowGuider() const
 {
-    player->removeAllComponents();
-
-	/*
-		Create arrow entity
-	*/
-	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
-
-    Transform* playerTransform = player->getTransform();
-
-    playerTransform->setForward(playerDir);
-    playerTransform->resetRoll();
-	playerTransform->setPosition(playerPos);
-	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
-
-	player->setModel(model);
-
-	/*
-		Add camera to arrow entity
-	*/
-	Camera* camera = new Camera(player, "Camera", { 0.0f, 0.5f, -1.0f });
-	camera->init();
-
-	/*
-		Add arrowguider to entity
-	*/
-	ArrowGuider* arrow = new ArrowGuider(player, 2.0f);
-	arrow->startGuiding();
-
-	// Reset targets
-	level.targetManager->resetTargets();
-
-	Display::get().getRenderer().setActiveCamera(camera);
+    return arrowGuider;
 }
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)
@@ -78,12 +39,8 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
-        Phase* overviewPhase = new OverviewPhase(this);
-        changePhase(overviewPhase);
-    } else if (event->key == GLFW_KEY_3) {
+    if (event->key == GLFW_KEY_3) {
         Phase* replayPhase = new ReplayPhase(this);
         changePhase(replayPhase);
     }
 }
-

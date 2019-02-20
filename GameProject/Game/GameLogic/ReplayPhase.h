@@ -5,11 +5,15 @@
 #include <Game/Components/PathVisualizer.h>
 
 class GuidingPhase;
+class AimPhase;
 
 class ReplayPhase : public Phase
 {
 public:
-    ReplayPhase(GuidingPhase* other);
+    ReplayPhase(GuidingPhase* guidingPhase);
+    ReplayPhase(AimPhase* aimPhase);
+
+    Entity* getFreeCam() const;
 
     Entity* getReplayArrow() const;
     PathVisualizer* getPathVisualizer() const;
@@ -17,8 +21,10 @@ public:
 private:
     void handleKeyInput(KeyEvent* event);
 
-    PathTreader* pathTreader;
+    Entity* freeCam;
+
     Entity* replayArrow;
+    PathTreader* pathTreader;
     PathVisualizer* pathVisualizer;
 
     // This should be read from the level struct in the future
