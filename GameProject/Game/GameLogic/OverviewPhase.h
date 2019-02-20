@@ -1,19 +1,25 @@
 #pragma once
 
+#include <Engine/Entity/Entity.h>
 #include <Engine/Events/Events.h>
 #include <Game/GameLogic/Phase.h>
 
-class GuidingPhase;
+class AimPhase;
 
 class OverviewPhase : public Phase
 {
 public:
-    OverviewPhase(GuidingPhase* other);
+    OverviewPhase(AimPhase* aimPhase);
     OverviewPhase(const Level& level);
+
+    Entity* getOverviewCamera() const;
 
 private:
     void commonSetup();
+
     void handleKeyInput(KeyEvent* event);
+
+    Entity* overviewCamera;
 
     // This should be read from the level struct in the future
     const glm::vec3 cameraPos = glm::vec3(-10.0f, 20.0f, 10.0f);

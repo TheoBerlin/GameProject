@@ -58,9 +58,11 @@
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\CameraTransition.cpp" />
+    <ClCompile Include="Game\Components\OversightController.cpp" />
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
+    <ClCompile Include="Game\GameLogic\AimPhase.cpp" />
     <ClCompile Include="Game\GameLogic\GuidingPhase.cpp" />
     <ClCompile Include="Game\GameLogic\OverviewPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phase.cpp" />
@@ -124,8 +126,10 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />
+    <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
+    <ClInclude Include="Game\GameLogic\AimPhase.h" />
     <ClInclude Include="Game\GameLogic\GuidingPhase.h" />
     <ClInclude Include="Game\GameLogic\OverviewPhase.h" />
     <ClInclude Include="Game\GameLogic\Phase.h" />

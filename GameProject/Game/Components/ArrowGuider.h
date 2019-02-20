@@ -21,7 +21,14 @@ public:
 
     void update(const float& dt);
 
+    // Enables aim but not movement
+    void startAiming();
+    // Disables aim but not movement
+    void stopAiming();
+
+    // Enables both aim and movement
     void startGuiding();
+    // Disables both aim and movement
     void stopGuiding();
 
     // Event handlers
@@ -60,8 +67,8 @@ private:
 
     glm::vec3 direction;
 
-    // Disables and enables the guider
-    bool isGuiding;
+    // Disables and enables functionality within the guider
+    bool isAiming, isGuiding;
 
     // Frequency at which the position is stored
     float posStoreFrequency;
@@ -84,5 +91,5 @@ private:
     const float FOVChangeMax = 15.0f;
 
     float currentPitch;
-    const float maxPitch = glm::half_pi<float>() - FLT_EPSILON;
+    const float maxPitch = glm::half_pi<float>() - 0.01f;
 };
