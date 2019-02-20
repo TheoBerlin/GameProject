@@ -18,8 +18,6 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	this->mouseLock = false;
 	this->xPos = 0.0;
 	this->yPos = 0.0;
-	this->preXPos = 0.0;
-	this->preYPos = 0.0;
 }
 
 FreeMove::~FreeMove()
@@ -93,10 +91,8 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
-	this->xPos = evnt->moveX - this->preXPos;
-	this->yPos = evnt->moveY - this->preYPos;
-	this->preXPos = evnt->moveX;
-	this->preYPos = evnt->moveY;
+	this->xPos = evnt->travelX;
+	this->yPos = evnt->travelY;
 }
 
 void FreeMove::clickMouse(MouseClickEvent * evnt)

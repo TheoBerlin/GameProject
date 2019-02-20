@@ -18,7 +18,6 @@ private:
 	float sensitivity;
 	bool mouseLock;
 	double xPos, yPos;
-	double preXPos, preYPos;
 	std::unordered_map<unsigned, bool> pressedKeys;
 
 	void moveKeyboard(KeyEvent * evnt);
