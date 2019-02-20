@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
     <ClCompile Include="Engine\GUI\Font.cpp" />
     <ClCompile Include="Engine\GUI\FontManager.cpp" />
     <ClCompile Include="Engine\GUI\Panel.cpp" />
@@ -79,6 +80,7 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
     <ClInclude Include="Engine\Components\CollisionComponent.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
