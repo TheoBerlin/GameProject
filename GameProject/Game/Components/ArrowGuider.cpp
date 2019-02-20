@@ -156,13 +156,10 @@ void ArrowGuider::startGuiding()
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // Get cursor position
-    double* cursorX = new double, *cursorY = new double;
-    glfwGetCursorPos(Display::get().getWindowPtr(), cursorX, cursorY);
+    double cursorX, cursorY;
+    glfwGetCursorPos(Display::get().getWindowPtr(), &cursorX, &cursorY);
 
-    mousePos = glm::vec2((float)*cursorX, (float)*cursorY);
-
-    delete cursorX;
-    delete cursorY;
+    mousePos = glm::vec2((float)cursorX, (float)cursorY);
 
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
 }

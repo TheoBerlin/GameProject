@@ -84,5 +84,5 @@ private:
     const float FOVChangeMax = 15.0f;
 
     float currentPitch;
-    const float maxPitch = glm::half_pi<float>() - FLT_EPSILON;
+    const float maxPitch = glm::half_pi<float>() - 0.01f;
 };
