@@ -11,10 +11,13 @@ Phase::Phase(const Level& level)
 Phase::Phase(Phase* other)
 {
     this->level = other->level;
-    this->player = other->player;
 }
 
 void Phase::handleKeyInput(KeyEvent* event)
+{
+}
+
+void Phase::handleMouseClick(MouseClickEvent* event)
 {
 }
 

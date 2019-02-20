@@ -9,12 +9,13 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/GuidingPhase.h>
+#include <Game/GameLogic/AimPhase.h>
 
-ReplayPhase::ReplayPhase(GuidingPhase* other)
-    :Phase((Phase*)other)
+ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
+    :Phase((Phase*)guidingPhase)
 {
     /*
-		Create arrow entity
+		Create replay arrow
 	*/
 	replayArrow = level.entityManager->addTracedEntity("ArrowReplay");
 
@@ -24,12 +25,9 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
 	replayArrow->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	// Stop arrow guider and copy arrow path from guider to path treader
-	Component* tmpPtr = player->getComponent("ArrowGuider");
-    ArrowGuider* oldArrowGuider = dynamic_cast<ArrowGuider*>(tmpPtr);
-
+    ArrowGuider* oldArrowGuider = guidingPhase->getArrowGuider();
     oldArrowGuider->stopGuiding();
 
-    // Add path treader to arrow entity
     PathTreader* arrow = new PathTreader(replayArrow, oldArrowGuider->getPath());
     arrow->startTreading();
 
@@ -37,26 +35,33 @@ ReplayPhase::ReplayPhase(GuidingPhase* other)
     pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
     pathVisualizer->addPath(oldArrowGuider->getPath());
 
+    // Remove old arrow entity
+    Entity* oldArrow = guidingPhase->getPlayerArrow();
+    level.entityManager->removeTracedEntity(oldArrow->getName());
+
     // Set up the player camera
-    player->removeAllComponents();
-    player->detachFromModel();
+    freeCam = level.entityManager->addTracedEntity("FreeCam");
 
-    // Create free camera
-    Transform* playerTransform = player->getTransform();
+    Transform* camTransform = freeCam->getTransform();
 
-	playerTransform->setPosition(glm::vec3(0.0f, 3.0f, 4.0f));
-	playerTransform->setForward(glm::vec3(0.0f, -0.7f, -0.7f));
-    playerTransform->resetRoll();
+	camTransform->setPosition(glm::vec3(0.0f, 3.0f, 4.0f));
+	camTransform->setForward(glm::vec3(0.0f, -0.7f, -0.7f));
+    camTransform->resetRoll();
 
-	Camera* camera = new Camera(player, "Camera");
+	Camera* camera = new Camera(freeCam, "Camera");
 	camera->init();
 
-	FreeMove* freeMove = new FreeMove(player);
+	FreeMove* freeMove = new FreeMove(freeCam);
 
 	// Reset targets
 	level.targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
+}
+
+Entity* ReplayPhase::getFreeCam() const
+{
+    return freeCam;
 }
 
 Entity* ReplayPhase::getReplayArrow() const
@@ -76,7 +81,7 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_2) {
-        Phase* guidingPhase = new GuidingPhase(this);
+        Phase* guidingPhase = new AimPhase(this);
         changePhase(guidingPhase);
     }
 }

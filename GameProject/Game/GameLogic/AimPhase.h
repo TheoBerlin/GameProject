@@ -1,16 +1,16 @@
 #pragma once
 
-#include <Engine/Events/Events.h>
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
 
-// Phases GuidingPhase can transition from
-class AimPhase;
+class OverviewPhase;
+class ReplayPhase;
 
-class GuidingPhase : public Phase
+class AimPhase : public Phase
 {
 public:
-    GuidingPhase(AimPhase* other);
+    AimPhase(OverviewPhase* overviewPhase);
+    AimPhase(ReplayPhase* replayPhase);
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
@@ -18,6 +18,7 @@ public:
 private:
     void commonSetup();
 
+    void handleMouseClick(MouseClickEvent* event);
     void handleKeyInput(KeyEvent* event);
 
     Entity* playerArrow;

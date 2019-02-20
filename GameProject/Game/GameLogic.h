@@ -20,6 +20,7 @@ private:
 
 	// Pass through input to the current phase
 	void handleKeyInput(KeyEvent* event);
+	void handleMouseClick(MouseClickEvent* event);
 
 	Level level;
 

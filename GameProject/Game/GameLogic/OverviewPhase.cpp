@@ -3,14 +3,14 @@
 #include <Engine/Components/Camera.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
-#include <Game/GameLogic/GuidingPhase.h>
+#include <Game/GameLogic/AimPhase.h>
 #include <Utils/Logger.h>
 
-OverviewPhase::OverviewPhase(GuidingPhase* other)
-    :Phase((Phase*)other)
+OverviewPhase::OverviewPhase(AimPhase* aimPhase)
+    :Phase((Phase*)aimPhase)
 {
-    player->removeAllComponents();
-    player->detachFromModel();
+    // Remove arrow
+    level.entityManager->removeTracedEntity(aimPhase->getPlayerArrow()->getName());
 
     commonSetup();
 }
@@ -21,17 +21,21 @@ OverviewPhase::OverviewPhase(const Level& level)
 	/*
 		Create camera entity
 	*/
-    player = level.entityManager->addTracedEntity("Player");
-
     commonSetup();
+}
+
+Entity* OverviewPhase::getOverviewCamera() const
+{
+    return overviewCamera;
 }
 
 void OverviewPhase::commonSetup()
 {
-    player->getTransform()->setPosition(cameraPos);
-	player->getTransform()->setForward(cameraDir);
+    overviewCamera = level.entityManager->addTracedEntity("OverviewCamera");
+    overviewCamera->getTransform()->setPosition(cameraPos);
+	overviewCamera->getTransform()->setForward(cameraDir);
 
-	Camera* camera = new Camera(player, "Camera", { 0.0f, 0.5f, -2.0f });
+	Camera* camera = new Camera(overviewCamera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
 
 	// Reset targets
@@ -47,7 +51,7 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_2) {
-        Phase* guidingPhase = new GuidingPhase(this);
+        Phase* guidingPhase = new AimPhase(this);
         changePhase(guidingPhase);
     }
 }
