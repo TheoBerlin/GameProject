@@ -26,6 +26,7 @@ void GameLogic::init(Level& level)
 GameLogic::~GameLogic()
 {
 	EventBus::get().unsubscribe(this, &GameLogic::changePhaseCallback);
+
 	EventBus::get().unsubscribe(this, &GameLogic::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GameLogic::handleMouseClick);
 

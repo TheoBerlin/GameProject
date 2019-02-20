@@ -4,6 +4,8 @@
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/GUI/GUI.h>
+#include <Engine/Rendering/GUIRenderer.h>
 
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
@@ -19,6 +21,7 @@ GameState::GameState()
 
 	level.entityManager = &this->getEntityManager();
 	level.targetManager = targetManager;
+	level.gui = &this->getGUI();
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
@@ -58,6 +61,7 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
@@ -74,6 +78,7 @@ void GameState::render()
 	//EntityManager& entityManager = this->getEntityManager();
 	//std::vector<Entity*>& entities = entityManager.getAll();
 
+	// Draw entities.
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
 	
@@ -83,11 +88,16 @@ void GameState::render()
 
 	/*for (Entity* entity : entities)
 		renderer.push(entity);
-	renderer.drawAll();*/
-
+	renderer.drawAll();
+	*/
 
 	/*
 		New rendering
 	*/
 	renderer.drawAllInstanced();
+
+	// Draw gui elements.
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+	GUI& gui = this->getGUI();
+	guiRenderer.draw(gui);
 }

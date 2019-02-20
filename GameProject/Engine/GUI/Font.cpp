@@ -85,9 +85,9 @@ void Font::loadCharacters()
 		Character character;
 		character.width = this->face->glyph->bitmap.width;
 		character.height = this->face->glyph->bitmap.rows;
-		character.bearingX = this->face->glyph->bitmap_left;
-		character.bearingY = this->face->glyph->bitmap_top;
-		character.advance = this->face->glyph->advance.x;
+		character.bearingX = (unsigned int)this->face->glyph->bitmap_left;
+		character.bearingY = (unsigned int)this->face->glyph->bitmap_top;
+		character.advance = (unsigned int)this->face->glyph->advance.x;
 
 		// Create texture for glyph.
 		GLuint texId;
@@ -120,9 +120,9 @@ void Font::updateCharacters()
 		// Update character data.
 		this->characters[c].width = this->face->glyph->bitmap.width;
 		this->characters[c].height = this->face->glyph->bitmap.rows;
-		this->characters[c].bearingX = this->face->glyph->bitmap_left;
-		this->characters[c].bearingY = this->face->glyph->bitmap_top;
-		this->characters[c].advance = this->face->glyph->advance.x;
+		this->characters[c].bearingX = (unsigned int)this->face->glyph->bitmap_left;
+		this->characters[c].bearingY = (unsigned int)this->face->glyph->bitmap_top;
+		this->characters[c].advance = (unsigned int)this->face->glyph->advance.x;
 
 		// Update texture for glyph.
 		glBindTexture(GL_TEXTURE_2D, this->characters[c].textureID);
