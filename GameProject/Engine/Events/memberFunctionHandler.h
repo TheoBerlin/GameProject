@@ -29,7 +29,7 @@ public:
 	//Function that is called to call the assigned function
 	void call(Event * evnt)
 	{
-		//Cast event to the correct type and call emmber function
+		//Cast event to the correct type and call member function
 		(instance->*memberFunction)(static_cast<EventType*>(evnt));
 	}
 

@@ -54,11 +54,6 @@ public:
 	Initialize the logger.
 	*/
 	static void init();
-	
-	/*
-	Clean up the logger.
-	*/
-	static void destroy();
 
 	/*
 	Print a formatted white string with [INFO] as a prefix.
@@ -137,6 +132,8 @@ public:
 		TYPE_ERROR = 4,
 		TYPE_SUCCESS = 8
 	};
+
+	~Logger();
 
 private:
 	static bool shouldPrint(TYPE type);

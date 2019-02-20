@@ -21,11 +21,6 @@ void Logger::init()
 	file.open(PATH_TO_LOG_FILE);
 }
 
-void Logger::destroy()
-{
-	file.close();
-}
-
 void Logger::setFilter(unsigned int filterTypes)
 {
 	filter = filterTypes;
@@ -47,6 +42,11 @@ void Logger::endColorPass()
 	// Reset console color.
 	FlushConsoleInputBuffer(hstdin);
 	SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+}
+
+Logger::~Logger()
+{
+	file.close();
 }
 
 bool Logger::shouldPrint(TYPE type)
