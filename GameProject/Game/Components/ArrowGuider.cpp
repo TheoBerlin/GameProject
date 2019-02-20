@@ -155,15 +155,7 @@ void ArrowGuider::startGuiding()
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // Get cursor position
-    double* cursorX = new double, *cursorY = new double;
-    glfwGetCursorPos(Display::get().getWindowPtr(), cursorX, cursorY);
-
-    mousePos = glm::vec2((float)*cursorX, (float)*cursorY);
-
-    delete cursorX;
-    delete cursorY;
-
+    // Subscribe to mouse movement for guiding
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
 }
 
@@ -192,11 +184,8 @@ void ArrowGuider::stopGuiding()
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 {
     // Calculate relative mouse position
-    float moveX = (float)event->moveX - mousePos.x;
-    float moveY = (float)event->moveY - mousePos.y;
-
-    mousePos.x = (float)event->moveX;
-    mousePos.y = (float)event->moveY;
+	int moveX = event->travelX;
+	int moveY = event->travelY;
 
     // Divide by window height to separate turn speed from screen resolution
     float turnFactorYaw = moveX / (windowHeight * maxMouseMove);
