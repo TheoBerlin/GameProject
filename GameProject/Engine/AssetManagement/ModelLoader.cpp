@@ -23,7 +23,7 @@ Model* ModelLoader::loadModel(std::string fileName)
     }
 
     // The model needs to be loaded
-    const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs);
+    const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_JoinIdenticalVertices | aiProcess_GenNormals | aiProcess_FlipUVs);
 
     if (!scene || !scene->mRootNode) {
         LOG_WARNING("Assimp failed to load [%s]", fileName.c_str());
@@ -67,6 +67,17 @@ std::vector<Model*> ModelLoader::getModels()
 	}
 
 	return models;
+}
+
+Model * ModelLoader::getModel(const std::string & name)
+{
+	Model* model = loadedModels[name];
+
+	if (!model) {
+		LOG_INFO("Model [%s] dosen't exist", name.c_str());
+	}
+
+	return model;
 }
 
 void ModelLoader::unloadAllModels()
