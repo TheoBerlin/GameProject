@@ -10,6 +10,7 @@
 #include <Engine/InputHandler.h>
 
 #include <Game/GameLogic/TargetManager.h>
+#include "Game/components/ArrowGuider.h"
 
 GameState::GameState()
 {
@@ -30,6 +31,7 @@ GameState::GameState()
 
 	EventBus::get().subscribe(this, &GameState::emit);
 
+	//Particle Emitter init
 	ParticleManager::get().addEmitter(&emitter);
 	emitter.setPosition(glm::vec3(0, 2.0f, -0.0f));
 	emitter.setSpread(0.0f);
@@ -42,8 +44,6 @@ GameState::GameState()
 	emitter.setLifeTime(10.0f);
 	emitter.setScaleChange(1.0f);
 	emitter.setScale(0.1f);
-
-
 }
 
 GameState::~GameState()
@@ -73,15 +73,18 @@ void GameState::end()
 		entity->detachFromModel();
 }
 
-#include "Game/components/ArrowGuider.h"
-
 void GameState::update(const float dt)
 {
 
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
+
+	//Particle tracing TEST
+	//Increase movement speed
 	if (entityManager.getTracedEntity("Player") != nullptr)
-		dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
+		if(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider") != nullptr)
+			dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("Player")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
+	//Get arrow replay position
 	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
 		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
 		emitter.playEmitter(0);
@@ -89,6 +92,7 @@ void GameState::update(const float dt)
 	else {
 		emitter.stopEmitter();
 	}
+
 	for (Entity* entity : entities)
 		entity->update(dt);
 	ParticleManager::get().update(dt);
