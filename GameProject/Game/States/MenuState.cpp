@@ -98,5 +98,6 @@ void MenuState::render()
 	Display& display = Display::get();
 	
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
+
 	guiRenderer.draw(this->getGUI());
 }

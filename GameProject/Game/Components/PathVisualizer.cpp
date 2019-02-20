@@ -47,4 +47,6 @@ void PathVisualizer::removeVisualizers()
             }
         }
     }
+
+    pathCount = 0;
 }
