@@ -32,8 +32,6 @@ int main() {
 
 	Game game;
 	game.start();
-	
-	Logger::destroy();
 
 	ModelLoader::unloadAllModels();
 	TextureManager::unloadAllTextures();

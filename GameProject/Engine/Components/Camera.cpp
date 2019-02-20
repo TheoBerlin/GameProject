@@ -18,6 +18,7 @@ Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec
 
 Camera::~Camera()
 {
+	EventBus::get().unsubscribe(this, &Camera::updateProj);
 }
 
 void Camera::update(const float & dt)

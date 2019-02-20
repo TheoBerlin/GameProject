@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../../Engine/States/State.h"
-#include "../../Engine/Level/LevelParser.h"
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Events/EventBus.h"
 #include "Engine/Events/Events.h"
-#include "../../Game/GameLogic.h"
+#include <Engine/States/State.h>
+#include <Game/Level/LevelParser.h>
+#include <Game/GameLogic.h>
 
 class GameState : public State
 {
@@ -24,5 +24,6 @@ public:
 private:
 	LevelParser levelParser;
 	ParticleEmitter emitter;
+	TargetManager* targetManager;
 	GameLogic gameLogic;
 };

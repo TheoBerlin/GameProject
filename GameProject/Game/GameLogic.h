@@ -4,33 +4,25 @@
 #include "Engine/Entity/EntityManager.h"
 #include "Engine/Events/Events.h"
 #include <Game/Components/PathVisualizer.h>
+#include <Game/Level/Level.h>
+#include <Game/GameLogic/Phase.h>
 #include "glm/glm.hpp"
 
 class GameLogic
 {
 public:
-	GameLogic(EntityManager * em);
+	GameLogic();
+	void init(Level& level);
 	~GameLogic();
 
-	enum Phases { PHASE_OVERVIEW, PHASE_GUIDING, PHASE_REPLAY };
-	void changePhase(Phases phase);
-
-	void enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 & cameraDir);
-	void enterGuidingPhase(const glm::vec3 & playerPos);
-	void enterReplayPhase(const glm::vec3 & arrowPos);
-
-	void leaveOverviewPhase();
-	void leaveGuidingPhase();
-	void leaveReplayPhase();
-
 private:
-	void changePhaseCallback(KeyEvent * ev);
+	void changePhaseCallback(PhaseChangeEvent * event);
 
-	Phases currentPhase;
+	// Pass through input to the current phase
+	void handleKeyInput(KeyEvent* event);
 
-	Entity* camera;
-	Entity* player;
+	Level level;
 
-	EntityManager* em;
+	Phase* phase;
 };
 

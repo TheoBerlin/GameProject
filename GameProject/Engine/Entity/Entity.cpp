@@ -10,12 +10,8 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 
 Entity::~Entity()
 {
-	for (auto& it : this->components) {
-		delete it.second;
-		it.second = nullptr;
-	}
+	removeAllComponents();
 
-	this->components.clear();
 	/*
 		Remove entity from models rendering group
 	*/
@@ -62,14 +58,26 @@ bool Entity::removeComponent(const std::string& componentName)
 	return false;
 }
 
+void Entity::removeAllComponents()
+{
+	for (auto& it : this->components) {
+		delete it.second;
+		it.second = nullptr;
+	}
+
+	this->components.clear();
+}
+
 Component* Entity::getComponent(const std::string& componentName)
 {
 	// Returns nullptr if component is not found
 	auto elem = this->components.find(componentName);
-	if (elem != this->components.end())
+
+	if (elem != this->components.end()) {
 		return elem->second;
-	else
+	} else {
 		return nullptr;
+	}
 }
 
 void Entity::setModel(Model * model)

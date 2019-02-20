@@ -41,6 +41,9 @@ public:
 	~Display();
 
 private:
+	Display() = default;
+	Display(const Display& other) = delete;
+
 	static void errorCallback(int error, const char* description);
 	static void resizeCallback(GLFWwindow* window, int width, int height);
 

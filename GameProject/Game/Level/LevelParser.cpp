@@ -1,12 +1,12 @@
 #include "LevelParser.h"
 
-#include "../../Engine/Rendering/Display.h"
-#include "../../Engine/Rendering/Renderer.h"
-#include "../../Engine/Components/FreeMove.h"
-#include "../../Engine/Components/Camera.h"
+#include <Engine/Rendering/Display.h>
+#include <Engine/Rendering/Renderer.h>
+#include <Engine/Components/FreeMove.h>
+#include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
 
-void LevelParser::readEntityTargets(EntityManager * entityManager)
+void LevelParser::readEntityTargets(Level& level)
 {
 	Model *model = nullptr;
 	//Get the size of the target entities
@@ -26,7 +26,7 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 		//Every object requires a name
 		if (!target["Name"].empty() && target["Name"].is_string()) {
 			std::string name = target["Name"];
-			entity = entityManager->addTracedEntity(name);
+			entity = level.entityManager->addTracedEntity(name);
 
 			if (!target["Position"].empty()) {
 				readPosition(target, entity, position);
@@ -34,31 +34,23 @@ void LevelParser::readEntityTargets(EntityManager * entityManager)
 				readPath(target, entity, path);
 			}
 		} else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
-		// If the target is mobile
 		if (!path.empty()) {
-			PathTreader* treader = new PathTreader(entity, path);
-			treader->startTreading();
-
-			position = path.at(0).Position;
-
-			new RollNullifier(entity);
+			// The target is mobile
+			level.targetManager->addMovingTarget(entity, path);
+		} else {
+			// The target is static
+			level.targetManager->addStaticTarget(entity, position);
 		}
-
-		Transform* transform = entity->getTransform();
-
-		transform->setPosition(position);
-		transform->setScale(0.25f);
-		transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
 		entity->setModel(model);
 	}
 }
 
-void LevelParser::readEntityBoxes(EntityManager * entityManager)
+void LevelParser::readEntityBoxes(Level& level)
 {
 	Model *model = nullptr;
 	//Get the size of the target entities
@@ -76,13 +68,13 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 		//Every object requires a name
 		if (!box["Name"].empty() && box["Name"].is_string()) {
 			std::string name = box["Name"];
-			entity = entityManager->addEntity();
+			entity = level.entityManager->addEntity();
 
 			if (!box["Position"].empty()) {
 				readPosition(box, entity, position);
 			}
 		} else {
-			LOG_ERROR("%s: An object is missing a name or name is not a string", CLASS_NAME);
+			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
@@ -92,12 +84,12 @@ void LevelParser::readEntityBoxes(EntityManager * entityManager)
 	}
 }
 
-void LevelParser::readEntityWalls(EntityManager * entityManager)
+void LevelParser::readEntityWalls(Level& level)
 {
 	//Add read for walls
 }
 
-void LevelParser::readEntityFloor(EntityManager * entityManager)
+void LevelParser::readEntityFloor(Level& level)
 {
 	Model *model = nullptr;
 	model = ModelLoader::loadModel("./Game/assets/floor.fbx");
@@ -107,7 +99,7 @@ void LevelParser::readEntityFloor(EntityManager * entityManager)
 
 	json::json& floor = jsonFile["Floor"];
 
-	entity = entityManager->addEntity();
+	entity = level.entityManager->addEntity();
 
 	if (!floor["Position"].empty()) {
 		readPosition(floor, entity, position);
@@ -155,7 +147,7 @@ void LevelParser::readPath(json::json& file, Entity* entity, std::vector<KeyPoin
 			keyPoint.t = file["Path"][pointIndex]["Time"];
 		}
 		catch (const std::exception& e) {
-			LOG_ERROR("%s: at '%s' : %s", CLASS_NAME, entity->getName().c_str(), e.what());
+			LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
 			break;
 		}
 
@@ -163,7 +155,7 @@ void LevelParser::readPath(json::json& file, Entity* entity, std::vector<KeyPoin
 	}
 }
 
-void LevelParser::readEntites(std::string file, EntityManager *entityManager)
+void LevelParser::readLevel(std::string file, Level& level)
 {
 	std::ifstream iFile;
 	iFile.open(file);
@@ -177,10 +169,10 @@ void LevelParser::readEntites(std::string file, EntityManager *entityManager)
 			return;
 		}
 
-		readEntityTargets(entityManager);
-		readEntityBoxes(entityManager);
-		readEntityWalls(entityManager);
-		readEntityFloor(entityManager);
+		readEntityTargets(level);
+		readEntityBoxes(level);
+		readEntityWalls(level);
+		readEntityFloor(level);
 	}
 	else
 	{
