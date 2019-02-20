@@ -20,8 +20,8 @@ VertexBuffer::~VertexBuffer()
 void VertexBuffer::make(const void * const data, const size_t & dataSize, GLenum usage)
 {
 	bind();
+	this->dataSize = dataSize;
 	glBufferData(GL_ARRAY_BUFFER, dataSize, data, usage);
-	unbind();
 }
 
 void VertexBuffer::bind()

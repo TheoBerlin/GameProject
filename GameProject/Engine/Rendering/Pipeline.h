@@ -9,6 +9,8 @@
 
 //TEST TEST TEST REMOVE
 #include "Engine/Particle/ParticleManager.h"
+#include "Engine/Rendering/GLAbstraction/VertexArray.h"
+#include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
 
 class Entity;
 
@@ -24,7 +26,7 @@ public:
 	~Pipeline();
 
 	//PARTICLE TEST
-	Texture* drawParticle(ParticleManager& particleManager);
+	Texture* drawParticle();
 
 
 	/*
@@ -61,6 +63,8 @@ public:
 	Framebuffer* getFbo();
 
 private:
+	static const GLfloat g_vertex_buffer_data[16];
+
 	Camera * camera;
 	unsigned width, height;
 	Framebuffer fbo;
@@ -83,6 +87,10 @@ private:
 	bool p = true;
 	GLuint billboard_vertex_buffer;
 	GLuint particleDataBuffer;
+
+	VertexArray va;
+	VertexBuffer* vbBillboard;
+	VertexBuffer* vbParticle;
 
 	Model* quad;
 

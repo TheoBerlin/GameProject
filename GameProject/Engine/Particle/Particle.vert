@@ -1,8 +1,8 @@
 #version 420
 
-layout(location = 4) in vec4 vertex;
-layout(location = 5) in vec4 PosScale;
-layout(location = 6) in vec4 colour;
+layout(location = 0) in vec4 vertex;
+layout(location = 1) in vec4 PosScale;
+layout(location = 2) in vec4 colour;
 
 uniform mat4 vp;
 uniform vec3 cameraRight;

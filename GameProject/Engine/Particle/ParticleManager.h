@@ -12,9 +12,16 @@ private:
 	std::vector<ParticleEmitter*> emitters;
 
 	void updateEmitter(ParticleEmitter *emitter, float dt);
+
+	ParticleManager() = default;
+	ParticleManager(const ParticleManager& other) = delete;
 public:
+	static ParticleManager& get();
+
 	//Update all emitters
 	void update(float dt);
+
+	virtual ~ParticleManager() {}
 	/*
 		Add emitter
 	*/

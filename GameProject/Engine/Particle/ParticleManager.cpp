@@ -5,6 +5,12 @@ void ParticleManager::updateEmitter(ParticleEmitter* emitter, float dt)
 	emitter->update(dt);
 }
 
+ParticleManager & ParticleManager::get()
+{
+	static ParticleManager particleManager;
+	return particleManager;
+}
+
 void ParticleManager::update(float dt)
 {
 	//int half = std::ceil((float)emitters.size() / 2.0f);

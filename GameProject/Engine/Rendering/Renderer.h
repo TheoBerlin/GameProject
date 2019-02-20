@@ -30,11 +30,6 @@ public:
 	void push(Entity* entity);
 
 	/*
-	Push the manager to draw all particles
-	*/
-	void pushParticleManager(ParticleManager* particleManager);
-
-	/*
 	Draw all entites in the rendering list and clear it.
 	*/
 	void drawAll();

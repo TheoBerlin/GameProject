@@ -20,7 +20,7 @@ GameState::GameState() : gameLogic(&this->getEntityManager())
 
 	EventBus::get().subscribe(this, &GameState::emit);
 
-	particleManger.addEmitter(&emitter);
+	ParticleManager::get().addEmitter(&emitter);
 	emitter.setPosition(glm::vec3(0, 2.0f, -0.0f));
 	emitter.setSpread(0.0f);
 	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -80,7 +80,7 @@ void GameState::update(const float dt)
 	}
 	for (Entity* entity : entities)
 		entity->update(dt);
-	particleManger.update(dt);
+	ParticleManager::get().update(dt);
 }
 
 void GameState::updateLogic(const float dt)
@@ -95,8 +95,6 @@ void GameState::render()
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
-
-	renderer.pushParticleManager(&this->particleManger);
 
 	//for (Entity* entity : entities)
 	

@@ -28,11 +28,6 @@ void Renderer::push(Entity * entity)
 	this->renderingList.push_back(entity);
 }
 
-void Renderer::pushParticleManager(ParticleManager * particleManager)
-{
-	this->particleManager = particleManager;
-}
-
 void Renderer::drawAll()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -47,7 +42,7 @@ void Renderer::drawAll()
 	//*/
 	postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
 
-	tex = this->pipeline.drawParticle(*particleManager);
+	tex = this->pipeline.drawParticle();
 	///*
 	//	Draw texture of scene to quad for postprocessing
 	//*/
@@ -88,7 +83,7 @@ void Renderer::drawAllInstanced()
 		this->pipeline.drawInstanced(model);
 	}
 
-	pipeline.drawParticle(*particleManager);
+	pipeline.drawParticle();
 	
 	postProcessTexture = pipeline.getFbo()->getColorTexture(0);
 	tex = pipeline.getFbo()->getColorTexture(1);

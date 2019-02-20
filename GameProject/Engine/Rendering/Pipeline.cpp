@@ -4,6 +4,13 @@
 #include "Engine/Entity/Entity.h"
 #include "Engine/Events/EventBus.h"
 
+const GLfloat Pipeline::g_vertex_buffer_data[] = {
+	-0.5f, -0.5f, 0.0f,
+	0.5f, -0.5f, 0.0f,
+	-0.5f, 0.5f, 0.0f,
+	0.5f, 0.5f, 0.0f,
+};
+
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
@@ -27,6 +34,22 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
+
+
+	//Particle init
+	this->va.bind();
+
+	this->vbBillboard = new VertexBuffer(g_vertex_buffer_data, sizeof(g_vertex_buffer_data), GL_STATIC_DRAW);
+	AttributeLayout layout;
+	layout.push(3); // Vertex
+	this->va.addBuffer(this->vbBillboard, layout);
+
+	this->vbParticle = new VertexBuffer(NULL, ParticleManager::get().getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
+	AttributeLayout layout2;
+	layout2.push(4, 1); // Pos / scale
+	layout2.push(4, 1); // Colour
+	this->va.addBuffer(this->vbParticle, layout2);
+	//Particle init
 
 
 	this->uniformBuffers.resize(7);
@@ -67,53 +90,13 @@ Pipeline::~Pipeline()
 	this->uniformBuffers.clear();
 }
 
-Texture* Pipeline::drawParticle(ParticleManager& particleManager)
+Texture* Pipeline::drawParticle()
 {
-	static const GLfloat g_vertex_buffer_data[] = {
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f,
-		-0.5f, 0.5f, 0.0f,
-		0.5f, 0.5f, 0.0f,
-	};
-	
 	this->particleShader->bind();
-	if (p) {
-
-		glGenBuffers(1, &billboard_vertex_buffer);
-		glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
-
-		glGenBuffers(1, &particleDataBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-		// Initialize with empty (NULL) buffer : it will be updated later, each frame.
-		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW);
+	if (ParticleManager::get().getParticleCount() != 0) {
+		this->vbParticle->make(NULL, ParticleManager::get().getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
+		ParticleManager::get().updateBuffer();
 	}
-	p = false;
-	if (particleManager.getParticleCount() != 0) {
-		glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-		glBufferData(GL_ARRAY_BUFFER, particleManager.getMaxParticles() * sizeof(Particle), NULL, GL_STREAM_DRAW);
-		particleManager.updateBuffer();
-	}
-	
-	// Quad
-	glEnableVertexAttribArray(4);
-	glBindBuffer(GL_ARRAY_BUFFER, billboard_vertex_buffer);
-	glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-
-	// Position + Scale
-	glEnableVertexAttribArray(5);
-	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)0);
-
-	// Colour
-	glEnableVertexAttribArray(6);
-	glBindBuffer(GL_ARRAY_BUFFER, particleDataBuffer);
-	glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (void*)(sizeof(glm::vec3) + sizeof(float)));
-
-	glVertexAttribDivisor(4, 0); // Reuse quad for every vertex
-	glVertexAttribDivisor(5, 1); // Use one Position + scale per quad
-	glVertexAttribDivisor(6, 1); // Use one colour per quad
-
 
 	this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	this->particleShader->setUniform3f("cameraUp", this->camera->getView()[0][1], this->camera->getView()[1][1], this->camera->getView()[2][1]);
@@ -121,12 +104,8 @@ Texture* Pipeline::drawParticle(ParticleManager& particleManager)
 
 	glDepthMask(GL_TRUE);
 
-	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, particleManager.getParticleCount());
-
-
-	glDisableVertexAttribArray(4);
-	glDisableVertexAttribArray(5);
-	glDisableVertexAttribArray(6);
+	this->va.bind();
+	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticleManager::get().getParticleCount());
 
 	this->particleShader->unbind();
 	
