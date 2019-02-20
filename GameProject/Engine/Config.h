@@ -2,6 +2,9 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+// Debug openGL
+#define GL_DEBUG_LAYER
+
 // Common defines
 #define EPSILON 0.0000001
 
