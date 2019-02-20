@@ -61,26 +61,30 @@ float SoundManager::getEffectVolume() const
 	return effectVolume;
 }
 
-void SoundManager::setAmbientVolume(int volume)
+void SoundManager::setAmbientVolume(float volume)
 {
 	ambientVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i].getSoundType() == SOUND_AMBIENT)
-			sounds[i].setVolume((masterVolume + ambientVolume) / 200);
+			sounds[i].setVolume(masterVolume * ambientVolume);
 	}
 }
 
-unsigned int SoundManager::getAmbientVolume() const
+float SoundManager::getAmbientVolume() const
 {
 	return ambientVolume;
 }
 
-void SoundManager::setMiscVolume(int volume)
+void SoundManager::setMiscVolume(float volume)
 {
 	miscVolume = volume;
 }
 
-unsigned int SoundManager::getMiscVolume() const
+float SoundManager::getMiscVolume() const
 {
 	return musicVolume;
+	for (unsigned int i = 0; i < sounds.size(); i++) {
+		if (sounds[i].getSoundType() == SOUND_MISC)
+			sounds[i].setVolume(masterVolume * miscVolume);
+	}
 }

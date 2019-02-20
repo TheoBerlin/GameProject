@@ -16,6 +16,7 @@ private:
 	ALuint buffer;
 
 	SoundType type;
+	float volume;
 
 	unsigned int freq;
 	unsigned short int channels;
