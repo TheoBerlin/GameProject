@@ -4,6 +4,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/GameLogic/AimPhase.h>
+#include <Game/Components/OversightController.h>
 #include <Utils/Logger.h>
 
 OverviewPhase::OverviewPhase(AimPhase* aimPhase)
@@ -37,6 +38,9 @@ void OverviewPhase::commonSetup()
 
 	Camera* camera = new Camera(overviewCamera, "Camera", { 0.0f, 0.5f, -2.0f });
 	camera->init();
+
+    // Add oversight controller
+    OversightController* camOversight = new OversightController(overviewCamera);
 
 	// Reset targets
 	level.targetManager->resetTargets();

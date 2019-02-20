@@ -1,16 +1,7 @@
 #include "GameLogic.h"
 
-#include "../Engine/Rendering/Display.h"
-#include "../Engine/Rendering/Renderer.h"
-#include "../Engine/Components/Component.h"
-#include "../Engine/Components/Camera.h"
-#include "../Engine/AssetManagement/ModelLoader.h"
-#include "Engine/Events/EventBus.h"
-#include <Game/Components/ArrowGuider.h>
-#include <Game/Components/PathTreader.h>
+#include <Engine/Events/EventBus.h>
 #include <Game/GameLogic/OverviewPhase.h>
-#include <Game/GameLogic/GuidingPhase.h>
-#include <Utils/Logger.h>
 
 GameLogic::GameLogic()
 {
