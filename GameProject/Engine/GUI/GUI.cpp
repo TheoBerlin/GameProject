@@ -11,9 +11,7 @@ GUI::GUI()
 
 GUI::~GUI()
 {
-	for (Panel* panel : this->panelList)
-		delete panel;
-	this->panelList.clear();
+	clearAllPanels();
 }
 
 void GUI::addPanel(Panel * panel)
@@ -81,4 +79,11 @@ Panel * GUI::getPanel(unsigned int index)
 std::vector<Panel*>& GUI::getPanelList()
 {
 	return this->panelList;
+}
+
+void GUI::clearAllPanels()
+{
+	for (Panel* panel : this->panelList)
+		delete panel;
+	this->panelList.clear();
 }

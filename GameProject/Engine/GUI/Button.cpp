@@ -41,14 +41,14 @@ void Button::setPressedColor(const glm::vec4 & color)
 	this->pressedColor = color;
 }
 
-bool Button::isActivated() const
-{
-	return this->active;
-}
-
 void Button::setCallback(std::function<void(void)> func)
 {
 	this->func = func;
+}
+
+void Button::removeCallback()
+{
+	this->func = [](void)->void {};
 }
 
 void Button::mouseClickCallback(MouseClickEvent * evnt)
@@ -61,7 +61,6 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 	}
 	else if (this->isHovering)
 	{
-		this->active = true;
 		if(this->func)
 			this->func();
 		toNormalStyle();
@@ -79,7 +78,6 @@ void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 	else
 	{
 		this->isHovering = false; 
-		this->active = false;
 		toNormalStyle();
 	}
 }

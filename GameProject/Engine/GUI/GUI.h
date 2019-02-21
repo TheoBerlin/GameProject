@@ -163,6 +163,11 @@ public:
 	*/
 	std::vector<Panel*>& getPanelList();
 
+	/*
+	Remove all panels from the list.
+	*/
+	void clearAllPanels();
+
 private:
 	std::vector<Panel*> panelList;
 };
