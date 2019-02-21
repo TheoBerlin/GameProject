@@ -71,3 +71,11 @@ struct PhaseChangeEvent : public Event
 	PhaseChangeEvent(Phase* newPhase) : newPhase{ newPhase } {};
 	Phase* newPhase;
 };
+
+class Entity;
+
+struct CameraTransitionEvent : public Event
+{
+	CameraTransitionEvent(Entity* host) : host{ host } {};
+	Entity* host;
+};
