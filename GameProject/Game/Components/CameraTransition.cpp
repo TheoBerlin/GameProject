@@ -5,13 +5,29 @@
 #include <Engine/Events/Events.h>
 #include <glm/gtx/quaternion.hpp>
 
-CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength)
+CameraTransition::CameraTransition(Entity* host)
     :Component(host, "CameraTransition"),
-    isTransitioning(true),
-    transitionTime(0.0f),
-    transitionLength(transitionLength),
-    endPos(newPos)
+    isTransitioning(false)
 {
+}
+
+CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength)
+    :Component(host, "CameraTransition")
+{
+    setDestination(newPos, newForward, transitionLength);
+}
+
+CameraTransition::~CameraTransition()
+{
+}
+
+void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength)
+{
+    this->isTransitioning = true;
+    this->transitionTime = 0.0f;
+    this->transitionLength = transitionLength;
+    this->endPos = newPos;
+
     Transform* transform = host->getTransform();
 
     this->beginPos = transform->getPosition();
@@ -21,10 +37,6 @@ CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const 
     this->beginQuat = transform->getRotationQuat();
 
 	this->endQuat = glm::rotation(transform->getDefaultForward(), newForward);
-}
-
-CameraTransition::~CameraTransition()
-{
 }
 
 void CameraTransition::update(const float& dt)
@@ -38,10 +50,8 @@ void CameraTransition::update(const float& dt)
     if (transitionTime > transitionLength) {
         isTransitioning = false;
 
-        // Publish camera transition done event
-        CameraTransitionEvent* event = new CameraTransitionEvent(host);
-
-        EventBus::get().publish(event);
+        // Publish camera transition event
+        EventBus::get().publish(&CameraTransitionEvent(host));
 
 		return;
     }
@@ -59,4 +69,5 @@ void CameraTransition::update(const float& dt)
     Transform* transform = host->getTransform();
 
     transform->setForward(currentRotationQuat * host->getTransform()->getDefaultForward());
+	transform->setPosition(currentPosition);
 }

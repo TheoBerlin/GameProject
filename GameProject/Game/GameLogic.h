@@ -18,12 +18,10 @@ public:
 private:
 	void changePhaseCallback(PhaseChangeEvent * event);
 
-	// Pass through input to the current phase
-	void handleKeyInput(KeyEvent* event);
-	void handleMouseClick(MouseClickEvent* event);
+	// Used for camera transitions
+	Entity* phaseTransitionEntity;
 
 	Level level;
 
 	Phase* phase;
 };
-

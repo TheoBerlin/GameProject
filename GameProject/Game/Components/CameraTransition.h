@@ -7,8 +7,11 @@
 class CameraTransition : public Component
 {
 public:
+    CameraTransition(Entity* host);
     CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength);
     ~CameraTransition();
+
+    void setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength);
 
     void update(const float& dt);
 private:

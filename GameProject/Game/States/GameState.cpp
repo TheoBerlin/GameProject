@@ -10,6 +10,7 @@
 #include <Engine/InputHandler.h>
 
 #include <Game/GameLogic/TargetManager.h>
+#include <Utils/Logger.h>
 
 GameState::GameState()
 {
@@ -60,8 +61,10 @@ void GameState::update(const float dt)
 {
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
-	for (Entity* entity : entities)
-		entity->update(dt);
+
+	for (unsigned int i = 0; i < entities.size(); i += 1) {
+		entities[i]->update(dt);
+	}
 }
 
 void GameState::updateLogic(const float dt)

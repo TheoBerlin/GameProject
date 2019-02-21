@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Engine/Events/Events.h>
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
 
@@ -26,6 +25,4 @@ private:
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
-
-    Entity* transitionEntity;
 };

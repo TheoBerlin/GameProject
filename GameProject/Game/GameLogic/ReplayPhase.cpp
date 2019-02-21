@@ -1,13 +1,11 @@
 #include "ReplayPhase.h"
 
 #include <Engine/AssetManagement/ModelLoader.h>
-#include <Engine/Components/Camera.h>
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
-#include <Game/Components/CameraTransition.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/AimPhase.h>
@@ -25,9 +23,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     replayArrow->getTransform()->setPosition(level.player.arrowCamera.position);
 	replayArrow->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
-	// Stop arrow guider and copy arrow path from guider to path treader
+	// Copy arrow path from arrow guider to path treader
     ArrowGuider* oldArrowGuider = guidingPhase->getArrowGuider();
-    oldArrowGuider->stopGuiding();
 
     PathTreader* arrow = new PathTreader(replayArrow, oldArrowGuider->getPath());
     arrow->startTreading();
@@ -58,6 +55,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	level.targetManager->resetTargets();
 
 	Display::get().getRenderer().setActiveCamera(camera);
+
+    EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
 }
 
 Entity* ReplayPhase::getFreeCam() const
@@ -82,6 +81,8 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_2) {
+        EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+
         // Begin transition to aim phase
         freeCam->removeComponent(freeMove->getName());
 
@@ -90,7 +91,15 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
         glm::vec3 newForward = level.player.arrowCamera.direction;
         float transitionLength = 2.0f;
 
-        CameraTransition* camTransition = new CameraTransition(freeCam, newPos, newForward, transitionLength);
+        glm::vec3 currentPosition = freeCam->getTransform()->getPosition();
+        glm::vec3 currentForward = freeCam->getTransform()->getForward();
+
+        transitionEntity->getTransform()->setPosition(currentPosition);
+        transitionEntity->getTransform()->setForward(currentForward);
+
+        transitionComponent->setDestination(newPos, newForward, transitionLength);
+
+        Display::get().getRenderer().setActiveCamera(transitionCam);
 
         EventBus::get().subscribe(this, &ReplayPhase::transitionToAim);
     }
@@ -98,6 +107,8 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
 void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
 {
+    EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
+
     Phase* guidingPhase = new AimPhase(this);
     changePhase(guidingPhase);
 }
