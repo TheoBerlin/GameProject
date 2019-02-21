@@ -1,18 +1,62 @@
 #include "SoundManager.h"
 
-void SoundManager::init(float masterVolume, float musicVolume, float effectVolume, float ambientVolume, float miscVolume)
+bool SoundManager::errorCheck()
 {
-	this->masterVolume = masterVolume;
-	this->musicVolume = musicVolume;
-	this->effectVolume = effectVolume;
-	this->ambientVolume = ambientVolume;
-	this->miscVolume = miscVolume;
+	bool error = true;
+	ALCenum e;
+
+	e = alGetError();
+	if (e != AL_NO_ERROR) {
+		std::cout << "OpenAL error with error code: " << e << std::endl;
+		error = false;
+	}
+
+	return error;
+}
+
+SoundManager & SoundManager::get()
+{
+	static SoundManager soundManager;
+	return soundManager;
 }
 
 void SoundManager::addSound(Sound & sound, SoundType type)
 {
 	sound.setSoundType(type);
 	sounds.push_back(sound);
+	switch (sound.getSoundType()) {
+	case(SOUND_MUSIC): sound.updateSound(masterVolume * musicVolume); break;
+	case(SOUND_EFFECT): sound.updateSound(masterVolume * effectVolume); break;
+	case(SOUND_AMBIENT): sound.updateSound(masterVolume * ambientVolume); break;
+	case(SOUND_MISC): sound.updateSound(masterVolume * miscVolume); break;
+	}
+}
+
+void SoundManager::setListenerPosition(glm::vec3 position)
+{
+	alListener3f(AL_POSITION, position.x, position.y, position.z);
+	errorCheck();
+}
+
+glm::vec3 SoundManager::getListenerPosition() const
+{
+	glm::vec3 position;
+	alGetListener3f(AL_POSITION, &position.x, &position.y, &position.z);
+	return position;
+}
+
+void SoundManager::setListenerOrientation(glm::vec3 at, glm::vec3 up)
+{
+	ALfloat orientation[6] = { at.x, at.y, at.z, up.x, up.y, up.z };
+	alListenerfv(AL_ORIENTATION, orientation);
+	errorCheck();
+}
+
+glm::vec3 SoundManager::getListenerOrientation() const
+{
+	glm::vec3 orientation;
+	alGetListener3f(AL_ORIENTATION, &orientation.x, &orientation.y, &orientation.z);
+	return orientation;
 }
 
 void SoundManager::setMasterVolume(float volume)
@@ -20,10 +64,10 @@ void SoundManager::setMasterVolume(float volume)
 	this->masterVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		switch (sounds[i].getSoundType()) {
-		case(SOUND_MUSIC): sounds[i].setVolume(masterVolume * musicVolume); break;
-		case(SOUND_EFFECT): sounds[i].setVolume(masterVolume * effectVolume); break;
-		case(SOUND_AMBIENT): sounds[i].setVolume(masterVolume * ambientVolume); break;
-		case(SOUND_MISC): sounds[i].setVolume(masterVolume * miscVolume); break;
+		case(SOUND_MUSIC): sounds[i].updateSound(masterVolume * musicVolume); break;
+		case(SOUND_EFFECT): sounds[i].updateSound(masterVolume * effectVolume); break;
+		case(SOUND_AMBIENT): sounds[i].updateSound(masterVolume * ambientVolume); break;
+		case(SOUND_MISC): sounds[i].updateSound(masterVolume * miscVolume); break;
 		}
 	}
 }
@@ -38,7 +82,7 @@ void SoundManager::setMusicVolume(float volume)
 	musicVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i].getSoundType() == SOUND_MUSIC)
-			sounds[i].setVolume(masterVolume * musicVolume);
+			sounds[i].updateSound(masterVolume * musicVolume);
 	}
 }
 
@@ -52,7 +96,7 @@ void SoundManager::setEffectVolume(float volume)
 	effectVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i].getSoundType() == SOUND_EFFECT)
-			sounds[i].setVolume(masterVolume * effectVolume);
+			sounds[i].updateSound(masterVolume * effectVolume);
 	}
 }
 
@@ -66,7 +110,7 @@ void SoundManager::setAmbientVolume(float volume)
 	ambientVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i].getSoundType() == SOUND_AMBIENT)
-			sounds[i].setVolume(masterVolume * ambientVolume);
+			sounds[i].updateSound(masterVolume * ambientVolume);
 	}
 }
 
@@ -78,13 +122,14 @@ float SoundManager::getAmbientVolume() const
 void SoundManager::setMiscVolume(float volume)
 {
 	miscVolume = volume;
+	for (unsigned int i = 0; i < sounds.size(); i++) {
+		if (sounds[i].getSoundType() == SOUND_MISC)
+			sounds[i].updateSound(masterVolume * miscVolume);
+	}
 }
 
 float SoundManager::getMiscVolume() const
 {
 	return musicVolume;
-	for (unsigned int i = 0; i < sounds.size(); i++) {
-		if (sounds[i].getSoundType() == SOUND_MISC)
-			sounds[i].setVolume(masterVolume * miscVolume);
-	}
+
 }

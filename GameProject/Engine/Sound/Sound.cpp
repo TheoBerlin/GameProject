@@ -2,13 +2,16 @@
 
 bool Sound::errorCheck()
 {
-	ALCenum error;
+	bool error = true;
+	ALCenum e;
 
-	error = alGetError();
-	if (error != AL_NO_ERROR)
-		std::cout << error << std::endl;
+	e = alGetError();
+	if (e != AL_NO_ERROR) {
+		std::cout << "OpenAL error with error code: " << e << std::endl;
+		error = false;
+	}
 
-	return false;
+	return error;
 }
 
 Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, bool loop)
@@ -18,6 +21,7 @@ Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, 
 
 	alSourcef(source, AL_PITCH, pitch);
 	errorCheck();
+	this->volume = volume;
 	alSourcef(source, AL_GAIN, volume);
 	errorCheck();
 	alSource3f(source, AL_POSITION, position.x, position.y, position.z);
@@ -25,6 +29,8 @@ Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, 
 	alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 	errorCheck();
 	alSourcei(source, AL_LOOPING, loop);
+	errorCheck();
+	alDistanceModel(AL_LINEAR_DISTANCE);
 	errorCheck();
 
 	alGenBuffers((ALuint)1, &buffer);
@@ -85,6 +91,7 @@ void Sound::loadSound(std::string fileName)
 void Sound::playSound()
 {
 	alSourcePlay(source);
+	errorCheck();
 }
 
 void Sound::setSoundType(SoundType type)
@@ -96,22 +103,10 @@ SoundType Sound::getSoundType() const
 {
 	return type;
 }
-
-void Sound::setListener(const glm::vec3 listener)
-{
-	alListener3f(source, listener.x, listener.y, listener.z);
-}
-
-glm::vec3 Sound::getListener() const
-{
-	glm::vec3 position;
-	alGetListener3f(source, &position.x, &position.y, &position.z);
-	return position;
-}
-
 void Sound::setPitch(const float pitch)
 {
 	alSourcef(source, AL_PITCH, pitch);
+	errorCheck();
 }
 
 float Sound::getPitch() const
@@ -124,6 +119,7 @@ float Sound::getPitch() const
 void Sound::setVolume(const float volume)
 {
 	alSourcef(source, AL_GAIN, volume);
+	errorCheck();
 }
 
 float Sound::getVolume() const
@@ -135,7 +131,8 @@ float Sound::getVolume() const
 
 void Sound::setPosition(const glm::vec3 position)
 {
-	alSource3f(source, AL_GAIN, position.x, position.y, position.z);
+	alSource3f(source, AL_POSITION, position.x, position.y, position.z);
+	errorCheck();
 }
 
 glm::vec3 Sound::getPosition() const
@@ -148,6 +145,7 @@ glm::vec3 Sound::getPosition() const
 void Sound::setVelocity(const glm::vec3 position)
 {
 	alSource3f(source, AL_VELOCITY, position.x, position.y, position.z);
+	errorCheck();
 }
 
 glm::vec3 Sound::getVelocity() const
@@ -160,6 +158,7 @@ glm::vec3 Sound::getVelocity() const
 void Sound::setLoopState(const bool loop)
 {
 	alSourcei(source, AL_LOOPING, loop);
+	errorCheck();
 }
 
 bool Sound::getLoopState() const
@@ -175,6 +174,7 @@ bool Sound::getLoopState() const
 void Sound::setSourceRelative(const bool relative)
 {
 	alSourcei(source, AL_SOURCE_RELATIVE, relative);
+	errorCheck();
 }
 
 bool Sound::getSourceRelative() const
@@ -185,4 +185,10 @@ bool Sound::getSourceRelative() const
 		return true;
 	if (ret == 0)
 		return false;
+}
+
+void Sound::updateSound(float volume)
+{
+	alSourcef(source, AL_GAIN, this->volume * volume);
+	errorCheck();
 }

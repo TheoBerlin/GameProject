@@ -34,8 +34,6 @@ public:
 	void setSoundType(SoundType type);
 	SoundType getSoundType() const;
 
-	void setListener(const glm::vec3 listener);
-	glm::vec3 getListener() const;
 	//Pitch multiplier should always positive value
 	void setPitch(const float pitch);
 	float getPitch() const;
@@ -52,4 +50,6 @@ public:
 	//Sets the sounds source to be relavtive to listener
 	void setSourceRelative(const bool relative);
 	bool getSourceRelative() const;
+	//Updates volume of sound without affecting volume variable. Should exclusivly be used by sound manager
+	void updateSound(float volume);
 };

@@ -3,6 +3,7 @@
 #include <Engine/States/State.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
+#include "Engine/Sound/SoundManager.h"
 
 class GameState : public State
 {

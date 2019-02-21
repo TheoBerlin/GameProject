@@ -62,6 +62,11 @@ void GameState::update(const float dt)
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->update(dt);
+	if (entityManager.getTracedEntity("Player") != nullptr) {
+		SoundManager::get().setListenerPosition(entityManager.getTracedEntity("Player")->getTransform()->getPosition());
+		SoundManager::get().setListenerOrientation(entityManager.getTracedEntity("Player")->getTransform()->getForward(), entityManager.getTracedEntity("Player")->getTransform()->getUp());
+		std::cout << SoundManager::get().getListenerPosition().x << ":" << SoundManager::get().getListenerPosition().y << ":" << SoundManager::get().getListenerPosition().z << std::endl;
+	}
 }
 
 void GameState::updateLogic(const float dt)

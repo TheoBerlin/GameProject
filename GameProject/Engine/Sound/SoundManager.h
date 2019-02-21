@@ -3,16 +3,31 @@
 #include "Sound.h"
 #include <vector>
 
-static class SoundManager {
+class SoundManager {
 private:
-	static std::vector<Sound> sounds;
+	std::vector<Sound> sounds;
 
 	//Volume between 0.0 and 1.0
-	float masterVolume, musicVolume, effectVolume, ambientVolume, miscVolume;
-public:
-	void init(float masterVolume, float musicVolume, float effectVolume, float ambientVolume, float miscVolume);
+	float masterVolume = 1.0f;
+	float musicVolume = 1.0f;
+	float effectVolume = 1.0f;
+	float ambientVolume = 1.0f;
+	float miscVolume = 1.0f;
 
-	static void addSound(Sound &sound, SoundType type);
+	bool errorCheck();
+
+	SoundManager() = default;
+	SoundManager(const SoundManager& other) = delete;
+public:
+	static SoundManager& get();
+	virtual ~SoundManager() {};
+
+	void addSound(Sound &sound, SoundType type);
+
+	void setListenerPosition(glm::vec3 position);
+	glm::vec3 getListenerPosition() const;
+	void setListenerOrientation(glm::vec3 at, glm::vec3 up);
+	glm::vec3 getListenerOrientation() const;
 
 	void setMasterVolume(float volume);
 	float getMasterVolume() const;

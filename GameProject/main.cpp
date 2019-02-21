@@ -13,6 +13,7 @@
 
 #include "Engine/Sound/SoundContext.h"
 #include "Engine/Sound/Sound.h"
+#include "Engine/Sound/SoundManager.h"
 #include "Utils/Settings.h"
 
 int main() {
@@ -25,6 +26,10 @@ int main() {
 	sound.setLoopState(true);
 	sound.setPitch(1.25f);
 	sound.playSound();
+	sound.setPosition(glm::vec3(0, 0, -10));
+	SoundManager::get().addSound(sound, SOUND_MUSIC);
+	SoundManager::get().setMasterVolume(0.25f);
+	SoundManager::get().setEffectVolume(0.25f);
 
 	Game game;
 	game.start();
