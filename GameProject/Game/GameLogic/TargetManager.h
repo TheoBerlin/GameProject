@@ -1,9 +1,12 @@
 #pragma once
 
-#include <Engine/Entity/Entity.h>
-#include <Game/Components/PathTreader.h>
-#include <Game/Components/RollNullifier.h>
 #include <vector>
+#include "glm/glm.hpp"
+
+class Entity;
+class PathTreader;
+class RollNullifier;
+struct KeyPoint;
 
 struct MovingTarget {
     PathTreader* pathTreader;

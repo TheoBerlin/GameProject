@@ -42,6 +42,11 @@ glm::vec3 Transform::getRotation() const
 	return glm::eulerAngles(rotationQuat);
 }
 
+glm::quat Transform::getRotationQuat() const
+{
+	return this->rotationQuat;
+}
+
 glm::vec3 Transform::getScale() const
 {
 	return this->scaleFactor;
@@ -60,6 +65,21 @@ glm::vec3 Transform::getRight() const
 glm::vec3 Transform::getUp() const
 {
 	return this->u;
+}
+
+glm::vec3 Transform::getDefaultForward() const
+{
+	return this->defaultForward;
+}
+
+void Transform::setRotationQuat(const glm::quat& newQuat)
+{
+	this->rotationQuat = newQuat;
+
+	// Apply rotation
+	this->f = newQuat * defaultForward;
+	this->u = newQuat * GLOBAL_UP_VECTOR;
+	this->r = glm::normalize(glm::cross(this->f, this->u));
 }
 
 bool Transform::getStatus()

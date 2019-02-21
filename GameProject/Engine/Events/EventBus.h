@@ -73,7 +73,7 @@ inline void EventBus::publish(EventType * evnt)
 				break;
 			}
 		}
-		
+
 		if (shouldBreak)
 			break;
 

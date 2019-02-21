@@ -3,7 +3,6 @@
 #include <fstream>
 
 #include "glm/glm.hpp"
-#include "../../Utils/Logger.h"
 #include "../../../include/OpenAL/al.h"
 #include "../../../include/OpenAL/alc.h"
 

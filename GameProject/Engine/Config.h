@@ -2,10 +2,14 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
-#define IMGUI
-
 // Debug openGL
 #define GL_DEBUG_LAYER
+
+// Define IMGUI
+#define IMGUI
+
+//Debug defines
+#define ENABLE_COLLISION_BOXES
 
 // Common defines
 #define EPSILON 0.0000001
