@@ -35,9 +35,11 @@ struct WindowResizeEvent : public Event
 
 struct MouseMoveEvent : public Event
 {
-	MouseMoveEvent(double moveX, double moveY) : moveX{ moveX }, moveY{ moveY } {};
-	double moveX;
-	double moveY;
+	MouseMoveEvent(int moveX, int moveY, int travelX, int travelY) : moveX{ moveX }, moveY{ moveY }, travelX{ travelX }, travelY{ travelY } {};
+	int moveX;
+	int moveY;
+	int travelX;
+	int travelY;
 };
 
 struct MouseClickEvent : public Event
@@ -59,4 +61,13 @@ struct PlayerCollisionEvent : public Event
 struct ResetEvent : public Event
 {
 	ResetEvent() {};
+};
+
+
+class Phase;
+
+struct PhaseChangeEvent : public Event
+{
+	PhaseChangeEvent(Phase* newPhase) : newPhase{ newPhase } {};
+	Phase* newPhase;
 };

@@ -20,6 +20,13 @@ Texture* TextureManager::loadTexture(const std::string& fileName, TextureType ty
 	// Load texture from disc and stor the data with openGL.
 	Texture* newTexture = new Texture(fileName, type);
 
+	// Check if texture was loaded.
+	if (newTexture->hasLoadedData() == false)
+	{
+		delete newTexture;
+		return nullptr;
+	}
+
     // Store the new texture in the texture map
     loadedTextures[fileName] = newTexture;
 

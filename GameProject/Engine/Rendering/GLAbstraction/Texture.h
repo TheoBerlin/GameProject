@@ -123,6 +123,11 @@ public:
 	Get the format of the data which was passed to the texture.
 	*/
 	GLuint getFormat() const;
+	
+	/*
+	Return true if the data was loaded correctly, otherwise false.
+	*/
+	bool hasLoadedData() const;
 
 	void bind();
 	void unbind();
@@ -142,4 +147,6 @@ private:
 
 	unsigned int width;
 	unsigned int height;
+
+	bool loaded;
 };

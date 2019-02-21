@@ -91,24 +91,13 @@ void Transform::rotate(const glm::vec3& rotation)
 void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
 	if(rotation != glm::vec3(0.0f)) {
-		glm::mat4 rotMat = glm::mat4(1);
+		position -= rotationCenter;
 
-		//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
-		rotMat = glm::translate(rotMat, rotationCenter - position);
+		position = glm::quat(rotation) * position;
 
-		if (glm::abs(rotation.x) > 0) {
-			rotMat = glm::rotate(rotMat, rotation.x, glm::vec3(1, 0, 0));
-		}
-		if (glm::abs(rotation.y) > 0) {
-			rotMat = glm::rotate(rotMat, rotation.y, glm::vec3(0, 1, 0));
-		}
-		if (glm::abs(rotation.z) > 0) {
-			rotMat = glm::rotate(rotMat, rotation.z, glm::vec3(0, 0, 1));
-		}
+		position += rotationCenter;
 
-		rotMat = glm::translate(rotMat, position - rotationCenter);
-		position = (rotMat * glm::vec4(position, 1.0f)).xyz();
-		this->isUpdated = true;
+		isUpdated = true;
 	}
 }
 
@@ -193,10 +182,10 @@ void Transform::setForward(const glm::vec3 & forward)
 	float cosAngle = glm::dot(normForward, this->f);
 	glm::quat rotQuat = glm::quat_cast(glm::mat4(1));
 
-	if (cosAngle >= 1.0f - FLT_EPSILON) {
+	if (cosAngle >= 1.0f - FLT_EPSILON * 10.0f) {
 		// The new forward is identical to the old one, do nothing
 		return;
-	} else if (cosAngle <= -1.0f + FLT_EPSILON) {
+	} else if (cosAngle <= -1.0f + FLT_EPSILON * 10.0f) {
 		// The new forward is parallell to the old one, create a 180 degree rotation quarternion
 		// around any axis
 		rotQuat = glm::angleAxis(glm::pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
@@ -236,4 +225,10 @@ void Transform::rotate(const float yaw, const float pitch, const float roll)
 	rotationQuat = rollQuat * pitchQuat * yawQuat * rotationQuat;
 
 	this->isUpdated = true;
+}
+
+void Transform::resetRoll()
+{
+	this->r = glm::normalize(glm::vec3(r.x, 0.0f, r.z));
+	this->u = glm::cross(this->r, this->f);
 }

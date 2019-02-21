@@ -20,8 +20,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
+    <ClCompile Include="Engine\GUI\Button.cpp" />
     <ClCompile Include="Engine\GUI\Font.cpp" />
     <ClCompile Include="Engine\GUI\FontManager.cpp" />
+    <ClCompile Include="Engine\GUI\GUI.cpp" />
     <ClCompile Include="Engine\GUI\Panel.cpp" />
     <ClCompile Include="Engine\GUI\Text.cpp" />
     <ClCompile Include="Engine\Components\CollisionComponent.cpp" />
@@ -62,9 +64,15 @@
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
+    <ClCompile Include="Game\Components\OversightController.cpp" />
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
+    <ClCompile Include="Game\GameLogic\AimPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\GuidingPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\OverviewPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\Phase.cpp" />
+    <ClCompile Include="Game\GameLogic\ReplayPhase.cpp" />
     <ClCompile Include="Game\GameLogic\TargetManager.cpp" />
     <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
@@ -89,8 +97,10 @@
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\Events\EventBus.h" />
+    <ClInclude Include="Engine\GUI\Button.h" />
     <ClInclude Include="Engine\GUI\Font.h" />
     <ClInclude Include="Engine\GUI\FontManager.h" />
+    <ClInclude Include="Engine\GUI\GUI.h" />
     <ClInclude Include="Engine\GUI\Panel.h" />
     <ClInclude Include="Engine\GUI\Text.h" />
     <ClInclude Include="Engine\Imgui\imconfig.h" />
@@ -130,8 +140,14 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
+    <ClInclude Include="Game\GameLogic\AimPhase.h" />
+    <ClInclude Include="Game\GameLogic\GuidingPhase.h" />
+    <ClInclude Include="Game\GameLogic\OverviewPhase.h" />
+    <ClInclude Include="Game\GameLogic\Phase.h" />
+    <ClInclude Include="Game\GameLogic\ReplayPhase.h" />
     <ClInclude Include="Game\GameLogic\TargetManager.h" />
     <ClInclude Include="Game\Level\Level.h" />
     <ClInclude Include="Game\Level\LevelParser.h" />
