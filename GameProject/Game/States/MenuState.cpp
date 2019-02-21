@@ -70,5 +70,6 @@ void MenuState::render()
 	guiRenderer.draw(this->panel);
 
 	guiRenderer.drawBaked(test, -1.0f, 0.5f);
+	
 	//guiRenderer.draw(test, -1.0, -0.5, 2.0f);
 }
