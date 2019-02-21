@@ -168,6 +168,8 @@ public:
 	*/
 	void clearAllPanels();
 
+	void setActive(bool active);
+
 private:
 	std::vector<Panel*> panelList;
 };

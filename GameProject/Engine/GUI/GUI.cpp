@@ -87,3 +87,9 @@ void GUI::clearAllPanels()
 		delete panel;
 	this->panelList.clear();
 }
+
+void GUI::setActive(bool active)
+{
+	for (Panel* panel : this->panelList)
+		panel->setActive(active);
+}

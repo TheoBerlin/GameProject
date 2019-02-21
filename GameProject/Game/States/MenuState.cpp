@@ -33,6 +33,7 @@ MenuState::MenuState() : State()
 	this->button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 	this->button->addText("Play", "arialBig");
 	this->button->setCallback([this](void) {
+		//this->getGUI().removePanel(this->button);
 		this->pushState(new GameState());
 	});
 	gui.addPanel(this->button);
