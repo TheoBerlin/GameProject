@@ -240,7 +240,7 @@ protected:
 	std::vector<Panel*> children;
 	std::vector<std::pair<Text*, glm::uvec2>> textList;
 
-	Texture bakedTexture;
+	Texture* bakedTexture;
 	Texture* backgroundTexture;
 
 	glm::vec4 color;

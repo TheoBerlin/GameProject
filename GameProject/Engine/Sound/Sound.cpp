@@ -1,5 +1,7 @@
 #include "Sound.h"
 
+#include <Windows.h>
+
 #include "../../Utils/Logger.h"
 
 bool Sound::errorCheck()
@@ -150,6 +152,7 @@ bool Sound::getLoopState() const
 		return true;
 	if (ret == 0)
 		return false;
+	return false;
 }
 
 void Sound::setSourceRelative(const bool relative)
@@ -165,4 +168,5 @@ bool Sound::getSourceRelative() const
 		return true;
 	if (ret == 0)
 		return false;
+	return false;
 }

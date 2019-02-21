@@ -33,7 +33,7 @@ CollisionRenderer::CollisionRenderer()
 	layout.push(3); // vec3 position
 
 	//Load collision Box model
-	this->collisionBoxMesh = new Mesh((void*)cubeVertices, sizeof(float) * 24, (void*)indices, 17, layout);
+	this->collisionBoxMesh = new Mesh((void*)cubeVertices, sizeof(cubeVertices), (void*)indices, sizeof(indices)/sizeof(unsigned), layout);
 
 	AttributeLayout colorLayout;
 	colorLayout.push(3, 1); // Vec3 Color 
@@ -51,13 +51,11 @@ CollisionRenderer::CollisionRenderer()
 	this->instanceCount = 0;
 }
 
-
 CollisionRenderer::~CollisionRenderer()
 {
 	delete this->collisionBoxMesh;
 	delete this->shader;
 }
-
 
 void CollisionRenderer::updateMatrices(const std::vector<glm::mat4>& matrices)
 {
@@ -77,10 +75,8 @@ void CollisionRenderer::render()
 
 	this->shader->setUniformMatrix4fv("vp", 1, false, &(Display::get().getRenderer().getActiveCamera()->getVP()[0][0]));
 
-
 	IndexBuffer& ib = this->collisionBoxMesh->getIndexBuffer();
 	ib.bind();
 
 	glDrawElementsInstanced(GL_LINE_STRIP, ib.getCount(), GL_UNSIGNED_INT, 0, this->instanceCount);
-
 }

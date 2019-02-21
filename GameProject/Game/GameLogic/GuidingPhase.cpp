@@ -1,16 +1,13 @@
 #include "GuidingPhase.h"
 
 #include <Engine/AssetManagement/ModelLoader.h>
-#include <Engine/Components/Camera.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Engine/Components/CollisionComponent.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/AimPhase.h>
-#include <Game/GameLogic/OverviewPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
-#include <Utils/Logger.h>
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase)
@@ -29,6 +26,8 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
 
 	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
+
+    EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
 
 Entity* GuidingPhase::getPlayerArrow() const
@@ -49,13 +48,40 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_3) {
-		EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
+        EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 
-		level.collisionHandler->removeCollisionBody(this->playerArrow);
+        arrowGuider->stopGuiding();
 
-        Phase* replayPhase = new ReplayPhase(this);
-        changePhase(replayPhase);
+        // Begin camera transition to the replay freecam
+        glm::vec3 newPos = level.player.replayCamera.position;
+        glm::vec3 newForward = level.player.replayCamera.direction;
+        float transitionLength = 2.0f;
+
+        glm::vec3 currentPosition = playerArrow->getTransform()->getPosition();
+        glm::vec3 currentForward = playerArrow->getTransform()->getForward();
+
+        transitionEntity->getTransform()->setPosition(currentPosition);
+        transitionEntity->getTransform()->setForward(currentForward);
+
+        transitionComponent->setDestination(newPos, newForward, transitionLength);
+
+        Display::get().getRenderer().setActiveCamera(transitionCam);
+
+        EventBus::get().subscribe(this, &GuidingPhase::transitionToReplay);
+
+        transitionComponent->setDestination(newPos, newForward, transitionLength);
     }
+}
+
+void GuidingPhase::transitionToReplay(CameraTransitionEvent* event)
+{
+    EventBus::get().unsubscribe(this, &GuidingPhase::transitionToReplay);
+
+	level.collisionHandler->removeCollisionBody(this->playerArrow);
+	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
+
+    Phase* guidingPhase = new ReplayPhase(this);
+    changePhase(guidingPhase);
 }
 
 
@@ -89,7 +115,6 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 		CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->playerArrow->getComponent("Collision"));
 		if (playerCollision != nullptr)
 		{
-			// 
 			unsigned category = otherShape->getCollisionCategoryBits();
 			switch (category)
 			{

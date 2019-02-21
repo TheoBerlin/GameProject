@@ -39,7 +39,7 @@ void TimeProfiler::endInterval()
 {
 	if (this->currentInterval < this->intervalCount && this->inInterval) {
 		this->timer.stop();
-		this->times[this->currentInterval].first += (float)this->timer.restart() * 1000.0;
+		this->times[this->currentInterval].first += (float)this->timer.restart() * 1000.0f;
 		this->times[this->currentInterval].first /= 2.0;
 		this->inInterval = false;
 		this->currentInterval++;
@@ -63,7 +63,7 @@ void TimeProfiler::endFrame()
 
 	float totalTime = 0.0f;
 
-	for (int i = 0; i < this->times.size(); i++)
+	for (unsigned i = 0; i < this->times.size(); i++)
 	{
 		ImGui::Text((std::to_string(i) + ": " + this->times[i].second).c_str());
 		ImGui::SameLine(300.0f);
@@ -104,7 +104,7 @@ void TimeProfiler::resetIntervalCount()
 		this->intervalCount = this->currentInterval;
 		this->statistics = new float[this->intervalCount];
 
-		for (int i = 0; i < this->intervalCount; i++)
+		for (unsigned i = 0; i < this->intervalCount; i++)
 			this->statistics[i] = this->times[i].first;
 	}
 
@@ -113,7 +113,7 @@ void TimeProfiler::resetIntervalCount()
 	
 	// Update statistics every second
 	if (passedTime >= refreshTime) {
-		for (int i = 0; i < this->intervalCount; i++)
+		for (unsigned i = 0; i < this->intervalCount; i++)
 			this->statistics[i] = this->times[i].first;
 
 		passedTime = 0.0;

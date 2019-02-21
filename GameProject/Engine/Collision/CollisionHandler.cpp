@@ -251,7 +251,6 @@ void CollisionHandler::toggleDrawing(KeyEvent * ev)
 {
 	if (ev->key == GLFW_KEY_F3 && ev->action == GLFW_PRESS) {
 		this->drawCollisionShapes = !this->drawCollisionShapes;
-		LOG_INFO("swap!");
 	}
 }
 
