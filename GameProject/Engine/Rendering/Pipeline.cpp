@@ -33,7 +33,6 @@ Pipeline::Pipeline()
 	float shadowResScale = 4.0f;
 	shadowWidth = Display::get().getWidth() * shadowResScale;
 	shadowHeight = Display::get().getHeight() * shadowResScale;
-	//this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::COLOR);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
@@ -218,8 +217,12 @@ Texture * Pipeline::drawModelToTexture(const std::vector<Model*>& renderingModel
 
 	this->entityShaderInstanced->bind();
 
+	this->entityShaderInstanced->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
 	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+
+	Texture * shadowTex = getShadowFbo()->getDepthTexture();
+	this->entityShaderInstanced->setTexture2D("shadowTex", 1, shadowTex->getID());
 
 	for (Model* model : renderingModels) {
 		drawInstanced(model);
@@ -297,6 +300,36 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 
 	ImGui::End();
 #endif
+
+	Display::get().updateView(displayWidth, displayHeight);
+}
+
+void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingModels)
+{
+	int displayWidth = Display::get().getWidth();
+	int displayHeight = Display::get().getHeight();
+
+	Display::get().updateView(shadowWidth, shadowHeight);
+
+	this->shadowFbo.bind();
+	this->prePassDepthOn();
+	this->ZprePassShaderInstanced->bind();
+
+	float orthoWidth = 20.0f;
+	float orthoHeight = 20.0f * Display::get().getRatio();
+	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
+	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+	lightSpaceMatrix = lightProjection * lightView;
+
+	//Draw renderingList
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	for (Model* model : renderingModels) {
+		drawModelPrePassInstanced(model);
+	}
+
+	this->ZprePassShaderInstanced->unbind();
+	this->prePassDepthOff();
+	this->shadowFbo.unbind();
 
 	Display::get().updateView(displayWidth, displayHeight);
 }

@@ -52,7 +52,8 @@ public:
 	/*
 		Generates depth texture for shadows, input entities who should give away shadows
 	*/
-	void calcDirLightDepth(const std::vector<Entity*>& renderingList /*,const glm::vec3& lightDir*/);
+	void calcDirLightDepth(const std::vector<Entity*>& renderingList); // Old rendering
+	void calcDirLightDepthInstanced(const std::vector<Model*>& renderingModels);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();

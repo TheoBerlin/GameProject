@@ -80,6 +80,11 @@ void Renderer::drawAllInstanced()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/*
+		Calulate shadow depth
+	*/
+	this->pipeline.calcDirLightDepthInstanced(this->renderingModels);
+
+	/*
 		Z-prepass stage
 	*/
 	this->pipeline.prePassDepthModel(this->renderingModels);
