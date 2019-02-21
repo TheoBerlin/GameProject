@@ -114,8 +114,6 @@ void GameState::render()
 	// Draw entities.
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
-
-	//for (Entity* entity : entities)
 	
 	/*
 		Old rendering

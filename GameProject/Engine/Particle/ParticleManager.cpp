@@ -13,16 +13,6 @@ ParticleManager & ParticleManager::get()
 
 void ParticleManager::update(float dt)
 {
-	//int half = std::ceil((float)emitters.size() / 2.0f);
-
-	//ParticleManager * p = new ParticleManager();
-
-	//std::thread first(&ParticleManager::updateEmitter, p, emitters[0], dt);
-
-	//first.join();
-
-	//delete p;
-
 	for (int i = 0; i < emitters.size(); i++) {
 		emitters[i]->update(dt);
 	}

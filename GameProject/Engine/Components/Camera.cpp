@@ -37,7 +37,7 @@ void Camera::init()
 	updateView();
 }
 
-glm::vec3 Camera::getUp()
+const glm::vec3 Camera::getUp()
 {
 	return this->getHost()->getTransform()->getUp();
 }
@@ -47,7 +47,7 @@ glm::vec3 Camera::getForward() const
 	return this->f;
 }
 
-glm::vec3 Camera::getRight()
+const glm::vec3 Camera::getRight()
 {
 	return this->getHost()->getTransform()->getRight();
 }

@@ -18,11 +18,11 @@ public:
 	void update(const float& dt);
 
 	// Returns the cameras up-vector
-	glm::vec3 getUp();
+	const glm::vec3 getUp();
 	// Returns the cameras forward-vector
 	glm::vec3 getForward() const;
 	// Returns the cameras right-vector
-	glm::vec3 getRight() const;
+	 const glm::vec3 getRight();
 
 	// Returns the View-Projection matrix
 	glm::mat4 getVP() const;
