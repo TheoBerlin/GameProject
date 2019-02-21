@@ -115,7 +115,7 @@ inline void EventBus::unsubscribe(T * instance, void(T::* memberFunction)(EventT
 		for (it = handlers->begin(); it != handlers->end(); ++it)
 		{
 			if ((*it) == nullptr)
-				break;
+				continue;
 			if ((*it)->id == id)
 			{
 				delete *it;
