@@ -134,11 +134,6 @@ void Transform::setRotation(const glm::vec3 &rotation)
 	this->isUpdated = true;
 }
 
-void Transform::setRotation(const glm::quat & rotation)
-{
-	this->rotationQuat = rotation;
-}
-
 void Transform::translate(const glm::vec3& vector)
 {
 	this->position += vector;
