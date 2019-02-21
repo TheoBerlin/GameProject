@@ -62,14 +62,6 @@ inline void EventBus::publish(EventType * evnt)
 		return;
 	}
 
-	//for (auto & handler : *handlers)
-	//{
-	//	if (handler != nullptr)
-	//	{
-	//		handler->exec(evnt);
-	//	}
-	//}
-
 	for (auto it = handlers->begin(); it != handlers->end(); it++)
 	{
 		if ((*it) == nullptr)
