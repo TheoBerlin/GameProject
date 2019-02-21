@@ -223,6 +223,15 @@ bool Panel::hasUpdated() const
 	return false;
 }
 
+void Panel::setActive(bool active)
+{
+}
+
+bool Panel::isActive() const
+{
+	return false;
+}
+
 void Panel::init()
 {
 	this->pos = { 0, 0 };
