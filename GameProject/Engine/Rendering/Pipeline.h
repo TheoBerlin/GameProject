@@ -49,6 +49,7 @@ public:
 	Texture* calcDirLightDepth(const std::vector<Entity*>& renderingList, const glm::vec3& lightDir);
 
 	void setActiveCamera(Camera* camera);
+	Camera* getActiveCamera();
 
 	Framebuffer* getFbo();
 

@@ -11,6 +11,8 @@
 
 #include <Game/GameLogic/TargetManager.h>
 
+#include "Engine/Config.h"
+
 GameState::GameState()
 {
 	Level level;
@@ -92,4 +94,9 @@ void GameState::render()
 		New rendering
 	*/
 	renderer.drawAllInstanced();
+
+#ifdef ENABLE_COLLISION_BOXES
+	this->collisionHandler.updateDrawingData();
+	this->collisionHandler.drawCollisionBoxes();
+#endif
 }

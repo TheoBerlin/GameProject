@@ -2,6 +2,10 @@
 #include "Engine/Entity/Entity.h"
 #include "Utils/Logger.h"
 
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/quaternion.hpp"
+
+#include "GLFW/glfw3.h"
 
 CollisionHandler::CollisionHandler()
 {
@@ -21,6 +25,12 @@ CollisionHandler::CollisionHandler()
 
 	// Create the shapes used by bodies
 	createShapes();
+#ifdef ENABLE_COLLISION_BOXES
+	//Register callback for drawing GUI
+	EventBus::get().subscribe(this, &CollisionHandler::toggleDrawing);
+
+	this->drawCollisionShapes = false;
+#endif
 }
 
 
@@ -32,9 +42,11 @@ CollisionHandler::~CollisionHandler()
 	// Clear the bodies list of pointers
 	this->bodies.clear();
 
-	// Delete the shape pointers
-	for (auto shape : this->shapes)
-		delete shape;
+	for (auto shapeVector : this->shapes)
+		for (auto data : shapeVector) {
+			delete data->shape;
+			delete data;
+		}
 }
 
 void CollisionHandler::checkCollision()
@@ -94,18 +106,28 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 	/*
 	SET SHAPE TO COLLISIONBODY. IF SHAPE IS ARROW/PLAYER SAVE THE POINTER FOR COLLISION CHECK
 	*/
-	rp3d::Vector3 shapePos({ 0.0, 0.0, 0.0 });
-	rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
-	rp3d::Transform shapeTransform(shapePos, shapeRot);
 
-	if (shape == SHAPE::ARROW) {
+	if (shape == SHAPE::ARROW)
 		this->player = entityBody;
-		entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform)->setCollisionCategoryBits(CATEGORY::ARROW);
+
+
+rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
+#ifdef ENABLE_COLLISION_BOXES
+
+	for (auto data : this->shapes[(size_t)shape]) {
+		rp3d::ProxyShape* proxyShape = entityBody->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
+		proxyShape->setUserData((void*)data);
+		this->proxyShapes.push_back(proxyShape);
 	}
-	else if (shape == SHAPE::DRONE)
-		entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform)->setCollisionCategoryBits(CATEGORY::DRONE_BODY);
-	else
-		entityBody->addCollisionShape(this->shapes[(size_t)shape], shapeTransform)->setCollisionCategoryBits(CATEGORY::STATIC);
+
+#else
+
+	for (auto data : this->shapes[(size_t)shape]) {
+		entityBody->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
+	}
+
+#endif
+
 
 	entityBody->setTransform(transform);
 
@@ -170,19 +192,114 @@ glm::vec3 CollisionHandler::toGlmVec(const rp3d::Vector3 & vec)
 	return { vec.x, vec.y, vec.z };
 }
 
+glm::quat CollisionHandler::toGlmQuat(const rp3d::Quaternion & vec)
+{
+	glm::quat q;
+	q.x = vec.x;
+	q.y = vec.y;
+	q.z = vec.z;
+	q.w = vec.w;
+
+	return q;
+}
+
 void CollisionHandler::createShapes()
 {
+	this->shapes.resize((size_t)SHAPE::SIZE);
+
 	// Create and add shapes to the shapes vector. Order is important!
 
-	// DRONE = 0 ---- CHANGE TO A MESH WHEN DONE
-	rp3d::BoxShape* drone = new rp3d::BoxShape({ 0.25, 0.25, 0.25 });
-	this->shapes.push_back(drone);
+	
+#ifdef ENABLE_COLLISION_BOXES
+	//// DRONE = 0
+	this->addShape(SHAPE::DRONE, { 0.25f, 0.25f, 0.25f }, { 0.15f, 0.5f, 0.15f });
+	this->addShape(SHAPE::DRONE, { 0.05f, 0.05f, 0.05f }, { 0.75f, 0.15f, 0.15f }, { 0.0f, 0.05f, -0.25f });
 
-	// BOX = 1
-	rp3d::BoxShape * box = new rp3d::BoxShape({ 0.25, 0.25, 0.25 });
-	this->shapes.push_back(box);
+	//// BOX = 1
+	this->addShape(SHAPE::BOX, { 0.5f, 0.5f, 0.5f });
 
-	// ARROW = 2 ---- CHANGE TO A MESH WHEN DOWN
-	rp3d::SphereShape* arrow = new rp3d::SphereShape(0.25);
-	this->shapes.push_back(arrow);
+	//// ARROW = 2
+	this->addShape(SHAPE::ARROW, { 0.05f, 0.05f, 0.5f }, { 0.0f, 0.0f, 1.0f });
+#else
+	//// DRONE = 0 ---- CHANGE TO A MESH WHEN DONE
+	this->addShape(SHAPE::DRONE, { 0.25f, 0.25f, 0.25f }); 
+
+	//// BOX = 1
+	this->addShape(SHAPE::BOX, { 0.5f, 0.5f, 0.5f });
+
+	//// ARROW = 2 ---- CHANGE TO A MESH WHEN DOWN
+	this->addShape(SHAPE::ARROW, { 0.05f, 0.05f, 0.5f });
+#endif
 }
+
+
+
+#ifdef ENABLE_COLLISION_BOXES
+
+void CollisionHandler::toggleDrawing(KeyEvent * ev)
+{
+	if (ev->key == GLFW_KEY_F3 && ev->action == GLFW_PRESS) {
+		this->drawCollisionShapes = !this->drawCollisionShapes;
+		LOG_INFO("swap!");
+	}
+}
+
+
+void CollisionHandler::addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& color, const glm::vec3& pos)
+{
+	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
+	data->color = color;
+	data->scale = scale;
+	data->pos = pos;
+
+	rp3d::BoxShape * boxShape = new rp3d::BoxShape(toReactVec(data->scale));
+	data->shape = boxShape;
+
+	this->shapes[(size_t)shape].push_back(data);
+}
+
+void CollisionHandler::updateDrawingData()
+{
+	if (this->drawCollisionShapes) {
+		this->matrices.clear();
+		this->colors.clear();
+
+		for (auto proxyShape : this->proxyShapes) {
+			CollisionShapeDrawingData* data = (CollisionShapeDrawingData*)(proxyShape->getUserData());
+			rp3d::Transform trans = proxyShape->getLocalToWorldTransform();
+			glm::vec3 eulerAngles = glm::eulerAngles(this->toGlmQuat(trans.getOrientation()));
+
+			glm::mat4 mat(1.0f);
+			mat = glm::translate(mat, this->toGlmVec(trans.getPosition()));
+			mat = glm::rotate(mat, eulerAngles.z, glm::vec3(0.0f, 0.0f, 1.0f));
+			mat = glm::rotate(mat, eulerAngles.y, glm::vec3(0.0f, 1.0f, 0.0f));
+			mat = glm::rotate(mat, eulerAngles.x, glm::vec3(1.0f, 0.0f, 0.0f));
+			mat = glm::scale(mat, data->scale);
+			this->matrices.push_back(mat);
+			this->colors.push_back(data->color);
+		}
+
+		this->cRenderer.updateColors(colors);
+		this->cRenderer.updateMatrices(matrices);
+	}
+
+}
+
+void CollisionHandler::drawCollisionBoxes()
+{
+	if(this->drawCollisionShapes)
+		this->cRenderer.render();
+}
+#else
+
+
+void CollisionHandler::addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3 & pos)
+{
+	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
+	data->pos = pos;
+	data->shape = new rp3d::BoxShape(this->toReactVec(scale));
+
+	this->shapes[(size_t)shape].push_back(data);
+}
+
+#endif

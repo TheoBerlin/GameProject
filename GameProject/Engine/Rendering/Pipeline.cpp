@@ -182,6 +182,11 @@ void Pipeline::setActiveCamera(Camera * camera)
 	this->camera = camera;
 }
 
+Camera * Pipeline::getActiveCamera()
+{
+	return this->camera;
+}
+
 Framebuffer * Pipeline::getFbo()
 {
 	return &this->fbo;
