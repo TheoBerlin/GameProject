@@ -104,6 +104,8 @@ inline void EventBus::subscribe(T * instance, void(T::* memberFunction)(EventTyp
 template<class T, class EventType>
 inline void EventBus::unsubscribe(T * instance, void(T::* memberFunction)(EventType *))
 {
+	if (this->subscribers.empty())
+		return;
 	if(this->subscribers.find(typeid(EventType)) != this->subscribers.end())
 	{
 		HandlerList* handlers = this->subscribers[typeid(EventType)];
