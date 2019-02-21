@@ -209,7 +209,9 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 
 	//Draw renderingList
 	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	glCullFace(GL_FRONT);
 	draw(renderingList);
+	glCullFace(GL_BACK);
 
 	this->ZprePassShader->unbind();
 	this->prePassDepthOff();
