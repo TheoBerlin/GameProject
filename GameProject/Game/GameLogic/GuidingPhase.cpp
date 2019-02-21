@@ -89,7 +89,6 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 		CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->playerArrow->getComponent("Collision"));
 		if (playerCollision != nullptr)
 		{
-			// 
 			unsigned category = otherShape->getCollisionCategoryBits();
 			switch (category)
 			{
