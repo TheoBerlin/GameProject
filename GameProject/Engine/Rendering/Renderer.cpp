@@ -11,6 +11,11 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Cube.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/floor.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/droneTarget.fbx"));
 }
 
 Renderer::~Renderer()
@@ -21,6 +26,11 @@ Renderer::~Renderer()
 void Renderer::setActiveCamera(Camera * camera)
 {
 	this->pipeline.setActiveCamera(camera);
+}
+
+Camera * Renderer::getActiveCamera()
+{
+	return this->pipeline.getActiveCamera();
 }
 
 void Renderer::push(Entity * entity)
@@ -67,11 +77,23 @@ void Renderer::updateInstancingData(Model * model)
 
 void Renderer::drawAllInstanced()
 {
-	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	std::vector<Model*> models = ModelLoader::getModels();
-	for (Model* model : models) {
-		this->pipeline.drawInstanced(model);
-	}
+	/*
+		Z-prepass stage
+	*/
+	this->pipeline.prePassDepthModel(this->renderingModels);
+	
+	/*
+		Drawing stage with pre existing depth buffer to texture
+	*/
+	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
+
+	/*
+		Draw texture of scene to quad for postprocessing
+	*/
+	this->pipeline.drawTextureToQuad(postProcessTexture);
 }
+
+
+

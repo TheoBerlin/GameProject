@@ -19,10 +19,17 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
+    <ClCompile Include="Engine\GUI\Button.cpp" />
     <ClCompile Include="Engine\GUI\Font.cpp" />
     <ClCompile Include="Engine\GUI\FontManager.cpp" />
+    <ClCompile Include="Engine\GUI\GUI.cpp" />
     <ClCompile Include="Engine\GUI\Panel.cpp" />
     <ClCompile Include="Engine\GUI\Text.cpp" />
+    <ClCompile Include="Engine\Components\CollisionComponent.cpp" />
+    <ClCompile Include="Engine\Collision\Collision.cpp" />
+    <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
+    <ClCompile Include="Engine\Components\TargetCollision.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -74,17 +81,26 @@
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Utils\TimeProfiler.cpp" />
+    <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
+    <ClInclude Include="Engine\Components\CollisionComponent.h" />
+    <ClInclude Include="Engine\Collision\Collision.h" />
+    <ClInclude Include="Engine\Collision\CollisionHandler.h" />
+    <ClInclude Include="Engine\Components\TargetCollision.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
     <ClInclude Include="Engine\Events\EventBus.h" />
+    <ClInclude Include="Engine\GUI\Button.h" />
     <ClInclude Include="Engine\GUI\Font.h" />
     <ClInclude Include="Engine\GUI\FontManager.h" />
+    <ClInclude Include="Engine\GUI\GUI.h" />
     <ClInclude Include="Engine\GUI\Panel.h" />
     <ClInclude Include="Engine\GUI\Text.h" />
     <ClInclude Include="Engine\Imgui\imconfig.h" />
@@ -143,7 +159,9 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
+    <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
+    <ClInclude Include="Engine\Components\PlayerCollision.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
@@ -218,7 +236,7 @@
       <AdditionalLibraryDirectories>libs</AdditionalLibraryDirectories>
       <AdditionalDependencies>OpenAL32.lib;opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;assimp-vc140-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>libs;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;assimp-vc140-mt.lib;freetype.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;glfw3.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;glew32.lib;assimp-vc140-mt.lib;freetype.lib;reactphysics3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/NODEFAULTLIB:LIBCMT</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>

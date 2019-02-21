@@ -17,8 +17,9 @@ public:
 
 private:
     void commonSetup();
-
     void handleKeyInput(KeyEvent* event);
+
+	void playerCollisionCallback(PlayerCollisionEvent * ev);
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;

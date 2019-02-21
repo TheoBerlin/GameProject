@@ -28,6 +28,8 @@ public:
 	glm::vec3 getPosition() const;
 	//Get radians of rotation around itself
 	glm::vec3 getRotation() const;
+	//Get rotation quaternion
+	glm::quat getRotationQuat() const;
 	//Get scaling factor
 	glm::vec3 getScale() const;
 	//Get forward vector
@@ -55,6 +57,8 @@ public:
 	void rotateAxis(const float& radians, const glm::vec3& axis);
 	//Set the rotation by (x,y,z)
 	void setRotation(const glm::vec3& rotation);
+	//Set the rotation quat
+	void setRotation(const glm::quat& rotation);
 	//Translate from current position plus given vector
 	void translate(const glm::vec3& vector);
 	//Set world position

@@ -1,6 +1,7 @@
 #include "PathTreader.h"
 
 #include <Engine/Entity/Entity.h>
+#include "Utils/Logger.h"
 
 PathTreader::PathTreader(Entity* host)
     :Component(host, "PathTreader")

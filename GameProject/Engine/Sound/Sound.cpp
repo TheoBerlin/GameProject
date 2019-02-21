@@ -1,5 +1,7 @@
 #include "Sound.h"
 
+#include "../../Utils/Logger.h"
+
 bool Sound::errorCheck()
 {
 	ALCenum error;

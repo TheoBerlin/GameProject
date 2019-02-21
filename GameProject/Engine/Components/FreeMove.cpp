@@ -15,10 +15,8 @@ FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Componen
 	this->speed = 5.0f;
 	this->sensitivity = Settings::get().getMouseSensitivity();
 	this->mouseLock = false;
-	this->xPos = 0.0;
-	this->yPos = 0.0;
-	this->preXPos = 0.0;
-	this->preYPos = 0.0;
+	this->xPos = 0;
+	this->yPos = 0;
 
 	// Calculate pitch
 	glm::vec3 forward = host->getTransform()->getForward();
@@ -65,7 +63,7 @@ void FreeMove::update(const float & dt)
 
 	mat->setPosition(newPosition);
 
-	if (this->xPos != 0.0 || this->yPos != 0.0)
+	if (this->xPos != 0 || this->yPos != 0)
 	{
 		float yaw = -(float)xPos * this->dt * this->sensitivity;
 		float pitch = -(float)yPos * this->dt * this->sensitivity;
@@ -83,8 +81,8 @@ void FreeMove::update(const float & dt)
 
 		host->getTransform()->rotate(yaw, pitch);
 
-		this->xPos = 0.0;
-		this->yPos = 0.0;
+		this->xPos = 0;
+		this->yPos = 0;
 	}
 }
 
@@ -103,13 +101,6 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 		if (this->mouseLock) {
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-			// Get cursor position
-			double cursorX, cursorY;
-			glfwGetCursorPos(Display::get().getWindowPtr(), &cursorX, &cursorY);
-
-			this->preXPos = cursorX;
-			this->preYPos = cursorY;
-
 			EventBus::get().subscribe(this, &FreeMove::moveMouse);
 		} else {
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -120,10 +111,8 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
-	this->xPos = evnt->moveX - this->preXPos;
-	this->yPos = evnt->moveY - this->preYPos;
-	this->preXPos = evnt->moveX;
-	this->preYPos = evnt->moveY;
+	this->xPos = evnt->travelX;
+	this->yPos = evnt->travelY;
 }
 
 void FreeMove::clickMouse(MouseClickEvent * evnt)

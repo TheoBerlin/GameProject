@@ -6,7 +6,6 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Game/components/ComponentResources.h>
-#include <Utils/Logger.h>
 #include <vector>
 #include <cmath>
 #include <glm/gtc/quaternion.hpp>
@@ -57,8 +56,6 @@ private:
     float maxTurnSpeed;
     // Mouse movement, relative to window height, required to reach max turn speed
     const float maxMouseMove = 0.5f;
-
-    glm::vec2 mousePos;
 
     // Used to create prolonged turns, i.e. slowly turning the arrow over time
     glm::vec2 turnFactors;

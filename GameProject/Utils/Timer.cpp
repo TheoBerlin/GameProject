@@ -27,12 +27,16 @@ void Timer::stop()
 	this->preTime = this->currTime;
 }
 
-void Timer::restart()
+double Timer::restart()
 {
+	double elapsedTime = this->getTime();
+
 	this->dt = 0;
 	this->isRunning = true;
 	this->startTime = std::chrono::high_resolution_clock::now();
 	this->currTime = this->startTime;
+
+	return elapsedTime;
 }
 
 void Timer::update()

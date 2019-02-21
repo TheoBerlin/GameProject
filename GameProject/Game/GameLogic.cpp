@@ -1,6 +1,15 @@
 #include "GameLogic.h"
 
-#include <Engine/Events/EventBus.h>
+#include "../Engine/Rendering/Display.h"
+#include "../Engine/Rendering/Renderer.h"
+#include "../Engine/Components/Component.h"
+#include "../Engine/Components/Camera.h"
+#include "../Engine/Components/PlayerCollision.h"
+#include "../Engine/AssetManagement/ModelLoader.h"
+#include "Engine/Events/EventBus.h"
+#include <Game/Components/ArrowGuider.h>
+#include <Game/Components/PathTreader.h>
+#include "Engine/Collision/CollisionHandler.h"
 #include <Game/GameLogic/OverviewPhase.h>
 
 GameLogic::GameLogic()
@@ -26,6 +35,7 @@ void GameLogic::init(Level& level)
 GameLogic::~GameLogic()
 {
 	EventBus::get().unsubscribe(this, &GameLogic::changePhaseCallback);
+
 	EventBus::get().unsubscribe(this, &GameLogic::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GameLogic::handleMouseClick);
 

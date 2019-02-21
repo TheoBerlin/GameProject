@@ -4,6 +4,8 @@
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/GUI/GUI.h>
+#include <Engine/Rendering/GUIRenderer.h>
 
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
@@ -11,14 +13,19 @@
 
 #include <Game/GameLogic/TargetManager.h>
 
+#include "Engine/Config.h"
+
 GameState::GameState()
 {
 	Level level;
 
 	targetManager = new TargetManager();
 
-	level.entityManager = &this->getEntityManager();
+	EntityManager* entityManager = &this->getEntityManager();
+	level.entityManager = entityManager;
 	level.targetManager = targetManager;
+	level.collisionHandler = &this->collisionHandler;
+	level.gui = &this->getGUI();
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
@@ -58,6 +65,7 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
@@ -66,7 +74,7 @@ void GameState::update(const float dt)
 
 void GameState::updateLogic(const float dt)
 {
-	
+	this->collisionHandler.checkCollision();
 }
 
 void GameState::render()
@@ -84,10 +92,20 @@ void GameState::render()
 	for (Entity* entity : entities)
 		renderer.push(entity);
 	renderer.drawAll();
-
+	*/
 
 	/*
 		New rendering
 	*/
-	//renderer.drawAllInstanced();
+	renderer.drawAllInstanced();
+
+#ifdef ENABLE_COLLISION_BOXES
+	this->collisionHandler.updateDrawingData();
+	this->collisionHandler.drawCollisionBoxes();
+#endif
+
+	// Draw gui elements.
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+	GUI& gui = this->getGUI();
+	guiRenderer.draw(gui);
 }

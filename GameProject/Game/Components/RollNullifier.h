@@ -7,7 +7,6 @@
 #include <glm/glm.hpp>
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/Entity.h>
-#include <Utils/Logger.h>
 
 class RollNullifier : public Component
 {

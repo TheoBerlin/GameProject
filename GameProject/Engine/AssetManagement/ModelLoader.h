@@ -6,7 +6,6 @@
 #include <assimp/postprocess.h>
 #include "TextureManager.h"
 #include <map>
-#include "../../Utils/Logger.h"
 
 class ModelLoader
 {
@@ -16,6 +15,7 @@ public:
     static Model* loadModel(std::string fileName);
 
 	static std::vector<Model*> getModels();
+	static Model* getModel(const std::string & name);
     static void unloadAllModels();
     static size_t modelCount();
 

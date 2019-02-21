@@ -20,8 +20,7 @@ private:
 	float currentPitch;
 	float maxPitch = glm::half_pi<float>() - 0.01f;
 	bool mouseLock;
-	double xPos, yPos;
-	double preXPos, preYPos;
+	int xPos, yPos;
 	std::unordered_map<unsigned, bool> pressedKeys;
 
 	void moveKeyboard(KeyEvent * evnt);
