@@ -38,6 +38,7 @@ void StateManager::pop()
 
 
 	if (this->lowerStates.empty() == false) {
+		this->lowerStates.top()->getGUI().setActive(false);
 		this->lowerStates.pop();
 	}
 }
@@ -49,6 +50,7 @@ void StateManager::push(State * state)
 	if (isEmpty() == false) {
 		this->lowerStates.push(this->stack.top());
 		this->lowerStates.top()->end();
+		this->lowerStates.top()->getGUI().setActive(false);
 	}
 
 	this->stack.push(state);
