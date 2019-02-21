@@ -192,8 +192,8 @@ void ArrowGuider::stopGuiding()
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 {
     // Calculate relative mouse position
-	int moveX = event->travelX;
-	int moveY = event->travelY;
+	int moveX = event->deltaX;
+	int moveY = event->deltaY;
 
     // Divide by window height to separate turn speed from screen resolution
     float turnFactorYaw = moveX / (windowHeight * maxMouseMove);

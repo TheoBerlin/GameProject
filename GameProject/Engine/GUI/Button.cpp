@@ -69,8 +69,8 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 
 void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 {
-	if (evnt->moveX >= this->pos.x && evnt->moveX <= this->pos.x + this->size.x &&
-		evnt->moveY >= this->pos.y && evnt->moveY <= this->pos.y + this->size.y)
+	if (evnt->posX >= this->pos.x && evnt->posX <= this->pos.x + this->size.x &&
+		evnt->posY >= this->pos.y && evnt->posY <= this->pos.y + this->size.y)
 	{
 		this->isHovering = true;
 		toHoverStyle();
