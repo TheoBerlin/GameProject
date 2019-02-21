@@ -41,14 +41,14 @@ public:
 	void setPressedColor(const glm::vec4& color);
 
 	/*
-	Check if the button is clicked or not. Will only be true when the user release the button and is hovering over it.
-	*/
-	bool isActivated() const;
-
-	/*
 	Set the callback function. This will be called when the button is activated.
 	*/
 	void setCallback(std::function<void(void)> func);
+
+	/*
+	Remove the callback function. 
+	*/
+	void removeCallback();
 
 private:
 	/*
@@ -82,7 +82,6 @@ private:
 	void init();
 
 private:
-	bool active;
 	bool isHovering;
 	bool pressed;
 

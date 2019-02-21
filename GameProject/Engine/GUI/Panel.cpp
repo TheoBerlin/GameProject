@@ -7,7 +7,7 @@
 
 #include "../Events/EventBus.h"
 
-Panel::Panel() : backgroundTexture(nullptr)
+Panel::Panel() : backgroundTexture(nullptr), bakedTexture(nullptr)
 {
 	init();
 }
@@ -23,16 +23,21 @@ Panel::~Panel()
 	for (Panel* child : this->children)
 		delete child;
 	this->children.clear();
+
+	delete this->bakedTexture;
 }
 
 void Panel::setBakedTexture(const Texture& texture)
 {
-	this->bakedTexture = texture;
+	if (this->bakedTexture == nullptr)
+		this->bakedTexture = new Texture(texture);
+	else
+		*this->bakedTexture = texture;
 }
 
 Texture * Panel::getBakedTexture()
 {
-	return &this->bakedTexture;
+	return this->bakedTexture;
 }
 
 void Panel::setBackgroundTexture(Texture * texture)
