@@ -80,7 +80,7 @@ void CollisionRenderer::render()
 
 	IndexBuffer& ib = this->collisionBoxMesh->getIndexBuffer();
 	ib.bind();
-	glLineWidth(2);
+
 	glDrawElementsInstanced(GL_LINE_STRIP, ib.getCount(), GL_UNSIGNED_INT, 0, this->instanceCount);
 
 }

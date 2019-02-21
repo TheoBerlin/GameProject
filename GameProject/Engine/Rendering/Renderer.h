@@ -48,10 +48,6 @@ public:
 	*/
 	void drawAllInstanced();
 
-	/*
-		Draw all entites in the rendering list, assumes that all entities in rendering list uses the same model
-	*/
-	void drawModel(Model * model);
 
 
 private:

@@ -5,7 +5,7 @@
 
 #include "GLFormats.h"
 
-Texture::Texture() : id(0)
+Texture::Texture() : id(0), loaded(false)
 {
 }
 
@@ -114,6 +114,11 @@ GLuint Texture::getFormat() const
 	return this->format;
 }
 
+bool Texture::hasLoadedData() const
+{
+	return this->loaded;
+}
+
 void Texture::bind()
 {
 	glBindTexture(GL_TEXTURE_2D, this->id);
@@ -132,6 +137,7 @@ void Texture::copyData(const Texture & other)
 	this->height = other.getHeight();
 	this->internalFormat = other.getInternalFormat();
 	this->format = other.getFormat();
+	this->loaded = other.loaded;
 	
 	// Copy texture data
 	size_t size = this->width*this->height * Formats::getTextureFormatChannels(this->format);
@@ -162,6 +168,7 @@ void Texture::loadImage(const std::string & fileName, TextureType texType, unsig
 	if (!data)
 	{
 		LOG_WARNING("Unable to load texture [%s]", fileName.c_str());
+		this->loaded = false;
 		return;
 	}
 
@@ -171,6 +178,8 @@ void Texture::loadImage(const std::string & fileName, TextureType texType, unsig
 
 	// Free image data as OpenGL is storing a copy
 	stbi_image_free(data);
+
+	this->loaded = true;
 }
 
 void Texture::init(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, TextureType texType)
@@ -185,6 +194,8 @@ void Texture::init(unsigned char * data, unsigned int width, unsigned int height
 	bind();
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	setParameters();
+
+	this->loaded = true;
 }
 
 void Texture::setParameters()

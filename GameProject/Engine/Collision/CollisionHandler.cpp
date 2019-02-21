@@ -162,6 +162,17 @@ void CollisionHandler::removeCollisionBody(Entity * entity)
 
 		// Remove the proxy collision shape
 		rp3d::ProxyShape* nextElement = current->getNext();
+	
+		// TEMPORARY
+		rp3d::ProxyShape* proxyPtr;
+		size_t size = this->proxyShapes.size();
+		for (size_t i = 0; i < size; i++) {
+			proxyPtr = this->proxyShapes[i];
+			if (proxyPtr == current) {
+				this->proxyShapes[i] = this->proxyShapes[size - 1];
+				this->proxyShapes.pop_back();
+			}
+		}
 
 		body->removeCollisionShape(current);
 

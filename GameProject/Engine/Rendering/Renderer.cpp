@@ -76,25 +76,23 @@ void Renderer::updateInstancingData(Model * model)
 
 void Renderer::drawAllInstanced()
 {
-	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	this->pipeline.getFbo()->bind();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	/*
+		Z-prepass stage
+	*/
+	this->pipeline.prePassDepthModel(this->renderingModels);
+	
+	/*
+		Drawing stage with pre existing depth buffer to texture
+	*/
+	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
 
-
-	for (Model* model : this->renderingModels) {
-		this->pipeline.drawInstanced(model);
-	}
-
-	this->pipeline.getFbo()->unbind();
-
-	this->pipeline.drawTextureToQuad(this->pipeline.getFbo()->getColorTexture(0));
+	/*
+		Draw texture of scene to quad for postprocessing
+	*/
+	this->pipeline.drawTextureToQuad(postProcessTexture);
 }
 
-void Renderer::drawModel(Model * model)
-{
-	glDisable(GL_DEPTH_TEST);
-	this->pipeline.drawInstanced(model);
-}
+
 

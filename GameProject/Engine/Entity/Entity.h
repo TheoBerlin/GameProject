@@ -22,6 +22,7 @@ public:
 
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
+	void removeAllComponents();
 	// Used by components to get neighboring components
 	Component* getComponent(const std::string& componentName);
 

@@ -20,7 +20,14 @@ public:
 
     void update(const float& dt);
 
+    // Enables aim but not movement
+    void startAiming();
+    // Disables aim but not movement
+    void stopAiming();
+
+    // Enables both aim and movement
     void startGuiding();
+    // Disables both aim and movement
     void stopGuiding();
 
     // Event handlers
@@ -50,8 +57,6 @@ private:
     // Mouse movement, relative to window height, required to reach max turn speed
     const float maxMouseMove = 0.5f;
 
-    glm::vec2 mousePos;
-
     // Used to create prolonged turns, i.e. slowly turning the arrow over time
     glm::vec2 turnFactors;
     // Defines how fast turn factors fall off over time (per second)
@@ -59,8 +64,8 @@ private:
 
     glm::vec3 direction;
 
-    // Disables and enables the guider
-    bool isGuiding;
+    // Disables and enables functionality within the guider
+    bool isAiming, isGuiding;
 
     // Frequency at which the position is stored
     float posStoreFrequency;
@@ -83,5 +88,5 @@ private:
     const float FOVChangeMax = 15.0f;
 
     float currentPitch;
-    const float maxPitch = glm::half_pi<float>() - FLT_EPSILON;
+    const float maxPitch = glm::half_pi<float>() - 0.01f;
 };
