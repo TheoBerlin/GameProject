@@ -47,7 +47,6 @@ public:
 	*/
 	void drawInstanced(Model * model);
 
-	void drawAllInstanced();
 
 	/*
 		Generates depth texture for shadows, input entities who should give away shadows
