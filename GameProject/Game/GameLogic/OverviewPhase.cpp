@@ -63,7 +63,7 @@ void OverviewPhase::commonSetup()
 	camera->init();
 
     // Add oversight controller
-    oversightControl = new OversightController(overviewCamera);
+    overviewControl = new OversightController(overviewCamera);
 
 	// Reset targets
 	level.targetManager->resetTargets();
@@ -83,7 +83,7 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
         EventBus::get().unsubscribe(this, &OverviewPhase::handleKeyInput);
 
         // Remove oversight control
-        overviewCamera->removeComponent(oversightControl->getName());
+        overviewCamera->removeComponent(overviewControl->getName());
 
         // Begin camera transition to the arrow
         glm::vec3 newPos = level.player.arrowCamera.position;

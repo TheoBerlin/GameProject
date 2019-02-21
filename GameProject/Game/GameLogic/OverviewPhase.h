@@ -25,5 +25,5 @@ private:
     Entity* playerArrow;
 
     Entity* overviewCamera;
-    OversightController* oversightControl;
+    OversightController* overviewControl;
 };
