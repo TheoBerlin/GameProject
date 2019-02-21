@@ -30,9 +30,11 @@ struct WindowResizeEvent : public Event
 
 struct MouseMoveEvent : public Event
 {
-	MouseMoveEvent(double moveX, double moveY) : moveX{ moveX }, moveY{ moveY } {};
-	double moveX;
-	double moveY;
+	MouseMoveEvent(unsigned int posX, unsigned int posY, int deltaX, int deltaY) : posX{ posX }, posY{ posY }, deltaX{ deltaX }, deltaY{ deltaY } {};
+	unsigned int posX;
+	unsigned int posY;
+	int deltaX;
+	int deltaY;
 };
 
 struct MouseClickEvent : public Event
@@ -40,4 +42,20 @@ struct MouseClickEvent : public Event
 	MouseClickEvent(int button, int action) : button{ button }, action{ action } {};
 	int button;
 	int action;
+};
+
+class Phase;
+
+struct PhaseChangeEvent : public Event
+{
+	PhaseChangeEvent(Phase* newPhase) : newPhase{ newPhase } {};
+	Phase* newPhase;
+};
+
+class Entity;
+
+struct CameraTransitionEvent : public Event
+{
+	CameraTransitionEvent(Entity* host) : host{ host } {};
+	Entity* host;
 };

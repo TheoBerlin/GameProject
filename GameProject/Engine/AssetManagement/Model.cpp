@@ -63,6 +63,7 @@ void Model::removeEntity(unsigned index)
 			it++;
 		}
 	}
+
 }
 
 const std::vector<Entity*>& Model::getRenderingGroup() const

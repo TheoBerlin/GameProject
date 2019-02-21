@@ -4,7 +4,9 @@
 #include "GLAbstraction/Framebuffer.h"
 #include "../GUI/Text.h"
 #include "../GUI/Panel.h"
+#include "../Events/EventBus.h"
 
+class GUI;
 class GUIRenderer
 {
 public:
@@ -12,24 +14,19 @@ public:
 	virtual ~GUIRenderer();
 
 	/*
+	Draw all elements in gui.
+	*/
+	void draw(GUI& gui);
+
+	/*
 	Bake text into texture.
 	*/
-	void bakeText(Text& text, float scale);
+	void bakeText(Text& text);
 
 	/*
 	Draw the text with its internal baked texture.
 	*/
 	void drawBaked(Text & text, float x, float y);
-
-	/*
-	Draw each character. One draw call for each character.
-	*/
-	void draw(Text & text, float x, float y, float scale = -1.0f);
-
-	/*
-	Cunstruct all character bitmap and draw each character. One draw call for each character.
-	*/
-	void draw(const std::string& str, float x, float y, const glm::vec4& color, const std::string& fontName, float scale);
 
 	/*
 	Enable and set the blend function.
@@ -38,7 +35,6 @@ public:
 
 	void bakePanel(Panel* panel);
 	void drawBaked(Panel* panel);
-	void draw(Panel* panel);
 
 private:
 	/*
@@ -47,6 +43,11 @@ private:
 	void drawToBake(Text& text);
 
 	void initTextRendering();
+
+	void resizeCallback(WindowResizeEvent* evnt);
+
+	glm::mat4 orthoText;
+	glm::mat4 orthoDisplay;
 
 	VertexArray* vaFullQuad;
 	VertexBuffer* vbFullQuad;
