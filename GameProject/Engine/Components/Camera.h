@@ -22,7 +22,7 @@ public:
 	// Returns the cameras forward-vector
 	glm::vec3 getForward() const;
 	// Returns the cameras right-vector
-	glm::vec3 getRight();
+	glm::vec3 getRight() const;
 
 	// Returns the View-Projection matrix
 	glm::mat4 getVP() const;
