@@ -5,6 +5,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/quaternion.hpp"
 
+#include "GLFW/glfw3.h"
+
 CollisionHandler::CollisionHandler()
 {
 	// Set default values
@@ -23,8 +25,12 @@ CollisionHandler::CollisionHandler()
 
 	// Create the shapes used by bodies
 	createShapes();
+#ifdef ENABLE_COLLISION_BOXES
+	//Register callback for drawing GUI
+	EventBus::get().subscribe(this, &CollisionHandler::toggleDrawing);
 
-
+	this->drawCollisionShapes = false;
+#endif
 }
 
 
@@ -229,6 +235,16 @@ void CollisionHandler::createShapes()
 
 
 #ifdef ENABLE_COLLISION_BOXES
+
+void CollisionHandler::toggleDrawing(KeyEvent * ev)
+{
+	if (ev->key == GLFW_KEY_F3 && ev->action == GLFW_PRESS) {
+		this->drawCollisionShapes = !this->drawCollisionShapes;
+		LOG_INFO("swap!");
+	}
+}
+
+
 void CollisionHandler::addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& color, const glm::vec3& pos)
 {
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
@@ -244,33 +260,35 @@ void CollisionHandler::addShape(SHAPE shape, const glm::vec3& scale, const glm::
 
 void CollisionHandler::updateDrawingData()
 {
-	this->matrices.clear();
-	this->colors.clear();
+	if (this->drawCollisionShapes) {
+		this->matrices.clear();
+		this->colors.clear();
 
-	for (auto proxyShape : this->proxyShapes) {
-		CollisionShapeDrawingData* data = (CollisionShapeDrawingData*)(proxyShape->getUserData());
-		rp3d::Transform trans = proxyShape->getLocalToWorldTransform();
-		glm::vec3 eulerAngles = glm::eulerAngles(this->toGlmQuat(trans.getOrientation()));
+		for (auto proxyShape : this->proxyShapes) {
+			CollisionShapeDrawingData* data = (CollisionShapeDrawingData*)(proxyShape->getUserData());
+			rp3d::Transform trans = proxyShape->getLocalToWorldTransform();
+			glm::vec3 eulerAngles = glm::eulerAngles(this->toGlmQuat(trans.getOrientation()));
 
-		glm::mat4 mat(1.0f);
-		mat = glm::translate(mat, this->toGlmVec(trans.getPosition()));
-		mat = glm::rotate(mat, eulerAngles.z, glm::vec3(0.0f, 0.0f, 1.0f));
-		mat = glm::rotate(mat, eulerAngles.y, glm::vec3(0.0f, 1.0f, 0.0f));
-		mat = glm::rotate(mat, eulerAngles.x, glm::vec3(1.0f, 0.0f, 0.0f));
-		mat = glm::scale(mat, data->scale);
-		this->matrices.push_back(mat);
-		this->colors.push_back(data->color);
+			glm::mat4 mat(1.0f);
+			mat = glm::translate(mat, this->toGlmVec(trans.getPosition()));
+			mat = glm::rotate(mat, eulerAngles.z, glm::vec3(0.0f, 0.0f, 1.0f));
+			mat = glm::rotate(mat, eulerAngles.y, glm::vec3(0.0f, 1.0f, 0.0f));
+			mat = glm::rotate(mat, eulerAngles.x, glm::vec3(1.0f, 0.0f, 0.0f));
+			mat = glm::scale(mat, data->scale);
+			this->matrices.push_back(mat);
+			this->colors.push_back(data->color);
+		}
+
+		this->cRenderer.updateColors(colors);
+		this->cRenderer.updateMatrices(matrices);
 	}
-	//this->matrices.push_back(it.second->getTransform()->getMatrix());
-
-	this->cRenderer.updateColors(colors);
-	this->cRenderer.updateMatrices(matrices);
 
 }
 
 void CollisionHandler::drawCollisionBoxes()
 {
-	this->cRenderer.render();
+	if(this->drawCollisionShapes)
+		this->cRenderer.render();
 }
 #else
 

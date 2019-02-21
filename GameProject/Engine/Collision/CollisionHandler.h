@@ -7,6 +7,7 @@
 #include <unordered_map>
 
 #include "Engine/Config.h"
+#include "Engine/Events/EventBus.h"
 
 #ifdef ENABLE_COLLISION_BOXES
 	#include "CollisionRenderer.h"
@@ -87,6 +88,8 @@ private:
 	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 	std::vector<rp3d::ProxyShape*> proxyShapes;
 
+	bool drawCollisionShapes;
+	void toggleDrawing(KeyEvent * ev);
 
 	CollisionRenderer cRenderer;
 #else
