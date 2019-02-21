@@ -35,3 +35,8 @@ EntityManager & State::getEntityManager()
 {
 	return this->entityManager;
 }
+
+GUI & State::getGUI()
+{
+	return this->gui;
+}

@@ -2,6 +2,8 @@
 
 #include "glm/gtc/matrix_transform.hpp"
 
+#define IMGUI
+
 // Debug openGL
 #define GL_DEBUG_LAYER
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Engine/Entity/EntityManager.h>
+#include <Engine/GUI/GUI.h>
 #include <Game/GameLogic/TargetManager.h>
 #include <glm/glm.hpp>
 
@@ -19,4 +20,5 @@ struct Level {
 	EntityManager* entityManager;
 	TargetManager* targetManager;
 	Player player;
+	GUI* gui;
 };

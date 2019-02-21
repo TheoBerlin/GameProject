@@ -2,6 +2,9 @@
 
 #include "../GUI/FontManager.h"
 #include "glm/gtc/matrix_transform.hpp"
+
+#include "../GUI/GUI.h"
+
 #include "Utils/Logger.h"
 
 GUIRenderer::GUIRenderer()
@@ -20,109 +23,57 @@ GUIRenderer::~GUIRenderer()
 	delete this->whiteOnePixTexture;
 }
 
-void GUIRenderer::bakeText(Text & text, float scale)
+void GUIRenderer::draw(GUI & gui)
 {
-	Display& display = Display::get();
+	prepareTextRendering();
+	std::vector<Panel*>& panelList = gui.getPanelList();
+	for (Panel* panel : panelList)
+	{
+		// Rebake if needed
+		if (panel->hasUpdated())
+			panel->rebake();
 
-	if (scale > 0.0f)
-		text.setScale(scale);
+		// Draw baked texture.
+		this->orthoText = this->orthoDisplay;
+		drawBaked(panel);
+	}
+}
 
-	fb.updateDimensions(0, text.getWidth(), text.getHeight());
+void GUIRenderer::bakeText(Text & text)
+{
+	// Update framebuffer dimension.
+	fb.updateDimensions(0, (GLuint)text.getWidth(), (GLuint)text.getHeight());
+	this->orthoText = glm::ortho(0.0f, (float)text.getWidth(), 0.0f, (float)text.getHeight());
+
 	fb.bind();
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+	// Clear with transparent color.
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
+
+	// Draw to the texture.
 	drawToBake(text);
+
 	fb.unbind();
+	// Update texture.
 	text.setBakedTexture(*fb.getColorTexture(0));
 
+	// Reset viewport.
+	Display& display = Display::get();
 	glViewport(0, 0, display.getWidth(), display.getHeight());
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void GUIRenderer::drawBaked(Text & text, float x, float y)
 {
-	Display& display = Display::get();
-
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
-
-	float scaleX = sx * text.getScale();
-	float scaleY = sy * text.getScale();
-
 	this->textShader->bind();
+	this->textShader->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
 	this->textShader->setTexture2D("tex", 0, *text.getBakedTexture());
-	this->textShader->setUniform2f("pos", x + text.getWidth()*scaleX*0.5f, y + text.getHeight()*scaleY*0.5f);
-	this->textShader->setUniform2f("scale", text.getWidth()*scaleX*0.5f, text.getHeight()*scaleY*0.5f);
+	this->textShader->setUniform2f("pos", x, y);
+	this->textShader->setUniform2f("scale", (float)text.getWidth(), (float)text.getHeight());
 	this->vaFullQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	this->textShader->unbind();
-}
-
-void GUIRenderer::draw(Text & text, float x, float y, float scale)
-{
-	Font* font = text.getFont();
-	Display& display = Display::get();
-
-	float currentScale = scale <= 0.0f ? text.getScale() : scale;
-
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
-	const float scaleX = sx * currentScale;
-	const float scaleY = sy * currentScale;
-
-	std::vector<Text::CharacterDrawData> charactersData = text.getCharactersDrawData();
-	for (unsigned int i = 0; i < charactersData.size(); i++)
-	{
-		Text::CharacterDrawData character = charactersData[i];
-
-		font->getShader()->bind();
-		font->getShader()->setUniform4fv("color", 1, &text.getColor()[0]);
-		font->getShader()->setTexture2D("tex", 0, character.textureID);
-		font->getShader()->setUniform2f("scale", character.scale.x * scaleX, character.scale.y * scaleY);
-		font->getShader()->setUniform2f("pos", character.pos.x * scaleX + x, character.pos.y * scaleY + y);
-		
-		this->vaQuad->bind();
-		this->vbQuad->bind();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	}
-}
-
-void GUIRenderer::draw(const std::string & str, float x, float y, const glm::vec4& color, const std::string& fontName, float scale)
-{
-	Font* font = FontManager::getFont(fontName);
-	Display& display = Display::get();
-
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
-
-	const char* p;
-	for (p = str.c_str(); *p; p++)
-	{
-		Font::Character character = font->getCharacter(*p);
-
-		float x2 = x + character.bearingX * sx * scale;
-		float y2 = y - (character.height - character.bearingY) * sy * scale;
-		float w = character.width * sx * scale;
-		float h = character.height * sy * scale;
-
-		GLfloat rect[4][4] = {
-			{ x2	, y2 + h, 0, 0 }, // TL
-			{ x2	, y2	, 0, 1 }, // BL
-			{ x2 + w, y2 + h, 1, 0 }, // TR
-			{ x2 + w, y2	, 1, 1 }, // BR
-		};
-		this->vbQuad->updateData(rect, sizeof(rect));
-		
-		font->getShader()->bind();
-		font->getShader()->setUniform4fv("color", 1, &(color.x));
-		font->getShader()->setTexture2D("tex", 0, character.textureID);
-
-		this->vaQuad->bind();
-		this->vbQuad->bind();
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-
-		x += (character.advance >> 6) * sx * scale * 1.1f;
-	}
 }
 
 void GUIRenderer::prepareTextRendering()
@@ -134,95 +85,99 @@ void GUIRenderer::prepareTextRendering()
 
 void GUIRenderer::bakePanel(Panel * panel)
 {
-	std::vector<std::pair<Text*, glm::vec2>>& textList = panel->getTextList();
+	// Bake sub-panels and their text.
+	std::vector<Panel*>& children = panel->getChildren();
+	for (Panel* child : children)
+		child->rebake();
 
+	// Bake the text.
+	for (auto& element : panel->getTextList())
+		element.first->rebake();
 
-	fb.updateDimensions(0, panel->getSize().x, panel->getSize().y);
+	// Update framebuffer dimensions.
+	this->orthoText = glm::ortho(0.0f, (float)panel->getSize().x, 0.0f, (float)panel->getSize().y);
+	fb.updateDimensions(0, (GLuint)panel->getSize().x, (GLuint)panel->getSize().y);
+
 	fb.bind();
-	glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+	// Clear with a transparent color.
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	// TODO:
-	// Draw sub-panel and their text.
-	// Draw panel.
-	// Draw text.
-
-	fb.unbind();
-	panel->setBakedTexture(fb.getColorTexture(0));
-
-	Display& display = Display::get();
-	glViewport(0, 0, display.getWidth(), display.getHeight());
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-}
-
-void GUIRenderer::drawBaked(Panel * panel)
-{
-	Display& display = Display::get();
-
-	float sx = display.getPixelXScale();
-	float sy = display.getPixelYScale();
-
-	float x = panel->getPosition().x;
-	float y = panel->getPosition().y;
-
-	this->textShader->bind();
-	this->textShader->setTexture2D("tex", 0, *panel->getBakedTexture());
-	this->textShader->setUniform2f("pos", x + panel->getSize().x*sx*0.5f, y + panel->getSize().y*sy*0.5f);
-	this->textShader->setUniform2f("scale", panel->getSize().x*sx*0.5f, panel->getSize().y*sy*0.5f);
-	this->vaFullQuad->bind();
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	this->textShader->unbind();
-}
-
-void GUIRenderer::draw(Panel * panel)
-{
+	// Render current panel
 	this->panelShader->bind();
-	this->panelShader->setUniform2f("pos", panel->getPosition().x, panel->getPosition().y);
-	this->panelShader->setUniform2f("size", panel->getSize().x, panel->getSize().y);
+	this->panelShader->setUniform2f("pos", 0.0f, 0.0f);
+	this->panelShader->setUniform2f("size", (float)panel->getSize().x, (float)panel->getSize().y);
 	this->panelShader->setUniform4f("color", panel->getColor().x, panel->getColor().y, panel->getColor().z, panel->getColor().w);
+	this->panelShader->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
+
+	// If no texture was found => set to a 1x1 white texture.
 	Texture* texture = panel->getBackgroundTexture();
 	if (texture == nullptr)
 		texture = this->whiteOnePixTexture;
 	this->panelShader->setTexture2D("tex", 0, *texture);
 
-	this->vaQuad->bind();
+	// Draw panel.
+	this->vaFullQuad->bind();
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
+	// Draw text.
 	for (auto& element : panel->getTextList())
 	{
-		float x = panel->getPosition().x + element.second.x;
-		float y = panel->getPosition().y + element.second.y;
-		drawBaked(*element.first, x, y);
-		//draw(*element.first, x, y);
+		element.first->getBakedTexture()->bind();
+		drawBaked(*element.first, (float)element.second.x, (float)element.second.y);
 	}
+
+	// Draw sub-panels baked texture.
+	for (Panel* child : children)
+		drawBaked(child);
+
+	fb.unbind();
+	panel->setBakedTexture(*fb.getColorTexture(0));
+
+	// Reset viewport.
+	Display& display = Display::get();
+	glViewport(0, 0, (GLsizei)display.getWidth(), (GLsizei)display.getHeight());
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+}
+
+void GUIRenderer::drawBaked(Panel * panel)
+{
+	float x = (float)panel->getPosition().x;
+	float y = (float)panel->getPosition().y;
+
+	this->textShader->bind();
+	this->textShader->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
+	this->textShader->setTexture2D("tex", 0, *panel->getBakedTexture());
+	this->textShader->setUniform2f("pos", x, y);
+	this->textShader->setUniform2f("scale", (float)panel->getSize().x, (float)panel->getSize().y);
+	this->vaFullQuad->bind();
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	this->textShader->unbind();
 }
 
 void GUIRenderer::drawToBake(Text & text)
 {
 	Font* font = text.getFont();
 
-	Display& display = Display::get();
+	float y = (float)text.getHeight() - (float)text.getBearingY();
+	
+	font->getShader()->bind();
+	font->getShader()->setUniformMatrix4fv("ortho", 1, false, &(this->orthoText[0][0]));
 
-	float sx = 1.0f / (float)(text.getWidth());
-	float sy = 1.0f / (float)(text.getHeight());
-	const float scaleX = sx * 2.0f;
-	const float scaleY = sy * 2.0f;
-	float x = -1.0f;
-	float y = -1.0f + (text.getHeight() - text.getBearingY())*scaleY;
-
+	// Go thorugh all characters in text and draw them.
 	std::vector<Text::CharacterDrawData> charactersData = text.getCharactersDrawData();
 	for (unsigned int i = 0; i < charactersData.size(); i++)
 	{
 		Text::CharacterDrawData character = charactersData[i];
 
-		font->getShader()->bind();
 		font->getShader()->setUniform4fv("color", 1, &text.getColor()[0]);
 		font->getShader()->setTexture2D("tex", 0, character.textureID);
-		font->getShader()->setUniform2f("scale", character.scale.x * scaleX, character.scale.y * scaleY);
-		font->getShader()->setUniform2f("pos", character.pos.x * scaleX + x, character.pos.y * scaleY + y);
+		font->getShader()->setUniform2f("scale", (float)character.size.x, (float)character.size.y);
+		font->getShader()->setUniform2f("pos", (float)character.pos.x, (float)character.pos.y + y);
 
-		this->vaQuad->bind();
-		this->vbQuad->bind();
+		this->vaFullQuad->bind();
+		this->vbFullQuad->bind();
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	}
 }
@@ -232,10 +187,10 @@ void GUIRenderer::initTextRendering()
 	// Vao for each character
 	this->vaQuad = new VertexArray();
 	GLfloat quad[4][4] = {
-			{ -0.5f, +0.5f, 0, 0 }, // TL
-			{ -0.5f, -0.5f, 0, 1 }, // BL
-			{ +0.5f, +0.5f, 1, 0 }, // TR
-			{ +0.5f, -0.5f, 1, 1 }, // BR
+			{ 0.0f, 1.0f, 0, 0 }, // TL
+			{ 0.0f, 0.0f, 0, 1 }, // BL
+			{ 1.0f, 1.0f, 1, 0 }, // TR
+			{ 1.0f, 0.0f, 1, 1 }, // BR
 	};
 	this->vbQuad = new VertexBuffer(quad, sizeof(quad), GL_STATIC_DRAW);
 	AttributeLayout layout;
@@ -245,10 +200,10 @@ void GUIRenderer::initTextRendering()
 	// Vao for baked texture.
 	this->vaFullQuad = new VertexArray();
 	GLfloat fullQuad[4][4] = {
-			{ -1.0f, +1.0f, 0, 0 }, // TL
-			{ -1.0f, -1.0f, 0, 1 }, // BL
-			{ +1.0f, +1.0f, 1, 0 }, // TR
-			{ +1.0f, -1.0f, 1, 1 }, // BR
+			{ 0.0f, 1.0f, 0, 0 }, // TL
+			{ 0.0f, 0.0f, 0, 1 }, // BL
+			{ 1.0f, 1.0f, 1, 0 }, // TR
+			{ 1.0f, 0.0f, 1, 1 }, // BR
 	};
 	this->vbFullQuad = new VertexBuffer(fullQuad, sizeof(fullQuad), GL_STATIC_DRAW);
 	this->vaFullQuad->addBuffer(vbFullQuad, layout);
@@ -258,4 +213,14 @@ void GUIRenderer::initTextRendering()
 
 	std::vector<unsigned char> data = { 0xFF, 0xFF, 0xFF, 0xFF };
 	this->whiteOnePixTexture = new Texture(data.data(), 1, 1);
+
+	this->orthoDisplay = glm::ortho(0.0f, (float)display.getWidth(), 0.0f, (float)display.getHeight());
+	this->orthoText = this->orthoDisplay;
+
+	EventBus::get().subscribe(this, &GUIRenderer::resizeCallback);
+}
+
+void GUIRenderer::resizeCallback(WindowResizeEvent * evnt)
+{
+	this->orthoDisplay = glm::ortho(0.0f, (float)evnt->width, 0.0f, (float)evnt->height);
 }

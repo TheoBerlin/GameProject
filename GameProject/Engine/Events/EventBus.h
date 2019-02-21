@@ -44,8 +44,6 @@ private:
 	template<class T, class EventType>
 	static unsigned getID(T* instance);
 	
-	
-
 	std::map<std::type_index, HandlerList*> subscribers;
 };
 
@@ -62,30 +60,22 @@ inline void EventBus::publish(EventType * evnt)
 		return;
 	}
 
-	//for (auto & handler : *handlers)
-	//{
-	//	if (handler != nullptr)
-	//	{
-	//		handler->exec(evnt);
-	//	}
-	//}
 
 	bool shouldBreak = false;
-
 	for (auto it = handlers->begin(); it != handlers->end(); it++)
 	{
 		while ((*it) == nullptr)
 		{
 			it = handlers->erase(it);
-			if (it == handlers->end()) {
+			if (it == handlers->end())
+			{
 				shouldBreak = true;
 				break;
 			}
 		}
 
-		if (shouldBreak) {
+		if (shouldBreak)
 			break;
-		}
 
 		(*it)->exec(evnt);
 	}
