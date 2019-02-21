@@ -19,6 +19,7 @@ Pipeline::Pipeline()
 	this->quadShader = new Shader("./Engine/Rendering/Shaders/PostProcessVert.vert", "./Engine/Rendering/Shaders/PostProcessFrag.frag");
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
+	this->ZprePassShaderInstanced = new Shader("./Engine/Rendering/Shaders/ZPrepassInstanced.vert", "./Engine/Rendering/Shaders/ZPrepassInstanced.frag");
 	Display& display = Display::get();
 
 	int width = display.getWidth();
@@ -53,6 +54,7 @@ Pipeline::~Pipeline()
 {
 	delete this->quadShader;
 	delete this->ZprePassShader;
+	delete this->ZprePassShaderInstanced;
 	delete this->testShader;
 	delete this->entityShaderInstanced;
 
@@ -74,6 +76,26 @@ void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toSc
 	draw(renderingList);
 	
 	this->ZprePassShader->unbind();
+	this->prePassDepthOff();
+	if (!toScreen)
+		this->fbo.unbind();
+}
+
+void Pipeline::prePassDepthModel(const std::vector<Model*>& renderingModels, bool toScreen)
+{
+	if (!toScreen)
+		this->fbo.bind();
+	this->prePassDepthOn();
+	this->ZprePassShaderInstanced->bind();
+
+	//Draw renderingList
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	
+	for (Model* model : renderingModels) {
+		drawModelPrePassInstanced(model);
+	}
+
+	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	if (!toScreen)
 		this->fbo.unbind();
@@ -128,14 +150,28 @@ void Pipeline::drawToScreen(const std::vector<Entity*>& renderingList)
 {
 	glEnable(GL_DEPTH_TEST);
 
-	//shader->bind();
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	draw(renderingList, this->testShader);
 
 	this->testShader->unbind();
-	//shader->unbind();
+}
+
+void Pipeline::drawModelToScreen(const std::vector<Model*>& renderingModels)
+{
+	glEnable(GL_DEPTH_TEST);
+
+	this->entityShaderInstanced->bind();
+
+	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+
+	for (Model* model : renderingModels) {
+		drawInstanced(model);
+	}
+
+	this->entityShaderInstanced->unbind();
 }
 
 /*
@@ -155,6 +191,28 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	draw(renderingList, this->testShader);
 
 	this->testShader->unbind();
+	this->fbo.unbind();
+
+	return this->fbo.getColorTexture(0);
+}
+
+Texture * Pipeline::drawModelToTexture(const std::vector<Model*>& renderingModels)
+{
+
+	this->fbo.bind();
+	glEnable(GL_DEPTH_TEST);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	this->entityShaderInstanced->bind();
+
+	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+
+	for (Model* model : renderingModels) {
+		drawInstanced(model);
+	}
+
+	this->entityShaderInstanced->unbind();
 	this->fbo.unbind();
 
 	return this->fbo.getColorTexture(0);
@@ -238,11 +296,6 @@ void Pipeline::drawModelPrePass(Model * model)
 void Pipeline::drawInstanced(Model * model)
 {
 
-	this->entityShaderInstanced->bind();
-
-	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
-
 	for (size_t i = 0; i < model->meshCount(); i++)
 	{
 		Mesh* mesh = model->getMesh(i);
@@ -262,7 +315,7 @@ void Pipeline::drawInstanced(Model * model)
 		ib.bind();
 		glDrawElementsInstanced(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0, model->getRenderingGroup().size());
 	}
-	this->entityShaderInstanced->unbind();
+
 }
 
 void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
@@ -272,7 +325,6 @@ void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 
 void Pipeline::drawModel(Model * model, Shader* shader)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	for (size_t i = 0; i < model->meshCount(); i++)
 	{
 		Mesh* mesh = model->getMesh(i);
@@ -290,5 +342,19 @@ void Pipeline::drawModel(Model * model, Shader* shader)
 		IndexBuffer& ib = mesh->getIndexBuffer();
 		ib.bind();
 		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
+	}
+}
+
+void Pipeline::drawModelPrePassInstanced(Model * model)
+{
+	for (size_t i = 0; i < model->meshCount(); i++)
+	{
+		Mesh* mesh = model->getMesh(i);
+
+		mesh->bindVertexArray();
+
+		IndexBuffer& ib = mesh->getIndexBuffer();
+		ib.bind();
+		glDrawElementsInstanced(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0, model->getRenderingGroup().size());
 	}
 }
