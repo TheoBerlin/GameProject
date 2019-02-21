@@ -9,8 +9,8 @@ public:
 	struct CharacterDrawData
 	{
 		GLuint textureID;
-		glm::vec2 pos;
-		glm::vec2 scale;
+		glm::ivec2 pos;
+		glm::ivec2 size;
 	};
 
 	Text();
@@ -36,25 +36,14 @@ public:
 	Update the text like setText but will only do this if the string or the font is different.
 	Arguments:
 		str: The string which will be converted to characters.
-		scale: The scale of the text. This is not the same as the font size.
 		font: A pointer to the font, which will be used. If font is nullptr, an error will occur.
 	*/
-	void updateText(const std::string& str, float scale = 2.0f, Font* font = nullptr);
+	void updateText(const std::string& str, Font* font = nullptr);
 
 	/*
-	Update the data and bake it into a texture.
+	Bake the data into a texture.
 	*/
-	void update();
-
-	/*
-	Set the scale of the text. This is not the same as setting the font size.
-	*/
-	void setScale(float scale);
-
-	/*
-	Get the current scale.
-	*/
-	float getScale() const;
+	void rebake();
 
 	/*
 	Get the color as rgba.
@@ -64,15 +53,15 @@ public:
 	/*
 	Get the width in pixels.
 	*/
-	float getWidth() const;
+	unsigned int getWidth() const;
 	/*
 	Get the height in pixels.
 	*/
-	float getHeight() const;
+	unsigned int getHeight() const;
 	/*
 	Get the bearing in pixels.
 	*/
-	float getBearingY() const;
+	unsigned int getBearingY() const;
 
 	/*
 	Set the baked texture as a copy of the argument.
@@ -98,16 +87,18 @@ public:
 	*/
 	std::vector<CharacterDrawData>& getCharactersDrawData();
 
+	bool hasUpdated() const;
+
 private:
 	std::string str;
 
-	float line;
-	float width;
-	float height;
-	float bearingY;
-	glm::vec4 color;
+	bool shouldUpdate;
 
-	float scale;
+	unsigned int line;
+	unsigned int width;
+	unsigned int height;
+	unsigned int bearingY;
+	glm::vec4 color;
 
 	Texture bakedTexture;
 	Font* font;

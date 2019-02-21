@@ -3,6 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <random>
 
+#define IMGUI
+
 // Debug openGL
 #define GL_DEBUG_LAYER
 

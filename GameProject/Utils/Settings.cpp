@@ -91,7 +91,6 @@ Settings& Settings::get()
 
 Settings::Settings()
 {
-	EventBus::get().subscribe(this, &Settings::handleResizeEvent);
 	readFile();
 }
 

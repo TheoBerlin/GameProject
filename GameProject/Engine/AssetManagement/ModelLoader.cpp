@@ -72,9 +72,9 @@ void ModelLoader::unloadAllModels()
 {
     for (std::map<std::string, Model*>::iterator itr = loadedModels.begin(); itr != loadedModels.end(); itr++) {
         delete itr->second;
+		itr->second = nullptr;
     }
 
-    loadedModels.clear();
 }
 
 size_t ModelLoader::modelCount()
