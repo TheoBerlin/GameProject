@@ -3,7 +3,6 @@
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/Transform.h>
 #include <Game/components/ComponentResources.h>
-#include <Utils/Logger.h>
 #include <glm/gtx/spline.hpp>
 #include <vector>
 

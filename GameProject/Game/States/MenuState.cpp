@@ -8,7 +8,7 @@
 #include "../../Engine/GUI/FontManager.h"
 #include "glm/vec4.hpp"
 #include "../../Engine/InputHandler.h"
-
+#include "Utils/Logger.h"
 #include "../../Engine/GUI/Button.h"
 
 MenuState::MenuState() : State()

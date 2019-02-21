@@ -1,5 +1,7 @@
 #include "TextureManager.h"
 
+#include <Utils/Logger.h>
+
 std::map<std::string, Texture*> TextureManager::loadedTextures = std::map<std::string, Texture*>();
 
 Texture* TextureManager::loadTexture(const std::string& fileName, TextureType type)

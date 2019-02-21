@@ -17,6 +17,7 @@ public:
 private:
     void handleKeyInput(KeyEvent* event);
 
+	void playerCollisionCallback(PlayerCollisionEvent * ev);
     void transitionToReplay(CameraTransitionEvent* event);
 
     Entity* playerArrow;

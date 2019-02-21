@@ -1,6 +1,7 @@
 #include "Phase.h"
 
 #include <Engine/Events/EventBus.h>
+#include <Engine/Entity/Entity.h>
 
 Phase::Phase(const Level& level, Entity* transitionEntity)
     :level(level),

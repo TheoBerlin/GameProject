@@ -1,5 +1,9 @@
 #include "TargetManager.h"
 
+#include <Engine/Entity/Entity.h>
+#include <Game/Components/PathTreader.h>
+#include <Game/Components/RollNullifier.h>
+
 TargetManager::TargetManager()
 {
 }
