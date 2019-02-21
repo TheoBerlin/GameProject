@@ -32,7 +32,7 @@ MenuState::MenuState() : State()
 	this->button->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 	this->button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 	this->button->addText("Play", "arialBig");
-	this->button->setCallback([](void) { LOG_ERROR("Pressed"); });
+	this->button->setCallback([](void) { LOG_INFO("Pressed Play!"); });
 	gui.addPanel(this->button);
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -82,7 +82,8 @@ void MenuState::update(const float dt)
 
 	if (this->button->isActivated())
 	{
-		this->pushState(new GameState());
+		this->getGUI().removePanel(this->button);
+		//this->pushState(new GameState());
 	}
 }
 

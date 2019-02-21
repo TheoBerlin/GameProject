@@ -17,6 +17,7 @@ void Button::setHoverTexture(Texture * texture)
 void Button::setNormalTexture(Texture * texture)
 {
 	this->normalTexture = texture;
+	toNormalStyle();
 }
 
 void Button::setPressedTexture(Texture * texture)
@@ -32,6 +33,7 @@ void Button::setHoverColor(const glm::vec4 & color)
 void Button::setNormalColor(const glm::vec4 & color)
 {
 	this->normalColor = color;
+	toNormalStyle();
 }
 
 void Button::setPressedColor(const glm::vec4 & color)
@@ -60,7 +62,8 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 	else if (this->isHovering)
 	{
 		this->active = true;
-		this->func();
+		if(this->func)
+			this->func();
 		toNormalStyle();
 	}
 }
