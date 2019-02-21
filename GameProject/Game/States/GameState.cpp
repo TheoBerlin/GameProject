@@ -12,7 +12,6 @@
 #include <Engine/InputHandler.h>
 
 #include <Game/GameLogic/TargetManager.h>
-#include <Utils/Logger.h>
 
 GameState::GameState()
 {
