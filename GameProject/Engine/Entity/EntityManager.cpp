@@ -1,5 +1,8 @@
 #include "EntityManager.h"
 
+#include "Utils/Logger.h"
+#include "Entity.h"
+
 
 
 EntityManager::EntityManager()

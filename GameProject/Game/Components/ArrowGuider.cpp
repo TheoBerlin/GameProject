@@ -1,6 +1,7 @@
 #include "ArrowGuider.h"
 
 #include <Engine/Entity/Entity.h>
+#include <Utils/Logger.h>
 
 ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")

@@ -1,5 +1,7 @@
 #include "Settings.h"
 
+#include "../Utils/Logger.h"
+
 bool Settings::readFile(std::string fileName)
 {
 	std::ifstream iFile;

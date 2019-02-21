@@ -22,17 +22,21 @@ public:
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
-	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false);
+	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false); // Old rendering
+	void prePassDepthModel(const std::vector<Model*>& renderingModels, bool toScreen = false);
 
 	/*
 		Draw directly to the screen
 	*/
-	void drawToScreen(const std::vector<Entity*>& renderingList);
+	void drawToScreen(const std::vector<Entity*>& renderingList); // Old rendering
+	void drawModelToScreen(const std::vector<Model*>& renderingModels);
 
 	/*
 		Draw to framebuffer color texture, nothing will be visible on screen unless you draw the texture to a quad
 	*/
-	Texture* drawToTexture(const std::vector<Entity*>& renderingList);
+	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
+	Texture* drawModelToTexture(const std::vector<Model*>& renderingModels);
+
 	/*
 		Use texture to draw to quad which cover the whole screen
 	*/
@@ -49,6 +53,7 @@ public:
 	Texture* calcDirLightDepth(const std::vector<Entity*>& renderingList, const glm::vec3& lightDir);
 
 	void setActiveCamera(Camera* camera);
+	Camera* getActiveCamera();
 
 	Framebuffer* getFbo();
 
@@ -57,18 +62,23 @@ private:
 	unsigned width, height;
 	Framebuffer fbo;
 
-	void draw(const std::vector<Entity*>& renderingList);
-	void draw(const std::vector<Entity*>& renderingList, Shader* shader);
-	void drawModel(Model * model, Shader* shader);
-	void drawModelPrePass(Model * model);
+	// Old rendering draw functions
+	void draw(const std::vector<Entity*>& renderingList);					// Old rendering
+	void draw(const std::vector<Entity*>& renderingList, Shader* shader);	// Old rendering
+	void drawModel(Model * model, Shader* shader);							// Old rendering
+	void drawModelPrePass(Model * model);									// Old rendering
+
+	// New rendering draw functions
+	void drawModelPrePassInstanced(Model * model);
 
 	void updateFramebufferDimension(WindowResizeEvent* event);
 
 	void prePassDepthOn();
 	void prePassDepthOff();
 
-	Shader* ZprePassShader;
-	Shader* testShader;
+	Shader* ZprePassShader;				// Old rendering
+	Shader* testShader;					// Old rendering
+	Shader* ZprePassShaderInstanced;
 	Shader* entityShaderInstanced;
 	Shader* quadShader;
 

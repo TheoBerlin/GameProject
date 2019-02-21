@@ -7,7 +7,6 @@
 #include <Game/Level/Level.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/AssetManagement/ModelLoader.h>
-#include <Utils/Logger.h>
 
 #include <fstream>
 #include <iostream>
@@ -31,6 +30,8 @@ private:
 	void readVec3(json::json& file, glm::vec3& vec);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 	void readCameraSetting(json::json& file, CameraSetting& camera);
+
+	void createCollisionBodies(Level& level);
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);

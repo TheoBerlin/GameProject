@@ -8,6 +8,8 @@
 #include <Game/GameLogic/Phase.h>
 #include "glm/glm.hpp"
 
+class CollisionHandler;
+
 class GameLogic
 {
 public:
