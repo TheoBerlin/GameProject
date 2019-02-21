@@ -128,11 +128,33 @@ public:
 
 	/*
 	Add a panel to the gui.
+	Arguments:
+		panel: A pointer to the panel which will be added.
 	*/
 	void addPanel(Panel* panel);
 
 	/*
+	Remove a panel from the gui. This will swap the panel at the position of index with the last panel and delete it.
+	Arguments:
+		index: The index of the panel in the list of gui elements.
+	return:
+		true if removed else false.
+	*/
+	bool removePanelI(unsigned int index);
+
+	/*
+	Remove a panel from the gui. This will swap the panel with the last panel and delete it.
+	Arguments:
+		panel: A pointer to the panel which will be removed.
+	return:
+		true if removed else false.
+	*/
+	bool removePanel(Panel* panel);
+	
+	/*
 	Get a pointer to a panel from the gui.
+	Arguments:
+		index: The index of the panel in the list of gui elements.
 	*/
 	Panel* getPanel(unsigned int index);
 
@@ -140,6 +162,11 @@ public:
 	Get the list of panels in the gui.
 	*/
 	std::vector<Panel*>& getPanelList();
+
+	/*
+	Remove all panels from the list.
+	*/
+	void clearAllPanels();
 
 private:
 	std::vector<Panel*> panelList;

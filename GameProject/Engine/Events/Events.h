@@ -35,11 +35,11 @@ struct WindowResizeEvent : public Event
 
 struct MouseMoveEvent : public Event
 {
-	MouseMoveEvent(int moveX, int moveY, int travelX, int travelY) : moveX{ moveX }, moveY{ moveY }, travelX{ travelX }, travelY{ travelY } {};
-	int moveX;
-	int moveY;
-	int travelX;
-	int travelY;
+	MouseMoveEvent(unsigned int posX, unsigned int posY, int deltaX, int deltaY) : posX{ posX }, posY{ posY }, deltaX{ deltaX }, deltaY{ deltaY } {};
+	unsigned int posX;
+	unsigned int posY;
+	int deltaX;
+	int deltaY;
 };
 
 struct MouseClickEvent : public Event

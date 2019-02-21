@@ -102,9 +102,9 @@ void OversightController::update(const float& dt)
 
 void OversightController::handleMouseMove(MouseMoveEvent* event)
 {
-    mouseMoveX += (float)event->moveX - prevMousePosX;
+    mouseMoveX += (float)event->posX - prevMousePosX;
 
-    prevMousePosX = (float)event->moveX;
+    prevMousePosX = (float)event->posX;
 
     // Divide by window height to separate turn speed from screen resolution
     rotateFactor += mouseSensitivity * mouseMoveX / windowHeight;

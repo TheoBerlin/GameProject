@@ -17,6 +17,7 @@ void Button::setHoverTexture(Texture * texture)
 void Button::setNormalTexture(Texture * texture)
 {
 	this->normalTexture = texture;
+	toNormalStyle();
 }
 
 void Button::setPressedTexture(Texture * texture)
@@ -32,6 +33,7 @@ void Button::setHoverColor(const glm::vec4 & color)
 void Button::setNormalColor(const glm::vec4 & color)
 {
 	this->normalColor = color;
+	toNormalStyle();
 }
 
 void Button::setPressedColor(const glm::vec4 & color)
@@ -39,14 +41,14 @@ void Button::setPressedColor(const glm::vec4 & color)
 	this->pressedColor = color;
 }
 
-bool Button::isActivated() const
-{
-	return this->active;
-}
-
 void Button::setCallback(std::function<void(void)> func)
 {
 	this->func = func;
+}
+
+void Button::removeCallback()
+{
+	this->func = [](void)->void {};
 }
 
 void Button::mouseClickCallback(MouseClickEvent * evnt)
@@ -59,16 +61,16 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 	}
 	else if (this->isHovering)
 	{
-		this->active = true;
-		this->func();
+		if(this->func)
+			this->func();
 		toNormalStyle();
 	}
 }
 
 void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 {
-	if (evnt->moveX >= this->pos.x && evnt->moveX <= this->pos.x + this->size.x &&
-		evnt->moveY >= this->pos.y && evnt->moveY <= this->pos.y + this->size.y)
+	if (evnt->posX >= this->pos.x && evnt->posX <= this->pos.x + this->size.x &&
+		evnt->posY >= this->pos.y && evnt->posY <= this->pos.y + this->size.y)
 	{
 		this->isHovering = true;
 		toHoverStyle();
@@ -76,7 +78,6 @@ void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 	else
 	{
 		this->isHovering = false; 
-		this->active = false;
 		toNormalStyle();
 	}
 }

@@ -9,7 +9,7 @@ Texture::Texture() : id(0), loaded(false)
 {
 }
 
-Texture::Texture(const Texture & other)
+Texture::Texture(const Texture & other) : id(0), loaded(false)
 {
 	copyData(other);
 }
