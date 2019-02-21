@@ -1,23 +1,20 @@
 #include "Phase.h"
 
 #include <Engine/Events/EventBus.h>
-#include <Engine/Events/Events.h>
 
-Phase::Phase(const Level& level)
+Phase::Phase(const Level& level, Entity* transitionEntity)
+    :level(level),
+    transitionEntity(transitionEntity)
 {
-    this->level = level;
+    this->transitionComponent = dynamic_cast<CameraTransition*>(transitionEntity->getComponent("CameraTransition"));
+    this->transitionCam = dynamic_cast<Camera*>(transitionEntity->getComponent("Camera"));
 }
 
 Phase::Phase(Phase* other)
-{
-    this->level = other->level;
-}
-
-void Phase::handleKeyInput(KeyEvent* event)
-{
-}
-
-void Phase::handleMouseClick(MouseClickEvent* event)
+    :level(other->level),
+    transitionEntity(other->transitionEntity),
+    transitionComponent(other->transitionComponent),
+    transitionCam(other->transitionCam)
 {
 }
 
