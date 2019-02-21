@@ -82,7 +82,8 @@ void MenuState::update(const float dt)
 
 	if (this->button->isActivated())
 	{
-		this->getGUI().removePanel(this->button);
+		this->getGUI().removePanelI(1);
+		//this->getGUI().removePanel(this->button);
 		//this->pushState(new GameState());
 	}
 }

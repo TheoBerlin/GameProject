@@ -134,13 +134,13 @@ public:
 	void addPanel(Panel* panel);
 
 	/*
-	Remove a panel from the gui.
+	Remove a panel from the gui. This will swap the panel at the position of index with the last panel and delete it.
 	Arguments:
 		index: The index of the panel in the list of gui elements.
 	return:
 		true if removed else false.
 	*/
-	bool removePanel(unsigned int index);
+	bool removePanelI(unsigned int index);
 
 	/*
 	Remove a panel from the gui. This will swap the panel with the last panel and delete it.
@@ -152,7 +152,7 @@ public:
 	bool removePanel(Panel* panel);
 	
 	/*
-	Get a pointer to a panel from the gui. This will swap the panel at the position of index with the last panel and delete it.
+	Get a pointer to a panel from the gui.
 	Arguments:
 		index: The index of the panel in the list of gui elements.
 	*/

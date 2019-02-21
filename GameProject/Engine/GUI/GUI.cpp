@@ -21,7 +21,7 @@ void GUI::addPanel(Panel * panel)
 	this->panelList.push_back(panel);
 }
 
-bool GUI::removePanel(unsigned int index)
+bool GUI::removePanelI(unsigned int index)
 {
 	const size_t size = this->panelList.size();
 	if (size == 0)
@@ -42,6 +42,11 @@ bool GUI::removePanel(unsigned int index)
 
 bool GUI::removePanel(Panel * panel)
 {
+	if (panel == nullptr)
+	{
+		LOG_WARNING("Trying to remove a nullptr from list!");
+		return false;
+	}
 	const size_t size = this->panelList.size();
 	if (size == 0)
 	{
@@ -50,7 +55,7 @@ bool GUI::removePanel(Panel * panel)
 	}
 
 	Panel* last = this->panelList[size - 1];
-	for (Panel* p : this->panelList)
+	for (Panel*& p : this->panelList)
 	{
 		if (p == panel)
 		{
