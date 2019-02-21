@@ -60,16 +60,24 @@ inline void EventBus::publish(EventType * evnt)
 		return;
 	}
 
+
+	bool shouldBreak = false;
 	for (auto it = handlers->begin(); it != handlers->end(); it++)
 	{
-		if ((*it) == nullptr)
+		while ((*it) == nullptr)
 		{
 			it = handlers->erase(it);
 			if (it == handlers->end())
+			{
+				shouldBreak = true;
 				break;
+			}
 		}
-		else
-			(*it)->exec(evnt);
+		
+		if (shouldBreak)
+			break;
+
+		(*it)->exec(evnt);
 	}
 }
 
