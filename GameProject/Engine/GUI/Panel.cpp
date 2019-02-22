@@ -25,6 +25,8 @@ Panel::~Panel()
 	this->children.clear();
 
 	delete this->bakedTexture;
+
+	EventBus::get().unsubscribe(this, &Panel::resizeCallback);
 }
 
 void Panel::setBakedTexture(const Texture& texture)
@@ -218,6 +220,15 @@ bool Panel::hasUpdated() const
 		if(p->hasUpdated())
 			return true;
 
+	return false;
+}
+
+void Panel::setActive(bool active)
+{
+}
+
+bool Panel::isActive() const
+{
 	return false;
 }
 

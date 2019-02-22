@@ -5,6 +5,9 @@
 #include "Engine/Events/EventBus.h"
 #include "Utils/Logger.h"
 
+#include "../Config.h"
+#include <Engine/Imgui/imgui.h>
+
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
@@ -26,6 +29,11 @@ Pipeline::Pipeline()
 	int height = display.getHeight();
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
+
+	float shadowResScale = 4.0f;
+	shadowWidth = Display::get().getWidth() * shadowResScale;
+	shadowHeight = Display::get().getHeight() * shadowResScale;
+	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
 	this->uniformBuffers.resize(7);
@@ -67,7 +75,7 @@ Pipeline::~Pipeline()
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)
 {
 	if(!toScreen)
-		this->fbo.bind();
+		this->fbo.bind();;
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
@@ -186,7 +194,11 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+	this->testShader->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
 	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+
+	Texture * shadowTex = getShadowFbo()->getDepthTexture();
+	this->testShader->setTexture2D("shadowTex", 1, shadowTex->getID());
 
 	draw(renderingList, this->testShader);
 
@@ -205,8 +217,12 @@ Texture * Pipeline::drawModelToTexture(const std::vector<Model*>& renderingModel
 
 	this->entityShaderInstanced->bind();
 
+	this->entityShaderInstanced->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
 	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+
+	Texture * shadowTex = getShadowFbo()->getDepthTexture();
+	this->entityShaderInstanced->setTexture2D("shadowTex", 1, shadowTex->getID());
 
 	for (Model* model : renderingModels) {
 		drawInstanced(model);
@@ -235,6 +251,89 @@ void Pipeline::drawTextureToQuad(Texture * tex)
 	this->quadShader->unbind();
 }
 
+void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
+{
+	
+	int displayWidth = Display::get().getWidth();
+	int displayHeight = Display::get().getHeight();
+
+	Display::get().updateView(shadowWidth, shadowHeight);
+
+	this->shadowFbo.bind();;
+	this->prePassDepthOn();
+	this->ZprePassShader->bind();
+
+	float orthoWidth = 20.0f;
+	float orthoHeight = 20.0f * Display::get().getRatio();
+	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth /2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
+	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+	lightSpaceMatrix = lightProjection * lightView;
+
+	//Draw renderingList
+	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	glCullFace(GL_FRONT);
+	draw(renderingList);
+	glCullFace(GL_BACK);
+
+	this->ZprePassShader->unbind();
+	this->prePassDepthOff();
+	this->shadowFbo.unbind();
+
+#ifdef IMGUI
+	auto drawTexture = [](Texture* texture, bool nextLine = false) {
+		ImTextureID texID = (ImTextureID)texture->getID();
+		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
+		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
+		if (nextLine)
+			ImGui::SameLine();
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Image(texID, ImVec2(370 * ratio, 370), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+			ImGui::EndTooltip();
+		}
+	};
+
+	ImGui::Begin("Shadow buffer");
+
+	drawTexture(this->shadowFbo.getDepthTexture());
+
+	ImGui::End();
+#endif
+
+	Display::get().updateView(displayWidth, displayHeight);
+}
+
+void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingModels)
+{
+	int displayWidth = Display::get().getWidth();
+	int displayHeight = Display::get().getHeight();
+
+	Display::get().updateView(shadowWidth, shadowHeight);
+
+	this->shadowFbo.bind();
+	this->prePassDepthOn();
+	this->ZprePassShaderInstanced->bind();
+
+	float orthoWidth = 20.0f;
+	float orthoHeight = 20.0f * Display::get().getRatio();
+	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
+	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+	lightSpaceMatrix = lightProjection * lightView;
+
+	//Draw renderingList
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	for (Model* model : renderingModels) {
+		drawModelPrePassInstanced(model);
+	}
+
+	this->ZprePassShaderInstanced->unbind();
+	this->prePassDepthOff();
+	this->shadowFbo.unbind();
+
+	Display::get().updateView(displayWidth, displayHeight);
+}
+
 void Pipeline::setActiveCamera(Camera * camera)
 {
 	this->camera = camera;
@@ -248,6 +347,11 @@ Camera * Pipeline::getActiveCamera()
 Framebuffer * Pipeline::getFbo()
 {
 	return &this->fbo;
+}
+
+Framebuffer * Pipeline::getShadowFbo()
+{
+	return &this->shadowFbo;
 }
 
 void Pipeline::draw(const std::vector<Entity*>& renderingList)

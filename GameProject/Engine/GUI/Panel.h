@@ -176,6 +176,16 @@ public:
 	*/
 	bool hasUpdated() const;
 
+	/*
+	Set if the panel is active.
+	*/
+	virtual void setActive(bool active);
+
+	/*
+	Get if the panel is active.
+	*/
+	virtual bool isActive() const;
+
 private:
 
 	/*
