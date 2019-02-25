@@ -7,6 +7,8 @@
 
 #include "GLFW/glfw3.h"
 
+#include "../Rendering/GLAbstraction/RenderingResources.h"
+
 CollisionHandler::CollisionHandler()
 {
 	// Set default values
@@ -111,7 +113,7 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, SHAPE shape)
 		this->player = entityBody;
 
 
-rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
+	rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
 #ifdef ENABLE_COLLISION_BOXES
 
 	for (auto data : this->shapes[(size_t)shape]) {
@@ -162,7 +164,7 @@ void CollisionHandler::removeCollisionBody(Entity * entity)
 
 		// Remove the proxy collision shape
 		rp3d::ProxyShape* nextElement = current->getNext();
-	
+		
 		// TEMPORARY
 		rp3d::ProxyShape* proxyPtr;
 		size_t size = this->proxyShapes.size();
@@ -191,6 +193,49 @@ void CollisionHandler::removeCollisionBody(Entity * entity)
 			break;
 		}
 	}
+}
+
+void CollisionHandler::addShape(const std::string & name, Vertex* vertices, unsigned int numVertices)
+{
+	std::vector<Vertex> verts(vertices, vertices+numVertices);
+	
+	// Calculate centroid.
+	glm::vec3 centroid;
+	for (Vertex& v : verts)
+		centroid += v.Position;
+	centroid /= numVertices;
+
+	// Distance from centroid to vertex.
+	std::vector<glm::vec3> vertsDist;
+	for (Vertex& v : verts)
+		vertsDist.push_back(v.Position-centroid);
+	
+	/* Matrix multiplication for a single element.
+		c[i][j] = (a*b)[i][j]
+	Arguments:
+		m1: matrix a
+		m2: matrix b
+		i: row index
+		j: col index
+	*/
+	auto getElem = [](std::vector<glm::vec3>& m1, std::vector<glm::vec3>& m2, int i, int j)->float {
+		float a = 0.0f;
+		for (unsigned k = 0; k < m1.size(); k++)
+			a += m1[k][i] * m2[k][j];
+		return a;
+	};
+
+	// Calculate the covariance matrix
+	float cov[3][3];
+	for (unsigned i = 0; i < 3; i++)
+		for (unsigned j = 0; j < 3; j++)
+			cov[j][i] = getElem(vertsDist, vertsDist, i, j);
+
+	/*
+	TODO: 
+	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
+	Vector3 axis = eig.eigenvectors().col(2).normalized();
+	*/
 }
 
 rp3d::Vector3 CollisionHandler::toReactVec(const glm::vec3 & vec)

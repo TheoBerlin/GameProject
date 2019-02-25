@@ -44,7 +44,7 @@ enum CATEGORY
 
 // Forward declerations
 class Entity;
-
+struct Vertex;
 class CollisionHandler
 {
 public:
@@ -63,6 +63,8 @@ public:
 	void removeCollisionBody(rp3d::CollisionBody * body);
 	// Remove collision from an entity
 	void removeCollisionBody(Entity * entity);
+
+	void addShape(const std::string& name, Vertex* vertices, unsigned int numVertices);
 
 	rp3d::Vector3 toReactVec(const glm::vec3& vec);
 	glm::vec3 toGlmVec(const rp3d::Vector3& vec);
