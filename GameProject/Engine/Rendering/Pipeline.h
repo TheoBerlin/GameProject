@@ -6,11 +6,8 @@
 #include "GLAbstraction/Shader.h"
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
-
-//TEST TEST TEST REMOVE
 #include "Engine/Particle/ParticleManager.h"
-#include "Engine/Rendering/GLAbstraction/VertexArray.h"
-#include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
+
 
 class Entity;
 
