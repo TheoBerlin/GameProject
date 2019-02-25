@@ -11,6 +11,7 @@ class Mesh
 {
 public:
     Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
+	Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout);
     ~Mesh();
 
     void bindVertexArray();
@@ -20,11 +21,10 @@ public:
     void bindMaterial(UniformBuffer* uniformBuffer);
     unsigned short getMaterialIndex();
 
-	void initInstancing(const void * data, size_t dataSize);
-	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0);
+	void addBuffer(const void * data, size_t dataSize, const AttributeLayout& layout);
 
-private:
-    void createBuffers();
+	void initInstancing(const void * data, size_t dataSize);
+	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0, unsigned buffer = 1);
 
 private:
     Model* parentModel;

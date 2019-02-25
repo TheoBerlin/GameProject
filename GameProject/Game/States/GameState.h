@@ -6,6 +6,7 @@
 #include <Engine/States/State.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
+#include "Engine/Collision/CollisionHandler.h"
 
 class GameState : public State
 {
@@ -26,4 +27,5 @@ private:
 	ParticleEmitter emitter;
 	TargetManager* targetManager;
 	GameLogic gameLogic;
+	CollisionHandler collisionHandler;
 };

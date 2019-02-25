@@ -111,8 +111,8 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
-	this->xPos = evnt->travelX;
-	this->yPos = evnt->travelY;
+	this->xPos = evnt->deltaX;
+	this->yPos = evnt->deltaY;
 }
 
 void FreeMove::clickMouse(MouseClickEvent * evnt)

@@ -8,7 +8,7 @@
 #include "../../Engine/GUI/FontManager.h"
 #include "glm/vec4.hpp"
 #include "../../Engine/InputHandler.h"
-
+#include "Utils/Logger.h"
 #include "../../Engine/GUI/Button.h"
 
 MenuState::MenuState() : State()
@@ -32,7 +32,10 @@ MenuState::MenuState() : State()
 	this->button->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
 	this->button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
 	this->button->addText("Play", "arialBig");
-	this->button->setCallback([](void) { LOG_ERROR("Pressed"); });
+	this->button->setCallback([this](void) {
+		//this->getGUI().removePanel(this->button);
+		this->pushState(new GameState());
+	});
 	gui.addPanel(this->button);
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -76,13 +79,9 @@ void MenuState::update(const float dt)
 	time += dt;
 	if (time > 1.0f)
 	{
-		this->panel->updateText(0, "FPS: " + std::to_string((int)(1.0f / dt)));
+		if(this->panel)
+			this->panel->updateText(0, "FPS: " + std::to_string((int)(1.0f / dt)));
 		time = 0.0f;
-	}
-
-	if (this->button->isActivated())
-	{
-		this->pushState(new GameState());
 	}
 }
 

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <iostream>
-#include <Windows.h>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -151,8 +150,9 @@ private:
 	template<typename ...Args>
 	static std::string formatString(const std::string& str, Args&& ...args);
 
-	static HANDLE hstdin, hstdout;
-	static CONSOLE_SCREEN_BUFFER_INFO csbi;
+	static void* hstdin;
+	static void* hstdout;
+	static unsigned short  wAttributes;
 	static unsigned int filter;
 
 	static bool writeToFile;

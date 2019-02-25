@@ -12,6 +12,7 @@ GUIRenderer::GUIRenderer()
 	this->textShader = new Shader("./Engine/Rendering/Shaders/TexShader.vert", "./Engine/Rendering/Shaders/TexShader.frag");
 	this->panelShader = new Shader("./Engine/Rendering/Shaders/PanelShader.vert", "./Engine/Rendering/Shaders/PanelShader.frag");
 	initTextRendering();
+	EventBus::get().subscribe(this, &GUIRenderer::resizeCallback);
 }
 
 GUIRenderer::~GUIRenderer()
@@ -21,6 +22,8 @@ GUIRenderer::~GUIRenderer()
 	delete this->textShader;
 	delete this->panelShader;
 	delete this->whiteOnePixTexture;
+
+	EventBus::get().unsubscribe(this, &GUIRenderer::resizeCallback);
 }
 
 void GUIRenderer::draw(GUI & gui)
@@ -216,8 +219,6 @@ void GUIRenderer::initTextRendering()
 
 	this->orthoDisplay = glm::ortho(0.0f, (float)display.getWidth(), 0.0f, (float)display.getHeight());
 	this->orthoText = this->orthoDisplay;
-
-	EventBus::get().subscribe(this, &GUIRenderer::resizeCallback);
 }
 
 void GUIRenderer::resizeCallback(WindowResizeEvent * evnt)

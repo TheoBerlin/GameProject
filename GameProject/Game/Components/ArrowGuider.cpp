@@ -1,6 +1,7 @@
 #include "ArrowGuider.h"
 
 #include <Engine/Entity/Entity.h>
+#include <Utils/Logger.h>
 
 ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
     :Component(parentEntity, "ArrowGuider")
@@ -192,8 +193,8 @@ void ArrowGuider::stopGuiding()
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 {
     // Calculate relative mouse position
-	int moveX = event->travelX;
-	int moveY = event->travelY;
+	int moveX = event->deltaX;
+	int moveY = event->deltaY;
 
     // Divide by window height to separate turn speed from screen resolution
     float turnFactorYaw = moveX / (windowHeight * maxMouseMove);

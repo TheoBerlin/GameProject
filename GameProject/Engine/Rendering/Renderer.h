@@ -22,6 +22,7 @@ public:
 	*/
 	void setActiveCamera(Camera* camera);
 
+	Camera* getActiveCamera();
 	/*
 	Push entity to the rendering list.
 	Arguments:
@@ -44,11 +45,11 @@ public:
 	*/
 	void updateInstancingData(Model * model);
 
-
 	/*
 		Draw all entites in the rendering list, assumes that all entities in rendering list uses the same model
 	*/
 	void drawAllInstanced();
+
 
 
 private:
@@ -59,5 +60,6 @@ private:
 	Texture* tex;
 
 	std::vector<Entity*> renderingList;
+	std::vector<Model*> renderingModels;
 
 };

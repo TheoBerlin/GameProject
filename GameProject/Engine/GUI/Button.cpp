@@ -7,6 +7,8 @@ Button::Button() : Panel()
 
 Button::~Button()
 {
+	EventBus::get().unsubscribe(this, &Button::mouseClickCallback);
+	EventBus::get().unsubscribe(this, &Button::mouseMoveCallback);
 }
 
 void Button::setHoverTexture(Texture * texture)
@@ -17,6 +19,7 @@ void Button::setHoverTexture(Texture * texture)
 void Button::setNormalTexture(Texture * texture)
 {
 	this->normalTexture = texture;
+	toNormalStyle();
 }
 
 void Button::setPressedTexture(Texture * texture)
@@ -32,6 +35,7 @@ void Button::setHoverColor(const glm::vec4 & color)
 void Button::setNormalColor(const glm::vec4 & color)
 {
 	this->normalColor = color;
+	toNormalStyle();
 }
 
 void Button::setPressedColor(const glm::vec4 & color)
@@ -39,45 +43,50 @@ void Button::setPressedColor(const glm::vec4 & color)
 	this->pressedColor = color;
 }
 
-bool Button::isActivated() const
-{
-	return this->active;
-}
-
 void Button::setCallback(std::function<void(void)> func)
 {
 	this->func = func;
 }
 
+void Button::removeCallback()
+{
+	this->func = [](void)->void {};
+}
+
 void Button::mouseClickCallback(MouseClickEvent * evnt)
 {
-	if (evnt->action == GLFW_PRESS)
+	if (this->active)
 	{
-		this->pressed = true;
-		if(this->isHovering)
-			toPressedStyle();
-	}
-	else if (this->isHovering)
-	{
-		this->active = true;
-		this->func();
-		toNormalStyle();
+		if (evnt->action == GLFW_PRESS)
+		{
+			this->pressed = true;
+			if (this->isHovering)
+				toPressedStyle();
+		}
+		else if (this->isHovering)
+		{
+			if (this->func)
+				this->func();
+			toNormalStyle();
+		}
 	}
 }
 
 void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 {
-	if (evnt->moveX >= this->pos.x && evnt->moveX <= this->pos.x + this->size.x &&
-		evnt->moveY >= this->pos.y && evnt->moveY <= this->pos.y + this->size.y)
+	if (this->active)
 	{
-		this->isHovering = true;
-		toHoverStyle();
-	}
-	else
-	{
-		this->isHovering = false; 
-		this->active = false;
-		toNormalStyle();
+		if (evnt->posX >= this->pos.x && evnt->posX <= this->pos.x + this->size.x &&
+			evnt->posY >= this->pos.y && evnt->posY <= this->pos.y + this->size.y)
+		{
+			this->isHovering = true;
+			toHoverStyle();
+		}
+		else
+		{
+			this->isHovering = false;
+			toNormalStyle();
+		}
 	}
 }
 
@@ -113,4 +122,16 @@ void Button::init()
 	this->normalColor = { 0.5f, 0.5f, 0.5f, 1.0f };
 	this->hoverColor = { 0.8f, 0.8f, 0.8f, 1.0f };
 	this->pressedColor = { 0.3f, 0.3f, 0.3f, 1.0f };
+
+	this->active = true;
+}
+
+void Button::setActive(bool active)
+{
+	this->active = active;
+}
+
+bool Button::isActive() const
+{
+	return this->active;
 }

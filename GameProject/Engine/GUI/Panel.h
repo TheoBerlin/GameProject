@@ -176,6 +176,16 @@ public:
 	*/
 	bool hasUpdated() const;
 
+	/*
+	Set if the panel is active.
+	*/
+	virtual void setActive(bool active);
+
+	/*
+	Get if the panel is active.
+	*/
+	virtual bool isActive() const;
+
 private:
 
 	/*
@@ -240,7 +250,7 @@ protected:
 	std::vector<Panel*> children;
 	std::vector<std::pair<Text*, glm::uvec2>> textList;
 
-	Texture bakedTexture;
+	Texture* bakedTexture;
 	Texture* backgroundTexture;
 
 	glm::vec4 color;

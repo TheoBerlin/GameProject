@@ -3,6 +3,7 @@
 in vec3 fragNormal;
 in vec2 fragUv;
 in vec3 fragPos;
+in vec4 fragLightPos;
 
 layout(std140) uniform Material
 {
@@ -19,8 +20,28 @@ layout(std140) uniform DirectionalLight
 layout (location = 0) out vec4 finalColor;
 
 uniform sampler2D tex;
+uniform sampler2D shadowTex;
 uniform vec3 camPos;
 
+float ShadowCalculation(vec4 fragLightSpace)
+{
+    float bias = 0.00000002;//max(0.005 * (1.0 - dot(fragNormal, dirLight.direction.xyz)), 0.005);  
+    // perform perspective divide
+    vec3 projCoords = fragLightSpace.xyz / fragLightSpace.w;
+    // transform to [0,1] range
+    projCoords = projCoords * 0.5 + 0.5;
+    // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
+    float closestDepth = texture(shadowTex, projCoords.xy).r; 
+    // get depth of current fragment from light's perspective
+    float currentDepth = projCoords.z;
+    // check whether current frag pos is in shadow
+    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+
+    if(projCoords.z > 1.0)
+        shadow = 0.0;
+
+    return shadow;
+}  
 
 void main()
 {
@@ -49,5 +70,11 @@ void main()
     texColor = min(texColor, 1.0f);
     vec3 phong = min(texColor * ( specular + diffuse + ambient), 1.0f);
 
-    finalColor = vec4(phong, 1.0f);
+	/*
+		Shadow
+	*/
+	float shadow = ShadowCalculation(fragLightPos);
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
+
+    finalColor = vec4(lighting, 1.0);
 }

@@ -11,6 +11,11 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Cube.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/floor.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/droneTarget.fbx"));
 }
 
 Renderer::~Renderer()
@@ -23,6 +28,11 @@ void Renderer::setActiveCamera(Camera * camera)
 	this->pipeline.setActiveCamera(camera);
 }
 
+Camera * Renderer::getActiveCamera()
+{
+	return this->pipeline.getActiveCamera();
+}
+
 void Renderer::push(Entity * entity)
 {
 	this->renderingList.push_back(entity);
@@ -31,6 +41,8 @@ void Renderer::push(Entity * entity)
 void Renderer::drawAll()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	this->pipeline.calcDirLightDepth(this->renderingList);
 
 	/*
 		Z-prepass stage
@@ -69,7 +81,6 @@ void Renderer::updateInstancingData(Model * model)
 
 void Renderer::drawAllInstanced()
 {
-	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	pipeline.getFbo()->bind();
@@ -77,11 +88,21 @@ void Renderer::drawAllInstanced()
 	glDrawBuffers(2, buf);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	/*
+	Calulate shadow depth
+	*/
+	this->pipeline.calcDirLightDepthInstanced(this->renderingModels);
 
-	std::vector<Model*> models = ModelLoader::getModels();
-	for (Model* model : models) {
-		this->pipeline.drawInstanced(model);
-	}
+	/*
+		Z-prepass stage
+	*/
+	this->pipeline.prePassDepthModel(this->renderingModels);
+
+	/*
+		Drawing stage with pre existing depth buffer to texture
+	*/
+	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
+
 
 	pipeline.drawParticle();
 	
@@ -90,5 +111,13 @@ void Renderer::drawAllInstanced()
 
 	pipeline.getFbo()->unbind();
 
-	this->pipeline.drawTextureToQuad(postProcessTexture, tex);
+	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, tex);
+
+	/*
+		Draw texture of scene to quad for postprocessing
+	*/
+	this->pipeline.drawTextureToQuad(combinedTex);
 }
+
+
+

@@ -43,7 +43,7 @@ public:
 private:
 	template<class T, class EventType>
 	static unsigned getID(T* instance);
-
+	
 	std::map<std::type_index, HandlerList*> subscribers;
 };
 
@@ -60,12 +60,24 @@ inline void EventBus::publish(EventType * evnt)
 		return;
 	}
 
-	for (auto & handler : *handlers)
+
+	bool shouldBreak = false;
+	for (auto it = handlers->begin(); it != handlers->end(); it++)
 	{
-		if (handler != nullptr)
+		while ((*it) == nullptr)
 		{
-			handler->exec(evnt);
+			it = handlers->erase(it);
+			if (it == handlers->end())
+			{
+				shouldBreak = true;
+				break;
+			}
 		}
+
+		if (shouldBreak)
+			break;
+
+		(*it)->exec(evnt);
 	}
 }
 
@@ -92,6 +104,8 @@ inline void EventBus::subscribe(T * instance, void(T::* memberFunction)(EventTyp
 template<class T, class EventType>
 inline void EventBus::unsubscribe(T * instance, void(T::* memberFunction)(EventType *))
 {
+	if (this->subscribers.empty())
+		return;
 	if(this->subscribers.find(typeid(EventType)) != this->subscribers.end())
 	{
 		HandlerList* handlers = this->subscribers[typeid(EventType)];
@@ -100,10 +114,12 @@ inline void EventBus::unsubscribe(T * instance, void(T::* memberFunction)(EventT
 		std::list<HandlerFunctionBase*>::iterator it;
 		for (it = handlers->begin(); it != handlers->end(); ++it)
 		{
+			if ((*it) == nullptr)
+				continue;
 			if ((*it)->id == id)
 			{
 				delete *it;
-				handlers->erase(it);
+				(*it) = nullptr;
 				break;
 			}
 		}
