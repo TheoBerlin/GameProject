@@ -120,7 +120,7 @@ public:
 	// A strcut to hold the value of the option. 
 	struct OPTION_VALUE
 	{
-		unsigned int ui = 0u;
+		int i = 0;
 	};
 
 	GUI();

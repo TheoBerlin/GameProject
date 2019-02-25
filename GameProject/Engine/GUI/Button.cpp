@@ -1,5 +1,7 @@
 #include "Button.h"
 
+#include "../Rendering/Display.h"
+
 Button::Button() : Panel()
 {
 	init();
@@ -76,8 +78,9 @@ void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 {
 	if (this->active)
 	{
+		unsigned int py = (unsigned int)((int)Display::get().getHeight() - (int)evnt->posY);
 		if (evnt->posX >= this->pos.x && evnt->posX <= this->pos.x + this->size.x &&
-			evnt->posY >= this->pos.y && evnt->posY <= this->pos.y + this->size.y)
+			py >= this->pos.y && py <= this->pos.y + this->size.y)
 		{
 			this->isHovering = true;
 			toHoverStyle();

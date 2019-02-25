@@ -201,7 +201,7 @@ void Panel::setParent(Panel * parent)
 void Panel::setOption(GUI::OPTION option)
 {
 	GUI::OPTION_VALUE v;
-	v.ui = 0;
+	v.i = 0;
 	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);
 	this->shouldUpdate = true;
 }
@@ -261,30 +261,30 @@ void Panel::processOption(GUI::OPTION_VALUE option, unsigned int index)
 	{
 	// ---------------- Size related -------------------
 	case GUI::OPTION::SCALE_TO_TEXT_X:
-		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_X, option.ui);
+		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_X, option.i);
 		break;
 	case GUI::OPTION::SCALE_TO_TEXT_Y:
-		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.ui);
+		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.i);
 		break;
 
 	// -------------- Position related -----------------
 	case GUI::OPTION::FLOAT_LEFT:
-		processPositionOption(GUI::OPTION::FLOAT_LEFT, option.ui);
+		processPositionOption(GUI::OPTION::FLOAT_LEFT, option.i);
 		break;
 	case GUI::OPTION::FLOAT_RIGHT:
-		processPositionOption(GUI::OPTION::FLOAT_RIGHT, option.ui);
+		processPositionOption(GUI::OPTION::FLOAT_RIGHT, option.i);
 		break;
 	case GUI::OPTION::FLOAT_UP:
-		processPositionOption(GUI::OPTION::FLOAT_UP, option.ui);
+		processPositionOption(GUI::OPTION::FLOAT_UP, option.i);
 		break;
 	case GUI::OPTION::FLOAT_DOWN:
-		processPositionOption(GUI::OPTION::FLOAT_DOWN, option.ui);
+		processPositionOption(GUI::OPTION::FLOAT_DOWN, option.i);
 		break;
 	case GUI::OPTION::CENTER_X:
-		processPositionOption(GUI::OPTION::CENTER_X, 0);
+		processPositionOption(GUI::OPTION::CENTER_X, option.i);
 		break;
 	case GUI::OPTION::CENTER_Y:
-		processPositionOption(GUI::OPTION::CENTER_Y, 0);
+		processPositionOption(GUI::OPTION::CENTER_Y, option.i);
 		break;
 
 	case GUI::OPTION::FIT_X:
@@ -302,27 +302,27 @@ void Panel::processOption(GUI::OPTION_VALUE option, unsigned int index)
 		processTextPositionOption(GUI::OPTION::TEXT_CENTER_Y, 0);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_LEFT:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_LEFT, option.ui);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_LEFT, option.i);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_RIGHT:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_RIGHT, option.ui);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_RIGHT, option.i);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_UP:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_UP, option.ui);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_UP, option.i);
 		break;
 	case GUI::OPTION::TEXT_FLOAT_DOWN:
-		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_DOWN, option.ui);
+		processTextPositionOption(GUI::OPTION::TEXT_FLOAT_DOWN, option.i);
 		break;
 
 	}
 }
 
-void Panel::processPositionOption(unsigned int index, unsigned int v)
+void Panel::processPositionOption(unsigned int index, int v)
 {
 	if (index == GUI::FLOAT_LEFT)
-		this->pos.x = v;
+		this->pos.x = (unsigned int)v;
 	if (index == GUI::FLOAT_DOWN)
-		this->pos.y = v;
+		this->pos.y = (unsigned int)v;
 
 	Display& display = Display::get();
 	unsigned int w = (unsigned int)display.getWidth();
@@ -334,16 +334,16 @@ void Panel::processPositionOption(unsigned int index, unsigned int v)
 	}
 
 	if (index == GUI::FLOAT_RIGHT)
-		this->pos.x = w - this->size.x - v;
+		this->pos.x = (unsigned int)((int)w - (int)this->size.x - v);
 	if (index == GUI::FLOAT_UP)
-		this->pos.y = h - this->size.y - v;
+		this->pos.y = (unsigned int)((int)h - (int)this->size.y - v);
 	if (index == GUI::CENTER_X)
-		this->pos.x = w / 2 - this->size.x / 2;
+		this->pos.x = (unsigned int)((int)w / 2 - (int)this->size.x / 2 + v);
 	if (index == GUI::CENTER_Y)
-		this->pos.y = h / 2 - this->size.y / 2;
+		this->pos.y = (unsigned int)((int)h / 2 - (int)this->size.y / 2 + v);
 }
 
-void Panel::processTextPositionOption(unsigned int index, unsigned int v)
+void Panel::processTextPositionOption(unsigned int index, int v)
 {
 	bool centerX = false;
 	bool centerY = false;
@@ -367,18 +367,18 @@ void Panel::processTextPositionOption(unsigned int index, unsigned int v)
 			t.second.y = this->getSize().y/2 - text->getHeight()/2;
 
 		if (horizontal == 1)
-			t.second.x = v;
+			t.second.x = (unsigned int)v;
 		if(horizontal == 2)
-			t.second.x = this->getSize().x - text->getWidth() - v;
+			t.second.x = (unsigned int)((int)this->getSize().x - (int)text->getWidth() - v);
 
 		if (vertical == 1)
-			t.second.y = v;
+			t.second.y = (unsigned int)v;
 		if (vertical == 2)
-			t.second.y = this->getSize().y - text->getHeight() - v;
+			t.second.y = (unsigned int)((int)this->getSize().y - (int)text->getHeight() - v);
 	}
 }
 
-void Panel::processFitOption(unsigned int index, unsigned int v)
+void Panel::processFitOption(unsigned int index, int v)
 {
 	Display& display = Display::get();
 	unsigned int w = (unsigned int)display.getWidth();
@@ -402,7 +402,7 @@ void Panel::processFitOption(unsigned int index, unsigned int v)
 	}
 }
 
-void Panel::processScaleToTextOption(unsigned int index, unsigned int v)
+void Panel::processScaleToTextOption(unsigned int index, int v)
 {
 	if (index == GUI::SCALE_TO_TEXT_X)
 	{
@@ -412,8 +412,8 @@ void Panel::processScaleToTextOption(unsigned int index, unsigned int v)
 			unsigned int w = t.first->getWidth();
 			if (w > maxX) maxX = w;
 		}
-		this->size.x = maxX + v;
-		this->pos.x = 0;
+		this->size.x = (unsigned int)((int)maxX + v);
+		//this->pos.x = 0;
 	}
 
 	if (index == GUI::SCALE_TO_TEXT_Y)
@@ -424,8 +424,8 @@ void Panel::processScaleToTextOption(unsigned int index, unsigned int v)
 			unsigned int h = t.first->getHeight();
 			if (h > maxY) maxY = h;
 		}
-		this->size.y = maxY + v;
-		this->pos.y = 0;
+		this->size.y = (unsigned int)((int)maxY + v);
+		//this->pos.y = 0;
 	}
 }
 

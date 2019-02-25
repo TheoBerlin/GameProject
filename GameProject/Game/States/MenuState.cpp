@@ -3,6 +3,7 @@
 #include "Engine/States/StateManager.h"
 #include "GameState.h"
 #include "TestState.h"
+#include "EditorState.h"
 #include "Engine/Rendering/Display.h"
 #include "Engine/Rendering/GUIRenderer.h"
 #include "Engine/GUI/FontManager.h"
@@ -37,6 +38,24 @@ MenuState::MenuState() : State()
 		this->pushState(new GameState());
 	});
 	gui.addPanel(this->button);
+
+	Button* button2 = new Button();
+	button2->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	button2->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	button2->setOption(GUI::CENTER_X);
+	button2->setOption(GUI::CENTER_Y, -40);
+	button2->setOption(GUI::TEXT_CENTER_X);
+	button2->setOption(GUI::TEXT_CENTER_Y);
+	//button2->setPosition(glm::uvec2(0, 100));
+	button2->setHoverColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+	button2->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
+	button2->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
+	button2->addText("Editor", "arialBig");
+	button2->setCallback([this](void) {
+		//this->getGUI().removePanel(this->button);
+		this->pushState(new EditorState());
+	});
+	gui.addPanel(button2);
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
