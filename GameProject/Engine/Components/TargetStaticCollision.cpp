@@ -12,6 +12,7 @@ TargetStaticCollision::TargetStaticCollision(Entity * parentEntity, const std::s
 
 TargetStaticCollision::~TargetStaticCollision()
 {
+	EventBus::get().unsubscribe(this, &TargetStaticCollision::collide);
 }
 
 bool TargetStaticCollision::getFlag()

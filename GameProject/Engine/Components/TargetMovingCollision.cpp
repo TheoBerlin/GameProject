@@ -1,6 +1,7 @@
 #include "TargetMovingCollision.h"
 
 #include "../Entity/Entity.h"
+#include "Engine/Events/EventBus.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 
@@ -12,6 +13,7 @@ TargetMovingCollision::TargetMovingCollision(Entity * parentEntity, const std::s
 
 TargetMovingCollision::~TargetMovingCollision()
 {
+	EventBus::get().unsubscribe(this, &TargetMovingCollision::collide);
 }
 
 bool TargetMovingCollision::getFlag()
