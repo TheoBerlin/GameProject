@@ -1,6 +1,5 @@
 #include "Model.h"
 
-#include "Utils/Logger.h"
 #include "Mesh.h"
 #include "Engine/Entity/Entity.h"
 

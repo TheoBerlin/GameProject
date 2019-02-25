@@ -2,7 +2,6 @@
 
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
-#include <Utils/Logger.h>
 #include <Utils/Settings.h>
 
 OversightController::OversightController(Entity* host)

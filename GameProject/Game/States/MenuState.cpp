@@ -1,15 +1,15 @@
 #include "MenuState.h"
 
-#include "../../Engine/States/StateManager.h"
+#include "Engine/States/StateManager.h"
 #include "GameState.h"
 #include "TestState.h"
-#include "../../Engine/Rendering/Display.h"
-#include "../../Engine/Rendering/GUIRenderer.h"
-#include "../../Engine/GUI/FontManager.h"
+#include "Engine/Rendering/Display.h"
+#include "Engine/Rendering/GUIRenderer.h"
+#include "Engine/GUI/FontManager.h"
 #include "glm/vec4.hpp"
-#include "../../Engine/InputHandler.h"
+#include "Engine/InputHandler.h"
 #include "Utils/Logger.h"
-#include "../../Engine/GUI/Button.h"
+#include "Engine/GUI/Button.h"
 
 MenuState::MenuState() : State()
 {
