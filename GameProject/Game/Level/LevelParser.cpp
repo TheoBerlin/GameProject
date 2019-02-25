@@ -5,7 +5,8 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
-#include <Engine/Components/TargetCollision.h>
+#include <Engine/Components/TargetMovingCollision.h>
+#include <Engine/Components/TargetStaticCollision.h>
 #include <Utils/Logger.h>
 
 void LevelParser::readEntityTargets(Level& level)
@@ -43,13 +44,14 @@ void LevelParser::readEntityTargets(Level& level)
 		if (!path.empty()) {
 			// The target is mobile
 			level.targetManager->addMovingTarget(entity, path);
+			new TargetMovingCollision(entity);
 		} else {
 			// The target is static
 			level.targetManager->addStaticTarget(entity, position);
+			new TargetStaticCollision(entity);
 		}
 
 		entity->setModel(model);
-		new TargetCollision(entity);
 		level.collisionHandler->addCollisionToEntity(entity, SHAPE::DRONE);
 	}
 }
