@@ -2,7 +2,7 @@
 
 #include "GL/glew.h"
 
-#include "../../../Utils/Logger.h"
+#include "Utils/Logger.h"
 
 
 #define FRAMEBUFFER_RENDERBUFFER_NON_EXISTENT this->rbo == 0
