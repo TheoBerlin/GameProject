@@ -83,7 +83,7 @@ void Renderer::drawAllInstanced()
 	/*
 		Calulate shadow depth
 	*/
-	this->pipeline.calcDirLightDepthInstanced(this->renderingModels);
+	this->pipeline.calcDirLightDepthInstanced(ModelLoader::getModels());
 
 	/*
 		Z-prepass stage
