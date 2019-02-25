@@ -1,6 +1,7 @@
 #include "PlayerCollision.h"
 
 #include <reactphysics3d/reactphysics3d.h>
+// Remove logger when handleCollision does something
 #include "Utils/Logger.h"
 
 PlayerCollision::PlayerCollision(Entity* parentEntity, const std::string& tagName) : CollisionComponent(parentEntity, tagName)

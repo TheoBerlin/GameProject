@@ -1,6 +1,6 @@
 #include "Display.h"
 
-#include "../../Utils/Logger.h"
+#include "Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
 #include "../Imgui/imgui.h"
