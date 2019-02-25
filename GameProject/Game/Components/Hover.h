@@ -15,12 +15,9 @@ private:
     // Animation time
     float t;
 
-    glm::vec3 translation;
     // Defines translation animation
     const glm::vec3 maxTranslation = {0.0f, 0.17f, 0.0f};
 
-    // Yaw, pitch, roll
-    glm::vec3 rotation;
-    // Defines rotation animation
+    // Defines rotation animation (yaw, pitch, roll)
     const glm::vec3 maxRotation = {0.0f, 0.0f, glm::quarter_pi<float>()/4.0f};
 };
