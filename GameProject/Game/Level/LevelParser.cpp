@@ -15,7 +15,7 @@ void LevelParser::readEntityTargets(Level& level)
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -61,7 +61,7 @@ void LevelParser::readEntityBoxes(Level& level)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/Cube.fbx");
+		model = ModelLoader::loadModel("./Game/assets/Test.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -97,7 +97,7 @@ void LevelParser::readEntityWalls(Level& level)
 void LevelParser::readEntityFloor(Level& level)
 {
 	Model *model = nullptr;
-	model = ModelLoader::loadModel("./Game/assets/floor.fbx");
+	model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
 
 	Entity* entity;
 	glm::vec3 position;

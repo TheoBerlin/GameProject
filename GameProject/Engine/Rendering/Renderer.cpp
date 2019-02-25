@@ -11,11 +11,12 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Cube.fbx"));
+	/*
+	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Test.fbx"));
 	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/floor.fbx"));
 	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/droneTarget.fbx"));
+	*/
 }
 
 Renderer::~Renderer()
@@ -81,12 +82,12 @@ void Renderer::drawAllInstanced()
 	/*
 		Z-prepass stage
 	*/
-	this->pipeline.prePassDepthModel(this->renderingModels);
+	this->pipeline.prePassDepthModel(ModelLoader::getModels());
 	
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
+	Texture * postProcessTexture = this->pipeline.drawModelToTexture(ModelLoader::getModels());
 
 	/*
 		Draw texture of scene to quad for postprocessing

@@ -47,7 +47,7 @@ void main()
         }
     
     texColor = min(texColor, 1.0f);
-    vec3 phong = min(texColor * ( specular + diffuse + ambient), 1.0f);
+    vec3 phong = min(texColor * ( specular + diffuse + ambient) + mat.kd.rgb, 1.0f);
 
     finalColor = vec4(phong, 1.0f);
 }
