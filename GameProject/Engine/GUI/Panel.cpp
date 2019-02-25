@@ -25,6 +25,8 @@ Panel::~Panel()
 	this->children.clear();
 
 	delete this->bakedTexture;
+
+	EventBus::get().unsubscribe(this, &Panel::resizeCallback);
 }
 
 void Panel::setBakedTexture(const Texture& texture)

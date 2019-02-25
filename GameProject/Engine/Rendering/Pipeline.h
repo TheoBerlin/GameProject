@@ -47,20 +47,26 @@ public:
 	*/
 	void drawInstanced(Model * model);
 
+
 	/*
 		Generates depth texture for shadows, input entities who should give away shadows
 	*/
-	Texture* calcDirLightDepth(const std::vector<Entity*>& renderingList, const glm::vec3& lightDir);
+	void calcDirLightDepth(const std::vector<Entity*>& renderingList); // Old rendering
+	void calcDirLightDepthInstanced(const std::vector<Model*>& renderingModels);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
 
 	Framebuffer* getFbo();
+	Framebuffer* getShadowFbo();
 
 private:
 	Camera * camera;
-	unsigned width, height;
+	unsigned int width, height;
+	unsigned int shadowWidth, shadowHeight;
 	Framebuffer fbo;
+	Framebuffer shadowFbo;
+	glm::mat4 lightSpaceMatrix;
 
 	// Old rendering draw functions
 	void draw(const std::vector<Entity*>& renderingList);					// Old rendering

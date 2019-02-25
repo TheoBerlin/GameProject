@@ -7,6 +7,8 @@ Button::Button() : Panel()
 
 Button::~Button()
 {
+	EventBus::get().unsubscribe(this, &Button::mouseClickCallback);
+	EventBus::get().unsubscribe(this, &Button::mouseMoveCallback);
 }
 
 void Button::setHoverTexture(Texture * texture)
