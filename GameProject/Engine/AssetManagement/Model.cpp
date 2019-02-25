@@ -89,6 +89,12 @@ void Model::initInstancing()
 	delete[] matrices;
 }
 
+void Model::initInstancing(unsigned meshIndex, const void * data, size_t dataSize, const AttributeLayout & attributeLayout)
+{
+	if(meshIndex > 0 && meshIndex < this->meshes.size())
+		this->meshes[meshIndex]->initInstancing(data, dataSize, attributeLayout);
+}
+
 void Model::updateInstancingSpecificData(unsigned renderingGroupIndex)
 {
 	size_t amount = this->renderingGroup.size();
@@ -104,6 +110,13 @@ void Model::updateInstancingSpecificData(unsigned renderingGroupIndex)
 	}
 
 	delete matrix;
+}
+
+void Model::updateInstancingSpecificData(const void * data, size_t dataSize, unsigned offset, unsigned meshIndex, unsigned vboIndex)
+{
+	Mesh* mesh = this->getMesh(meshIndex);
+
+	mesh->updateInstancingData(data, dataSize, offset, vboIndex);
 }
 
 void Model::updateInstancingData()
