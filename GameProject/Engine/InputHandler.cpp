@@ -1,7 +1,6 @@
 #include "InputHandler.h"
 
 #include "Events/EventBus.h"
-#include "Utils/Logger.h"
 
 int InputHandler::lastPosX = 0;
 int InputHandler::lastPosY = 0;
