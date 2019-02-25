@@ -71,24 +71,34 @@ ArrowGuider* AimPhase::getArrowGuider() const
     return arrowGuider;
 }
 
+Camera* AimPhase::getArrowCam() const
+{
+    return arrowCam;
+}
+
 void AimPhase::commonSetup()
 {
 	/*
 		Add camera to arrow entity
 	*/
-	Camera* camera = new Camera(playerArrow, "Camera", { 0.0f, 0.5f, -1.0f });
-	camera->init();
+    CameraSetting arrowCamSettings = level.player.arrowCamera;
+
+    glm::vec3 camOffset = arrowCamSettings.offset;
+	arrowCam = new Camera(playerArrow, "Camera", camOffset);
+
+    arrowCam->setFOV(arrowCamSettings.FOV);
+	arrowCam->init();
 
 	/*
 		Add arrowguider to entity
 	*/
-	arrowGuider = new ArrowGuider(playerArrow, 2.0f);
+	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
 	arrowGuider->startAiming();
 
 	// Reset targets
 	level.targetManager->resetTargets();
 
-	Display::get().getRenderer().setActiveCamera(camera);
+	Display::get().getRenderer().setActiveCamera(arrowCam);
 
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
@@ -120,19 +130,16 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         arrowGuider->stopAiming();
 
         // Begin camera transition to the oversight camera
-        glm::vec3 newPos = level.player.oversightCamera.position;
-        glm::vec3 newForward = level.player.oversightCamera.direction;
-        float transitionLength = 2.0f;
+        CameraSetting currentCamSettings = level.player.arrowCamera;
 
-        glm::vec3 currentPosition = playerArrow->getTransform()->getPosition();
-        glm::vec3 currentForward = playerArrow->getTransform()->getForward();
+        Transform* arrowTransform = playerArrow->getTransform();
 
-        transitionEntity->getTransform()->setPosition(currentPosition);
-        transitionEntity->getTransform()->setForward(currentForward);
+        currentCamSettings.position = arrowTransform->getPosition();
+        currentCamSettings.direction = arrowTransform->getForward();
 
-        transitionComponent->setDestination(newPos, newForward, transitionLength);
+        CameraSetting newCamSettings = level.player.oversightCamera;
 
-        Display::get().getRenderer().setActiveCamera(transitionCam);
+        this->setupTransition(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
     }

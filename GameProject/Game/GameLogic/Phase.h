@@ -14,6 +14,8 @@ public:
 protected:
     void changePhase(Phase* newPhase);
 
+    void setupTransition(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
+
     Level level;
 
     // Transition tools

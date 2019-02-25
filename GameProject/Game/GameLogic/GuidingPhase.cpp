@@ -12,6 +12,8 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 {
     playerArrow = aimPhase->getPlayerArrow();
 
+    arrowCam = aimPhase->getArrowCam();
+
     // Start guiding the arrow
     arrowGuider = aimPhase->getArrowGuider();
     arrowGuider->startGuiding();
@@ -43,23 +45,20 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
         arrowGuider->stopGuiding();
 
         // Begin camera transition to the replay freecam
-        glm::vec3 newPos = level.player.replayCamera.position;
-        glm::vec3 newForward = level.player.replayCamera.direction;
-        float transitionLength = 2.0f;
+        CameraSetting currentCamSettings;
 
-        glm::vec3 currentPosition = playerArrow->getTransform()->getPosition();
-        glm::vec3 currentForward = playerArrow->getTransform()->getForward();
+        Transform* arrowTransform = playerArrow->getTransform();
 
-        transitionEntity->getTransform()->setPosition(currentPosition);
-        transitionEntity->getTransform()->setForward(currentForward);
+        currentCamSettings.position = arrowTransform->getPosition();
+        currentCamSettings.direction = arrowTransform->getForward();
+        currentCamSettings.offset = arrowCam->getOffset();
+        currentCamSettings.FOV = arrowCam->getFOV();
 
-        transitionComponent->setDestination(newPos, newForward, transitionLength);
+        CameraSetting newCamSettings = level.player.replayCamera;
 
-        Display::get().getRenderer().setActiveCamera(transitionCam);
+        this->setupTransition(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &GuidingPhase::transitionToReplay);
-
-        transitionComponent->setDestination(newPos, newForward, transitionLength);
     }
 }
 

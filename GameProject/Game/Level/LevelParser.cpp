@@ -168,6 +168,16 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 {
 	readVec3(file["Position"], camera.position);
 	readVec3(file["Direction"], camera.direction);
+	readVec3(file["Offset"], camera.offset);
+
+	// Read FOV
+	try {
+		camera.FOV = file["FOV"];
+	}
+	catch (const std::exception& e) {
+		LOG_ERROR("Failed to FOV: %s", e.what());
+		camera.FOV = 75.0f;
+	}
 
 	camera.direction = glm::normalize(camera.direction);
 }

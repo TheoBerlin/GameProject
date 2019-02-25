@@ -1,30 +1,27 @@
 #include "ArrowGuider.h"
 
 #include <Engine/Entity/Entity.h>
+#include <Utils/Logger.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
-    :Component(parentEntity, "ArrowGuider")
+ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float minFOV, float movementSpeed, float maxTurnSpeed)
+    :Component(parentEntity, "ArrowGuider"),
+    minCamOffset(minCamOffset),
+    isGuiding(false),
+    isAiming(false),
+    movementSpeed(movementSpeed),
+    maxTurnSpeed(maxTurnSpeed),
+    turnFactors(glm::vec2(0.0f,0.0f)),
+    posStoreTimer(0.0f),
+    arrowCamera(nullptr),
+    flightTime(0.0f),
+    minFOV(minFOV)
 {
-    isGuiding = false, isAiming = false;
-
-    this->movementSpeed = movementSpeed;
-
-    this->maxTurnSpeed = maxTurnSpeed;
-
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution
     EventBus::get().subscribe(this, &ArrowGuider::handleWindowResize);
     windowHeight = Display::get().getHeight();
 
-    turnFactors = glm::vec2(0.0f, 0.0f);
-
-    posStoreTimer = 0.0f;
-
-    arrowCamera = nullptr;
-
     currentPitch = 0.0f;
-
-    flightTime = 0.0f;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -68,7 +65,7 @@ void ArrowGuider::update(const float& dt)
 
         if (posStoreTimer > 1.0f/posStoreFrequency) {
             // Store position and reset timer
-            posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
+            posStoreTimer = 0.0f;
 
             KeyPoint newKeyPoint;
             newKeyPoint.Position = transform->getPosition();
