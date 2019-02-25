@@ -173,6 +173,8 @@
     <ClInclude Include="Utils\Timer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Engine\Rendering\Shaders\CombineShader.frag" />
+    <None Include="Engine\Rendering\Shaders\CombineShader.vert" />
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
     <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
   </ItemGroup>

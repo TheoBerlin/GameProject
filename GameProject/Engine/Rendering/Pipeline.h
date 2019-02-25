@@ -47,10 +47,12 @@ public:
 	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
 	Texture* drawModelToTexture(const std::vector<Model*>& renderingModels);
 
+	Texture* combineTextures(Texture* sceen, Texture* particles);
+
 	/*
 		Use texture to draw to quad which cover the whole screen
 	*/
-	void drawTextureToQuad(Texture* tex, Texture* texture);
+	void drawTextureToQuad(Texture* tex);
 
 	/*
 		Draws models using instancing - seperate drawing method from functions above
@@ -88,7 +90,6 @@ private:
 
 	// New rendering draw functions
 	void drawModelPrePassInstanced(Model * model);
-
 	void updateFramebufferDimension(WindowResizeEvent* event);
 
 	void prePassDepthOn();
@@ -100,6 +101,7 @@ private:
 	Shader* entityShaderInstanced;
 	Shader* quadShader;
 	Shader* particleShader;
+	Shader* combineShader;
 	bool p = true;
 	GLuint billboard_vertex_buffer;
 	GLuint particleDataBuffer;

@@ -58,7 +58,7 @@ void Renderer::drawAll()
 	///*
 	//	Draw texture of scene to quad for postprocessing
 	//*/
-	this->pipeline.drawTextureToQuad(postProcessTexture, tex);
+	this->pipeline.drawTextureToQuad(postProcessTexture);
 
 
 
@@ -87,6 +87,7 @@ void Renderer::drawAllInstanced()
 	GLenum buf[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, buf);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	pipeline.getFbo()->unbind();
 
 	/*
 	Calulate shadow depth
@@ -103,13 +104,10 @@ void Renderer::drawAllInstanced()
 	*/
 	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
 
-
 	pipeline.drawParticle();
 	
 	postProcessTexture = pipeline.getFbo()->getColorTexture(0);
 	tex = pipeline.getFbo()->getColorTexture(1);
-
-	pipeline.getFbo()->unbind();
 
 	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, tex);
 

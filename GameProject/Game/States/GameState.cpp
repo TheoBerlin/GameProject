@@ -93,6 +93,7 @@ void GameState::update(const float dt)
 			dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("PlayerArrow")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
 	//Get arrow replay position
 	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
+		ParticleManager::get().update(dt);
 		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
 		emitter.playEmitter(0);
 	}

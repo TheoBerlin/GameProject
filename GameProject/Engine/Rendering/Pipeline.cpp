@@ -31,6 +31,7 @@ Pipeline::Pipeline()
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
 	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
 	this->ZprePassShaderInstanced = new Shader("./Engine/Rendering/Shaders/ZPrepassInstanced.vert", "./Engine/Rendering/Shaders/ZPrepassInstanced.frag");
+	this->combineShader = new Shader("./Engine/Rendering/Shaders/CombineShader.vert", "./Engine/Rendering/Shaders/CombineShader.frag");
 
 	Display& display = Display::get();
 
@@ -94,6 +95,7 @@ Pipeline::~Pipeline()
 	delete this->testShader;
 	delete this->particleShader;
 	delete this->entityShaderInstanced;
+	delete this->combineShader;
 
 	for (UniformBuffer* ubo : this->uniformBuffers)
 		delete ubo;
@@ -103,6 +105,7 @@ Pipeline::~Pipeline()
 
 Texture* Pipeline::drawParticle()
 {
+	fbo.bind();
 	this->particleShader->bind();
 	if (ParticleManager::get().getParticleCount() != 0) {
 		this->vbParticle->make(NULL, ParticleManager::get().getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
@@ -114,12 +117,14 @@ Texture* Pipeline::drawParticle()
 	this->particleShader->setUniform3f("cameraRight", this->camera->getView()[0][0], this->camera->getView()[1][0], this->camera->getView()[2][0]);
 
 	glDepthMask(GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
 
 	this->va.bind();
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticleManager::get().getParticleCount());
 
 	this->particleShader->unbind();
-	
+	fbo.unbind();
+
 	return fbo.getColorTexture(1);
 }
 
@@ -479,11 +484,12 @@ void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 
 Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)
 {
+	fbo.bind();
 	glDisable(GL_DEPTH_TEST);
 
-	this->quadShader->bind();
-	this->quadShader->setTexture2D("tex", 0, sceen->getID());
-	this->quadShader->setTexture2D("particles", 1, particles->getID());
+	this->combineShader->bind();
+	this->combineShader->setTexture2D("tex", 0, sceen->getID());
+	this->combineShader->setTexture2D("particles", 1, particles->getID());
 
 	Mesh* mesh = this->quad->getMesh(0);
 	mesh->bindVertexArray();
@@ -491,7 +497,10 @@ Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)
 	ib.bind();
 	glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 
-	this->quadShader->unbind();
+	this->combineShader->unbind();
+	fbo.unbind();
+
+	return fbo.getColorTexture(0);
 }
 
 void Pipeline::drawModel(Model * model, Shader* shader)
