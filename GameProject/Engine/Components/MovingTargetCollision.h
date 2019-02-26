@@ -8,11 +8,11 @@
 
 namespace reactphysics3d { class ProxyShapes; }
 
-class TargetMovingCollision : public Component
+class MovingTargetCollision : public Component
 {
 public:
-	TargetMovingCollision(Entity * parentEntity, const std::string& tagName = "Collision");
-	virtual ~TargetMovingCollision();
+	MovingTargetCollision(Entity * parentEntity, const std::string& tagName = "MovingTargetCollision");
+	virtual ~MovingTargetCollision();
 	bool getFlag();
 
 	void update(const float& dt);
