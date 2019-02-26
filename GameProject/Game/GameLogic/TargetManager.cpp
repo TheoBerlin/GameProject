@@ -1,6 +1,7 @@
 #include "TargetManager.h"
 
 #include <Engine/Entity/Entity.h>
+#include <Game/Components/Hover.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/RollNullifier.h>
 
@@ -25,6 +26,9 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 
     // Add component pointers to vector
     StaticTarget staticTarget;
+
+    staticTarget.hoverAnimation = new Hover(host);
+
     staticTargets.push_back(staticTarget);
 }
 
@@ -61,6 +65,11 @@ void TargetManager::setupTargetGeneric(Entity* host)
 
 void TargetManager::resetStaticTargets()
 {
+	unsigned int staticTargetCount = staticTargets.size();
+
+    for (unsigned int i = 0; i != staticTargetCount; i += 1) {
+        staticTargets.at(i).hoverAnimation->reset();
+    }
 }
 
 void TargetManager::resetMovingTargets()
