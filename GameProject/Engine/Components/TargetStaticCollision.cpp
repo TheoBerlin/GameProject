@@ -27,6 +27,10 @@ void TargetStaticCollision::collide(PlayerCollisionEvent * evnt)
 {
 	if (evnt->entity1 == host || evnt->entity2 == host)
 	{
-		this->host->getTransform()->translate({ -1.0, 0.0, -1.0 });
+		/*
+			Vbo index 2 because the drones meshes has third vbo with colors, 0 mesh index because the drone body is that mesh
+		*/
+		this->host->getModel()->updateInstancingSpecificData(&glm::vec3(1.0, 0.0, 0.0)[0] ,sizeof(glm::vec3),
+								this->host->getRenderingGroupIndex() * sizeof(glm::vec3), 0, 2);
 	}
 }
