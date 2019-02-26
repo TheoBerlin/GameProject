@@ -4,13 +4,14 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/AimPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase)
 {
-    playerArrow = aimPhase->getPlayerArrow();
+	this->playerArrow = aimPhase->getPlayerArrow();
 
     arrowCam = aimPhase->getArrowCam();
 
@@ -20,6 +21,13 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 
     level.targetManager->resetTargets();
 
+	/*
+	Do stuff when collision happens
+	*/
+
+	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
+
+	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
 
@@ -35,6 +43,7 @@ ArrowGuider* GuidingPhase::getArrowGuider() const
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)
 {
+
     if (event->action != GLFW_PRESS) {
         return;
     }
@@ -65,7 +74,16 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 void GuidingPhase::transitionToReplay(CameraTransitionEvent* event)
 {
     EventBus::get().unsubscribe(this, &GuidingPhase::transitionToReplay);
+	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
+
+	level.collisionHandler->removeCollisionBody(this->playerArrow);
 
     Phase* guidingPhase = new ReplayPhase(this);
     changePhase(guidingPhase);
+}
+
+
+void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
+{
+	// This is used in another branch, please keep
 }

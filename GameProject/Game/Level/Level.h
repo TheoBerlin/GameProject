@@ -4,6 +4,7 @@
 #include <Engine/GUI/GUI.h>
 #include <Game/GameLogic/TargetManager.h>
 #include <glm/glm.hpp>
+#include <Engine/Collision/CollisionHandler.h>
 
 struct CameraSetting {
 	glm::vec3 position;
@@ -23,4 +24,5 @@ struct Level {
 	TargetManager* targetManager;
 	Player player;
 	GUI* gui;
+	CollisionHandler* collisionHandler;
 };

@@ -10,6 +10,11 @@
 
 // THE SYNTAX FOR UNSUBSCRIBE IS THE SAME AS FOR SUBSCRIBE
 
+/// Forward declerations
+class Entity;
+namespace reactphysics3d { class ProxyShape; }
+
+/// Class to inherit from
 class Event
 {
 };
@@ -30,11 +35,11 @@ struct WindowResizeEvent : public Event
 
 struct MouseMoveEvent : public Event
 {
-	MouseMoveEvent(int moveX, int moveY, int travelX, int travelY) : moveX{ moveX }, moveY{ moveY }, travelX{ travelX }, travelY{ travelY } {};
-	int moveX;
-	int moveY;
-	int travelX;
-	int travelY;
+	MouseMoveEvent(unsigned int posX, unsigned int posY, int deltaX, int deltaY) : posX{ posX }, posY{ posY }, deltaX{ deltaX }, deltaY{ deltaY } {};
+	unsigned int posX;
+	unsigned int posY;
+	int deltaX;
+	int deltaY;
 };
 
 struct MouseClickEvent : public Event
@@ -43,6 +48,28 @@ struct MouseClickEvent : public Event
 	int button;
 	int action;
 };
+
+struct MouseScrollEvent : public Event
+{
+	MouseScrollEvent(int xoffset, int yoffset) : xoffset{ xoffset }, yoffset{ yoffset } {};
+	int xoffset;
+	int yoffset;
+};
+
+struct PlayerCollisionEvent : public Event
+{
+	PlayerCollisionEvent(Entity* entity1, Entity* entity2, const reactphysics3d::ProxyShape * shape1, const reactphysics3d::ProxyShape * shape2) : entity1{ entity1 }, entity2{ entity2 }, shape1{ shape1 }, shape2{ shape2 } {};
+	Entity* entity1;
+	Entity* entity2;
+	const reactphysics3d::ProxyShape* shape1;
+	const reactphysics3d::ProxyShape* shape2;
+};
+
+struct ResetEvent : public Event
+{
+	ResetEvent() {};
+};
+
 
 class Phase;
 

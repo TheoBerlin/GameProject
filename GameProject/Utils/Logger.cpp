@@ -2,10 +2,11 @@
 
 #include <chrono>
 #include <ctime>
+#include <Windows.h>
 
 HANDLE Logger::hstdin = (void*)0;
 HANDLE Logger::hstdout = (void*)0;
-CONSOLE_SCREEN_BUFFER_INFO Logger::csbi = {};
+WORD Logger::wAttributes = {};
 unsigned int Logger::filter = 0;
 std::ofstream Logger::file;
 bool Logger::writeToFile = true;
@@ -15,8 +16,10 @@ void Logger::init()
 	hstdin = GetStdHandle(STD_INPUT_HANDLE);
 	hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	// Remember how things were when we started
 	GetConsoleScreenBufferInfo(hstdout, &csbi);
+	wAttributes = csbi.wAttributes;
 
 	file.open(PATH_TO_LOG_FILE);
 }
@@ -41,7 +44,7 @@ void Logger::endColorPass()
 {	
 	// Reset console color.
 	FlushConsoleInputBuffer(hstdin);
-	SetConsoleTextAttribute(hstdout, csbi.wAttributes);
+	SetConsoleTextAttribute(hstdout, wAttributes);
 }
 
 Logger::~Logger()

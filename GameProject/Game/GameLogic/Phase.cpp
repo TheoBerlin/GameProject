@@ -3,6 +3,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/Entity/Entity.h>
 
 Phase::Phase(const Level& level, Entity* transitionEntity)
     :level(level),

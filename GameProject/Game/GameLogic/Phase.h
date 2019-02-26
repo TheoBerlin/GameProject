@@ -1,9 +1,11 @@
 #pragma once
 
 #include <Game/Level/Level.h>
+#include <Engine/Events/Events.h>
 #include <Game/Components/CameraTransition.h>
 #include <Engine/Components/Camera.h>
-#include <Engine/Events/Events.h>
+
+class Entity;
 
 class Phase
 {

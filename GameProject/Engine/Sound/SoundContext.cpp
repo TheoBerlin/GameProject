@@ -1,5 +1,7 @@
 #include "SoundContext.h"
 
+#include "Utils/Logger.h"
+
 void SoundContext::initSoundContext()
 {
 	ALCdevice *device;

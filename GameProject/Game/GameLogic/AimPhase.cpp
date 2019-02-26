@@ -7,6 +7,7 @@
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/OverviewPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
+#include <Engine/Components/PlayerCollision.h>
 #include <GLFW/glfw3.h>
 
 AimPhase::AimPhase(OverviewPhase* overviewPhase)
@@ -57,6 +58,8 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);
+
+	new PlayerCollision(playerArrow);
 
     commonSetup();
 }

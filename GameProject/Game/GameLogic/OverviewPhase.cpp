@@ -4,6 +4,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/GameLogic/AimPhase.h>
+#include <Engine/Components/PlayerCollision.h>
 #include <Game/Components/OversightController.h>
 
 OverviewPhase::OverviewPhase(AimPhase* aimPhase)
@@ -35,6 +36,8 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
 	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);
+
+	new PlayerCollision(playerArrow);
 
     commonSetup();
 }

@@ -5,6 +5,7 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
+#include <Utils/Logger.h>
 
 void LevelParser::readEntityTargets(Level& level)
 {
@@ -47,6 +48,7 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 
 		entity->setModel(model);
+		level.collisionHandler->addCollisionToEntity(entity, SHAPE::DRONE);
 	}
 }
 
@@ -79,8 +81,9 @@ void LevelParser::readEntityBoxes(Level& level)
 		}
 
 		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setScale(0.25f);
+		entity->getTransform()->setScale(0.5f);
 		entity->setModel(model);
+		level.collisionHandler->addCollisionToEntity(entity, SHAPE::BOX);
 	}
 }
 
@@ -182,6 +185,16 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 	camera.direction = glm::normalize(camera.direction);
 }
 
+void LevelParser::createCollisionBodies(Level& level)
+{
+	// Start at 1 to give space for a player later on.
+	int bodiesNeeded = 1;
+	bodiesNeeded += jsonFile["Target"].size();
+	bodiesNeeded += jsonFile["Boxes"].size();
+
+	level.collisionHandler->createCollisionBodies(bodiesNeeded);
+}
+
 void LevelParser::readLevel(std::string file, Level& level)
 {
 	std::ifstream iFile;
@@ -196,6 +209,10 @@ void LevelParser::readLevel(std::string file, Level& level)
 			return;
 		}
 
+		// Create collision bodies to collisionHandler
+		createCollisionBodies(level);
+
+		// Add entites to entityManager
 		readEntityTargets(level);
 		readEntityBoxes(level);
 		readEntityWalls(level);

@@ -1,9 +1,13 @@
 #pragma once
 
-#include <Engine/Entity/Entity.h>
-#include <Game/Components/PathTreader.h>
-#include <Game/Components/RollNullifier.h>
 #include <vector>
+#include "glm/glm.hpp"
+
+class Entity;
+class PathTreader;
+class RollNullifier;
+class Hover;
+struct KeyPoint;
 
 struct MovingTarget {
     PathTreader* pathTreader;
@@ -11,6 +15,7 @@ struct MovingTarget {
 };
 
 struct StaticTarget {
+    Hover* hoverAnimation;
 };
 
 class TargetManager

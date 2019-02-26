@@ -4,7 +4,6 @@
 #include "../Entity/Entity.h"
 #include "glm/gtx/rotate_vector.hpp"
 #include "../Events/EventBus.h"
-#include "Utils/Logger.h"
 #include <Utils/Settings.h>
 
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
@@ -107,8 +106,8 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
-	this->xPos = evnt->travelX;
-	this->yPos = evnt->travelY;
+	this->xPos = evnt->deltaX;
+	this->yPos = evnt->deltaY;
 }
 
 void FreeMove::clickMouse(MouseClickEvent * evnt)

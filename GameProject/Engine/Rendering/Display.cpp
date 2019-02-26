@@ -1,6 +1,6 @@
 #include "Display.h"
 
-#include "../../Utils/Logger.h"
+#include "Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
 #include "../Imgui/imgui.h"
@@ -35,6 +35,7 @@ void Display::startFrame()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+
 	#endif /* IMGUI */
 }
 
