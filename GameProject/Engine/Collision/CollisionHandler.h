@@ -17,6 +17,7 @@
 		glm::vec3 color;
 		glm::vec3 scale;
 		glm::vec3 pos;
+		unsigned short category;
 		rp3d::CollisionShape * shape;
 	};
 #else
@@ -36,6 +37,7 @@ enum class SHAPE {
 
 enum CATEGORY
 {
+	NO_COLLISION = 0x0000,
 	ARROW = 0x0001,
 	STATIC = 0x0002,
 	DRONE_BODY = 0x0004,
@@ -92,7 +94,7 @@ private:
 	std::vector<glm::mat4> matrices;
 	std::vector<glm::vec3> colors;
 
-	void addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
 	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 	std::vector<rp3d::ProxyShape*> proxyShapes;
 
@@ -101,7 +103,7 @@ private:
 
 	CollisionRenderer cRenderer;
 #else
-	void addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
 	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 #endif
 
