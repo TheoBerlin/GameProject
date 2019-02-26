@@ -30,6 +30,8 @@ public:
     // Disables both aim and movement
     void stopGuiding(float flightTime);
 
+    void saveKeyPoint(float flightTime);
+
     // Event handlers
     void handleMouseMove(MouseMoveEvent* event);
     void handleWindowResize(WindowResizeEvent* event);

@@ -93,5 +93,8 @@ void GuidingPhase::transitionToReplay(CameraTransitionEvent* event)
 
 void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
-	// This is used in another branch, please keep
+	// Save keypoint for collision so that the collision is visible during replay
+    flightTimer.update();
+
+    arrowGuider->saveKeyPoint(flightTimer.getTime());
 }

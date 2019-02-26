@@ -188,6 +188,11 @@ void ArrowGuider::stopGuiding(float flightTime)
     path.push_back(newKeyPoint);
 }
 
+void ArrowGuider::saveKeyPoint(float flightTime)
+{
+    path.push_back(KeyPoint(host->getTransform()->getPosition(), flightTime));
+}
+
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 {
     // Calculate relative mouse position
