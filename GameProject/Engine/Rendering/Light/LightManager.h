@@ -14,11 +14,13 @@ public:
 	float getShadowHeightScaled();
 	float getShadowWidthScaled();
 	PointLight * createPointLight(glm::vec4 position, glm::vec4 intensity);
+	int getNrOfPointLights();
 	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity);
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getLightMatrix();
 private:
 	std::vector<PointLight*> pointLights; 
+
 	DirectionalLight * dirLight;
 	bool dirLightExist = false;
 	glm::vec3 shadowPosition;

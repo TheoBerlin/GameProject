@@ -45,6 +45,11 @@ PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intens
 	return pointLight;
 }
 
+int LightManager::getNrOfPointLights()
+{
+	return pointLights.size();
+}
+
 DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm::vec4 intensity)
 {
 	if (dirLightExist == false) {
