@@ -22,4 +22,5 @@ private:
 	TargetManager* targetManager;
 	GameLogic gameLogic;
 	CollisionHandler collisionHandler;
+	ReplaySystem replaySystem;
 };

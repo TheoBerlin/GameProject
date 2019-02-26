@@ -27,6 +27,9 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 
 	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
 
+	// Begin recording collisions
+	level.replaySystem->startRecording();
+
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
@@ -43,7 +46,6 @@ ArrowGuider* GuidingPhase::getArrowGuider() const
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)
 {
-
     if (event->action != GLFW_PRESS) {
         return;
     }
@@ -52,6 +54,7 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
         EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 
         arrowGuider->stopGuiding();
+		level.replaySystem->stopRecording();
 
         // Begin camera transition to the replay freecam
         CameraSetting currentCamSettings;

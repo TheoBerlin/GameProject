@@ -74,6 +74,7 @@
     <ClCompile Include="Game\GameLogic\OverviewPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phase.cpp" />
     <ClCompile Include="Game\GameLogic\ReplayPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\ReplaySystem.cpp" />
     <ClCompile Include="Game\GameLogic\TargetManager.cpp" />
     <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="Game\GameLogic\OverviewPhase.h" />
     <ClInclude Include="Game\GameLogic\Phase.h" />
     <ClInclude Include="Game\GameLogic\ReplayPhase.h" />
+    <ClInclude Include="Game\GameLogic\ReplaySystem.h" />
     <ClInclude Include="Game\GameLogic\TargetManager.h" />
     <ClInclude Include="Game\Level\Level.h" />
     <ClInclude Include="Game\Level\LevelParser.h" />

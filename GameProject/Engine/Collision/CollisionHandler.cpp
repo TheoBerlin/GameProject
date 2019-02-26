@@ -53,8 +53,6 @@ void CollisionHandler::checkCollision()
 {
 	if (this->player)
 		this->world->testCollision(this->player, &this->collision);
-	else
-		this->world->testCollision(&this->collision);
 }
 
 void CollisionHandler::createCollisionBodies(unsigned num)
