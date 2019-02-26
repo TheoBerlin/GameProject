@@ -26,6 +26,7 @@ GameState::GameState()
 	level.targetManager = targetManager;
 	level.collisionHandler = &this->collisionHandler;
 	level.gui = &this->getGUI();
+	level.replaySystem = &this->replaySystem;
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
@@ -73,6 +74,7 @@ void GameState::update(const float dt)
 		entities[i]->update(dt);
 	}
 
+
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
 
@@ -80,6 +82,9 @@ void GameState::update(const float dt)
 		Update shaders
 	*/
 	renderer.updateShaders(dt);
+
+	this->replaySystem.update(dt);
+
 }
 
 void GameState::updateLogic(const float dt)

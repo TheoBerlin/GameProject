@@ -55,6 +55,9 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	// Reset targets
 	level.targetManager->resetTargets();
 
+    // Begin replaying playthrough
+    level.replaySystem->startReplaying();
+
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
@@ -84,8 +87,10 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     if (event->key == GLFW_KEY_2) {
         EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 
-        // Begin transition to aim phase
         freeCam->removeComponent(freeMove->getName());
+
+        // Stop replaying playthrough
+        level.replaySystem->stopReplaying();
 
         // Begin camera transition to the arrow
         CameraSetting currentCamSettings;
