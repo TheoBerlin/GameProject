@@ -2,8 +2,6 @@
 
 #include <Engine/Events/EventBus.h>
 
-#include <Utils/Logger.h>
-
 ReplaySystem::ReplaySystem()
     :replayTime(0.0f),
     isRecording(false),
@@ -26,7 +24,6 @@ void ReplaySystem::update(const float& dt)
 
     // Advance collisionIndex and republish events
     while (collisionIndex < collisions.size() && collisions[collisionIndex].time < replayTime) {
-        LOG_INFO("Republishing collision");
         EventBus::get().publish(&collisions[collisionIndex].event);
 
         collisionIndex += 1;
@@ -40,7 +37,6 @@ void ReplaySystem::update(const float& dt)
 
 void ReplaySystem::startRecording()
 {
-    LOG_INFO("Starting recording");
     EventBus::get().subscribe(this, &ReplaySystem::handlePlayerCollision);
 
     // Delete old replay
@@ -59,7 +55,6 @@ void ReplaySystem::startRecording()
 
 void ReplaySystem::stopRecording()
 {
-    LOG_INFO("Stopping recording");
     EventBus::get().unsubscribe(this, &ReplaySystem::handlePlayerCollision);
 
     isRecording = false;
@@ -69,13 +64,11 @@ void ReplaySystem::stopRecording()
 
 void ReplaySystem::deleteReplay()
 {
-    LOG_INFO("Deleting replay");
     collisions.clear();
 }
 
 void ReplaySystem::startReplaying()
 {
-    LOG_INFO("Starting replay");
     // This will enable update to republish collision events
     isReplaying = true;
 
@@ -90,7 +83,6 @@ void ReplaySystem::startReplaying()
 
 void ReplaySystem::stopReplaying()
 {
-    LOG_INFO("Stopping replay");
     isReplaying = false;
 }
 
@@ -98,7 +90,6 @@ void ReplaySystem::handlePlayerCollision(PlayerCollisionEvent* event)
 {
     recordingTimer.update();
     float timeStamp = recordingTimer.getTime();
-    LOG_INFO("Storing collision replay at [%f]", timeStamp);
 
     collisions.push_back(CollisionReplay(*event, timeStamp));
 }
