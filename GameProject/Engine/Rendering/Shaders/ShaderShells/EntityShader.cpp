@@ -1,4 +1,5 @@
 #include "EntityShader.h"
+#include <math.h>
 
 EntityShader::EntityShader(const std::string & vertex, const std::string & fragment, Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix) : Shader(vertex, fragment)
 {
@@ -31,6 +32,7 @@ void EntityShader::updateMeshData(unsigned texId)
 void EntityShader::update(const float & dt)
 {
 	this->time += dt;
+	this->time = fmod(this->time, 20000.0f);
 }
 
 float EntityShader::getTime()

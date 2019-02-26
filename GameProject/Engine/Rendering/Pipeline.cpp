@@ -4,7 +4,7 @@
 #include "Engine/Entity/Entity.h"
 #include "Engine/Events/EventBus.h"
 #include "Utils/Logger.h"
-
+#include "Display.h"
 #include "../Config.h"
 #include <Engine/Imgui/imgui.h>
 
@@ -15,7 +15,6 @@ Pipeline::Pipeline()
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
 
 	this->quad = ModelLoader::loadModel("Game/assets/postProcessQuad.fbx");
-
 	/*
 		Loading in shaders, Quad and Z pre pass are necessary for drawing texture to window and depth pre pass
 		Test shader will be swapped out with a option to choose between multiple shaders for rendering Entities
