@@ -22,4 +22,5 @@ private:
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
+    Camera* arrowCam;
 };

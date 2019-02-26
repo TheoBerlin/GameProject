@@ -9,6 +9,8 @@
 struct CameraSetting {
 	glm::vec3 position;
 	glm::vec3 direction;
+	glm::vec3 offset;
+	float FOV;
 };
 
 struct Player {
