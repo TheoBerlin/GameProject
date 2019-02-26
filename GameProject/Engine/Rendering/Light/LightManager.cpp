@@ -9,6 +9,7 @@ LightManager::LightManager()
 	this->shadowWidth = Display::get().getWidth();
 	this->orthoHeight = 20.0f * Display::get().getRatio();
 	this->orthoWidth = 20.0f; //fix this so that the class gets this info relative to input
+	this->shadowPosition = glm::vec3(0.0f, 10.0f, 10.0f);
 }
 
 
@@ -71,6 +72,6 @@ glm::mat4 LightManager::getLightMatrix()
 void LightManager::calcLightMatrix()
 {
 	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float) orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 10.0f, 10.0f /*ShadowCameraPosition*/), glm::vec3(dirLight->getDirection()), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(glm::vec3(shadowPosition), glm::vec3(dirLight->getDirection()), glm::vec3(0.0f, 1.0f, 0.0f));
 	lightMatrix = lightProjection * lightView;
 }
