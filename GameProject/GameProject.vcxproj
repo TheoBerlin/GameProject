@@ -79,7 +79,6 @@
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
-    <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
@@ -160,7 +159,6 @@
     <ClInclude Include="Game\Components\PathTreader.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\GameState.h" />
-    <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />

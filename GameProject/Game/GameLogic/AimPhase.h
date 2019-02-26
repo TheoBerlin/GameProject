@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Engine/Components/Camera.h>
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
 
@@ -14,6 +15,7 @@ public:
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
+    Camera* getArrowCam() const;
 
 private:
     void commonSetup();
@@ -25,4 +27,5 @@ private:
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
+    Camera* arrowCam;
 };
