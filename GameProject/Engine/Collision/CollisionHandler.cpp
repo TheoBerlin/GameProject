@@ -200,7 +200,7 @@ void CollisionHandler::addShape(const std::string & name, Vertex* vertices, unsi
 	std::vector<Vertex> verts(vertices, vertices+numVertices);
 	
 	// Calculate centroid.
-	glm::vec3 centroid;
+	glm::vec3 centroid(0.0f);
 	for (Vertex& v : verts)
 		centroid += v.Position;
 	centroid /= numVertices;
@@ -229,8 +229,113 @@ void CollisionHandler::addShape(const std::string & name, Vertex* vertices, unsi
 	float cov[3][3];
 	for (unsigned i = 0; i < 3; i++)
 		for (unsigned j = 0; j < 3; j++)
-			cov[j][i] = getElem(vertsDist, vertsDist, i, j);
+			cov[i][j] = getElem(vertsDist, vertsDist, i, j);
+	
+	//float cov[3][3] = { { 3.f, 2.f, 6.f }, { 2.f, 2.f, 5.f }, { -2.f, -1.f, -4.f } }; //expected a: 1, b: 1, c: -1
 
+	//TEST: float cov[3][3] = { {1.f, 0.f, 1.f}, {0.f, 1.f, 1.f}, {0.f, 1.f, 0.f} };
+
+	// Find characteristic equation det(A-l*I) = 0
+	double a = -(double)(cov[0][0] + cov[1][1] + cov[2][2]);
+	double b = -(double)(-cov[0][0]* cov[1][1] - cov[0][0]* cov[2][2] - cov[1][1]* cov[2][2] + cov[1][2]* cov[2][1] + cov[0][1]* cov[1][0] + cov[0][2]* cov[2][0]);
+	double c = -(double)(cov[0][0]* cov[1][1]* cov[2][2] - cov[0][0]* cov[1][2]* cov[2][1] - cov[0][1]* cov[1][0]* cov[2][2] + cov[0][1]* cov[1][2]* cov[2][0] + cov[0][2]* cov[1][0]* cov[2][1] - cov[0][2]* cov[1][1]* cov[2][0]);
+
+	// Cubic solver
+	// Code from icy1: http://www.cplusplus.com/forum/beginner/234717/
+	double x1_real = 0.0f;
+	double x2_real = 0.0f;
+	double x3_real = 0.0f;
+
+	double x1_imag = 0.0f;
+	double x2_imag = 0.0f;
+	double x3_imag = 0.0f;
+
+	double q = (3.*b - a * a) / 9.;
+
+	double r = (-27.*c + a * (9.*b - 2.*a*a))/54.;
+	double disc = q*q*q + r*r;
+
+	double r13;
+	bool towEqual = false;
+	
+	double term1 = a / 3.;
+	if(disc > 0.00000001) // One root real, two are complex.
+	{
+		double sqDisc = sqrt(disc);
+		double s = r + sqDisc;
+		s = s < 0. ? -cbrt(-s) : cbrt(s);
+		double t = r - sqDisc;
+		t = t < 0. ? -cbrt(-t) : cbrt(t);
+		x1_real = -term1 + s + t;
+		term1 += (s + t) / 2.f;
+		x3_real = x2_real = -term1;
+		term1 = sqrt(3.)*((s - t) / 2.);
+		x2_imag = term1;
+		x3_imag = -term1;
+	}
+	else if (disc >= 0.0 && disc <= 0.00000001) // All roots real, at least two are equal.
+	{
+		x3_imag = x2_imag = 0.;
+		r13 = r<0. ? -cbrt(-r) : cbrt(r);
+		x1_real = -term1 + 2.*r13;
+		x2_real = x3_real = -(r13 + term1);
+		towEqual = true;
+	}
+	else // Only option left is that all roots are real and unequal (to get here, q < 0)
+	{
+		x3_imag = x2_imag = 0;
+		q = -q;
+		float dum1 = q * q*q;
+		dum1 = acos(r / sqrt(dum1));
+		r13 = 2.0*sqrt(q);
+		x1_real = -term1 + r13 * cos(dum1 / 3.0);
+		x2_real = -term1 + r13 * cos((dum1 + 2.0*glm::pi<double>()) / 3.0);
+		x3_real = -term1 + r13 * cos((dum1 + 4.0*glm::pi<double>()) / 3.0);
+	}
+	
+	glm::mat3 mat({ cov[0][0], cov[1][0], cov[2][0] }, { cov[0][1], cov[1][1], cov[2][1] }, { cov[0][2], cov[1][2], cov[2][2] });
+
+
+	auto cramerRule = [](glm::mat3& m, glm::vec3& v)->glm::vec3 {
+		float d = glm::determinant(m);
+		glm::mat3 m2(v, m[1], m[2]);
+		float x = glm::determinant(m2) / d;
+		float y = glm::determinant(glm::mat3(m[0], v, m[2])) / d;
+		float z = glm::determinant(glm::mat3(m[0], m[1], v)) / d;
+		return glm::vec3(x, y, z);
+	};
+
+	glm::mat3 mat3({ -2.f, 1.f, 0.f }, { -8.f, 4.f, 0.f }, { -12.f, 4.f, 1.f });
+	glm::vec3 v4{ 0.0f, 0.0f, 0.0f };
+	glm::vec3 vv = cramerRule(mat3, v4);
+
+	if (towEqual)
+	{
+		glm::vec3 v{0.0f, 0.0f, 0.0f};
+
+		glm::mat3 m1 = mat - ((float)x1_real)*glm::mat3(1.0f);
+		glm::vec3 e1 = cramerRule(m1, v);
+
+		glm::mat3 m2 = mat - ((float)x2_real)*glm::mat3(1.0f);
+		glm::vec3 e2 = cramerRule(m2, v);
+
+		glm::vec3 r = e1;
+	}
+	else 
+	{
+		glm::vec3 v{ 0.0f, 0.0f, 0.0f };
+
+		glm::mat3 m1 = mat - ((float)x1_real)*glm::mat3(1.0f);
+		glm::vec3 e1 = cramerRule(m1, v);
+
+		glm::mat3 m2 = mat - ((float)x2_real)*glm::mat3(1.0f);
+		glm::vec3 e2 = cramerRule(m2, v);
+
+		glm::mat3 m3 = mat - ((float)x3_real)*glm::mat3(1.0f);
+		glm::vec3 e3 = cramerRule(m3, v);
+
+		glm::vec3 r = e1;
+	}
 	/*
 	TODO: 
 	Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> eig(cov);
