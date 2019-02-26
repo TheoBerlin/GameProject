@@ -53,8 +53,13 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
     if (event->key == GLFW_KEY_3) {
         EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 
-        arrowGuider->stopGuiding();
 		level.replaySystem->stopRecording();
+
+		// Get flight time
+		flightTimer.stop();
+		float flightTime = flightTimer.getDeltaTime();
+
+        arrowGuider->stopGuiding(flightTime);
 
         // Begin camera transition to the replay freecam
         CameraSetting currentCamSettings;
