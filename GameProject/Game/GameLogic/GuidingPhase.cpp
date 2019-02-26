@@ -50,7 +50,11 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
     if (event->key == GLFW_KEY_3) {
         EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 
-        arrowGuider->stopGuiding();
+		// Get flight time
+		flightTimer.stop();
+		float flightTime = flightTimer.getDeltaTime();
+
+        arrowGuider->stopGuiding(flightTime);
 
         // Begin camera transition to the replay freecam
         glm::vec3 newPos = level.player.replayCamera.position;
