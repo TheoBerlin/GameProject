@@ -1,6 +1,7 @@
 #include "LightManager.h"
 #include "Engine/Rendering/Display.h"
 #include "Utils/Logger.h"
+#include "glm/gtc/matrix_transform.hpp"
 
 LightManager::LightManager()
 {
@@ -9,7 +10,7 @@ LightManager::LightManager()
 	this->shadowWidth = Display::get().getWidth();
 	this->orthoHeight = 20.0f * Display::get().getRatio();
 	this->orthoWidth = 20.0f; //fix this so that the class gets this info relative to input
-	this->shadowPosition = glm::vec3(0.0f, 10.0f, 10.0f);
+	this->shadowPosition = glm::vec3(5.0f, 10.0f, 10.0f);
 }
 
 

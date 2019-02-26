@@ -83,7 +83,6 @@
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Engine\Rendering\Light\LightManager.cpp" />
-    <ClCompile Include="Engine\Rendering\Light\Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
@@ -167,7 +166,6 @@
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Engine\Rendering\Light\LightManager.h" />
-    <ClInclude Include="Engine\Rendering\Light\Light.h" />
     <ClInclude Include="Engine\Rendering\Light\PointLight.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
