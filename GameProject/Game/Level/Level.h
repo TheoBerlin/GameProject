@@ -1,10 +1,11 @@
 #pragma once
 
+#include <Engine/Collision/CollisionHandler.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/GUI/GUI.h>
 #include <Game/GameLogic/TargetManager.h>
+#include <Game/GameLogic/ReplaySystem.h>
 #include <glm/glm.hpp>
-#include <Engine/Collision/CollisionHandler.h>
 
 struct CameraSetting {
 	glm::vec3 position;
@@ -25,4 +26,5 @@ struct Level {
 	Player player;
 	GUI* gui;
 	CollisionHandler* collisionHandler;
+	ReplaySystem* replaySystem;
 };
