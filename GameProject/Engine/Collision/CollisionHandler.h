@@ -54,7 +54,7 @@ public:
 	void checkCollision();
 
 	// Creates the amount of bodies needed for the level. Done once to have it all after each other in memory.
-	void createCollisionBodies(int num);
+	void createCollisionBodies(unsigned num);
 	// Returns an unused collision body, nullptr if noone is available.
 	rp3d::CollisionBody* getUnusedBody();
 	// Add collision body to an entity with a predefined shape
@@ -86,7 +86,7 @@ private:
 	
 	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
-	int takenBodies;
+	unsigned takenBodies;
 
 #ifdef ENABLE_COLLISION_BOXES
 	std::vector<glm::mat4> matrices;
