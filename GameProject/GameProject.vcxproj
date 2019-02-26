@@ -66,6 +66,7 @@
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\CameraTransition.cpp" />
+    <ClCompile Include="Game\Components\Hover.cpp" />
     <ClCompile Include="Game\Components\OversightController.cpp" />
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
@@ -145,6 +146,7 @@
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />
+    <ClInclude Include="Game\Components\Hover.h" />
     <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />

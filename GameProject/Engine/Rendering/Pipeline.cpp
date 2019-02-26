@@ -39,8 +39,8 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
 	float shadowResScale = 4.0f;
-	shadowWidth = Display::get().getWidth() * shadowResScale;
-	shadowHeight = Display::get().getHeight() * shadowResScale;
+	shadowWidth = (unsigned)(Display::get().getWidth() * shadowResScale);
+	shadowHeight = (unsigned)(Display::get().getHeight() * shadowResScale);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
