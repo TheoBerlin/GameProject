@@ -18,10 +18,6 @@ Model::~Model()
 void Model::addMesh(Mesh* mesh)
 {
     meshes.push_back(mesh);
-	/*
-		Init instancing verter buffer
-	*/
-	mesh->initInstancing(NULL, 0);
 }
 
 void Model::addMaterial(Material material)
@@ -91,7 +87,7 @@ void Model::initInstancing()
 
 void Model::initInstancing(unsigned meshIndex, const void * data, size_t dataSize, const AttributeLayout & attributeLayout)
 {
-	if(meshIndex > 0 && meshIndex < this->meshes.size())
+	if(meshIndex >= 0 && meshIndex < this->meshes.size())
 		this->meshes[meshIndex]->initInstancing(data, dataSize, attributeLayout);
 }
 
