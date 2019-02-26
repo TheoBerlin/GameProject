@@ -14,6 +14,7 @@ PlayerCollision::PlayerCollision(Entity* parentEntity, const std::string& tagNam
 
 PlayerCollision::~PlayerCollision()
 {
+	EventBus::get().unsubscribe(this, &PlayerCollision::collide);
 }
 
 void PlayerCollision::update(const float & dt)

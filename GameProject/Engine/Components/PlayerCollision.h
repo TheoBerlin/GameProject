@@ -8,7 +8,7 @@ namespace reactphysics3d { class ProxyShape; }
 class PlayerCollision : public Component
 {
 public:
-	PlayerCollision(Entity* parentEntity, const std::string& tagName = "Collision");
+	PlayerCollision(Entity* parentEntity, const std::string& tagName = "PlayerCollision");
 	virtual ~PlayerCollision();
 
 	void update(const float& dt);

@@ -1,5 +1,5 @@
 #pragma once
-#include "../Events/EventBus.h"
+#include "../Events/Events.h"
 #include "Component.h"
 
 /*
@@ -8,11 +8,11 @@
 
 namespace reactphysics3d { class ProxyShapes; }
 
-class TargetStaticCollision : public Component
+class MovingTargetCollision : public Component
 {
 public:
-	TargetStaticCollision(Entity * parentEntity, const std::string& tagName = "Collision");
-	virtual ~TargetStaticCollision();
+	MovingTargetCollision(Entity * parentEntity, const std::string& tagName = "MovingTargetCollision");
+	virtual ~MovingTargetCollision();
 	bool getFlag();
 
 	void update(const float& dt);
