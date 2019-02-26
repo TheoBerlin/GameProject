@@ -65,6 +65,11 @@ void TargetManager::setupTargetGeneric(Entity* host)
 
 void TargetManager::resetStaticTargets()
 {
+	unsigned int staticTargetCount = staticTargets.size();
+
+    for (unsigned int i = 0; i != staticTargetCount; i += 1) {
+        staticTargets.at(i).hoverAnimation->reset();
+    }
 }
 
 void TargetManager::resetMovingTargets()

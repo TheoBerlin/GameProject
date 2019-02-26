@@ -5,7 +5,9 @@
 
 Hover::Hover(Entity* host)
     :Component(host, "Hover"),
-    t(0.0f)
+    t(0.0f),
+    totalTranslation({0.0f, 0.0f, 0.0f}),
+    totalRotation({0.0f, 0.0f, 0.0f})
 {
 }
 
@@ -30,4 +32,21 @@ void Hover::update(const float& dt)
 
     transform->translate(translation);
     transform->rotate(rotation.x, rotation.y, rotation.z);
+
+    // Store total amount of relative transformations applied by Hover
+    totalTranslation += translation;
+    totalRotation += rotation;
+}
+
+void Hover::reset()
+{
+    Transform* transform = host->getTransform();
+
+    transform->translate(-totalTranslation);
+    transform->rotate(-totalRotation.x, -totalRotation.y, -totalRotation.z);
+
+    totalTranslation = {0.0f, 0.0f, 0.0f};
+    totalRotation = {0.0f, 0.0f, 0.0f};
+
+    t = 0.0f;
 }
