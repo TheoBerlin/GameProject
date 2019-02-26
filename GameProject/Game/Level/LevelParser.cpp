@@ -5,7 +5,6 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
-#include <Engine/Components/TargetCollision.h>
 #include <Utils/Logger.h>
 
 void LevelParser::readEntityTargets(Level& level)
@@ -49,7 +48,6 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 
 		entity->setModel(model);
-		new TargetCollision(entity);
 		level.collisionHandler->addCollisionToEntity(entity, SHAPE::DRONE);
 	}
 }

@@ -4,7 +4,6 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
-#include <Engine/Components/CollisionComponent.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/AimPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
@@ -23,13 +22,13 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	/*
 	Do stuff when collision happens
 	*/
-	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
 
 	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
 
 	// Begin recording collisions
 	level.replaySystem->startRecording();
 
+	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
 
@@ -79,9 +78,9 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 void GuidingPhase::transitionToReplay(CameraTransitionEvent* event)
 {
     EventBus::get().unsubscribe(this, &GuidingPhase::transitionToReplay);
+	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
 
 	level.collisionHandler->removeCollisionBody(this->playerArrow);
-	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
 
     Phase* guidingPhase = new ReplayPhase(this);
     changePhase(guidingPhase);
@@ -90,56 +89,5 @@ void GuidingPhase::transitionToReplay(CameraTransitionEvent* event)
 
 void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
-	// Entity1 should always be player, but to be on the safe side...
-	Entity* otherEntity;
-	const rp3d::ProxyShape* playerShape;
-	const rp3d::ProxyShape* otherShape;
-	if (ev->entity1 != this->playerArrow)
-	{
-		otherEntity = ev->entity1;
-		otherShape = ev->shape1;
-		playerShape = ev->shape2;
-	}
-	else
-	{
-		otherEntity = ev->entity2;
-		otherShape = ev->shape2;
-		playerShape = ev->shape1;
-	}
-
-	// Handle collision for the entity the arrow hit
-	CollisionComponent* collision = dynamic_cast<CollisionComponent*>(otherEntity->getComponent("Collision"));
-	if (collision != nullptr)
-		collision->handleCollision(otherShape, playerShape);
-
-	// Only check if there is a player assigned
-	if (this->playerArrow) {
-		// Handle collision for the player arrow
-		CollisionComponent* playerCollision = dynamic_cast<CollisionComponent*>(this->playerArrow->getComponent("Collision"));
-		if (playerCollision != nullptr)
-		{
-			unsigned category = otherShape->getCollisionCategoryBits();
-			switch (category)
-			{
-			case CATEGORY::DRONE_BODY:
-			{
-				// Score point
-				break;
-			}
-			case CATEGORY::DRONE_EYE:
-			{
-				// Score bonus points
-				break;
-			}
-			case CATEGORY::STATIC:
-			{
-				// Arrow hit a static object - destory arrow
-				break;
-			}
-			default:
-				break;
-			}
-			playerCollision->handleCollision(playerShape, otherShape);
-		}
-	}
+	// This is used in another branch, please keep
 }
