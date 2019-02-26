@@ -74,6 +74,10 @@ void TargetManager::resetStaticTargets()
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
         staticTargets.at(i).hoverAnimation->reset();
+		//Reset color on entity
+		Entity* host = staticTargets.at(i).hoverAnimation->getHost();
+		host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
+			host->getRenderingGroupIndex() * sizeof(glm::vec3), 0, 2);
     }
 }
 

@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
     <ClCompile Include="Engine\GUI\Button.cpp" />
     <ClCompile Include="Engine\GUI\Font.cpp" />
@@ -62,6 +63,7 @@
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\CameraTransition.cpp" />
     <ClCompile Include="Game\Components\Hover.cpp" />
@@ -90,6 +92,7 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.h" />
     <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
@@ -141,6 +144,7 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />
     <ClInclude Include="Game\Components\Hover.h" />
     <ClInclude Include="Game\Components\OversightController.h" />

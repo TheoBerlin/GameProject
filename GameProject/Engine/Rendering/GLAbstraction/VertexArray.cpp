@@ -53,10 +53,6 @@ void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t
 		}
 
 	}
-	else {
-		LOG_ERROR("Index out of range, no vbo is attached to that index!");
-
-	}
 
 }
 

@@ -15,7 +15,8 @@ public:
 
 	void recreate(const std::string& vertex, const std::string& fragment);
 
-	void bind();
+	virtual void bind();
+
 	void unbind();
 
 	const GLuint getID() const;
