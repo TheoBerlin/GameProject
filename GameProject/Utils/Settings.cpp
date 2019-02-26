@@ -24,6 +24,7 @@ bool Settings::readFile(std::string fileName)
 	readScreenWidth();
 	readScreenHeight();
 	readMouseSensitivity();
+	readShadowReScale();
 
 	if (iFile.is_open()) {
 		iFile.close();
@@ -37,6 +38,7 @@ void Settings::writeFile(std::string fileName)
 	jsonFile["Volume"] = volume;
 	jsonFile["ScreenWidth"] = screenWidth;
 	jsonFile["ScreenHeight"] = screenHeight;
+	jsonFile["MouseSensitivity"] = mouseSensitivity;
 	std::ofstream oStream(fileName);
 	oStream << std::setw(4) << jsonFile << std::endl;
 }
@@ -81,7 +83,18 @@ void Settings::readMouseSensitivity()
 	if (!jsonMouseSens.empty()) {
 		mouseSensitivity = jsonMouseSens;
 	} else {
-		LOG_ERROR("MouseSensitivity has no value");
+		LOG_ERROR("%s: MouseSensitivity has no value");
+	}
+}
+
+void Settings::readShadowReScale()
+{
+	json::json& jsonShadowScale = jsonFile["ShadowReScale"];
+	if (!jsonShadowScale.empty()) {
+		shadowReScale = jsonShadowScale;
+	}
+	else {
+		LOG_ERROR("%s: ShadowReScale has no value");
 	}
 }
 
@@ -144,7 +157,13 @@ void Settings::setMouseSensitivity(const float mouseSensitivity)
 	changed = true;
 }
 
-void Settings::handleResizeEvent(WindowResizeEvent * evnt)
+float Settings::getShadowReScale()
 {
-	setResolution(evnt->width, evnt->height);
+	return this->shadowReScale;
+}
+
+void Settings::setShadowReScale(float shadowReScale)
+{
+	this->shadowReScale = shadowReScale;
+	changed = true;
 }

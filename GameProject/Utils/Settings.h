@@ -18,6 +18,7 @@ private:
 	int screenWidth;
 	int screenHeight;
 	float mouseSensitivity;
+	float shadowReScale;
 
 	bool readFile(std::string fileName = "./Utils/Settings.json");
 	void writeFile(std::string fileName = "./Utils/Settings.json");
@@ -26,6 +27,7 @@ private:
 	void readScreenWidth();
 	void readScreenHeight();
 	void readMouseSensitivity();
+	void readShadowReScale();
 
 	json::json jsonFile;
 
@@ -41,7 +43,8 @@ public:
 	void setResolution(int width, int height);
 	float getMouseSensitivity();
 	void setMouseSensitivity(const float mouseSensitivity);
-	void handleResizeEvent(WindowResizeEvent * evnt);
+	float getShadowReScale();
+	void setShadowReScale(float shadowReScale);
 };
 
 

@@ -1,6 +1,7 @@
 {
-    "MouseSensitivity": 0.5,
-    "ScreenHeight": 757,
-    "ScreenWidth": 1280,
-    "Volume": 0.5
+  "ShadowReScale":  4.0,
+  "MouseSensitivity": 0.5,
+  "ScreenHeight": 720,
+  "ScreenWidth": 1280,
+  "Volume": 0.5
 }

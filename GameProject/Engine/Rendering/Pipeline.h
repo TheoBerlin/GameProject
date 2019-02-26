@@ -6,10 +6,11 @@
 #include "GLAbstraction/Shader.h"
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
+#include "Light/LightManager.h"
 
 class Entity;
 
-struct DirectionalLight {
+struct DirectionLight {
 	glm::vec4 direction;
 	glm::vec4 color_intensity;
 };
@@ -63,10 +64,10 @@ public:
 private:
 	Camera * camera;
 	unsigned int width, height;
-	unsigned int shadowWidth, shadowHeight;
+	//unsigned int shadowWidth, shadowHeight;
 	Framebuffer fbo;
 	Framebuffer shadowFbo;
-	glm::mat4 lightSpaceMatrix;
+	//glm::mat4 lightSpaceMatrix;
 
 	// Old rendering draw functions
 	void draw(const std::vector<Entity*>& renderingList);					// Old rendering
@@ -90,7 +91,9 @@ private:
 
 	Model* quad;
 
-	DirectionalLight mainLight;
+	DirectionLight mainLight;
+
+	LightManager lm;
 
 	std::vector<UniformBuffer*> uniformBuffers;
 

@@ -30,10 +30,10 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
-	float shadowResScale = 4.0f;
+	/*float shadowResScale = 2.0f;
 	shadowWidth = Display::get().getWidth() * shadowResScale;
-	shadowHeight = Display::get().getHeight() * shadowResScale;
-	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
+	shadowHeight = Display::get().getHeight() * shadowResScale;*/
+	this->shadowFbo.attachTexture(lm.getShadowWidthScaled(), lm.getShadowHeightScaled(), AttachmentType::DEPTH);
 
 
 	this->uniformBuffers.resize(7);
@@ -52,9 +52,13 @@ Pipeline::Pipeline()
 	/*
 		Set up Directional Light
 	*/
-	this->mainLight.direction = glm::normalize(glm::vec4(0.5f, -1.0f, -0.5f, 1.0f));
+	/*this->mainLight.direction = glm::normalize(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f));
 	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);
+	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);*/
+
+	lm.createDirectionalLight(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	this->uniformBuffers[1]->setSubData((void*)lm.getDirectionalLight(), sizeof(lm.getDirectionalLight()) * 8, 0);
+	
 }
 
 
@@ -194,7 +198,7 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->testShader->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
+	this->testShader->setUniformMatrix4fv("lightMatrix", 1, false, &(lm.getLightMatrix()[0][0]));
 	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
 	Texture * shadowTex = getShadowFbo()->getDepthTexture();
@@ -217,7 +221,7 @@ Texture * Pipeline::drawModelToTexture(const std::vector<Model*>& renderingModel
 
 	this->entityShaderInstanced->bind();
 
-	this->entityShaderInstanced->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
+	this->entityShaderInstanced->setUniformMatrix4fv("lightMatrix", 1, false, &(lm.getLightMatrix()[0][0]));
 	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
@@ -257,20 +261,20 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(shadowWidth, shadowHeight);
+	Display::get().updateView(lm.getShadowWidthScaled(), lm.getShadowHeightScaled());
 
 	this->shadowFbo.bind();;
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
-	float orthoWidth = 20.0f;
+	/*float orthoWidth = 20.0f;
 	float orthoHeight = 20.0f * Display::get().getRatio();
 	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth /2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 lightView = glm::lookAt(glm::vec3(0.0f, 20.0f, 10.0f), glm::vec3(mainLight.direction), glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpaceMatrix = lightProjection * lightView;
-
+*/
 	//Draw renderingList
-	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &lm.getLightMatrix()[0][0]);
 	glCullFace(GL_FRONT);
 	draw(renderingList);
 	glCullFace(GL_BACK);
@@ -309,20 +313,14 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingMo
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(shadowWidth, shadowHeight);
+	Display::get().updateView(lm.getShadowWidthScaled(), lm.getShadowHeightScaled());
 
 	this->shadowFbo.bind();
 	this->prePassDepthOn();
 	this->ZprePassShaderInstanced->bind();
 
-	float orthoWidth = 20.0f;
-	float orthoHeight = 20.0f * Display::get().getRatio();
-	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
-	lightSpaceMatrix = lightProjection * lightView;
-
 	//Draw renderingList
-	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lm.getLightMatrix()[0][0]);
 	for (Model* model : renderingModels) {
 		drawModelPrePassInstanced(model);
 	}
