@@ -33,7 +33,7 @@ Pipeline::Pipeline()
 	/*float shadowResScale = 2.0f;
 	shadowWidth = Display::get().getWidth() * shadowResScale;
 	shadowHeight = Display::get().getHeight() * shadowResScale;*/
-	this->shadowFbo.attachTexture(lm.getShadowWidthScaled(), lm.getShadowHeightScaled(), AttachmentType::DEPTH);
+	this->shadowFbo.attachTexture((int)lm.getShadowWidthScaled(), (int)lm.getShadowHeightScaled(), AttachmentType::DEPTH);
 
 
 	this->uniformBuffers.resize(7);
@@ -57,8 +57,7 @@ Pipeline::Pipeline()
 	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);*/
 
 	lm.createDirectionalLight(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	this->uniformBuffers[1]->setSubData((void*)lm.getDirectionalLight(), sizeof(lm.getDirectionalLight()) * 8, 0);
-	
+	this->uniformBuffers[1]->setSubData(lm.getDirectionalLight(), 32, 0); //no idea how to solve the size issue
 }
 
 
@@ -261,7 +260,7 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(lm.getShadowWidthScaled(), lm.getShadowHeightScaled());
+	Display::get().updateView(int(lm.getShadowWidthScaled()), int(lm.getShadowHeightScaled()));
 
 	this->shadowFbo.bind();;
 	this->prePassDepthOn();
@@ -313,7 +312,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingMo
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(lm.getShadowWidthScaled(), lm.getShadowHeightScaled());
+	Display::get().updateView((int)lm.getShadowWidthScaled(), (int)lm.getShadowHeightScaled());
 
 	this->shadowFbo.bind();
 	this->prePassDepthOn();

@@ -13,8 +13,8 @@ public:
 	void setShadowReScale(float reScale);
 	float getShadowHeightScaled();
 	float getShadowWidthScaled();
-	PointLight * createPointLight();
-	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 inensity);
+	PointLight * createPointLight(glm::vec4 position, glm::vec4 intensity);
+	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity);
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getLightMatrix();
 private:

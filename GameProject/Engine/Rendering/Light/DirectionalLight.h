@@ -1,8 +1,11 @@
 #pragma once
 #include "Utils/Settings.h"
 
+
+
 class DirectionalLight
 {
+
 public:
 	DirectionalLight(glm::vec4 direction, glm::vec4 intensity);
 	~DirectionalLight();
@@ -11,5 +14,6 @@ public:
 private:
 	glm::vec4 direction;
 	glm::vec4 intensity;
+
 };
 

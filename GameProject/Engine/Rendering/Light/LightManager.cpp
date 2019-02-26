@@ -38,9 +38,9 @@ float LightManager::getShadowWidthScaled()
 	return this->shadowWidth * shadowReScale;
 }
 
-PointLight * LightManager::createPointLight()
+PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity)
 {
-	PointLight *  pointLight = new PointLight();
+	PointLight *  pointLight = new PointLight(position, intensity);
 	pointLights.push_back(pointLight);
 	return pointLight;
 }
