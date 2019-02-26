@@ -26,10 +26,9 @@
     <ClCompile Include="Engine\GUI\GUI.cpp" />
     <ClCompile Include="Engine\GUI\Panel.cpp" />
     <ClCompile Include="Engine\GUI\Text.cpp" />
-    <ClCompile Include="Engine\Components\CollisionComponent.cpp" />
     <ClCompile Include="Engine\Collision\Collision.cpp" />
     <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
-    <ClCompile Include="Engine\Components\TargetCollision.cpp" />
+    <ClCompile Include="Engine\Components\StaticTargetCollision.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -83,6 +82,7 @@
     <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
@@ -91,10 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
-    <ClInclude Include="Engine\Components\CollisionComponent.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
-    <ClInclude Include="Engine\Components\TargetCollision.h" />
+    <ClInclude Include="Engine\Components\StaticTargetCollision.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
@@ -163,6 +162,7 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
+    <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Engine\Components\PlayerCollision.h" />

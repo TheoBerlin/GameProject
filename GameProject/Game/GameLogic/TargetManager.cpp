@@ -4,6 +4,8 @@
 #include <Game/Components/Hover.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/RollNullifier.h>
+#include <Engine/Components/MovingTargetCollision.h>
+#include <Engine/Components/StaticTargetCollision.h>
 
 TargetManager::TargetManager()
 {
@@ -29,6 +31,8 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 
     staticTarget.hoverAnimation = new Hover(host);
 
+	new StaticTargetCollision(host);
+
     staticTargets.push_back(staticTarget);
 }
 
@@ -48,6 +52,7 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
 
     movingTarget.pathTreader = new PathTreader(host, path);
     movingTarget.rollNullifier = new RollNullifier(host);
+	new MovingTargetCollision(host);
 
     movingTargets.push_back(movingTarget);
 }
