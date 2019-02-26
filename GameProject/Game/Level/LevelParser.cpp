@@ -16,6 +16,7 @@ void LevelParser::readEntityTargets(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+		model->setName("droneTarget");
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -62,6 +63,7 @@ void LevelParser::readEntityBoxes(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/Cube.fbx");
+		model->setName("Cube");
 	}
 
 	for (int i = 0; i < targetSize; i++)

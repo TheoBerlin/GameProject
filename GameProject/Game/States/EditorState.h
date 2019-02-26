@@ -18,11 +18,20 @@ public:
 	void render() override;
 
 private:
+	//ImGui windows
+	void mainWindow(EntityManager& entityManager);
 	void entityWindow(EntityManager& entityManager);
-	std::string currentItem;
-	int currentEntity = -1;
-	Entity camera;
+	void levelWindow();
 
+	std::string levelName;
+	std::string currentItem;
+	std::string currentModel;
+	int currentEntity = -1;
+	bool activeWindow[2];
+	Entity camera;
+	FreeMove* freeMove;
+
+	Level level;
 	LevelParser levelParser;
 	TargetManager* targetManager;
 	GameLogic gameLogic;

@@ -129,3 +129,13 @@ Mesh* Model::getMesh(size_t index)
 {
     return meshes.at(index);
 }
+
+void Model::setName(std::string name)
+{
+	this->name = name;
+}
+
+std::string Model::getName() const
+{
+	return name;
+}

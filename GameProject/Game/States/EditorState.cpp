@@ -18,15 +18,22 @@
 
 EditorState::EditorState()
 {
-
-	Level level;
-
 	targetManager = new TargetManager();
 
 	EntityManager* entityManager = &this->getEntityManager();
 
-	Camera* c = new Camera(&camera, "Camera", { 0.0f, 0.5f, -10.0f });
+	// Set up the player camera
+	Transform* camTransform = camera.getTransform();
+
+	camTransform->setPosition(glm::vec3(0.0f, 5.0, -2.0f));
+	camTransform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
+	camTransform->resetRoll();
+
+	Camera* c = new Camera(&camera, "Camera");
 	c->init();
+
+	freeMove = new FreeMove(&camera);
+
 	Display::get().getRenderer().setActiveCamera(c);
 
 	level.entityManager = entityManager;
@@ -34,11 +41,10 @@ EditorState::EditorState()
 	level.collisionHandler = &this->collisionHandler;
 	level.gui = &this->getGUI();
 
-	levelParser.readLevel("./Game/Level/level.json", level);
-
 	Display::get().getRenderer().initInstancing();
 
 	InputHandler ih(Display::get().getWindowPtr());
+
 }
 
 EditorState::~EditorState()
@@ -50,7 +56,7 @@ void EditorState::start()
 {
 	/*
 	All entities in this state puts themselves in the rendering group of their model
-*/
+	*/
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
@@ -70,6 +76,9 @@ void EditorState::end()
 
 void EditorState::update(const float dt)
 {
+	freeMove->update(dt);
+	camera.update(dt);
+
 	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
@@ -77,7 +86,8 @@ void EditorState::update(const float dt)
 	for (unsigned int i = 0; i < entities.size(); i += 1) {
 		entities[i]->update(dt);
 	}
-	entityWindow(entityManager);
+
+	mainWindow(entityManager);
 }
 
 void EditorState::updateLogic(const float dt)
@@ -119,17 +129,38 @@ std::vector<Entity*>& entities = entityManager.getAll();
 	guiRenderer.draw(gui);
 }
 
+void EditorState::mainWindow(EntityManager & entityManager)
+{
+#ifdef IMGUI
+	ImGui::Begin("Main Window");
+	ImGui::SetWindowPos({0, 0});
+
+	if (ImGui::Button("Level"))
+		activeWindow[0] = !activeWindow[0];
+	if (ImGui::Button("Entities"))
+		activeWindow[1] = !activeWindow[1];
+	ImGui::NewLine();
+
+	ImGui::End();
+#endif
+
+	if (activeWindow[0])
+		levelWindow();
+	if (activeWindow[1])
+		entityWindow(entityManager);
+}
+
 void EditorState::entityWindow(EntityManager& entityManager)
 {
 #ifdef IMGUI
-
 	ImGui::Begin("Entity Window");
-
+	ImGui::AlignTextToFramePadding();
 	if (ImGui::BeginCombo("Entities", currentItem.c_str())) {
 		for (int i = 0; i < entityManager.getEntitySize(); i++) {
 			bool is_selected = (currentItem == entityManager.getEntity(i)->getName()); // You can store your selection however you want, outside or inside your objects
 			if (ImGui::Selectable(entityManager.getEntity(i)->getName().c_str(), is_selected)) {
 				currentItem = entityManager.getEntity(i)->getName();
+				currentModel = entityManager.getEntity(i)->getModel()->getName();
 				currentEntity = i;
 			}
 			if (is_selected)
@@ -138,11 +169,45 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		ImGui::EndCombo();
 	}
 	if (currentEntity != -1) {
+		//Entity Info
+		std::string name = entityManager.getEntity(currentEntity)->getName();
 		glm::vec3 position = entityManager.getEntity(currentEntity)->getTransform()->getPosition();
+		glm::vec3 scale = entityManager.getEntity(currentEntity)->getTransform()->getScale();
+		ImGui::Text("Entity Info");
+		if (ImGui::InputText("Name", &name[0], 64))
+			entityManager.getEntity(currentEntity)->setName(name.c_str());
 		if(ImGui::InputFloat3("Position", &position[0], 2))
 			entityManager.getEntity(currentEntity)->getTransform()->setPosition(position);
-	}
+		if (ImGui::InputFloat3("Scale", &scale[0], 2))
+			entityManager.getEntity(currentEntity)->getTransform()->setScale(scale);
+		//Model Info
+		Model* model = entityManager.getEntity(currentEntity)->getModel();
+		ImGui::Text("Model Info");
+		ImGui::InputText("Model Name", &currentModel[0], 64);
+		if (ImGui::Button("Load Model")) {
+			model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
+			entityManager.getEntity(currentEntity)->setModel(model);
+			entityManager.getEntity(currentEntity)->getModel()->setName(currentModel);
+		}
+		ImGui::NewLine();
 
+	}
+	ImGui::End();
+#endif
+}
+#include <string>
+#include <string.h>
+#include <iostream>
+
+void EditorState::levelWindow()
+{
+#ifdef IMGUI
+	ImGui::Begin("Level Window");
+	levelName.reserve(64);
+	ImGui::InputText("LevelName", (char*)levelName.c_str(), levelName.capacity());
+	if (ImGui::Button("Load")) {
+		levelParser.readLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
+	}
 	ImGui::End();
 #endif
 }
