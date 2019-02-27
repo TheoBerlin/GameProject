@@ -35,10 +35,16 @@ void StateManager::pop()
 	top->end();
 	delete top;
 	this->stack.pop();
+	
+	/*
+		Activate gui and run start on the new top state if available
+	*/
+	if (!this->stack.empty()) {
+		this->stack.top()->start();
+		this->stack.top()->getGUI().setActive(true);
+	}
 
-
-	if (this->lowerStates.empty() == false) {
-		this->lowerStates.top()->getGUI().setActive(false);
+	if (!this->lowerStates.empty()) {
 		this->lowerStates.pop();
 	}
 }
