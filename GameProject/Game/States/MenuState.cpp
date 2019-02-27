@@ -43,7 +43,7 @@ MenuState::MenuState() : State()
 	button2->setOption(GUI::SCALE_TO_TEXT_X, 5);
 	button2->setOption(GUI::SCALE_TO_TEXT_Y, 5);
 	button2->setOption(GUI::CENTER_X);
-	button2->setOption(GUI::CENTER_Y, -40);
+	button2->setOption(GUI::CENTER_Y, -60);
 	button2->setOption(GUI::TEXT_CENTER_X);
 	button2->setOption(GUI::TEXT_CENTER_Y);
 	//button2->setPosition(glm::uvec2(0, 100));

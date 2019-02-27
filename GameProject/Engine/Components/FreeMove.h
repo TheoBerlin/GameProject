@@ -13,6 +13,9 @@ public:
 	void init();
 	void update(const float& dt);
 
+	void setSpeed(const float speed);
+	float getSpeed() const;
+
 private:
 	float dt;
 	float speed;

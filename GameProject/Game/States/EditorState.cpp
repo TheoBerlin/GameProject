@@ -33,6 +33,7 @@ EditorState::EditorState()
 	c->init();
 
 	freeMove = new FreeMove(&camera);
+	camSpeed = freeMove->getSpeed();
 
 	Display::get().getRenderer().setActiveCamera(c);
 
@@ -139,6 +140,8 @@ void EditorState::mainWindow(EntityManager & entityManager)
 		activeWindow[0] = !activeWindow[0];
 	if (ImGui::Button("Entities"))
 		activeWindow[1] = !activeWindow[1];
+	if (ImGui::Button("Camera"))
+		activeWindow[2] = !activeWindow[2];
 	ImGui::NewLine();
 
 	ImGui::End();
@@ -148,6 +151,8 @@ void EditorState::mainWindow(EntityManager & entityManager)
 		levelWindow();
 	if (activeWindow[1])
 		entityWindow(entityManager);
+	if (activeWindow[2])
+		cameraWindow();
 }
 
 void EditorState::entityWindow(EntityManager& entityManager)
@@ -162,32 +167,62 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				currentItem = entityManager.getEntity(i)->getName();
 				currentModel = entityManager.getEntity(i)->getModel()->getName();
 				currentEntity = i;
+				if (entityManager.getTracedEntity(entityManager.getEntity(i)->getName()) != nullptr) {
+					currentTraced = true;
+				}
 			}
 			if (is_selected)
 				ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
 		}
 		ImGui::EndCombo();
 	}
+	if (ImGui::Button("Add Entity")) {
+		Entity* newEntity = new Entity();
+		newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+		Model* model = ModelLoader::loadModel("./Game/assets/Cube.fbx");
+		newEntity->setModel(model);
+		newEntity->getModel()->setName("Cube");
+		entityManager.addEntity(newEntity);
+		currentModel = newEntity->getModel()->getName();
+		currentEntity = entityManager.getEntitySize() - 1;
+		currentTraced = false;
+	}
 	if (currentEntity != -1) {
+		Entity* curEntity = entityManager.getEntity(currentEntity);
 		//Entity Info
-		std::string name = entityManager.getEntity(currentEntity)->getName();
-		glm::vec3 position = entityManager.getEntity(currentEntity)->getTransform()->getPosition();
-		glm::vec3 scale = entityManager.getEntity(currentEntity)->getTransform()->getScale();
+		std::string name = curEntity->getName();
+		glm::vec3 position = curEntity->getTransform()->getPosition();
+		glm::vec3 scale = curEntity->getTransform()->getScale();
+		glm::vec3 rotation = curEntity->getTransform()->getRotation();
+
 		ImGui::Text("Entity Info");
 		if (ImGui::InputText("Name", &name[0], 64))
-			entityManager.getEntity(currentEntity)->setName(name.c_str());
+			curEntity->setName(name.c_str());
 		if(ImGui::InputFloat3("Position", &position[0], 2))
-			entityManager.getEntity(currentEntity)->getTransform()->setPosition(position);
+			curEntity->getTransform()->setPosition(position);
 		if (ImGui::InputFloat3("Scale", &scale[0], 2))
-			entityManager.getEntity(currentEntity)->getTransform()->setScale(scale);
+			curEntity->getTransform()->setScale(scale);
+		if (ImGui::InputFloat3("Rotation", &rotation[0], 2))
+			curEntity->getTransform()->setRotation(rotation);
+		if (ImGui::RadioButton("IsTraced", currentTraced)) {
+			currentTraced = !currentTraced;
+			if (currentTraced) {
+				entityManager.addTracedEntity(curEntity->getName());
+			}
+			else {
+				Entity temp = *curEntity;
+				entityManager.removeTracedEntity(curEntity->getName());
+				entityManager.addEntity(&temp);
+			}
+		}
 		//Model Info
-		Model* model = entityManager.getEntity(currentEntity)->getModel();
+		Model* model = curEntity->getModel();
 		ImGui::Text("Model Info");
 		ImGui::InputText("Model Name", &currentModel[0], 64);
 		if (ImGui::Button("Load Model")) {
 			model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
-			entityManager.getEntity(currentEntity)->setModel(model);
-			entityManager.getEntity(currentEntity)->getModel()->setName(currentModel);
+			curEntity->setModel(model);
+			curEntity->getModel()->setName(currentModel);
 		}
 		ImGui::NewLine();
 
@@ -208,6 +243,17 @@ void EditorState::levelWindow()
 	if (ImGui::Button("Load")) {
 		levelParser.readLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
 	}
+	ImGui::End();
+#endif
+}
+
+void EditorState::cameraWindow()
+{
+#ifdef IMGUI
+	ImGui::Begin("Level Window");
+	
+	if (ImGui::SliderFloat("Camera Speed", &camSpeed, 1.0f, 10.0f))
+		freeMove->setSpeed(camSpeed);
 	ImGui::End();
 #endif
 }

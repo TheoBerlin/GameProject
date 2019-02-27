@@ -85,6 +85,16 @@ void FreeMove::update(const float & dt)
 	}
 }
 
+void FreeMove::setSpeed(const float speed)
+{
+	this->speed = speed;
+}
+
+float FreeMove::getSpeed() const
+{
+	return speed;
+}
+
 void FreeMove::moveKeyboard(KeyEvent * evnt)
 {
 	if (evnt->action == GLFW_PRESS)
@@ -93,7 +103,7 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 		this->pressedKeys[evnt->key] = false;
 
 	// Toggle keys
-	if (evnt->key == GLFW_KEY_C && evnt->action == GLFW_PRESS)
+	if (evnt->key == GLFW_KEY_F2 && evnt->action == GLFW_PRESS)
 	{
 		this->mouseLock = !this->mouseLock;
 

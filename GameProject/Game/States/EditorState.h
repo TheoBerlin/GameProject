@@ -22,13 +22,16 @@ private:
 	void mainWindow(EntityManager& entityManager);
 	void entityWindow(EntityManager& entityManager);
 	void levelWindow();
+	void cameraWindow();
 
 	std::string levelName;
 	std::string currentItem;
 	std::string currentModel;
 	int currentEntity = -1;
-	bool activeWindow[2];
+	bool currentTraced;
+	bool activeWindow[3];
 	Entity camera;
+	float camSpeed;
 	FreeMove* freeMove;
 
 	Level level;
