@@ -115,6 +115,7 @@ rp3d::Quaternion shapeRot = rp3d::Quaternion::identity();
 	for (auto data : this->shapes[(size_t)shape]) {
 		rp3d::ProxyShape* proxyShape = entityBody->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
 		proxyShape->setUserData((void*)data);
+		proxyShape->setCollisionCategoryBits(data->category);
 		this->proxyShapes.push_back(proxyShape);
 	}
 
@@ -221,14 +222,14 @@ void CollisionHandler::createShapes()
 	
 #ifdef ENABLE_COLLISION_BOXES
 	//// DRONE = 0
-	this->addShape(SHAPE::DRONE, { 0.25f, 0.25f, 0.25f }, { 0.15f, 0.5f, 0.15f });
-	this->addShape(SHAPE::DRONE, { 0.05f, 0.05f, 0.05f }, { 0.75f, 0.15f, 0.15f }, { 0.0f, 0.05f, -0.25f });
+	this->addShape(SHAPE::DRONE, CATEGORY::DRONE_BODY, { 0.25f, 0.25f, 0.25f }, { 0.15f, 0.5f, 0.15f });
+	this->addShape(SHAPE::DRONE, CATEGORY::DRONE_EYE, { 0.05f, 0.05f, 0.05f }, { 0.75f, 0.15f, 0.15f }, { 0.0f, 0.05f, -0.25f });
 
 	//// BOX = 1
-	this->addShape(SHAPE::BOX, { 0.5f, 0.5f, 0.5f });
+	this->addShape(SHAPE::BOX, CATEGORY::STATIC, { 0.5f, 0.5f, 0.5f });
 
 	//// ARROW = 2
-	this->addShape(SHAPE::ARROW, { 0.05f, 0.05f, 0.5f }, { 0.0f, 0.0f, 1.0f });
+	this->addShape(SHAPE::ARROW, CATEGORY::ARROW, { 0.05f, 0.05f, 0.5f }, { 0.0f, 0.0f, 1.0f });
 #else
 	//// DRONE = 0 ---- CHANGE TO A MESH WHEN DONE
 	this->addShape(SHAPE::DRONE, { 0.25f, 0.25f, 0.25f }); 
@@ -253,12 +254,13 @@ void CollisionHandler::toggleDrawing(KeyEvent * ev)
 }
 
 
-void CollisionHandler::addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& color, const glm::vec3& pos)
+void CollisionHandler::addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color, const glm::vec3& pos)
 {
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
 	data->color = color;
 	data->scale = scale;
 	data->pos = pos;
+	data->category = cat;
 
 	rp3d::BoxShape * boxShape = new rp3d::BoxShape(toReactVec(data->scale));
 	data->shape = boxShape;
@@ -301,11 +303,12 @@ void CollisionHandler::drawCollisionBoxes()
 #else
 
 
-void CollisionHandler::addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3 & pos)
+void CollisionHandler::addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3 & pos)
 {
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
 	data->pos = pos;
 	data->shape = new rp3d::BoxShape(this->toReactVec(scale));
+	data->category = cat;
 
 	this->shapes[(size_t)shape].push_back(data);
 }
