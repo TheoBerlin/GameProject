@@ -58,8 +58,8 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 
 void GuidingPhase::beginReplayTransition()
 {
-    EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
+    EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 
     arrowGuider->stopGuiding();
     level.replaySystem->stopRecording();
