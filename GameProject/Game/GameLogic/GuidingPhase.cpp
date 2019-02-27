@@ -9,8 +9,6 @@
 #include <Game/GameLogic/AimPhase.h>
 #include <Game/GameLogic/ReplayPhase.h>
 
-#include <Utils/Logger.h>
-
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase)
 {
