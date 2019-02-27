@@ -33,11 +33,9 @@ void Hover::update(const float& dt)
     // Apply transformations
     Transform* transform = host->getTransform();
 
-    transform->translate(-totalTranslation);
-    transform->translate(translation);
+    transform->translate(translation - totalTranslation);
 
-    transform->rotate(-totalRotation.x, -totalRotation.y, -totalRotation.z);
-    transform->rotate(rotation.x, rotation.y, rotation.z);
+    transform->rotate(rotation.x - totalRotation.x, rotation.y - totalRotation.y, rotation.z - totalRotation.z);
 
     // Store total amount of relative transformations applied by Hover
     totalTranslation = translation;
