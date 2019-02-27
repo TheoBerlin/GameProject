@@ -40,6 +40,9 @@ GameState::GameState()
 GameState::~GameState()
 {
 	delete targetManager;
+
+	// Delete all loaded models
+	ModelLoader::unloadAllModels();
 }
 
 void GameState::start()
