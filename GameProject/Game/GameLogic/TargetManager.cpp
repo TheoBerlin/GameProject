@@ -19,6 +19,9 @@ TargetManager::~TargetManager()
 
 void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 {
+	// Reset collision
+	resetStaticCollision();
+
     // Set position and forward
     Transform* transform = host->getTransform();
 
@@ -40,6 +43,9 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 
 void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& path)
 {
+	// Reset collision
+	resetMovingCollision();
+
     // Set position and forward
     Transform* transform = host->getTransform();
 
@@ -63,11 +69,9 @@ void TargetManager::resetTargets()
 {
 	// Moving targets
     resetMovingTargets();
-	resetMovingCollision();
 
 	// Static targets
     resetStaticTargets();
-	resetStaticCollision();
 }
 
 void TargetManager::setupTargetGeneric(Entity* host)
