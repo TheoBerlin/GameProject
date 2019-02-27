@@ -40,8 +40,6 @@ private:
     // Distance to the focus point
     const float rotationDistance = 6.0f;
 
-    const float pitch = -glm::quarter_pi<float>();
-
     // Track keyboard input
     std::unordered_map<unsigned, bool> pressedKeys;
     /*

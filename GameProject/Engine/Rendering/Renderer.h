@@ -48,12 +48,18 @@ public:
 	*/
 	void drawAllInstanced();
 
+	/*
+		Updates all shaders who need updates
+	*/
+	void updateShaders(const float & dt);
+
+
 
 
 private:
 	Pipeline pipeline;
 
 	std::vector<Entity*> renderingList;
-	std::vector<Model*> renderingModels;
+	std::vector<std::pair<Model*, SHADERS>> renderingModels;
 
 };

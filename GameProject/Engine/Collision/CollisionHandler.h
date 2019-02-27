@@ -11,39 +11,12 @@
 #include "Engine/Config.h"
 #include "Engine/Events/EventBus.h"
 
+#include "CollisionInfo.h"
+
 #ifdef ENABLE_COLLISION_BOXES
 	#include "CollisionRenderer.h"
-
-
-	struct CollisionShapeDrawingData {
-		glm::vec3 color;
-		glm::vec3 scale;
-		glm::vec3 size;
-		glm::vec3 pos;
-		rp3d::CollisionShape * shape;
-	};
-#else
-	struct CollisionShapeDrawingData {
-		glm::vec3 pos;
-		rp3d::CollisionShape * shape;
-	};
 #endif
 
-// Enum for the shapes for the CollisionBodies
-enum class SHAPE {
-	DRONE = 0,
-	BOX = 1,
-	ARROW = 2,
-	SIZE
-};
-
-enum CATEGORY
-{
-	ARROW = 0x0001,
-	STATIC = 0x0002,
-	DRONE_BODY = 0x0004,
-	DRONE_EYE = 0x0008
-};
 
 // Forward declerations
 class Entity;
@@ -58,7 +31,7 @@ public:
 	void checkCollision();
 
 	// Creates the amount of bodies needed for the level. Done once to have it all after each other in memory.
-	void createCollisionBodies(int num);
+	void createCollisionBodies(unsigned num);
 	// Returns an unused collision body, nullptr if noone is available.
 	rp3d::CollisionBody* getUnusedBody();
 	// Add collision body to an entity with a predefined shape
@@ -94,7 +67,7 @@ private:
 	
 	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
-	int takenBodies;
+	unsigned takenBodies;
 
 	typedef std::tuple<float, float, float> MapKey;
 	// ---------------------- Hash for the tuple above ----------------------
@@ -127,7 +100,7 @@ private:
 	std::vector<glm::mat4> matrices;
 	std::vector<glm::vec3> colors;
 
-	void addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
 	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 	std::vector<rp3d::ProxyShape*> proxyShapes;
 
@@ -136,7 +109,7 @@ private:
 
 	CollisionRenderer cRenderer;
 #else
-	void addShape(SHAPE shape, const glm::vec3& scale, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
 	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 #endif
 

@@ -1,14 +1,19 @@
 #pragma once
 
-#include "CollisionComponent.h"
+#include "Component.h"
+#include "Engine/Events/Events.h"
 
-class PlayerCollision : public CollisionComponent
+namespace reactphysics3d { class ProxyShape; }
+
+class PlayerCollision : public Component
 {
 public:
-	PlayerCollision(Entity* parentEntity, const std::string& tagName = "Collision");
+	PlayerCollision(Entity* parentEntity, const std::string& tagName = "PlayerCollision");
 	virtual ~PlayerCollision();
 
-	void handleCollision(const reactphysics3d::ProxyShape* self, const reactphysics3d::ProxyShape* other);
 	void update(const float& dt);
+
+private:
+	void collide(PlayerCollisionEvent * evnt);
 };
 
