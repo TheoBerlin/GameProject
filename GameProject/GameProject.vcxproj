@@ -92,6 +92,7 @@
     <ClCompile Include="Utils\Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Collision\CollisionInfo.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.h" />
     <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
