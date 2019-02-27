@@ -18,6 +18,8 @@ public:
 	void render() override;
 
 private:
+	void initPanelLayout();
+
 	Text test;
 	Font* font;
 	Panel* panel;

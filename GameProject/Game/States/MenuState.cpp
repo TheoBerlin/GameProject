@@ -34,8 +34,11 @@ MenuState::MenuState() : State()
 	this->button->setCallback([this](void) {
 		//this->getGUI().removePanel(this->button);
 		this->pushState(new GameState());
+
 	});
 	gui.addPanel(this->button);
+
+	this->initPanelLayout();
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
@@ -46,26 +49,9 @@ MenuState::~MenuState()
 
 void MenuState::start()
 {
-	Display& display = Display::get();
-	GUIRenderer& guiRenderer = display.getGUIRenderer();
+	// Unlock cursor
+	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	this->panel = new Panel();
-	this->panel->setSize({ 100, 100 });
-	this->panel->setOption(GUI::FLOAT_UP);
-	this->panel->setOption(GUI::FLOAT_RIGHT);
-	this->panel->setOption(GUI::TEXT_CENTER_X);
-	this->panel->setOption(GUI::TEXT_FLOAT_DOWN);
-	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-	this->panel->addText("Play", "arial", { 0.0f, 1.0f, 0.0f, 1.0f });
-	this->getGUI().addPanel(this->panel);
-
-	Panel* p = new Panel();
-	p->setSize({ 50, 50 });
-	p->setOption(GUI::FLOAT_LEFT, 5);
-	p->setOption(GUI::FLOAT_UP, 10);
-	p->setBackgroundTexture(TextureManager::loadTexture("./Game/assets/heaven.png", TextureType::TXTYPE_DIFFUSE));
-	p->addText("Inner", "arial");
-	this->panel->addChild(p);
 }
 
 void MenuState::end()
@@ -98,4 +84,28 @@ void MenuState::render()
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.draw(this->getGUI());
+}
+
+void MenuState::initPanelLayout()
+{
+	Display& display = Display::get();
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+
+	this->panel = new Panel();
+	this->panel->setSize({ 100, 100 });
+	this->panel->setOption(GUI::FLOAT_UP);
+	this->panel->setOption(GUI::FLOAT_RIGHT);
+	this->panel->setOption(GUI::TEXT_CENTER_X);
+	this->panel->setOption(GUI::TEXT_FLOAT_DOWN);
+	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
+	this->panel->addText("Play", "arial", { 0.0f, 1.0f, 0.0f, 1.0f });
+	this->getGUI().addPanel(this->panel);
+
+	Panel* p = new Panel();
+	p->setSize({ 50, 50 });
+	p->setOption(GUI::FLOAT_LEFT, 5);
+	p->setOption(GUI::FLOAT_UP, 10);
+	p->setBackgroundTexture(TextureManager::loadTexture("./Game/assets/heaven.png", TextureType::TXTYPE_DIFFUSE));
+	p->addText("Inner", "arial");
+	this->panel->addChild(p);
 }
