@@ -11,11 +11,6 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-
-	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Cube.fbx"));
-	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/floor.fbx"));
-	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
-	this->renderingModels.push_back(ModelLoader::loadModel("./Game/assets/droneTarget.fbx"));
 }
 
 Renderer::~Renderer()
@@ -72,6 +67,24 @@ void Renderer::initInstancing()
 	for (Model* model : models) {
 		model->initInstancing();
 	}
+
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Cube.fbx"), SHADERS::DEFAULT));
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/floor.fbx"), SHADERS::DEFAULT));
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Arrow.fbx"), SHADERS::DEFAULT));
+
+
+	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+	this->renderingModels.push_back(std::make_pair(model, SHADERS::DRONE_SHADER));
+	/*
+		Initilize colors vertexBuffer for collision color changing
+	*/
+	AttributeLayout layout;
+	layout.push(3, 1); // vec3 color which can be changed seperately for each entity;
+	std::vector<glm::vec3> colors;
+	for (size_t i = 0; i < model->getRenderingGroup().size(); i++)
+		colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
+
+	model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
 }
 
 void Renderer::updateInstancingData(Model * model)
@@ -115,6 +128,11 @@ void Renderer::drawAllInstanced()
 		Draw texture of scene to quad for postprocessing
 	*/
 	this->pipeline.drawTextureToQuad(combinedTex);
+}
+
+void Renderer::updateShaders(const float & dt)
+{
+	this->pipeline.updateShaders(dt);
 }
 
 

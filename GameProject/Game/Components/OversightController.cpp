@@ -2,7 +2,6 @@
 
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
-#include <Utils/Logger.h>
 #include <Utils/Settings.h>
 
 OversightController::OversightController(Entity* host)
@@ -16,21 +15,6 @@ OversightController::OversightController(Entity* host)
     rotateFactor = 0.0f;
 
     windowHeight = Display::get().getHeight();
-
-    // Set the forward vector to be horizontal, then pitch it
-    Transform* transform = host->getTransform();
-
-    // Set the desired pitch
-    glm::vec3 forward = transform->getForward();
-    glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
-
-    float currentPitch = std::acosf(glm::dot(horizontalForward, forward));
-
-    currentPitch = (forward.y > 0.0f) ? currentPitch : -currentPitch;
-
-    float deltaPitch = pitch - currentPitch;
-
-    transform->rotate(0.0f, deltaPitch);
 
     // Lock mouse and get mouse position
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);

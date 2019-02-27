@@ -1,7 +1,6 @@
 #include "InputHandler.h"
 
 #include "Events/EventBus.h"
-#include "Utils/Logger.h"
 
 int InputHandler::lastPosX = 0;
 int InputHandler::lastPosY = 0;
@@ -34,11 +33,17 @@ void InputHandler::mouseClickCallback(GLFWwindow * window, int button, int actio
 	EventBus::get().publish(&MouseClickEvent(button, action));
 }
 
+void InputHandler::mouseScrollCallback(GLFWwindow * window, double xoffset, double yoffset)
+{
+	EventBus::get().publish(&MouseScrollEvent((int)xoffset, (int)yoffset));
+}
+
 InputHandler::InputHandler(GLFWwindow* window)
 {
 	glfwSetKeyCallback(window, this->keyCallback);
 	glfwSetCursorPosCallback(window, this->mouseMoveCallback);
 	glfwSetMouseButtonCallback(window, this->mouseClickCallback);
+	glfwSetScrollCallback(window, this->mouseScrollCallback);
 }
 
 

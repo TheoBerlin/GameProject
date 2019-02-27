@@ -50,6 +50,12 @@ public:
 	*/
 	void drawAllInstanced();
 
+	/*
+		Updates all shaders who need updates
+	*/
+	void updateShaders(const float & dt);
+
+
 
 
 private:
@@ -60,6 +66,6 @@ private:
 	Texture* tex;
 
 	std::vector<Entity*> renderingList;
-	std::vector<Model*> renderingModels;
+	std::vector<std::pair<Model*, SHADERS>> renderingModels;
 
 };

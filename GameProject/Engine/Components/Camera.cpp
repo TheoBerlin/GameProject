@@ -92,6 +92,8 @@ glm::vec3 Camera::getOffset() const
 void Camera::setOffset(const glm::vec3& offset)
 {
 	this->offset = offset;
+
+	updatePosition();
 }
 
 void Camera::updateView()

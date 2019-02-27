@@ -53,11 +53,9 @@ void CollisionHandler::checkCollision()
 {
 	if (this->player)
 		this->world->testCollision(this->player, &this->collision);
-	else
-		this->world->testCollision(&this->collision);
 }
 
-void CollisionHandler::createCollisionBodies(int num)
+void CollisionHandler::createCollisionBodies(unsigned num)
 {
 	size_t previousSize = this->bodies.size();
 	this->bodies.resize(this->bodies.size() + num);

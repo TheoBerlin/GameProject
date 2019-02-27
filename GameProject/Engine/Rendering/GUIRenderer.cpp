@@ -5,8 +5,6 @@
 
 #include "../GUI/GUI.h"
 
-#include "Utils/Logger.h"
-
 GUIRenderer::GUIRenderer()
 {
 	this->textShader = new Shader("./Engine/Rendering/Shaders/TexShader.vert", "./Engine/Rendering/Shaders/TexShader.frag");

@@ -24,6 +24,8 @@ public:
 	void addBuffer(const void * data, size_t dataSize, const AttributeLayout& layout);
 
 	void initInstancing(const void * data, size_t dataSize);
+	void initInstancing(const void * data, size_t dataSize, const AttributeLayout& attributeLayout);
+
 	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0, unsigned buffer = 1);
 
 private:

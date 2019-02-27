@@ -90,6 +90,16 @@ void Mesh::initInstancing(const void * data, size_t dataSize)
 
 }
 
+void Mesh::initInstancing(const void * data, size_t dataSize, const AttributeLayout & attributeLayout)
+{
+	/*
+	Creating vbo for model/transform matrices
+	*/
+	this->vao->bind();
+	VertexBuffer* vbo = new VertexBuffer(data, dataSize, GL_DYNAMIC_DRAW);
+	this->vao->addBuffer(vbo, attributeLayout);
+}
+
 void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned offset, unsigned buffer)
 {
 	/*
