@@ -17,7 +17,9 @@ public:
 
 private:
     // Animation time
-    float t;
+    float t1, t2;
+
+    const float rotationSpeedFactor = 2.0f;
 
     // Defines translation animation
     const glm::vec3 translationAnimation = {0.0f, 0.17f, 0.0f};

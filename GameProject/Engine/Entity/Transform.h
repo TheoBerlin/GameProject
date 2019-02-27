@@ -39,6 +39,8 @@ public:
 	//Get up vector
 	glm::vec3 getUp() const;
 
+	glm::vec3 getYawPitchRoll() const;
+
 	glm::vec3 getDefaultForward() const;
 
 	void setRotationQuat(const glm::quat& newQuat);
