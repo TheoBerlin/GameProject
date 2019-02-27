@@ -26,7 +26,7 @@ void EntityShader::bind()
 
 void EntityShader::updateMeshData(unsigned texId)
 {
-	Shader:setTexture2D("tex", 0, texId);
+	Shader::setTexture2D("tex", 0, texId);
 }
 
 void EntityShader::update(const float & dt)
