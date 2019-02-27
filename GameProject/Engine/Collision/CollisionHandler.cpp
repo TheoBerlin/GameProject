@@ -295,6 +295,52 @@ void CollisionHandler::addShape(const std::string & name, Vertex* vertices, unsi
 	
 	glm::mat3 mat({ cov[0][0], cov[1][0], cov[2][0] }, { cov[0][1], cov[1][1], cov[2][1] }, { cov[0][2], cov[1][2], cov[2][2] });
 
+	// https://martin-thoma.com/solving-linear-equations-with-gaussian-elimination/
+	auto solveSystem = [](std::vector< std::vector<double>> A)->std::vector<double> {
+		int n = A.size();
+
+		for (int i = 0; i < n; i++) {
+			// Search for maximum in this column
+			double maxEl = abs(A[i][i]);
+			int maxRow = i;
+			for (int k = i + 1; k < n; k++) {
+				if (abs(A[k][i]) > maxEl) {
+					maxEl = abs(A[k][i]);
+					maxRow = k;
+				}
+			}
+
+			// Swap maximum row with current row (column by column)
+			for (int k = i; k < n + 1; k++) {
+				double tmp = A[maxRow][k];
+				A[maxRow][k] = A[i][k];
+				A[i][k] = tmp;
+			}
+
+			// Make all rows below this one 0 in current column
+			for (int k = i + 1; k < n; k++) {
+				double c = -A[k][i] / A[i][i];
+				for (int j = i; j < n + 1; j++) {
+					if (i == j) {
+						A[k][j] = 0;
+					}
+					else {
+						A[k][j] += c * A[i][j];
+					}
+				}
+			}
+		}
+
+		// Solve equation Ax=b for an upper triangular matrix A
+		std::vector<double> x(n);
+		for (int i = n - 1; i >= 0; i--) {
+			x[i] = A[i][n] / A[i][i];
+			for (int k = i - 1; k >= 0; k--) {
+				A[k][n] -= A[k][i] * x[i];
+			}
+		}
+		return x;
+	};
 
 	auto cramerRule = [](glm::mat3& m, glm::vec3& v)->glm::vec3 {
 		float d = glm::determinant(m);
@@ -304,17 +350,47 @@ void CollisionHandler::addShape(const std::string & name, Vertex* vertices, unsi
 		float z = glm::determinant(glm::mat3(m[0], m[1], v)) / d;
 		return glm::vec3(x, y, z);
 	};
-
+	
 	glm::mat3 mat3({ -2.f, 1.f, 0.f }, { -8.f, 4.f, 0.f }, { -12.f, 4.f, 1.f });
+	//glm::mat3 mat3({ 1.f, 2.f, 3.f }, { 4.f, 5.f, 6.f }, { 1.f, 0.f, 1.f });
 	glm::vec3 v4{ 0.0f, 0.0f, 0.0f };
 	glm::vec3 vv = cramerRule(mat3, v4);
+	/*
+	std::vector<double> line(4);
+	std::vector<std::vector<double>> A(3, line);
+	for (unsigned int i = 0; i < 3; i++)
+		for (unsigned int j = 0; j < 3; j++)
+			A[i][j] = mat3[i][j];
+
+	for (unsigned int i = 0; i < 3; i++)
+		A[i][3] = 0.0f;
+
+	std::vector<double> x(3);
+	x = solveSystem(A);
+	*/
+	auto getEigen = [this, &solveSystem](glm::mat3 m, float eigenVal)->glm::vec3 {
+		glm::mat3 m1 = m - eigenVal*glm::mat3(1.0f);
+
+		std::vector<double> line(4);
+		std::vector<std::vector<double>> A(3, line);
+		for (unsigned int i = 0; i < 3; i++)
+			for (unsigned int j = 0; j < 3; j++)
+				A[i][j] = (double)m1[i][j];
+
+		for (unsigned int i = 0; i < 3; i++)
+			A[i][3] = 0.0;
+
+		std::vector<double> x(3);
+		x = solveSystem(A);
+		return glm::vec3((float)x[0], (float)x[1], (float)x[2]);
+	};
 
 	if (towEqual)
 	{
 		glm::vec3 v{0.0f, 0.0f, 0.0f};
 
-		glm::mat3 m1 = mat - ((float)x1_real)*glm::mat3(1.0f);
-		glm::vec3 e1 = cramerRule(m1, v);
+		//glm::mat3 m1 = mat - ((float)x1_real)*glm::mat3(1.0f);
+		glm::vec3 e1 = getEigen(mat, (float)x1_real);//cramerRule(m1, v);
 
 		glm::mat3 m2 = mat - ((float)x2_real)*glm::mat3(1.0f);
 		glm::vec3 e2 = cramerRule(m2, v);
@@ -325,8 +401,8 @@ void CollisionHandler::addShape(const std::string & name, Vertex* vertices, unsi
 	{
 		glm::vec3 v{ 0.0f, 0.0f, 0.0f };
 
-		glm::mat3 m1 = mat - ((float)x1_real)*glm::mat3(1.0f);
-		glm::vec3 e1 = cramerRule(m1, v);
+		//glm::mat3 m1 = mat - ((float)x1_real)*glm::mat3(1.0f);
+		glm::vec3 e1 = getEigen(mat, (float)x1_real);//cramerRule(m1, v);
 
 		glm::mat3 m2 = mat - ((float)x2_real)*glm::mat3(1.0f);
 		glm::vec3 e2 = cramerRule(m2, v);
