@@ -10,6 +10,7 @@ class GuidingPhase : public Phase
 {
 public:
     GuidingPhase(AimPhase* other);
+	~GuidingPhase();
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
