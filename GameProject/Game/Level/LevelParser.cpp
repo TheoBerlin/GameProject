@@ -48,7 +48,8 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 
 		entity->setModel(model);
-		level.collisionHandler->addCollisionToEntity(entity);
+		auto categories = level.collisionHandler->addCollisionToEntity(entity, CATEGORY::DRONE_BODY);
+		*(categories[2]) = CATEGORY::DRONE_EYE;
 	}
 }
 
@@ -59,7 +60,7 @@ void LevelParser::readEntityBoxes(Level& level)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/Test2.fbx", level.collisionHandler);
+		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -83,7 +84,7 @@ void LevelParser::readEntityBoxes(Level& level)
 		entity->getTransform()->setPosition(position);
 		entity->getTransform()->setScale(0.5f);
 		entity->setModel(model);
-		level.collisionHandler->addCollisionToEntity(entity);
+		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 	}
 }
 
@@ -110,7 +111,7 @@ void LevelParser::readEntityFloor(Level& level)
 
 	entity->getTransform()->setPosition(position);
 	entity->setModel(model);
-	level.collisionHandler->addCollisionToEntity(entity);
+	level.collisionHandler->addCollisionToEntity(entity, CATEGORY::NO_COLLISION);
 }
 
 void LevelParser::readPlayer(Level& level)

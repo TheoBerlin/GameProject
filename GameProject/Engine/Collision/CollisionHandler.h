@@ -35,14 +35,14 @@ public:
 	// Returns an unused collision body, nullptr if noone is available.
 	rp3d::CollisionBody* getUnusedBody();
 	// Add collision body to an entity with a predefined shape
-	void addCollisionToEntity(Entity * entity, SHAPE shape);
+	//void addCollisionToEntity(Entity * entity, SHAPE shape);
 	// Remove a collision body from the world, this will stop collision checking and destory the pointer
 	void removeCollisionBody(rp3d::CollisionBody * body);
 	// Remove collision from an entity
 	void removeCollisionBody(Entity * entity);
 
 	// Add collision body to an entity with a predefined shape
-	void addCollisionToEntity(Entity * entity, bool isPlayer = false);
+	std::vector<unsigned short*> addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer = false);
 	void addShape(Model* modelPtr, Vertex* vertices, unsigned int numVertices);
 
 	rp3d::Vector3 toReactVec(const glm::vec3& vec);
@@ -63,8 +63,10 @@ private:
 	Collision collision;
 
 	// Creates all the shapes which will be used in the scene
-	void createShapes();
-	
+	std::pair<glm::vec3, glm::vec3> getAABB(Vertex* vertices, unsigned int numVertices);
+	void constructShape(CollisionShapeDrawingData* data, const glm::vec3& pos, const glm::vec3& size, CATEGORY cat = CATEGORY::NO_COLLISION, const glm::vec3& scale = {1.f, 1.f, 1.f}, const glm::vec3& color = { 1.f, 1.f, 1.f });
+	void addCollisionShapeToBody(rp3d::CollisionBody* body, CollisionShapeDrawingData* data, const rp3d::Quaternion& shapeRot);
+
 	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
 	unsigned takenBodies;
@@ -100,8 +102,8 @@ private:
 	std::vector<glm::mat4> matrices;
 	std::vector<glm::vec3> colors;
 
-	void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
-	std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
+	//void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
+	//std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 	std::vector<rp3d::ProxyShape*> proxyShapes;
 
 	bool drawCollisionShapes;

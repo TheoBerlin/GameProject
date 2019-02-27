@@ -23,6 +23,7 @@ enum CATEGORY
 struct CollisionShapeDrawingData {
 	glm::vec3 color;
 	glm::vec3 scale;
+	glm::vec3 size;
 	glm::vec3 pos;
 	unsigned short category;
 	rp3d::CollisionShape * shape;

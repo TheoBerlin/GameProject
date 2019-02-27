@@ -95,17 +95,17 @@ void Renderer::drawAllInstanced()
 	/*
 		Calulate shadow depth
 	*/
-	this->pipeline.calcDirLightDepthInstanced(ModelLoader::getModels());
+	this->pipeline.calcDirLightDepthInstanced(this->renderingModels);
 
 	/*
 		Z-prepass stage
 	*/
-	this->pipeline.prePassDepthModel(ModelLoader::getModels());
+	this->pipeline.prePassDepthModel(this->renderingModels);
 	
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	Texture * postProcessTexture = this->pipeline.drawModelToTexture(ModelLoader::getModels());
+	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
 
 	/*
 		Draw texture of scene to quad for postprocessing
