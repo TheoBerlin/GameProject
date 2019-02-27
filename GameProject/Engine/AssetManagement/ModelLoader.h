@@ -37,7 +37,7 @@ private:
     static void processMaterial(aiMaterial* material, Model* model, aiTextureType type, const std::string& directory);
     static void processNode(const aiScene* scene, aiNode* node, Model* model);
     static void processMesh(aiMesh* assimpMesh, Model* model);
-	static void processNode(const aiScene* scene, aiNode* node, Model* model, CollisionHandler* ch, const std::string& fileName, std::unordered_map<unsigned int, MeshData>* meshMapIn = nullptr);
-	static void processMesh(aiMesh* assimpMesh, CollisionHandler* ch, const std::string& fileName, std::unordered_map<unsigned int, MeshData>& meshMap);
+	static void processNode(const aiScene* scene, aiNode* node, Model* model, CollisionHandler* ch, std::unordered_map<unsigned int, MeshData>* meshMapIn = nullptr);
+	static void processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* model, std::unordered_map<unsigned int, MeshData>& meshMap);
     static TextureType convertTextureType(const aiTextureType& assimpType);
 };

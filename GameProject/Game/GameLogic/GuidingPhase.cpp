@@ -25,7 +25,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	*/
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
 
-	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
+	level.collisionHandler->addCollisionToEntity(this->playerArrow, true);
 
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }

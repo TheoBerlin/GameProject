@@ -100,7 +100,7 @@ Model * ModelLoader::loadModel(std::string fileName, CollisionHandler * ch)
 
 	// Process all scene nodes recursively
 	aiNode *rootNode = scene->mRootNode;
-	processNode(scene, rootNode, loadedModel, ch, fileName);
+	processNode(scene, rootNode, loadedModel, ch);
 
 	// Save the model's pointer to avoid duplicate model data
 	loadedModels[fileName] = loadedModel;
@@ -249,7 +249,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, Model* model)
     model->addMesh(newMesh);
 }
 
-void ModelLoader::processNode(const aiScene * scene, aiNode * node, Model * model, CollisionHandler * ch, const std::string& fileName, std::unordered_map<unsigned int, MeshData>* meshMapIn)
+void ModelLoader::processNode(const aiScene * scene, aiNode * node, Model * model, CollisionHandler * ch, std::unordered_map<unsigned int, MeshData>* meshMapIn)
 {
 	// Process node's meshes
 	std::unordered_map<unsigned int, MeshData>* meshMap;
@@ -263,12 +263,12 @@ void ModelLoader::processNode(const aiScene * scene, aiNode * node, Model * mode
 			LOG_WARNING("Ignoring mesh: Missing TX coordinates");
 			continue;
 		}
-		processMesh(scene->mMeshes[node->mMeshes[i]], ch, fileName, *meshMap);
+		processMesh(scene->mMeshes[node->mMeshes[i]], ch, model, *meshMap);
 	}
 
 	// Recursively process child nodes
 	for (unsigned int i = 0; i < node->mNumChildren; i += 1) {
-		processNode(scene, node->mChildren[i], model, ch, fileName, meshMap);
+		processNode(scene, node->mChildren[i], model, ch, meshMap);
 	}
 
 	if (meshMapIn == nullptr)
@@ -283,7 +283,7 @@ void ModelLoader::processNode(const aiScene * scene, aiNode * node, Model * mode
 	}
 }
 
-void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, const std::string& fileName, std::unordered_map<unsigned int, ModelLoader::MeshData>& meshMap)
+void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* model, std::unordered_map<unsigned int, ModelLoader::MeshData>& meshMap)
 {
 	// Store material index
 	// The materials in assimp are stored in the same order as in the new model,
@@ -320,7 +320,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, const st
 		mesh.vertices->push_back(vertex);
 	}
 
-	ch->addShape(fileName, &(*mesh.vertices)[preIndices], assimpMesh->mNumVertices);
+	ch->addShape(model, &(*mesh.vertices)[preIndices], assimpMesh->mNumVertices);
 
 	// Process indices
 	for (unsigned int i = 0; i < assimpMesh->mNumFaces; i += 1) {

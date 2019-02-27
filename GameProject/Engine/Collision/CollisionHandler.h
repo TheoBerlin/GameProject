@@ -5,6 +5,8 @@
 #include <vector>
 #include "glm/glm.hpp"
 #include <unordered_map>
+#include <tuple>
+#include <utility>
 
 #include "Engine/Config.h"
 #include "Engine/Events/EventBus.h"
@@ -16,6 +18,7 @@
 	struct CollisionShapeDrawingData {
 		glm::vec3 color;
 		glm::vec3 scale;
+		glm::vec3 size;
 		glm::vec3 pos;
 		rp3d::CollisionShape * shape;
 	};
@@ -45,6 +48,7 @@ enum CATEGORY
 // Forward declerations
 class Entity;
 struct Vertex;
+class Model;
 class CollisionHandler
 {
 public:
@@ -64,7 +68,9 @@ public:
 	// Remove collision from an entity
 	void removeCollisionBody(Entity * entity);
 
-	void addShape(const std::string& name, Vertex* vertices, unsigned int numVertices);
+	// Add collision body to an entity with a predefined shape
+	void addCollisionToEntity(Entity * entity, bool isPlayer = false);
+	void addShape(Model* modelPtr, Vertex* vertices, unsigned int numVertices);
 
 	rp3d::Vector3 toReactVec(const glm::vec3& vec);
 	glm::vec3 toGlmVec(const rp3d::Vector3& vec);
@@ -89,6 +95,33 @@ private:
 	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
 	int takenBodies;
+
+	typedef std::tuple<float, float, float> MapKey;
+	// ---------------------- Hash for the tuple above ----------------------
+	struct key_hash : public std::unary_function<MapKey, std::size_t> {
+		std::size_t operator()(const MapKey& k) const {
+			return ((std::size_t)std::get<0>(k)) ^ ((std::size_t)std::get<1>(k)) ^ ((std::size_t)std::get<2>(k));
+		}
+	};
+	// ------------------ Equal check for the tuple above -------------------
+	struct key_equal : public std::binary_function<MapKey, MapKey, bool> {
+		bool operator()(const MapKey& v0, const MapKey& v1) const {
+			return (std::get<0>(v0) == std::get<0>(v1) &&
+				std::get<1>(v0) == std::get<1>(v1) &&
+				std::get<2>(v0) == std::get<2>(v1));
+		}
+	};
+
+	// ------------------------ Data for the map ----------------------------
+	struct MapData {
+		std::vector<CollisionShapeDrawingData*> shapes;
+	};
+
+	// Unordered map which has a key as a tuple of 3 floats (Scale in x, y, z) and data as a vector of CollisionShapeDrawingData (Shape).
+	typedef std::unordered_map<const MapKey, MapData, key_hash, key_equal> VarientMap;
+	VarientMap varientShapesMap;
+
+	std::unordered_map<Model*,std::vector<CollisionShapeDrawingData*>> shapesMap;
 
 #ifdef ENABLE_COLLISION_BOXES
 	std::vector<glm::mat4> matrices;
