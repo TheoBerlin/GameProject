@@ -61,8 +61,13 @@ void GuidingPhase::beginReplayTransition()
     EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
 
-    arrowGuider->stopGuiding();
     level.replaySystem->stopRecording();
+
+    // Get flight time
+    flightTimer.stop();
+    float flightTime = flightTimer.getDeltaTime();
+
+    arrowGuider->stopGuiding(flightTime);
 
     // Begin camera transition to the replay freecam
     CameraSetting currentCamSettings;
@@ -93,6 +98,10 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 
 void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
+	// Save keypoint for collision so that the collision is visible during replay
+    flightTimer.update();
+
+    arrowGuider->saveKeyPoint(flightTimer.getTime());
 	// Check if the arrow hit static geometry
     unsigned int category = ev->shape2->getCollisionCategoryBits();
 
