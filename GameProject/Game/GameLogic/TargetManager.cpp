@@ -19,9 +19,6 @@ TargetManager::~TargetManager()
 
 void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 {
-	// Reset collision
-	resetStaticCollision();
-
     // Set position and forward
     Transform* transform = host->getTransform();
 
@@ -43,9 +40,6 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 
 void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& path)
 {
-	// Reset collision
-	resetMovingCollision();
-
     // Set position and forward
     Transform* transform = host->getTransform();
 
@@ -81,6 +75,9 @@ void TargetManager::setupTargetGeneric(Entity* host)
 
 void TargetManager::resetStaticTargets()
 {
+	// Reset collision
+	resetStaticCollision();
+
 	unsigned int staticTargetCount = staticTargets.size();
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
@@ -94,6 +91,9 @@ void TargetManager::resetStaticTargets()
 
 void TargetManager::resetMovingTargets()
 {
+	// Reset collision
+	resetMovingCollision();
+
 	unsigned int movingTargetCount = movingTargets.size();
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
@@ -113,7 +113,7 @@ void TargetManager::resetStaticCollision()
 		rp3d::ProxyShape* current = body->getProxyShapesList();
 
 		StaticTargetCollision* comp = dynamic_cast<StaticTargetCollision*>(host->getComponent("StaticTargetCollision"));
-		comp->resetFlag();
+		comp->enableCollision();
 
 		// Look for the proxy shape that contains the collision shape in parameter
 		while (current != nullptr) {
@@ -137,7 +137,7 @@ void TargetManager::resetMovingCollision()
 		rp3d::ProxyShape* current = body->getProxyShapesList();
 
 		MovingTargetCollision* comp = dynamic_cast<MovingTargetCollision*>(host->getComponent("MovingTargetCollision"));
-		comp->resetFlag();
+		comp->enableCollision();
 
 		// Look for the proxy shape that contains the collision shape in parameter
 		while (current != nullptr) {
