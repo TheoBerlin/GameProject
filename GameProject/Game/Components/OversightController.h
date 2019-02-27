@@ -35,7 +35,8 @@ private:
     int windowHeight;
 
     // Refreshed each update call
-    float prevMousePosX, mouseMoveX;
+    unsigned int prevMousePosX;
+    int mouseMoveX;
 
     // Distance to the focus point
     const float rotationDistance = 6.0f;
