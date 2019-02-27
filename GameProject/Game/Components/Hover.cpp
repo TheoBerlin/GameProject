@@ -5,10 +5,13 @@
 
 Hover::Hover(Entity* host)
     :Component(host, "Hover"),
-    t(0.0f),
     totalTranslation({0.0f, 0.0f, 0.0f}),
     totalRotation({0.0f, 0.0f, 0.0f})
 {
+    // Randomize starting animation time
+    startT = glm::linearRand(0.0f, glm::two_pi<float>());
+
+    t = startT;
 }
 
 void Hover::update(const float& dt)
@@ -23,7 +26,7 @@ void Hover::update(const float& dt)
     glm::vec3 translation = translationFactor * maxTranslation;
 
     // Rotate
-    float rotationFactor = 0.5f * sinf(t - glm::half_pi<float>()) + 0.5f;
+    float rotationFactor = 0.5f * sinf(t) + 0.5f;
 
     glm::vec3 rotation = glm::mix(maxRotation, -maxRotation, rotationFactor);
 
@@ -51,5 +54,5 @@ void Hover::reset()
     totalTranslation = {0.0f, 0.0f, 0.0f};
     totalRotation = {0.0f, 0.0f, 0.0f};
 
-    t = 0.0f;
+    t = startT;
 }
