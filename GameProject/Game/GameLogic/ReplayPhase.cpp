@@ -2,6 +2,7 @@
 
 #include <Engine/AssetManagement/ModelLoader.h>
 #include <Engine/Components/FreeMove.h>
+#include <Engine/Config.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
@@ -30,8 +31,10 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     arrow->startTreading();
 
     // Add path visualizer for debugging
-    pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
-    pathVisualizer->addPath(oldArrowGuider->getPath());
+    if (ENABLE_PATH_VISUALIZERS) {
+        pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
+        pathVisualizer->addPath(oldArrowGuider->getPath());
+    }
 
     // Remove old arrow entity
     Entity* oldArrow = guidingPhase->getPlayerArrow();
