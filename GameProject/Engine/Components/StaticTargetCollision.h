@@ -15,14 +15,14 @@ public:
 	virtual ~StaticTargetCollision();
 
 	// Returns the current flag status
-	bool getFlag();
+	bool isHit();
 	// Reset the flag to false
-	void resetFlag();
+	void enableCollision();
 
 	void update(const float& dt);
 
 private:
-	bool flag;
+	bool hit;
 	void collide(PlayerCollisionEvent * evnt);
 
 	reactphysics3d::ProxyShape* shape;

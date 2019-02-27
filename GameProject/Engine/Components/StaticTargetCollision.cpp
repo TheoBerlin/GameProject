@@ -7,7 +7,7 @@
 
 StaticTargetCollision::StaticTargetCollision(Entity * parentEntity, const std::string & tagName) : Component(parentEntity, tagName)
 {
-	this->flag = false;
+	this->hit = false;
 	EventBus::get().subscribe(this, &StaticTargetCollision::collide);
 }
 
@@ -16,19 +16,19 @@ StaticTargetCollision::~StaticTargetCollision()
 	EventBus::get().unsubscribe(this, &StaticTargetCollision::collide);
 }
 
-bool StaticTargetCollision::getFlag()
+bool StaticTargetCollision::isHit()
 {
-	return this->flag;
+	return this->hit;
 }
 
-void StaticTargetCollision::resetFlag()
+void StaticTargetCollision::enableCollision()
 {
-	this->flag = false;
+	this->hit = false;
 }
 
 void StaticTargetCollision::update(const float & dt)
 {
-	if (this->flag)
+	if (this->hit)
 	{
 		// Look for the proxy shape that contains the collision shape in parameter
 		while (shape != nullptr) {
@@ -51,6 +51,6 @@ void StaticTargetCollision::collide(PlayerCollisionEvent * evnt)
 		rp3d::CollisionBody* body = evnt->entity2->getCollisionBody();
 
 		this->shape = body->getProxyShapesList();
-		this->flag = true;
+		this->hit = true;
 	}
 }

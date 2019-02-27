@@ -8,7 +8,7 @@
 
 MovingTargetCollision::MovingTargetCollision(Entity * parentEntity, const std::string & tagName) : Component(parentEntity, tagName)
 {
-	this->flag = false;
+	this->hit = false;
 	EventBus::get().subscribe(this, &MovingTargetCollision::collide);
 }
 
@@ -17,19 +17,19 @@ MovingTargetCollision::~MovingTargetCollision()
 	EventBus::get().unsubscribe(this, &MovingTargetCollision::collide);
 }
 
-bool MovingTargetCollision::getFlag()
+bool MovingTargetCollision::isHit()
 {
-	return this->flag;
+	return this->hit;
 }
 
-void MovingTargetCollision::resetFlag()
+void MovingTargetCollision::enableCollision()
 {
-	this->flag = false;
+	this->hit = false;
 }
 
 void MovingTargetCollision::update(const float & dt)
 {
-	if (this->flag)
+	if (this->hit)
 	{
 		// Look for the proxy shape that contains the collision shape in parameter
 		while (shape != nullptr) {
@@ -51,6 +51,6 @@ void MovingTargetCollision::collide(PlayerCollisionEvent * evnt)
 
 		shape = body->getProxyShapesList();
 
-		this->flag = true;
+		this->hit = true;
 	}
 }
