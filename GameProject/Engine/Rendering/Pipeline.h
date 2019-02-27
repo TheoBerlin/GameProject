@@ -8,6 +8,8 @@
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
 #include "Engine/Particle/ParticleManager.h"
+#include "Engine/Rendering/GLAbstraction/VertexArray.h"
+#include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
 
 
 class Entity;
@@ -85,8 +87,6 @@ public:
 	Framebuffer* getShadowFbo();
 
 private:
-	static const GLfloat g_vertex_buffer_data[16];
-
 	Camera * camera;
 	unsigned int width, height;
 	unsigned int shadowWidth, shadowHeight;
@@ -114,13 +114,6 @@ private:
 	Shader* quadShader;
 	Shader* particleShader;
 	Shader* combineShader;
-	bool p = true;
-	GLuint billboard_vertex_buffer;
-	GLuint particleDataBuffer;
-
-	VertexArray va;
-	VertexBuffer* vbBillboard;
-	VertexBuffer* vbParticle;
 
 	std::vector<EntityShader*> entityShaders;
 

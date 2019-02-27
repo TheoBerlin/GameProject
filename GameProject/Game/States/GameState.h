@@ -19,9 +19,6 @@ public:
 	void update(const float dt) override;
 	void updateLogic(const float dt) override;
 	void render() override;
-
-	void emit(KeyEvent * evnt);
-
 private:
 	LevelParser levelParser;
 	ParticleEmitter emitter;

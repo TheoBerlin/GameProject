@@ -37,16 +37,14 @@ GameState::GameState()
 
 	InputHandler ih(Display::get().getWindowPtr());
 
-	EventBus::get().subscribe(this, &GameState::emit);
-
 	//Particle Emitter init
 	ParticleManager::get().addEmitter(&emitter);
 	emitter.setPosition(glm::vec3(0, 2.0f, -0.0f));
 	emitter.setSpread(0.0f);
 	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
 	emitter.setAcceleration(glm::vec3(0.0f, 0.0f, 0.0f));
-	emitter.setMaxParticle(600);
-	emitter.setSpawnRate(60);
+	emitter.setMaxParticle(800);
+	emitter.setSpawnRate(80);
 	emitter.setStartColour(glm::vec4(0.8f, 0.0f, 1.0f, 1.0f));
 	emitter.setEndColour(glm::vec4(0.8f, 0.0f, 1.0f, 0.0f));
 	emitter.setLifeTime(10.0f);
@@ -87,7 +85,7 @@ void GameState::update(const float dt)
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 
-	//Particle tracing TEST
+	//Particle tracing
 	//Increase movement speed
 	if (entityManager.getTracedEntity("PlayerArrow") != nullptr)
 		if(entityManager.getTracedEntity("PlayerArrow")->getComponent("ArrowGuider") != nullptr)
@@ -147,8 +145,4 @@ void GameState::render()
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 	GUI& gui = this->getGUI();
 	guiRenderer.draw(gui);
-}
-
-void GameState::emit(KeyEvent * evnt)
-{
 }

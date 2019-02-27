@@ -96,12 +96,6 @@ void Renderer::drawAllInstanced()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	pipeline.getFbo()->bind();
-	GLenum buf[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-	glDrawBuffers(2, buf);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	pipeline.getFbo()->unbind();
-
 	/*
 	Calulate shadow depth
 	*/

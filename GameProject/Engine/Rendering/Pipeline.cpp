@@ -9,13 +9,6 @@
 #include <Engine/Imgui/imgui.h>
 #include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
 
-const GLfloat Pipeline::g_vertex_buffer_data[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	-0.5f, 0.5f, 0.0f,
-	0.5f, 0.5f, 0.0f,
-};
-
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
@@ -54,19 +47,13 @@ Pipeline::Pipeline()
 
 
 	//Particle init
-	this->va.bind();
+	ParticleManager::get().init();
 
-	this->vbBillboard = new VertexBuffer(g_vertex_buffer_data, sizeof(g_vertex_buffer_data), GL_STATIC_DRAW);
-	AttributeLayout layout;
-	layout.push(3); // Vertex
-	this->va.addBuffer(this->vbBillboard, layout);
+	fbo.bind();
+	GLenum buf[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, buf);
+	fbo.unbind();
 
-	this->vbParticle = new VertexBuffer(NULL, ParticleManager::get().getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
-	AttributeLayout layout2;
-	layout2.push(4, 1); // Pos / scale
-	layout2.push(4, 1); // Colour
-	this->va.addBuffer(this->vbParticle, layout2);
-	//Particle init
 
 
 	this->uniformBuffers.resize(7);
@@ -120,7 +107,7 @@ Texture* Pipeline::drawParticle()
 	fbo.bind();
 	this->particleShader->bind();
 	if (ParticleManager::get().getParticleCount() != 0) {
-		this->vbParticle->make(NULL, ParticleManager::get().getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
+		ParticleManager::get().getVertexBuffer()->make(NULL, ParticleManager::get().getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
 		ParticleManager::get().updateBuffer();
 	}
 
@@ -131,7 +118,7 @@ Texture* Pipeline::drawParticle()
 	glDepthMask(GL_TRUE);
 	glEnable(GL_DEPTH_TEST);
 
-	this->va.bind();
+	ParticleManager::get().getVertexArray()->bind();
 	glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, ParticleManager::get().getParticleCount());
 
 	this->particleShader->unbind();
