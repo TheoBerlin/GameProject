@@ -38,6 +38,9 @@ private:
     void resetStaticTargets();
     void resetMovingTargets();
 
+	void resetStaticCollision();
+	void resetMovingCollision();
+
     std::vector<MovingTarget> movingTargets;
     std::vector<StaticTarget> staticTargets;
 };

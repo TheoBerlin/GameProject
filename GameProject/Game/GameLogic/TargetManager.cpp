@@ -6,6 +6,8 @@
 #include <Game/Components/RollNullifier.h>
 #include <Engine/Components/MovingTargetCollision.h>
 #include <Engine/Components/StaticTargetCollision.h>
+#include <reactphysics3d/reactphysics3d.h>
+#include <Engine/Collision/CollisionInfo.h>
 
 TargetManager::TargetManager()
 {
@@ -59,8 +61,13 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
 
 void TargetManager::resetTargets()
 {
+	// Moving targets
     resetMovingTargets();
+	resetMovingCollision();
+
+	// Static targets
     resetStaticTargets();
+	resetStaticCollision();
 }
 
 void TargetManager::setupTargetGeneric(Entity* host)
@@ -88,4 +95,52 @@ void TargetManager::resetMovingTargets()
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
         movingTargets.at(i).pathTreader->startTreading();
     }
+}
+
+void TargetManager::resetStaticCollision()
+{
+	rp3d::CollisionBody* body;
+	Entity* host;
+	for (auto target : this->staticTargets)
+	{
+		host = target.hoverAnimation->getHost();
+		body = host->getCollisionBody();
+
+		rp3d::ProxyShape* current = body->getProxyShapesList();
+
+		StaticTargetCollision* comp = dynamic_cast<StaticTargetCollision*>(host->getComponent("StaticTargetCollision"));
+		comp->resetFlag();
+
+		// Look for the proxy shape that contains the collision shape in parameter
+		while (current != nullptr) {
+			current->setCollisionCategoryBits(((CollisionShapeDrawingData*)current->getUserData())->category);
+
+			// Get the next element in the list
+			current = current->getNext();
+		}
+	}
+}
+
+void TargetManager::resetMovingCollision()
+{
+	rp3d::CollisionBody* body;
+	Entity* host;
+	for (auto target : this->movingTargets)
+	{
+		host = target.pathTreader->getHost();
+		body = host->getCollisionBody();
+
+		rp3d::ProxyShape* current = body->getProxyShapesList();
+
+		MovingTargetCollision* comp = dynamic_cast<MovingTargetCollision*>(host->getComponent("MovingTargetCollision"));
+		comp->resetFlag();
+
+		// Look for the proxy shape that contains the collision shape in parameter
+		while (current != nullptr) {
+			current->setCollisionCategoryBits(((CollisionShapeDrawingData*)current->getUserData())->category);
+
+			// Get the next element in the list
+			current = current->getNext();
+		}
+	}
 }
