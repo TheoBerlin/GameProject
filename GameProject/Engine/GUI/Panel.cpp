@@ -188,6 +188,13 @@ std::vector<std::pair<Text*, glm::uvec2>>& Panel::getTextList()
 	return textList;
 }
 
+Text * Panel::getText(const unsigned & index)
+{
+	if (index > textList.size() - 1)
+		return nullptr;
+	return textList[index].first;
+}
+
 std::vector<Panel*>& Panel::getChildren()
 {
 	return this->children;

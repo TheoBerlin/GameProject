@@ -144,6 +144,13 @@ public:
 	std::vector<std::pair<Text*, glm::uvec2>>& getTextList();
 
 	/*
+	Get a specific text element with its index.
+	Return:
+		The requested text pointer.
+	*/
+	Text* getText(const unsigned& index);
+
+	/*
 	Get a list of the current children attached to the panel.
 	Return:
 		A list of pointers to the children.
