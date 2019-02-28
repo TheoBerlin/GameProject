@@ -11,6 +11,7 @@ class OverviewPhase : public Phase
 public:
     OverviewPhase(AimPhase* aimPhase);
     OverviewPhase(const Level& level, Entity* transitionEntity);
+	~OverviewPhase();
 
     Entity* getOverviewCamera() const;
     Entity* getPlayerArrow() const;

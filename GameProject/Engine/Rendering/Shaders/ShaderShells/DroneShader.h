@@ -6,7 +6,7 @@
 class DroneShader : public EntityShader
 {
 public:
-	DroneShader(const std::string & vertex, const std::string & fragment, Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix);
+	DroneShader(Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix);
 	~DroneShader();
 
 

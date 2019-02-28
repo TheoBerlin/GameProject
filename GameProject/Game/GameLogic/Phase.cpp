@@ -21,6 +21,10 @@ Phase::Phase(Phase* other)
 {
 }
 
+Phase::~Phase()
+{
+}
+
 void Phase::changePhase(Phase* newPhase)
 {
     EventBus::get().publish(&PhaseChangeEvent(newPhase));

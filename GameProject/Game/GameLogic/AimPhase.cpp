@@ -64,6 +64,13 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
     commonSetup();
 }
 
+AimPhase::~AimPhase()
+{
+	EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &AimPhase::transitionToOverview);
+	EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
+}
+
 Entity* AimPhase::getPlayerArrow() const
 {
     return playerArrow;

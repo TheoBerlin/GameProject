@@ -13,9 +13,11 @@
 
 #include <Game/GameLogic/TargetManager.h>
 
+#include "Game/States/PauseState.h"
+
 #include "Engine/Config.h"
 
-GameState::GameState()
+GameState::GameState(const std::string& levelJSON)
 {
 	Level level;
 
@@ -28,18 +30,26 @@ GameState::GameState()
 	level.gui = &this->getGUI();
 	level.replaySystem = &this->replaySystem;
 
-	levelParser.readLevel("./Game/Level/level.json", level);
+	levelParser.readLevel(levelJSON, level);
 
 	gameLogic.init(level);
 
 	Display::get().getRenderer().initInstancing();
 
 	InputHandler ih(Display::get().getWindowPtr());
+
+	//For pause event
+	this->hasSubscribedToPause = false;
 }
 
 GameState::~GameState()
 {
 	delete targetManager;
+
+	Display::get().getRenderer().clearRenderingModels();
+
+	// Delete all loaded models
+	ModelLoader::unloadAllModels();
 }
 
 void GameState::start()
@@ -62,10 +72,20 @@ void GameState::end()
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->detachFromModel();
+
+	EventBus::get().unsubscribe(this, &GameState::pauseGame);
+	this->hasSubscribedToPause = false;
 }
 
 void GameState::update(const float dt)
 {
+	if (!this->hasSubscribedToPause) {
+
+		//Pause game event
+		EventBus::get().subscribe(this, &GameState::pauseGame);
+		this->hasSubscribedToPause = true;
+	}
+
 	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
@@ -115,4 +135,12 @@ void GameState::render()
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 	GUI& gui = this->getGUI();
 	guiRenderer.draw(gui);
+}
+
+void GameState::pauseGame(KeyEvent * ev)
+{
+	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
+
+		this->pushState(new PauseState());
+	}
 }

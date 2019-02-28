@@ -35,6 +35,13 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
 
+GuidingPhase::~GuidingPhase()
+{
+	EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
+	EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
+}
+
 Entity* GuidingPhase::getPlayerArrow() const
 {
     return playerArrow;

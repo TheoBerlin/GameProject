@@ -66,6 +66,12 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
 }
 
+ReplayPhase::~ReplayPhase()
+{
+	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
+}
+
 Entity* ReplayPhase::getFreeCam() const
 {
     return freeCam;
