@@ -19,6 +19,9 @@ public:
 
 private:
 	void initPanelLayout();
+	void initLevelSelectLayout();
+
+	std::string selectedLevel;
 
 	Text test;
 	Font* font;
