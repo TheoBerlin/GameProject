@@ -20,7 +20,7 @@ public:
 private:
 	void pauseGame(KeyEvent * ev);
 
-	bool hasSubscribedPause;
+	bool hasSubscribedToPause;
 
 	LevelParser levelParser;
 	TargetManager* targetManager;
