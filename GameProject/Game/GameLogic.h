@@ -17,6 +17,8 @@ public:
 	void init(Level& level);
 	~GameLogic();
 
+	void update(const float& dt);
+
 private:
 	void changePhaseCallback(PhaseChangeEvent * event);
 

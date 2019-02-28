@@ -1,6 +1,7 @@
 #include "ReplaySystem.h"
 
 #include <Engine/Events/EventBus.h>
+#include <Game/Level/Level.h>
 
 ReplaySystem::ReplaySystem()
     :replayTime(0.0f),
@@ -84,6 +85,30 @@ void ReplaySystem::startReplaying()
 void ReplaySystem::stopReplaying()
 {
     isReplaying = false;
+}
+
+void ReplaySystem::rewindLevel(Level& level, PathTreader* replayArrow, const float time)
+{
+    /*
+        Rewinding the level is done in two steps:
+        1. Reset the level to its original state
+        2. Fast forward the level to its state at the given time
+    */
+    // Reset targets
+    level.targetManager->resetTargets();
+
+    // Reset replay arrow
+    replayArrow->stopTreading();
+    replayArrow->startTreading();
+
+    // Reset collision replays
+    this->stopReplaying();
+    this->startReplaying();
+
+    // Fast forward level
+    level.entityManager->update(time);
+
+    this->update(time);
 }
 
 void ReplaySystem::handlePlayerCollision(PlayerCollisionEvent* event)

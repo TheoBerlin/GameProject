@@ -27,8 +27,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	// Copy arrow path from arrow guider to path treader
     ArrowGuider* oldArrowGuider = guidingPhase->getArrowGuider();
 
-    PathTreader* arrow = new PathTreader(replayArrow, oldArrowGuider->getPath());
-    arrow->startTreading();
+    pathTreader = new PathTreader(replayArrow, oldArrowGuider->getPath());
+    pathTreader->startTreading();
 
     // Add path visualizer for debugging
     if (ENABLE_PATH_VISUALIZERS) {
@@ -66,6 +66,11 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
 }
 
+void ReplayPhase::update(const float& dt)
+{
+    level.replaySystem->update(dt);
+}
+
 Entity* ReplayPhase::getFreeCam() const
 {
     return freeCam;
@@ -85,6 +90,10 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 {
     if (event->action != GLFW_PRESS) {
         return;
+    }
+
+    if (event->key == GLFW_KEY_1) {
+        level.replaySystem->rewindLevel(level, pathTreader, 5.0f);
     }
 
     if (event->key == GLFW_KEY_2) {

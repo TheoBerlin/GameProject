@@ -75,9 +75,24 @@ void TargetManager::setupTargetGeneric(Entity* host)
 
 void TargetManager::resetStaticTargets()
 {
-	// Reset collision
-	resetStaticCollision();
+	// Reset collisions
+	resetStaticCollisions();
 
+	// Reset animations
+	resetStaticAnimations();
+}
+
+void TargetManager::resetMovingTargets()
+{
+	// Reset collisions
+	resetMovingCollisions();
+
+	// Reset animations
+	resetMovingAnimations();
+}
+
+void TargetManager::resetStaticAnimations()
+{
 	unsigned int staticTargetCount = staticTargets.size();
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
@@ -89,11 +104,8 @@ void TargetManager::resetStaticTargets()
     }
 }
 
-void TargetManager::resetMovingTargets()
+void TargetManager::resetMovingAnimations()
 {
-	// Reset collision
-	resetMovingCollision();
-
 	unsigned int movingTargetCount = movingTargets.size();
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
@@ -101,7 +113,7 @@ void TargetManager::resetMovingTargets()
     }
 }
 
-void TargetManager::resetStaticCollision()
+void TargetManager::resetStaticCollisions()
 {
 	rp3d::CollisionBody* body;
 	Entity* host;
@@ -125,7 +137,7 @@ void TargetManager::resetStaticCollision()
 	}
 }
 
-void TargetManager::resetMovingCollision()
+void TargetManager::resetMovingCollisions()
 {
 	rp3d::CollisionBody* body;
 	Entity* host;

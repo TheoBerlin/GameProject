@@ -12,7 +12,8 @@ class ReplayPhase : public Phase
 {
 public:
     ReplayPhase(GuidingPhase* guidingPhase);
-    ReplayPhase(AimPhase* aimPhase);
+
+    void update(const float& dt);
 
     Entity* getFreeCam() const;
 
