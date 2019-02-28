@@ -27,6 +27,7 @@ GameState::GameState()
 	level.collisionHandler = &this->collisionHandler;
 	level.gui = &this->getGUI();
 	level.replaySystem = &this->replaySystem;
+	level.scoreManager = &this->scoreManager;
 
 	levelParser.readLevel("./Game/Level/level.json", level);
 
@@ -66,6 +67,9 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+	// Update gamelogic
+	this->gameLogic.update(dt);
+
 	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
