@@ -14,6 +14,10 @@ public:
 	CollisionRenderer();
 	~CollisionRenderer();
 
+	void updateLines(const std::vector<glm::vec3>& lines);
+	void updateMatricesLine(const std::vector<glm::mat4>& matrices);
+	void updateColorsLine(const std::vector<glm::vec3>& colors);
+
 	void updateMatrices(const std::vector<glm::mat4>& matrices);
 	void updateColors(const std::vector<glm::vec3>& colors);
 	void render();
@@ -23,6 +27,10 @@ private:
 
 	// Used for rendering collision boxes
 	Mesh* collisionBoxMesh;
-	unsigned instanceCount;
+	unsigned instanceCountBox;
+
+	// Used for rendering lines.
+	Mesh* lineMesh;
+	unsigned instanceCountLine;
 };
 

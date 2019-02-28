@@ -63,7 +63,13 @@ private:
 	Collision collision;
 
 	// Creates all the shapes which will be used in the scene
+	std::vector<std::pair<glm::vec3, glm::vec3>> lines;
+	std::vector<glm::vec3> lines2;
+	std::vector<glm::mat4> matricesLines;
+	std::vector<glm::vec3> colorsLines;
+
 	std::pair<glm::vec3, glm::vec3> getAABB(Vertex* vertices, unsigned int numVertices);
+	std::pair<glm::vec3, glm::vec3> getOOBB(Vertex* vertices, unsigned int numVertices);
 	void constructShape(CollisionShapeDrawingData* data, const glm::vec3& pos, const glm::vec3& size, CATEGORY cat = CATEGORY::NO_COLLISION, const glm::vec3& scale = {1.f, 1.f, 1.f}, const glm::vec3& color = { 1.f, 1.f, 1.f });
 	void addCollisionShapeToBody(rp3d::CollisionBody* body, CollisionShapeDrawingData* data, const rp3d::Quaternion& shapeRot);
 

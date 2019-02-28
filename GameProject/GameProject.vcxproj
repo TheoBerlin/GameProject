@@ -90,6 +90,7 @@
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
+    <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Engine\Collision\CollisionInfo.h" />
@@ -174,6 +175,7 @@
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+    <ClInclude Include="Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />

@@ -8,6 +8,7 @@
 #include "GLFW/glfw3.h"
 
 #include "../Rendering/GLAbstraction/RenderingResources.h"
+#include "Utils/Utils.h"
 
 CollisionHandler::CollisionHandler()
 {
@@ -248,6 +249,7 @@ std::vector<unsigned short*> CollisionHandler::addCollisionToEntity(Entity * ent
 
 void CollisionHandler::addShape(Model* modelPtr, Vertex* vertices, unsigned int numVertices)
 {
+	getOOBB(vertices, numVertices);
 	std::pair<glm::vec3, glm::vec3> aabb = getAABB(vertices, numVertices);
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
 	constructShape(data, aabb.second, aabb.first*.5f);
@@ -292,6 +294,88 @@ std::pair<glm::vec3, glm::vec3> CollisionHandler::getAABB(Vertex * vertices, uns
 	}
 
 	return std::pair<glm::vec3, glm::vec3>(glm::max(max - min, 0.01f), min + (max - min)*0.5f);
+}
+
+// TODO: Change return type to tuple with position, size and rotation.
+std::pair<glm::vec3, glm::vec3> CollisionHandler::getOOBB(Vertex * vertices, unsigned int numVertices)
+{
+	std::vector<Vertex> verts(vertices, vertices + numVertices);
+
+	// Calculate centroid.
+	glm::vec3 centroid(0.0f);
+	for (Vertex& v : verts)
+		centroid += v.Position;
+	centroid /= numVertices;
+
+	// Distance from centroid to vertex.
+	std::vector<glm::vec3> changeInPos;
+	for (Vertex& v : verts)
+		changeInPos.push_back(v.Position - centroid);
+
+	/* Matrix multiplication for a single element.
+		c[i][j] = (a*b)[i][j]
+	Arguments:
+		m1: matrix a
+		m2: matrix b
+		i: row index
+		j: col index
+	*/
+	auto getElem = [](std::vector<glm::vec3>& m1, std::vector<glm::vec3>& m2, int i, int j)->float {
+		float a = 0.0f;
+		for (unsigned k = 0; k < m1.size(); k++)
+			a += m1[k][i] * m2[k][j];
+		return a;
+	};
+
+	// Calculate the covariance matrix
+	float cov[3][3];
+	for (unsigned i = 0; i < 3; i++)
+		for (unsigned j = 0; j < 3; j++)
+			cov[i][j] = getElem(changeInPos, changeInPos, i, j);
+	
+	/*
+	// This might be needed.
+	for (unsigned i = 0; i < 3; i++)
+		for (unsigned j = 0; j < 3; j++)
+			cov[i][j] /= 3.f;
+			*/
+
+	// Find characteristic equation det(A-l*I) = 0
+	double a = -(double)(cov[0][0] + cov[1][1] + cov[2][2]);
+	double b = -(double)(-cov[0][0] * cov[1][1] - cov[0][0] * cov[2][2] - cov[1][1] * cov[2][2] + cov[1][2] * cov[2][1] + cov[0][1] * cov[1][0] + cov[0][2] * cov[2][0]);
+	double c = -(double)(cov[0][0] * cov[1][1] * cov[2][2] - cov[0][0] * cov[1][2] * cov[2][1] - cov[0][1] * cov[1][0] * cov[2][2] + cov[0][1] * cov[1][2] * cov[2][0] + cov[0][2] * cov[1][0] * cov[2][1] - cov[0][2] * cov[1][1] * cov[2][0]);
+
+	// Solve the cubic equation.
+	Utils::CubicResult cubicResult = Utils::solveCubic(a, b, c);
+
+	// For finding eigenvectors: http://wwwf.imperial.ac.uk/metric/metric_public/matrices/eigenvalues_and_eigenvectors/eigenvalues2.html
+
+	glm::mat3 mat({ cov[0][0], cov[0][1], cov[0][2] }, { cov[1][0], cov[1][1], cov[1][2] }, { cov[2][0], cov[2][1], cov[2][2] });
+
+	if (cubicResult.towEqual)
+	{
+		glm::vec3 e = Utils::calcEigenvector(cubicResult.x1_real, mat);
+	}
+	else
+	{
+		glm::vec3 e1 = Utils::calcEigenvector(cubicResult.x1_real, mat);
+		glm::vec3 e2 = Utils::calcEigenvector(cubicResult.x2_real, mat);
+		glm::vec3 e3 = Utils::calcEigenvector(cubicResult.x3_real, mat);
+
+		//this->lines.push_back(std::pair<glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1)));
+		//this->lines.push_back(std::pair<glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2)));
+		//this->lines.push_back(std::pair<glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3)));
+	}
+
+	if(lines.empty())
+		this->lines.push_back(std::pair<glm::vec3, glm::vec3>({ 0.f, 0.f, 0.f }, {0.f, 6.f, 0.f}));
+
+	//glm::mat3 mat3({ -2.f, -4.f, 2.f }, { -2.f, 1.f, 2.f }, { 4.f, 2.f, 5.f }); // eigenValues: 3, -5, 6
+	//glm::mat3 mat3({ 3.f, 2.f, 4.f }, { 2.f, 0.f, 2.f }, { 4.f, 2.f, 3.f }); // eigenValues: -1, -1, 8
+	
+	//glm::vec3 e = Utils::calcEigenvector(-1, mat3);
+
+	return std::pair<glm::vec3, glm::vec3>();
 }
 
 void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)
@@ -348,13 +432,29 @@ void CollisionHandler::updateDrawingData()
 
 		this->cRenderer.updateColors(colors);
 		this->cRenderer.updateMatrices(matrices);
-	}
 
+
+		// Update lines
+		this->lines2.clear();
+		this->matricesLines.clear();
+		this->colorsLines.clear();
+		for (std::pair<glm::vec3, glm::vec3>& line : this->lines) {
+			glm::mat4 mat(1.0f);
+			this->lines2.push_back(line.first);
+			this->lines2.push_back(line.second);
+			this->matricesLines.push_back(mat);
+			this->colorsLines.push_back({1.f, 1.f, 1.f});
+		}
+
+		this->cRenderer.updateLines(this->lines2);
+		this->cRenderer.updateColorsLine(colorsLines);
+		this->cRenderer.updateMatricesLine(matricesLines);
+	}
 }
 
 void CollisionHandler::drawCollisionBoxes()
 {
-	if(this->drawCollisionShapes)
+	if (this->drawCollisionShapes)
 		this->cRenderer.render();
 }
 #else
