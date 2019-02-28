@@ -22,15 +22,15 @@ private:
 
 	DirectionalLight * dirLight;
 	bool dirLightExist = false;
+	
 	glm::vec3 shadowPosition;
 	glm::mat4 lightMatrix;
 
 	void calcLightMatrix();
 
-
 	float orthoWidth;
 	float orthoHeight;
 	int shadowWidth;
-	int shadowHeith;
+	int shadowHeight;
 	float shadowReScale;
 };

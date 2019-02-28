@@ -6,7 +6,7 @@
 LightManager::LightManager()
 {
 	this->shadowReScale = Settings::get().getShadowReScale();
-	this->shadowHeith = Display::get().getHeight();
+	this->shadowHeight = Display::get().getHeight();
 	this->shadowWidth = Display::get().getWidth();
 	this->orthoHeight = 20.0f * Display::get().getRatio();
 	this->orthoWidth = 20.0f; //fix this so that the class gets this info relative to input
@@ -26,12 +26,12 @@ LightManager::~LightManager()
 
 void LightManager::setShadowReScale(float reScale)
 {
-	Settings::get().setShadowReScale(reScale);
+	this->shadowReScale = reScale;
 }
 
 float LightManager::getShadowHeightScaled()
 {
-	return this->shadowHeith * shadowReScale;
+	return this->shadowHeight * shadowReScale;
 }
 
 float LightManager::getShadowWidthScaled()
@@ -53,7 +53,7 @@ int LightManager::getNrOfPointLights()
 
 DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm::vec4 intensity)
 {
-	if (dirLightExist == false) {
+	if (!dirLightExist) {
 		dirLight = new DirectionalLight(direction, intensity);
 		dirLightExist = true;
 		calcLightMatrix();
