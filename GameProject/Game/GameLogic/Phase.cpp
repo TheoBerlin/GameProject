@@ -21,6 +21,10 @@ Phase::Phase(Phase* other)
 {
 }
 
+void Phase::update(const float & dt)
+{
+}
+
 void Phase::changePhase(Phase* newPhase)
 {
     EventBus::get().publish(&PhaseChangeEvent(newPhase));

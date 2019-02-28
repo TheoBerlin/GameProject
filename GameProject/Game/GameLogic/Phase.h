@@ -13,6 +13,8 @@ public:
     Phase(const Level& level, Entity* transitionEntity);
     Phase(Phase* other);
 
+	virtual void update(const float& dt);
+
 protected:
     void changePhase(Phase* newPhase);
 
