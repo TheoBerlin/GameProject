@@ -49,17 +49,17 @@ public:
 	/*
 	Get the position in pixels.
 	*/
-	glm::uvec2 getGlobalPosition() const;
+	glm::vec2 getGlobalPosition() const;
 
 	/*
 	Set the poisition in pixels. This will not rebake the texture!
 	*/
-	void setPosition(glm::uvec2 pos);
+	void setPosition(glm::vec2 pos);
 
 	/*
 	Get the position in pixels.
 	*/
-	glm::uvec2 getPosition() const;
+	glm::vec2 getPosition() const;
 
 	/*
 	Set the size in pixels. This will not rebake the texture!
@@ -89,7 +89,7 @@ public:
 		font: The font to use when converting the string to a character set.
 		color: The color of the text when rendering.
 	*/
-	void addText(const std::string& str, unsigned int x, unsigned int y, const std::string& font, const glm::vec4& color = { 0.0f, 0.0f, 0.0f, 1.0f });
+	void addText(const std::string& str, int x, int y, const std::string& font, const glm::vec4& color = { 0.0f, 0.0f, 0.0f, 1.0f });
 
 	/*
 	Update the string and position for an already added text. This will not rebake the texture!
@@ -99,7 +99,7 @@ public:
 		x: The x coordinate in pixels. 0 is the left side.
 		y: The y coordinate in pixels. 0 is the right side.
 	*/
-	void updateText(unsigned int index, const std::string& str, unsigned int x, unsigned int y);
+	void updateText(unsigned int index, const std::string& str, int x, int y);
 
 	/*
 	Update the position for an already added text. This will not rebake the texture!
@@ -108,7 +108,7 @@ public:
 		x: The x coordinate in pixels. 0 is the left side.
 		y: The y coordinate in pixels. 0 is the right side.
 	*/
-	void updateText(unsigned int index, unsigned int x, unsigned int y);
+	void updateText(unsigned int index, int x, int y);
 
 	/*
 	Update the string for an already added text. This will not rebake the texture!
@@ -141,14 +141,14 @@ public:
 	Return:
 		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
 	*/
-	std::vector<std::pair<Text*, glm::uvec2>>& getTextList();
+	std::vector<std::pair<Text*, glm::vec2>>& getTextList();
 
-	/*
-	Get a specific text element with its index.
+		/*
+	Get a list of the current text elements.
 	Return:
-		The requested text pointer.
+		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
 	*/
-	Text* getText(const unsigned& index);
+	Text * getText(const unsigned& index);
 
 	/*
 	Get a list of the current children attached to the panel.
@@ -175,6 +175,16 @@ public:
 	*/
 	template<typename T>
 	void setOption(GUI::OPTION option, T value);
+
+	/*
+	Remove all options.
+	*/
+	void removeAllOptions();
+
+	/*
+	Remove specific option.
+	*/
+	void removeOption(GUI::OPTION option);
 
 	/*
 	Set an option to use. The list of options can be found in the GUI::OPTION enum.
@@ -216,7 +226,7 @@ private:
 		option: The value of the option.
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 	*/
-	void processOption(GUI::OPTION_VALUE option, unsigned int index);
+	void processOption(std::pair<bool, GUI::OPTION_VALUE>& option, unsigned int index);
 
 	/*
 	Process the options related to positioning the panel.
@@ -260,15 +270,15 @@ protected:
 
 	Panel* parent;
 	std::vector<Panel*> children;
-	std::vector<std::pair<Text*, glm::uvec2>> textList;
+	std::vector<std::pair<Text*, glm::vec2>> textList;
 
 	Texture* bakedTexture;
 	Texture* backgroundTexture;
 
 	glm::vec4 color;
 
-	glm::uvec2 globalPos;
-	glm::uvec2 pos;
+	glm::vec2 globalPos;
+	glm::vec2 pos;
 	glm::uvec2 size;
 
 	std::vector<std::pair<bool, GUI::OPTION_VALUE>> options;

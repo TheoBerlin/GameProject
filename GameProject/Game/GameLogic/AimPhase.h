@@ -12,6 +12,7 @@ class AimPhase : public Phase
 public:
     AimPhase(OverviewPhase* overviewPhase);
     AimPhase(ReplayPhase* replayPhase);
+	~AimPhase();
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;

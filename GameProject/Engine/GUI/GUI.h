@@ -56,11 +56,15 @@ public:
 
 		/*
 		This will center the panels position, in the x-axis, inside its parent or the display.
+		Value:
+			Margin in horizontal postive right and negative left.
 		*/
 		CENTER_X,
 
 		/*
 		This will center the panels position, in the y-axis, inside its parent or the display.
+		Value:
+			Margin in vertical postive right and negative left.
 		*/
 		CENTER_Y,
 

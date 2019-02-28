@@ -88,6 +88,12 @@ void ReplayPhase::update(const float & dt)
 	}
 }
 
+ReplayPhase::~ReplayPhase()
+{
+	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
+}
+
 Entity* ReplayPhase::getFreeCam() const
 {
     return freeCam;

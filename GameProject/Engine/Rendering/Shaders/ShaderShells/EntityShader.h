@@ -14,7 +14,7 @@ class EntityShader : public Shader
 {
 public:
 	EntityShader(const std::string & vertex, const std::string & fragment, Framebuffer* shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix);
-	~EntityShader();
+	virtual ~EntityShader();
 
 	void bind();
 	void updateMeshData(unsigned texId);

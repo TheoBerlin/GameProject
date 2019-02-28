@@ -21,9 +21,9 @@ void State::pushState(State * state)
 	this->getStateManager().push(state);
 }
 
-void State::popState()
+void State::popState(unsigned popAmount)
 {
-	this->getStateManager().pop();
+	this->getStateManager().pop(popAmount);
 }
 
 StateManager& State::getStateManager()

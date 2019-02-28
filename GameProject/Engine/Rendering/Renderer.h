@@ -34,9 +34,14 @@ public:
 	void drawAll();
 
 	/*
-		inits vertex buffer for meshes rendering groups transforms
+		inits vertex buffer for meshes rendering groups transforms and create renderingModels list
 	*/
 	void initInstancing();
+
+	/*
+		clears renderingModels list
+	*/
+	void clearRenderingModels();
 
 	/*
 		Updates vertex buffer for models meshes rendering groups transforms
@@ -53,7 +58,20 @@ public:
 	*/
 	void updateShaders(const float & dt);
 
+	/*
+		Draw texture to screen using a post process  shader
+	*/
+	void drawTextureToScreen(Texture * texture, SHADERS_POST_PROCESS shader);
+	
+	/*
+		Draw texture to fbo color attachment 0 using a post process  shader
+	*/
+	Texture* drawTextureToFbo(Texture * texture, SHADERS_POST_PROCESS shader);
 
+	/*
+		Get pipeline
+	*/
+	Pipeline* getPipeline();
 
 
 private:
