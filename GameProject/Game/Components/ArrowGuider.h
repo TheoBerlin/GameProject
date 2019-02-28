@@ -28,7 +28,9 @@ public:
     // Enables both aim and movement
     void startGuiding();
     // Disables both aim and movement
-    void stopGuiding();
+    void stopGuiding(float flightTime);
+
+    void saveKeyPoint(float flightTime);
 
     // Event handlers
     void handleMouseMove(MouseMoveEvent* event);

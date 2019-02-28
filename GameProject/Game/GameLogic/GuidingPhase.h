@@ -2,6 +2,7 @@
 
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Utils/Timer.h>
 
 // Phases GuidingPhase can transition from
 class AimPhase;
@@ -18,10 +19,14 @@ public:
 private:
     void handleKeyInput(KeyEvent* event);
 
+    void beginReplayTransition();
+    void finishReplayTransition(CameraTransitionEvent* event);
+
 	void playerCollisionCallback(PlayerCollisionEvent * ev);
-    void transitionToReplay(CameraTransitionEvent* event);
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
     Camera* arrowCam;
+
+    Timer flightTimer;
 };
