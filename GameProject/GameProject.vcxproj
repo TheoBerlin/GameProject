@@ -85,6 +85,7 @@
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
+    <ClCompile Include="Game\GameLogic\ScoreManager.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
+    <ClInclude Include="Game\GameLogic\ScoreManager.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Engine\Components\PlayerCollision.h" />

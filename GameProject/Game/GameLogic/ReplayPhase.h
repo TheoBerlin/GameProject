@@ -7,12 +7,15 @@
 
 class GuidingPhase;
 class AimPhase;
+class Panel;
 
 class ReplayPhase : public Phase
 {
 public:
     ReplayPhase(GuidingPhase* guidingPhase);
     ReplayPhase(AimPhase* aimPhase);
+
+	void update(const float& dt);
 
     Entity* getFreeCam() const;
 
@@ -24,12 +27,23 @@ private:
 
     void transitionToAim(CameraTransitionEvent* event);
 
+	void activateGui();
+	void guiCallback();
+
     Entity* freeCam;
     FreeMove* freeMove;
 
     Entity* replayArrow;
     PathTreader* pathTreader;
     PathVisualizer* pathVisualizer;
+
+	// Gui stuff
+	float timeLeft;
+	bool showGui;
+	bool minimized;
+	Panel* smallPanel;
+	Panel* bigPanel;
+
 
     // This should be read from the level struct in the future
     const glm::vec3 arrowPos = glm::vec3(1.0f, 1.0f, 16.0f);
