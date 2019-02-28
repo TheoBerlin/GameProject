@@ -26,6 +26,9 @@ public:
     void addStaticTarget(Entity* host, const glm::vec3& position);
     void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
 
+	//Remove an entity as target
+	void removeTarget(std::string name);
+
     // Reset target components such as the path treader
     void resetTargets();
 

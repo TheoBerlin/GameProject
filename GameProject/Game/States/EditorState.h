@@ -28,7 +28,7 @@ private:
 	std::string currentItem;
 	std::string currentModel;
 	int currentEntity = -1;
-	bool currentTraced;
+	bool currentIsTarget;
 	bool activeWindow[3];
 	Entity camera;
 	float camSpeed;

@@ -168,7 +168,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				currentModel = entityManager.getEntity(i)->getModel()->getName();
 				currentEntity = i;
 				if (entityManager.getTracedEntity(entityManager.getEntity(i)->getName()) != nullptr) {
-					currentTraced = true;
+					currentIsTarget = true;
 				}
 			}
 			if (is_selected)
@@ -185,7 +185,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		entityManager.addEntity(newEntity);
 		currentModel = newEntity->getModel()->getName();
 		currentEntity = entityManager.getEntitySize() - 1;
-		currentTraced = false;
+		currentIsTarget = false;
 	}
 	if (currentEntity != -1) {
 		Entity* curEntity = entityManager.getEntity(currentEntity);
@@ -204,16 +204,8 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			curEntity->getTransform()->setScale(scale);
 		if (ImGui::InputFloat3("Rotation", &rotation[0], 2))
 			curEntity->getTransform()->setRotation(rotation);
-		if (ImGui::RadioButton("IsTraced", currentTraced)) {
-			currentTraced = !currentTraced;
-			if (currentTraced) {
-				entityManager.addTracedEntity(curEntity->getName());
-			}
-			else {
-				Entity temp = *curEntity;
-				entityManager.removeTracedEntity(curEntity->getName());
-				entityManager.addEntity(&temp);
-			}
+		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
+			currentIsTarget = !currentIsTarget;
 		}
 		//Model Info
 		Model* model = curEntity->getModel();
