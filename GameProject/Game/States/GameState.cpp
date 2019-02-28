@@ -79,7 +79,7 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
-	if (!this->hasSubscribedPause) {
+	if (!this->hasSubscribedToPause) {
 
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
