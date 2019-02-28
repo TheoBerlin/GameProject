@@ -20,7 +20,7 @@ public:
 		texture: The new baked texture. This function will copy the texture.
 	*/
 	void setBakedTexture(const Texture& texture);
-	
+
 	/*
 	Get a pointer to the baked texture.
 	*/
@@ -30,7 +30,7 @@ public:
 	Set the background texture. This will not rebake the texture!
 	*/
 	void setBackgroundTexture(Texture* texture);
-	
+
 	/*
 	Get a pointer to the background texture.
 	*/
@@ -45,6 +45,11 @@ public:
 	Get the color of the panel.
 	*/
 	glm::vec4 getColor() const;
+
+	/*
+	Get the position in pixels.
+	*/
+	glm::uvec2 getGlobalPosition() const;
 
 	/*
 	Set the poisition in pixels. This will not rebake the texture!
@@ -170,9 +175,9 @@ public:
 		option: A enum for how to position or scale the panel and its text.
 	*/
 	void setOption(GUI::OPTION option);
-	
+
 	/*
-	Returns true if some data has been changed, otherwise false. 
+	Returns true if some data has been changed, otherwise false.
 	*/
 	bool hasUpdated() const;
 
@@ -212,7 +217,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processPositionOption(unsigned int index, unsigned int v);
+	void processPositionOption(unsigned int index, int v);
 
 	/*
 	Process the options related to positioning the text in the panel.
@@ -220,7 +225,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processTextPositionOption(unsigned int index, unsigned int v);
+	void processTextPositionOption(unsigned int index, int v);
 
 	/*
 	Process the options related to fit the panel in its parent of display if not parent.
@@ -228,7 +233,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processFitOption(unsigned int index, unsigned int v);
+	void processFitOption(unsigned int index, int v);
 
 	/*
 	Process the options related to scaling the panel to match the text.
@@ -236,7 +241,7 @@ private:
 		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
 		v: The value of the option.
 	*/
-	void processScaleToTextOption(unsigned int index, unsigned int v);
+	void processScaleToTextOption(unsigned int index, int v);
 
 	/*
 	A callback for when the window is resized. This will updated all the option and rebaked the panel.
@@ -255,6 +260,7 @@ protected:
 
 	glm::vec4 color;
 
+	glm::uvec2 globalPos;
 	glm::uvec2 pos;
 	glm::uvec2 size;
 
@@ -265,8 +271,8 @@ template<typename T>
 inline void Panel::setOption(GUI::OPTION option, T value)
 {
 	GUI::OPTION_VALUE v;
-	if (typeid(T) == typeid(unsigned int))
-		v.ui = (unsigned int)value;
+	if (typeid(T) == typeid(int))
+		v.i = (int)value;
 	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);
 	this->shouldUpdate = true;
 }

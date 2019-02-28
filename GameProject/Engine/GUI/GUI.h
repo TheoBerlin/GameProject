@@ -75,7 +75,7 @@ public:
 		FIT_Y,
 
 		// ---------------------------------- Text options ----------------------------------
-		
+
 		/*
 		This will center the text in the x-axis inside the panel.
 		*/
@@ -120,7 +120,7 @@ public:
 	// A strcut to hold the value of the option. 
 	struct OPTION_VALUE
 	{
-		unsigned int ui = 0u;
+		int i = 0;
 	};
 
 	GUI();
@@ -150,7 +150,7 @@ public:
 		true if removed else false.
 	*/
 	bool removePanel(Panel* panel);
-	
+
 	/*
 	Get a pointer to a panel from the gui.
 	Arguments:
