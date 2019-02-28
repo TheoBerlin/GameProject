@@ -140,7 +140,6 @@ void GameState::render()
 void GameState::pauseGame(KeyEvent * ev)
 {
 	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
-		Display& display = Display::get();
 
 		this->pushState(new PauseState());
 	}
