@@ -39,7 +39,7 @@ GameState::GameState(const std::string& levelJSON)
 	InputHandler ih(Display::get().getWindowPtr());
 
 	//For pause event
-	this->hasSubscribedPause = false;
+	this->hasSubscribedToPause = false;
 }
 
 GameState::~GameState()
