@@ -5,6 +5,7 @@
 #include <Engine/GUI/GUI.h>
 #include <Game/GameLogic/TargetManager.h>
 #include <Game/GameLogic/ReplaySystem.h>
+#include <Game/GameLogic/ScoreManager.h>
 #include <glm/glm.hpp>
 
 struct CameraSetting {
@@ -27,4 +28,5 @@ struct Level {
 	GUI* gui;
 	CollisionHandler* collisionHandler;
 	ReplaySystem* replaySystem;
+	ScoreManager* scoreManager;
 };
