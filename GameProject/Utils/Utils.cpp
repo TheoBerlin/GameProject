@@ -33,7 +33,7 @@ Utils::CubicResult Utils::solveCubic(float a, float b, float c)
 		r13 = r < 0. ? -cbrt(-r) : cbrt(r);
 		result.x1_real = -term1 + 2.*r13;
 		result.x2_real = result.x3_real = -(r13 + term1);
-		result.towEqual = true;
+		result.twoEqual = true;
 	}
 	else // Only option left is that all roots are real and unequal (to get here, q < 0)
 	{

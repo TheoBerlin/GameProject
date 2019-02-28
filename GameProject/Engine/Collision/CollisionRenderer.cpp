@@ -62,13 +62,13 @@ CollisionRenderer::CollisionRenderer()
 		};
 		
 		AttributeLayout layout;
-		layout.push(3, 1); // vec3 position
+		layout.push(3); // vec3 position
 
 		//Load collision Box model
-		this->lineMesh = new Mesh((void*)cubeVertices, sizeof(cubeVertices), (void*)indices, sizeof(indices) / sizeof(unsigned), layout);
+		this->lineMesh = new Mesh((void*)cubeVertices, sizeof(cubeVertices), (void*)indices, sizeof(indices) / sizeof(unsigned), layout, GL_DYNAMIC_DRAW);
 
 		AttributeLayout colorLayout;
-		colorLayout.push(3, 1); // Vec3 Color 
+		colorLayout.push(3); // Vec3 Color 
 
 		this->lineMesh->addBuffer(NULL, 0, colorLayout);
 
@@ -93,7 +93,12 @@ void CollisionRenderer::updateLines(const std::vector<glm::vec3>& lines)
 {
 	this->lineMesh->bindVertexArray();
 	this->lineMesh->updateInstancingData((void*)&(lines[0][0]), lines.size() * sizeof(glm::vec3), 0, 0);
-	this->instanceCountLine = lines.size();
+	IndexBuffer& ibLine = this->lineMesh->getIndexBuffer();
+	std::vector<unsigned> indices;
+	for (unsigned int i = 0; i < lines.size(); i++)
+		indices.push_back(i);
+	ibLine.updateData((void*)&indices[0], indices.size());
+	this->instanceCountLine = lines.size()/2;
 }
 
 void CollisionRenderer::updateMatricesLine(const std::vector<glm::mat4>& matrices)
@@ -134,6 +139,6 @@ void CollisionRenderer::render()
 	this->lineMesh->bindVertexArray();
 	IndexBuffer& ibLine = this->lineMesh->getIndexBuffer();
 	ibLine.bind();
-	glDrawElementsInstanced(GL_LINE_STRIP, ibLine.getCount(), GL_UNSIGNED_INT, 0, this->instanceCountLine);
+	glDrawElementsInstanced(GL_LINES, ibLine.getCount(), GL_UNSIGNED_INT, 0, this->instanceCountLine);
 	//glDrawArraysInstanced(GL_LINES, 0, 2, this->instanceCountLine);
 }

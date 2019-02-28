@@ -209,7 +209,7 @@ std::vector<unsigned short*> CollisionHandler::addCollisionToEntity(Entity * ent
 			if (addVarient)
 			{
 				newData = new CollisionShapeDrawingData();
-				constructShape(newData, data->pos*entityScale, data->size*entityScale, cat, entityScale, {1.f, 0.f, 1.f});
+				constructShape(newData, data->pos*entityScale, data->size*entityScale, data->rot, cat, entityScale, {1.f, 0.f, 1.f});
 				map.shapes.push_back(newData);
 			}
 			else
@@ -218,12 +218,12 @@ std::vector<unsigned short*> CollisionHandler::addCollisionToEntity(Entity * ent
 			}
 
 			// Use shape if exists.
-			addCollisionShapeToBody(entityBody, newData, shapeRot);
+			addCollisionShapeToBody(entityBody, newData);
 			categories.push_back(&newData->category);
 		}
 		else
 		{
-			addCollisionShapeToBody(entityBody, data, shapeRot);
+			addCollisionShapeToBody(entityBody, data);
 			categories.push_back(&data->category);
 		}
 		index++;
@@ -249,10 +249,15 @@ std::vector<unsigned short*> CollisionHandler::addCollisionToEntity(Entity * ent
 
 void CollisionHandler::addShape(Model* modelPtr, Vertex* vertices, unsigned int numVertices)
 {
-	getOOBB(vertices, numVertices);
-	std::pair<glm::vec3, glm::vec3> aabb = getAABB(vertices, numVertices);
+	std::tuple<glm::vec3, glm::vec3, glm::quat> obb = getOBB(modelPtr, vertices, numVertices);
+	//std::pair<glm::vec3, glm::vec3> aabb = getAABB(vertices, numVertices);
+	if (std::get<0>(obb).x == 0 && std::get<0>(obb).y == 0 && std::get<0>(obb).z == 0) return;
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
-	constructShape(data, aabb.second, aabb.first*.5f);
+	glm::vec3 size = std::get<0>(obb)*.5f;
+	size.x = glm::max(size.x, 0.01f);
+	size.y = glm::max(size.y, 0.01f);
+	size.z = glm::max(size.z, 0.01f);
+	constructShape(data, /*aabb.second, aabb.first*.5f*/std::get<1>(obb), size, std::get<2>(obb));
 	this->shapesMap[modelPtr].push_back(data);
 }
 
@@ -277,27 +282,31 @@ glm::quat CollisionHandler::toGlmQuat(const rp3d::Quaternion & vec)
 	return q;
 }
 
-std::pair<glm::vec3, glm::vec3> CollisionHandler::getAABB(Vertex * vertices, unsigned int numVertices)
+std::pair<glm::vec3, glm::vec3> CollisionHandler::getAABB(Vertex * vertices, unsigned int numVertices, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
 {
 	glm::vec3 min = glm::vec3(10000.0f);
 	glm::vec3 max = glm::vec3(-10000.0f);
 	for (unsigned int i = 0; i < numVertices; i++)
 	{
 		Vertex& vert = vertices[i];
-		min.x = glm::min(min.x, vert.Position.x);
-		min.y = glm::min(min.y, vert.Position.y);
-		min.z = glm::min(min.z, vert.Position.z);
+		float e1dot = glm::dot(e1, vert.Position);
+		float e2dot = glm::dot(e2, vert.Position);
+		float e3dot = glm::dot(e3, vert.Position);
+		min.x = glm::min(min.x, e1dot);
+		min.y = glm::min(min.y, e2dot);
+		min.z = glm::min(min.z, e3dot);
 
-		max.x = glm::max(max.x, vert.Position.x);
-		max.y = glm::max(max.y, vert.Position.y);
-		max.z = glm::max(max.z, vert.Position.z);
+		max.x = glm::max(max.x, e1dot);
+		max.y = glm::max(max.y, e2dot);
+		max.z = glm::max(max.z, e3dot);
 	}
 
-	return std::pair<glm::vec3, glm::vec3>(glm::max(max - min, 0.01f), min + (max - min)*0.5f);
+	glm::vec3 pos = e1 * (min.x + (max.x - min.x)*.5f) + e2 * (min.y + (max.y - min.y)*.5f) + e3 * (min.z + (max.z - min.z)*.5f);
+
+	return std::pair<glm::vec3, glm::vec3>(glm::max(max - min, 0.01f), pos);
 }
 
-// TODO: Change return type to tuple with position, size and rotation.
-std::pair<glm::vec3, glm::vec3> CollisionHandler::getOOBB(Vertex * vertices, unsigned int numVertices)
+std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* modelPtr, Vertex * vertices, unsigned int numVertices)
 {
 	std::vector<Vertex> verts(vertices, vertices + numVertices);
 
@@ -352,9 +361,10 @@ std::pair<glm::vec3, glm::vec3> CollisionHandler::getOOBB(Vertex * vertices, uns
 
 	glm::mat3 mat({ cov[0][0], cov[0][1], cov[0][2] }, { cov[1][0], cov[1][1], cov[1][2] }, { cov[2][0], cov[2][1], cov[2][2] });
 
-	if (cubicResult.towEqual)
+	if (cubicResult.twoEqual || (cubicResult.x2_real == cubicResult.x3_real))
 	{
 		glm::vec3 e = Utils::calcEigenvector(cubicResult.x1_real, mat);
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e), glm::vec3{ 1.f, 1.f, 0.f }));
 	}
 	else
 	{
@@ -362,43 +372,83 @@ std::pair<glm::vec3, glm::vec3> CollisionHandler::getOOBB(Vertex * vertices, uns
 		glm::vec3 e2 = Utils::calcEigenvector(cubicResult.x2_real, mat);
 		glm::vec3 e3 = Utils::calcEigenvector(cubicResult.x3_real, mat);
 
-		//this->lines.push_back(std::pair<glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1)));
-		//this->lines.push_back(std::pair<glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2)));
-		//this->lines.push_back(std::pair<glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3)));
+		
+		glm::vec3 e4 = e3;
+		float x = cubicResult.x1_real;
+		float y = cubicResult.x2_real;
+		if (x < cubicResult.x2_real)
+		{
+			e4 = e1;
+			e1 = e2;
+			y = x;
+			x = cubicResult.x2_real;
+		}
+
+		if (x < cubicResult.x3_real)
+		{
+			e4 = e1;
+			e1 = e3;
+			y = x;
+			x = cubicResult.x3_real;
+		}
+		
+		glm::vec3 v1 = glm::cross(e1, e4);
+		e4 = glm::cross(v1, e1);
+
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 0.f, 0.f }));
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e4), glm::vec3{ 0.f, 1.f, 0.f }));
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(v1), glm::vec3{ 0.f, 0.f, 1.f }));
+		
+		std::pair<glm::vec3, glm::vec3> aabb = getAABB(vertices, numVertices, glm::normalize(e1), glm::normalize(v1), glm::normalize(e4));
+
+		auto length2 = [](const glm::vec3& v)->float {return v.x*v.x + v.y*v.y + v.z*v.z; };
+
+		glm::quat rot;
+		glm::vec3 b1(1.f, 0.f, 0.f);
+		glm::vec3 a = glm::cross(b1, e1);
+		rot.x = a.x;
+		rot.y = a.y;
+		rot.z = a.z;
+		rot.w = glm::sqrt(length2(b1) * length2(e1)) + glm::dot(b1, e1);
+		return std::tuple<glm::vec3, glm::vec3, glm::quat>(aabb.first, aabb.second, rot);
+		
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2), glm::vec3{ 0.f, 1.f, 0.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3), glm::vec3{ 0.f, 0.f, 1.f }));
 	}
 
-	if(lines.empty())
-		this->lines.push_back(std::pair<glm::vec3, glm::vec3>({ 0.f, 0.f, 0.f }, {0.f, 6.f, 0.f}));
+	//if(lines.empty())
+	//	this->lines.push_back(std::pair<glm::vec3, glm::vec3>({ 0.f, 0.f, 0.f }, {0.f, 6.f, 0.f}));
 
 	//glm::mat3 mat3({ -2.f, -4.f, 2.f }, { -2.f, 1.f, 2.f }, { 4.f, 2.f, 5.f }); // eigenValues: 3, -5, 6
 	//glm::mat3 mat3({ 3.f, 2.f, 4.f }, { 2.f, 0.f, 2.f }, { 4.f, 2.f, 3.f }); // eigenValues: -1, -1, 8
 	
 	//glm::vec3 e = Utils::calcEigenvector(-1, mat3);
 
-	return std::pair<glm::vec3, glm::vec3>();
+	return std::tuple<glm::vec3, glm::vec3, glm::quat>();
 }
 
-void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)
+void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, glm::quat rot, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)
 {
 	data->color = color;
 	data->scale = scale;
 	data->pos = pos;
 	data->size = size;
 	data->category = cat;
+	data->rot = rot;
 
 	rp3d::BoxShape * boxShape = new rp3d::BoxShape(toReactVec(data->size));
 	data->shape = boxShape;
 }
 
-void CollisionHandler::addCollisionShapeToBody(rp3d::CollisionBody * body, CollisionShapeDrawingData * data, const rp3d::Quaternion& shapeRot)
+void CollisionHandler::addCollisionShapeToBody(rp3d::CollisionBody * body, CollisionShapeDrawingData * data)
 {
+	rp3d::Quaternion shapeRot;
+	shapeRot.setAllValues(data->rot.x, data->rot.y, data->rot.z, data->rot.w);
 	rp3d::ProxyShape* proxyShape = body->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
 	proxyShape->setUserData((void*)data);
 	proxyShape->setCollisionCategoryBits(data->category);
 	this->proxyShapes.push_back(proxyShape);
 }
-
-
 
 #ifdef ENABLE_COLLISION_BOXES
 
@@ -435,20 +485,27 @@ void CollisionHandler::updateDrawingData()
 
 
 		// Update lines
-		this->lines2.clear();
-		this->matricesLines.clear();
-		this->colorsLines.clear();
-		for (std::pair<glm::vec3, glm::vec3>& line : this->lines) {
-			glm::mat4 mat(1.0f);
-			this->lines2.push_back(line.first);
-			this->lines2.push_back(line.second);
-			this->matricesLines.push_back(mat);
-			this->colorsLines.push_back({1.f, 1.f, 1.f});
-		}
+		if (this->lines.empty() == false)
+		{
+			this->lines2.clear();
+			this->matricesLines.clear();
+			this->colorsLines.clear();
+			for (auto& lineArr : this->lines) {
+				glm::mat4 mat(1.0f);
+				for (std::tuple<glm::vec3, glm::vec3, glm::vec3>& line : lineArr.second)
+				{
+					this->lines2.push_back(std::get<0>(line));
+					this->lines2.push_back(std::get<1>(line));
+					this->matricesLines.push_back(mat);
+					this->colorsLines.push_back(std::get<2>(line));
+					this->colorsLines.push_back(std::get<2>(line));
+				}
+			}
 
-		this->cRenderer.updateLines(this->lines2);
-		this->cRenderer.updateColorsLine(colorsLines);
-		this->cRenderer.updateMatricesLine(matricesLines);
+			this->cRenderer.updateLines(this->lines2);
+			this->cRenderer.updateColorsLine(colorsLines);
+			this->cRenderer.updateMatricesLine(matricesLines);
+		}
 	}
 }
 

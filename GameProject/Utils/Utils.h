@@ -15,7 +15,7 @@ struct Utils
 		double x2_imag = 0.0f;
 		double x3_imag = 0.0f;
 
-		bool towEqual = false;
+		bool twoEqual = false;
 	};
 	static CubicResult solveCubic(float a, float b, float c);
 

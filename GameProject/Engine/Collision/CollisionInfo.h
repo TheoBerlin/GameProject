@@ -25,6 +25,7 @@ struct CollisionShapeDrawingData {
 	glm::vec3 scale;
 	glm::vec3 size;
 	glm::vec3 pos;
+	glm::quat rot;
 	unsigned short category;
 	rp3d::CollisionShape * shape;
 };
