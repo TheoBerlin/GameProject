@@ -39,7 +39,7 @@ GuidingPhase::~GuidingPhase()
 {
 	EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
-	EventBus::get().unsubscribe(this, &GuidingPhase::transitionToReplay);
+	EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
 }
 
 Entity* GuidingPhase::getPlayerArrow() const
