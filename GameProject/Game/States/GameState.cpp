@@ -83,7 +83,7 @@ void GameState::update(const float dt)
 
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
-		this->hasSubscribedPause = true;
+		this->hasSubscribedToPause = true;
 	}
 
 	// Update entities.
