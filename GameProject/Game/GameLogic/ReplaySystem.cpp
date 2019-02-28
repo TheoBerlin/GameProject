@@ -98,11 +98,9 @@ void ReplaySystem::rewindLevel(Level& level, PathTreader* replayArrow, const flo
     level.targetManager->resetTargets();
 
     // Reset replay arrow
-    replayArrow->stopTreading();
     replayArrow->startTreading();
 
     // Reset collision replays
-    this->stopReplaying();
     this->startReplaying();
 
     // Fast forward level

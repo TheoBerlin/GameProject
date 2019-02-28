@@ -30,7 +30,7 @@ public:
 	Set the background texture. This will not rebake the texture!
 	*/
 	void setBackgroundTexture(Texture* texture);
-	
+
 	/*
 	Get a pointer to the background texture.
 	*/
@@ -47,7 +47,7 @@ public:
 	glm::vec4 getColor() const;
 
 	/*
-	Set the poisition in pixels. This will not rebake the texture!
+	Set the position in pixels. This will not rebake the texture!
 	*/
 	void setPosition(glm::uvec2 pos);
 

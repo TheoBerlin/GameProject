@@ -31,7 +31,6 @@ public:
     // Reset target components such as the path treader
     void resetTargets();
 
-
 private:
     // Common setup for targets
     void setupTargetGeneric(Entity* host);

@@ -150,7 +150,7 @@ public:
 		true if removed else false.
 	*/
 	bool removePanel(Panel* panel);
-	
+
 	/*
 	Get a pointer to a panel from the gui.
 	Arguments:
