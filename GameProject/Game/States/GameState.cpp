@@ -74,7 +74,7 @@ void GameState::end()
 		entity->detachFromModel();
 
 	EventBus::get().unsubscribe(this, &GameState::pauseGame);
-	this->hasSubscribedPause = false;
+	this->hasSubscribedToPause = false;
 }
 
 void GameState::update(const float dt)
