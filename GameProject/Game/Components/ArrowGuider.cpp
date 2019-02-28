@@ -185,12 +185,18 @@ void ArrowGuider::stopGuiding(float flightTime)
     newKeyPoint.Position = host->getTransform()->getPosition();
     newKeyPoint.t = this->flightTime;
 
-    path.push_back(newKeyPoint);
+    path.back() = newKeyPoint;
 }
 
 void ArrowGuider::saveKeyPoint(float flightTime)
 {
-    path.push_back(KeyPoint(host->getTransform()->getPosition(), flightTime));
+    // Do not save the key point if one was just saved during the same frame update
+    if (posStoreTimer < FLT_EPSILON * 10.0f) {
+        return;
+    }
+
+    posStoreTimer = 0.0f;
+    path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)

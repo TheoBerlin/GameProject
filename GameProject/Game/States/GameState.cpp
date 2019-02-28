@@ -66,6 +66,8 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+	gameLogic.update(dt);
+
 	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
@@ -73,7 +75,6 @@ void GameState::update(const float dt)
 	for (unsigned int i = 0; i < entities.size(); i += 1) {
 		entities[i]->update(dt);
 	}
-
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
@@ -84,7 +85,6 @@ void GameState::update(const float dt)
 	renderer.updateShaders(dt);
 
 	this->replaySystem.update(dt);
-
 }
 
 void GameState::updateLogic(const float dt)

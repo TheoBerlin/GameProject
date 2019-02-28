@@ -71,7 +71,7 @@ private:
 
     // Frequency at which the position is stored
     float posStoreFrequency;
-    const float minStoreFrequency = 0.5f, maxStoreFrequency = 1.0f;
+    const float minStoreFrequency = 0.7f, maxStoreFrequency = 1.2f;
     const float maxStoreFrequencyDelta = 0.15f;
 
     // Time since position was stored
