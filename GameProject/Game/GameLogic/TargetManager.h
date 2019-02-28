@@ -29,6 +29,10 @@ public:
 	//Remove an entity as target
 	void removeTarget(std::string name);
 
+	//Get the arrays
+	std::vector<MovingTarget> getMovingTargets() const;
+	std::vector<StaticTarget> getStaticTarget() const;
+
     // Reset target components such as the path treader
     void resetTargets();
 

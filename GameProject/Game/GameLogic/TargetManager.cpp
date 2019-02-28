@@ -48,6 +48,22 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
     movingTargets.push_back(movingTarget);
 }
 
+void TargetManager::removeTarget(std::string name)
+{
+	for (int i = 0; i < movingTargets.size(); i++) {
+	}
+}
+
+std::vector<MovingTarget> TargetManager::getMovingTargets() const
+{
+	return movingTargets;
+}
+
+std::vector<StaticTarget> TargetManager::getStaticTarget() const
+{
+	return staticTargets;
+}
+
 void TargetManager::resetTargets()
 {
     resetMovingTargets();

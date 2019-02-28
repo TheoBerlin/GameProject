@@ -167,8 +167,12 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				currentItem = entityManager.getEntity(i)->getName();
 				currentModel = entityManager.getEntity(i)->getModel()->getName();
 				currentEntity = i;
-				if (entityManager.getTracedEntity(entityManager.getEntity(i)->getName()) != nullptr) {
-					currentIsTarget = true;
+				currentIsTarget = false;
+				for (int j = 0; j < targetManager->getMovingTargets().size(); j++) {
+					if (entityManager.getEntity(i) == targetManager->getMovingTargets()[j].pathTreader->getHost()) {
+						currentIsTarget = true;
+						break;
+					}
 				}
 			}
 			if (is_selected)
@@ -222,9 +226,6 @@ void EditorState::entityWindow(EntityManager& entityManager)
 	ImGui::End();
 #endif
 }
-#include <string>
-#include <string.h>
-#include <iostream>
 
 void EditorState::levelWindow()
 {
