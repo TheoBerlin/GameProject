@@ -172,18 +172,25 @@ void ArrowGuider::startGuiding()
     path.push_back(startingKeyPoint);    
 }
 
-void ArrowGuider::stopGuiding()
+void ArrowGuider::stopGuiding(float flightTime)
 {
     isGuiding = false;
 
     stopAiming();
 
+    this->flightTime = flightTime;
+
     // Store end point
     KeyPoint newKeyPoint;
     newKeyPoint.Position = host->getTransform()->getPosition();
-    newKeyPoint.t = flightTime;
+    newKeyPoint.t = this->flightTime;
 
     path.push_back(newKeyPoint);
+}
+
+void ArrowGuider::saveKeyPoint(float flightTime)
+{
+    path.push_back(KeyPoint(host->getTransform()->getPosition(), flightTime));
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)

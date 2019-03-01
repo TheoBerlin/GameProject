@@ -2,6 +2,7 @@
 
 ParticleEmitter::ParticleEmitter()
 {
+	this->emitterVectorIndex = 0;
 	this->position = glm::vec3(0.0f);
 	this->prevPosition = glm::vec3(0.0f);
 	this->startVelocity = glm::vec3(0.0f);
@@ -12,6 +13,7 @@ ParticleEmitter::ParticleEmitter()
 	this->endColour = glm::vec4(1.0f);
 	this->startScale = 1.0f;
 	this->lifeTime = 10.0f;
+	this->allParticlesDead = true;
 
 	particles.reserve(maxParticle);
 
@@ -124,10 +126,12 @@ void ParticleEmitter::update(float dt)
 		}
 	}
 	//Update all particles
+	this->allParticlesDead = true;
 	for (int i = 0; i < particles.size(); i++) {
 		//Particle is dead if life is 0 or less
 		if (particlesInfo[i].life > 0) {
 			particleUpdate(i, dt, acceleration, scaleChange);
+			this->allParticlesDead = false;
 		}
 		else {
 			particles[i].scale = 0;
@@ -273,4 +277,19 @@ void ParticleEmitter::setEndColour(const glm::vec4 endColour)
 glm::vec4 ParticleEmitter::getEndColour() const
 {
 	return endColour;
+}
+
+bool ParticleEmitter::isDead()
+{
+	return this->allParticlesDead;
+}
+
+size_t ParticleEmitter::getEmitterVectorIndex() const
+{
+	return this->emitterVectorIndex;
+}
+
+void ParticleEmitter::setEmitterVectorIndex(const size_t & index)
+{
+	this->emitterVectorIndex = index;
 }

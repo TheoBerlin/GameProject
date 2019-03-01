@@ -43,7 +43,7 @@ public:
 private:
 	template<class T, class EventType>
 	static unsigned getID(T* instance);
-	
+
 	std::map<std::type_index, HandlerList*> subscribers;
 };
 

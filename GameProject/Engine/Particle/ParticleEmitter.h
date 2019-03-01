@@ -40,6 +40,10 @@ private:
 	float emissionTime;
 	float duration;
 	bool loop;
+	bool allParticlesDead;
+
+	// Position in particle managers vector
+	size_t emitterVectorIndex;
 
 	//Particles
 	std::vector<Particle> particles;
@@ -56,6 +60,7 @@ public:
 	void playEmitter(float duration);
 	//Stop emitter
 	void stopEmitter();
+
 	//Clear all particles
 	void clearEmitter();
 
@@ -105,5 +110,16 @@ public:
 	void setEndColour(const glm::vec4 endColour);
 	//Get particles end colour
 	glm::vec4 getEndColour() const;
+
+	/*
+		Is true when no particles in the emitter lives
+	*/
+	bool isDead();
+
+	/*
+		Used for removing emitters in particle manager
+	*/
+	size_t getEmitterVectorIndex() const;
+	void setEmitterVectorIndex(const size_t& index);
 
 };

@@ -33,6 +33,8 @@ void ParticleManager::init()
 	layout2.push(4, 1); // Pos / scale
 	layout2.push(4, 1); // Colour
 	this->va.addBuffer(this->vbParticle, layout2);
+
+	this->hasParticlesVisble = false;
 }
 
 void ParticleManager::update(float dt)
@@ -42,9 +44,54 @@ void ParticleManager::update(float dt)
 	}
 }
 
+ParticleManager::~ParticleManager()
+{
+	for (auto* emitter : this->emitters)
+		delete emitter;
+}
+
 void ParticleManager::addEmitter(ParticleEmitter* emitter)
 {
-	emitters.push_back(emitter);
+	emitter->setEmitterVectorIndex(this->emitters.size());
+	printf("Added emitter[%d]	Total[%d]\n", emitter->getEmitterVectorIndex(), this->emitters.size() + 1);
+	this->emitters.push_back(emitter);
+
+	// Update vbo to new size
+	this->va.updateBuffer(1, NULL, this->getMaxParticles() * sizeof(Particle));
+}
+
+void ParticleManager::removeEmitter(ParticleEmitter* emitter)
+{
+	size_t lastEmitterIndex = this->emitters.size() - 1;
+	size_t index = emitter->getEmitterVectorIndex();
+
+	printf("Remove emitter[%d]\n", index);
+
+	if (index >= 0 && index <= lastEmitterIndex) {
+		ParticleEmitter* pe = this->emitters[index];
+		pe->clearEmitter();
+		delete pe;
+		
+		//If emitter is not in last place
+		if (index < lastEmitterIndex) {
+			//get last emitter
+			pe = this->emitters[lastEmitterIndex];
+
+			//Swap last emitter with the emitter which will be removed
+			this->emitters.pop_back();
+			this->emitters[index] = pe;
+
+			//Loop through emitters from removed emitter and update vector index
+			while (index < this->emitters.size()) {
+				printf("----->  Changed emitter[%d]->[%d]\n", this->emitters[index]->getEmitterVectorIndex(), index);
+				this->emitters[index]->setEmitterVectorIndex(index);
+				index++;
+			}
+		}
+		else 
+			this->emitters.pop_back();
+	}
+
 }
 
 int ParticleManager::getMaxParticles() const
@@ -78,10 +125,20 @@ VertexArray * ParticleManager::getVertexArray()
 void ParticleManager::updateBuffer()
 {
 	int offset = 0;
+
+	this->hasParticlesVisble = false;
 	for (int i = 0; i < emitters.size(); i++) {
-		if (emitters[i]->getParticleArray().size() > 0) {
-			glBufferSubData(GL_ARRAY_BUFFER, offset, emitters[i]->getParticleArray().size() * sizeof(Particle), &emitters[i]->getParticleArray().front());
-			offset += emitters[i]->getParticleArray().size() * sizeof(Particle);
+		size_t size = emitters[i]->getParticleArray().size();
+		if (size > 0 && !emitters[i]->isDead()) {
+			this->va.updateBuffer(1, &emitters[i]->getParticleArray().front(), size * sizeof(Particle), offset);
+			offset += size * sizeof(Particle);
+			this->hasParticlesVisble = true;
 		}
 	}
+
+}
+
+bool ParticleManager::hasVisibleParticles() const
+{
+	return this->hasParticlesVisble;
 }

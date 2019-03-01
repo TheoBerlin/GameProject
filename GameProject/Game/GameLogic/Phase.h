@@ -12,6 +12,7 @@ class Phase
 public:
     Phase(const Level& level, Entity* transitionEntity);
     Phase(Phase* other);
+	virtual ~Phase();
 
 protected:
     void changePhase(Phase* newPhase);

@@ -33,7 +33,6 @@ int main() {
 	Game game;
 	game.start();
 
-	ModelLoader::unloadAllModels();
 	TextureManager::unloadAllTextures();
 
 	return 0;

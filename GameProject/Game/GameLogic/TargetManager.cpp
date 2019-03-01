@@ -6,6 +6,8 @@
 #include <Game/Components/RollNullifier.h>
 #include <Engine/Components/MovingTargetCollision.h>
 #include <Engine/Components/StaticTargetCollision.h>
+#include <reactphysics3d/reactphysics3d.h>
+#include <Engine/Collision/CollisionInfo.h>
 
 TargetManager::TargetManager()
 {
@@ -59,7 +61,10 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
 
 void TargetManager::resetTargets()
 {
+	// Moving targets
     resetMovingTargets();
+
+	// Static targets
     resetStaticTargets();
 }
 
@@ -70,22 +75,81 @@ void TargetManager::setupTargetGeneric(Entity* host)
 
 void TargetManager::resetStaticTargets()
 {
+	// Reset collision
+	resetStaticCollision();
+
 	unsigned int staticTargetCount = staticTargets.size();
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
         staticTargets.at(i).hoverAnimation->reset();
+		
 		//Reset color on entity
 		Entity* host = staticTargets.at(i).hoverAnimation->getHost();
-		host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
-			host->getRenderingGroupIndex() * sizeof(glm::vec3), 0, 2);
+		int attachmentIndex = host->getRenderingGroupIndex();
+		if(attachmentIndex != -1)
+			host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
+				attachmentIndex *sizeof(glm::vec3), 0, 2);
+	
+		
     }
 }
 
 void TargetManager::resetMovingTargets()
 {
+	// Reset collision
+	resetMovingCollision();
+
 	unsigned int movingTargetCount = movingTargets.size();
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
         movingTargets.at(i).pathTreader->startTreading();
     }
+}
+
+void TargetManager::resetStaticCollision()
+{
+	rp3d::CollisionBody* body;
+	Entity* host;
+	for (auto target : this->staticTargets)
+	{
+		host = target.hoverAnimation->getHost();
+		body = host->getCollisionBody();
+
+		rp3d::ProxyShape* current = body->getProxyShapesList();
+
+		StaticTargetCollision* comp = dynamic_cast<StaticTargetCollision*>(host->getComponent("StaticTargetCollision"));
+		comp->enableCollision();
+
+		// Look for the proxy shape that contains the collision shape in parameter
+		while (current != nullptr) {
+			current->setCollisionCategoryBits(((CollisionShapeDrawingData*)current->getUserData())->category);
+
+			// Get the next element in the list
+			current = current->getNext();
+		}
+	}
+}
+
+void TargetManager::resetMovingCollision()
+{
+	rp3d::CollisionBody* body;
+	Entity* host;
+	for (auto target : this->movingTargets)
+	{
+		host = target.pathTreader->getHost();
+		body = host->getCollisionBody();
+
+		rp3d::ProxyShape* current = body->getProxyShapesList();
+
+		MovingTargetCollision* comp = dynamic_cast<MovingTargetCollision*>(host->getComponent("MovingTargetCollision"));
+		comp->enableCollision();
+
+		// Look for the proxy shape that contains the collision shape in parameter
+		while (current != nullptr) {
+			current->setCollisionCategoryBits(((CollisionShapeDrawingData*)current->getUserData())->category);
+
+			// Get the next element in the list
+			current = current->getNext();
+		}
+	}
 }

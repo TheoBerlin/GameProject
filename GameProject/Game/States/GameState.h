@@ -11,7 +11,7 @@
 class GameState : public State
 {
 public:
-	GameState();
+	GameState(const std::string& levelJSON);
 	virtual ~GameState();
 
 	void start() override;
@@ -20,6 +20,10 @@ public:
 	void updateLogic(const float dt) override;
 	void render() override;
 private:
+	void pauseGame(KeyEvent * ev);
+
+	bool hasSubscribedToPause;
+
 	LevelParser levelParser;
 	ParticleEmitter emitter;
 	TargetManager* targetManager;

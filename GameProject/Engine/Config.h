@@ -11,6 +11,7 @@
 
 //Debug defines
 #define ENABLE_COLLISION_BOXES
+#define ENABLE_PATH_VISUALIZERS false
 
 // Common defines
 #define EPSILON 0.0000001

@@ -2,8 +2,8 @@
 
 #include "Engine/AssetManagement/TextureManager.h"
 
-DroneShader::DroneShader(const std::string & vertex, const std::string & fragment, Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix)
-	: EntityShader(vertex, fragment, shadowBuffer, camera, lightSpaceMatrix)
+DroneShader::DroneShader(Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix)
+	: EntityShader("./Engine/Rendering/Shaders/droneShaderInstanced.vert", "./Engine/Rendering/Shaders/droneShaderInstanced.frag", shadowBuffer, camera, lightSpaceMatrix)
 {
 	this->noiseTexture = TextureManager::loadTexture("./Game/assets/textures/noise.jpg");
 

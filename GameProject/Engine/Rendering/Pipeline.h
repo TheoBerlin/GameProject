@@ -13,6 +13,7 @@
 
 
 class Entity;
+class PostProcessShader;
 
 struct DirectionalLight {
 	glm::vec4 direction;
@@ -22,6 +23,11 @@ struct DirectionalLight {
 enum SHADERS {
 	DEFAULT = 0,
 	DRONE_SHADER = 1, // Requires a third vbo with colors bound to location 7.
+};
+
+enum SHADERS_POST_PROCESS {
+	NO_FILTER = 0,
+	BLUR_FILTER = 1, 
 };
 
 class Pipeline
@@ -57,7 +63,7 @@ public:
 	/*
 		Use texture to draw to quad which cover the whole screen
 	*/
-	void drawTextureToQuad(Texture* tex);
+	void drawTextureToQuad(Texture* tex, SHADERS_POST_PROCESS shader = SHADERS_POST_PROCESS::NO_FILTER, bool drawToFBO = false);
 
 	/*
 		Draws models using instancing - seperate drawing method from functions above
@@ -110,13 +116,14 @@ private:
 	Shader* ZprePassShader;				// Old rendering
 	Shader* testShader;					// Old rendering
 	Shader* ZprePassShaderInstanced;
-	Shader* entityShaderInstanced;
 	Shader* quadShader;
 	Shader* particleShader;
 	Shader* combineShader;
 
 	std::vector<EntityShader*> entityShaders;
+	std::vector<PostProcessShader*> postProcessShaders;
 
+	void createQuad();
 	Model* quad;
 
 	DirectionalLight mainLight;

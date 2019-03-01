@@ -44,18 +44,16 @@ void Renderer::drawAll()
 	*/
 	this->pipeline.prePassDepth(this->renderingList);
 
-	///*
-	//	Drawing stage with pre existing depth buffer to texture
-	//*/
+	/*
+		Drawing stage with pre existing depth buffer to texture
+	*/
 	postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
 
 	tex = this->pipeline.drawParticle();
-	///*
-	//	Draw texture of scene to quad for postprocessing
-	//*/
+	/*
+		Draw texture of scene to quad for postprocessing
+	*/
 	this->pipeline.drawTextureToQuad(postProcessTexture);
-
-
 
 	this->renderingList.clear();
 }
@@ -87,6 +85,11 @@ void Renderer::initInstancing()
 	model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
 }
 
+void Renderer::clearRenderingModels()
+{
+	this->renderingModels.clear();
+}
+
 void Renderer::updateInstancingData(Model * model)
 {
 	model->updateInstancingData();
@@ -109,7 +112,7 @@ void Renderer::drawAllInstanced()
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	Texture * postProcessTexture = this->pipeline.drawModelToTexture(this->renderingModels);
+	Texture* postProcess = this->pipeline.drawModelToTexture(this->renderingModels);
 
 	pipeline.drawParticle();
 	
@@ -127,6 +130,29 @@ void Renderer::drawAllInstanced()
 void Renderer::updateShaders(const float & dt)
 {
 	this->pipeline.updateShaders(dt);
+}
+
+void Renderer::drawTextureToScreen(Texture * texture, SHADERS_POST_PROCESS shader)
+{
+	/*
+		Draw texture of scene to quad for postprocessing
+	*/
+	this->pipeline.drawTextureToQuad(texture, shader);
+}
+
+Texture* Renderer::drawTextureToFbo(Texture * texture, SHADERS_POST_PROCESS shader)
+{
+	/*
+		Draw texture of color attachment and return that color attachment
+	*/
+	this->pipeline.drawTextureToQuad(texture, shader, true);
+
+	return this->pipeline.getFbo()->getColorTexture(0);
+}
+
+Pipeline * Renderer::getPipeline()
+{
+	return &this->pipeline;
 }
 
 

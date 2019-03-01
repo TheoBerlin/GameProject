@@ -18,6 +18,8 @@ private:
 	ParticleManager() = default;
 	ParticleManager(const ParticleManager& other) = delete;
 
+	bool hasParticlesVisble;
+
 	static const GLfloat g_vertex_buffer_data[16];
 	VertexArray va;
 	VertexBuffer* vbBillboard;
@@ -30,14 +32,23 @@ public:
 	//Update all emitters
 	void update(float dt);
 
-	virtual ~ParticleManager() {}
+	virtual ~ParticleManager();
+
 	/*
-		Add emitter
+		Add emitter, returns index of emitter vector
 	*/
 	void addEmitter(ParticleEmitter* emitter);
+
+	/*
+		Remove Emitter with index in emitter vector
+	*/
+	void removeEmitter(ParticleEmitter* emitter);
+
 	int getMaxParticles() const;
 	int getParticleCount() const;
 	VertexBuffer* getVertexBuffer() const;
 	VertexArray* getVertexArray();
 	void updateBuffer();
+
+	bool hasVisibleParticles() const;
 };

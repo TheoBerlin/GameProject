@@ -21,6 +21,10 @@ Phase::Phase(Phase* other)
 {
 }
 
+Phase::~Phase()
+{
+}
+
 void Phase::changePhase(Phase* newPhase)
 {
     EventBus::get().publish(&PhaseChangeEvent(newPhase));
@@ -49,6 +53,8 @@ void Phase::setupTransition(const CameraSetting& currentCamSettings, const Camer
     transitionEntity->getTransform()->setPosition(currentPos);
     transitionEntity->getTransform()->setForward(currentCamSettings.direction);
 
+    transitionCam->setPosition(currentPos);
+    transitionCam->setForward(currentCamSettings.direction);
     transitionCam->setFOV(currentCamSettings.FOV);
     transitionCam->setOffset(glm::vec3(0.0f, 0.0f, 0.0f));
 
