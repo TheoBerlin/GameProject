@@ -39,11 +39,16 @@ float LightManager::getShadowWidthScaled()
 	return this->shadowWidth * shadowReScale;
 }
 
-PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity)
+PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 {
-	PointLight *  pointLight = new PointLight(position, intensity);
+	PointLight *  pointLight = new PointLight(position, intensity, distance);
 	pointLights.push_back(pointLight);
 	return pointLight;
+}
+
+std::vector<PointLight*>* LightManager::getPointLights()
+{
+	return &this->pointLights;
 }
 
 int LightManager::getNrOfPointLights()

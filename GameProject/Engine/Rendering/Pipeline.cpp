@@ -48,16 +48,15 @@ Pipeline::Pipeline()
 
 	this->addUniformBuffer(0, this->entityShaderInstanced->getID(), "Material");
 	this->addUniformBuffer(1, this->entityShaderInstanced->getID(), "DirectionalLight");
+	this->addUniformBuffer(2, this->entityShaderInstanced->getID(), "PointLight");
 
 	/*
 		Set up Directional Light
 	*/
-	/*this->mainLight.direction = glm::normalize(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f));
-	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);*/
-
 	lm.createDirectionalLight(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	this->uniformBuffers[1]->setSubData(lm.getDirectionalLight(), 32, 0); //no idea how to solve the size issue
+	lm.createPointLight(glm::vec4(0.0f, 7.0f, 0.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 7);
+	this->uniformBuffers[1]->setSubData((void*)lm.getDirectionalLight(), 32, 0); //no idea how to solve the size issue
+	this->uniformBuffers[2]->setSubData((void*)lm.getPointLights(), 48, 0);
 }
 
 

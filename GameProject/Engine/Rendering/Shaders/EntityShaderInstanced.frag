@@ -1,5 +1,7 @@
 #version 420
 
+#define NR_OF_LIGHTS = 1;
+
 in vec3 fragNormal;
 in vec2 fragUv;
 in vec3 fragPos;
@@ -16,6 +18,26 @@ layout(std140) uniform DirectionalLight
     vec4 direction;
     vec4 color_intensity;
 } dirLight;
+
+layout(std140) uniform PointLight
+{
+	vec4 position;
+	vec4 intensity;
+
+	float constant;
+	float linear;
+	float quadratic;
+} pLight;
+
+struct PoiLight
+{
+	vec4 position;
+	vec4 intensity;
+
+	float constant;
+	float linear;
+	float quadratic;
+} poLight;
 
 out vec4 finalColor;
 
@@ -43,9 +65,41 @@ float ShadowCalculation(vec4 fragLightSpace)
     return shadow;
 }  
 
+vec3 CalcPointLight(PoiLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+{
+    vec3 lightDir = normalize(light.position.xyz - fragPos);
+    // diffuse shading
+    float diff = max(dot(normal, lightDir), 0.0);
+    // specular shading
+    vec3 reflectDir = reflect(-lightDir, normal);
+    float spec = pow(max(dot(viewDir, reflectDir), 0.0), mat.ks_f.w);
+    // attenuation
+    float distance    = length(light.position.xyz - fragPos);
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
+    // combine results
+    vec3 ambient  = vec3(0.2f) * mat.kd.xyz;
+    vec3 diffuse  = vec3(1.0f, 0.0f, 0.0f) * diff * mat.kd.xyz;
+    vec3 specular = vec3(1.0f) * spec * mat.ks_f.xyz;
+    ambient  *= attenuation;
+    diffuse  *= attenuation;
+    specular *= attenuation;
+    return (ambient + diffuse + specular);
+}
+
 void main()
 {
-    vec3 texColor = texture2D(tex, fragUv).rgb;
+    poLight.position = pLight.position;
+    poLight.intensity = pLight.intensity;
+    poLight.constant = pLight.constant;
+    poLight.linear = pLight.linear;
+    poLight.quadratic = pLight.quadratic;
+
+    vec3 viewDir = normalize(camPos - fragPos);
+
+    vec3 result = 10.0f * CalcPointLight(poLight, fragNormal, fragPos, viewDir);
+
+
+    vec3 texColor = texture2D(tex, fragUv).rgb + result;
      /*
         Ambient
     */
@@ -75,5 +129,5 @@ void main()
 	float shadow = ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
 
-    finalColor = vec4(lighting, 1.0);
+    finalColor = vec4((lighting), 1.0);
 }
