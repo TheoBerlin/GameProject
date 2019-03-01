@@ -67,6 +67,39 @@ glm::vec3 Transform::getUp() const
 	return this->u;
 }
 
+glm::vec3 Transform::getYawPitchRoll() const
+{
+	glm::vec3 yawPitchRoll;
+
+	// Calculate yaw
+	glm::vec3 temp = glm::normalize(glm::vec3(this->f.x, defaultForward.y, this->f.z));
+
+	yawPitchRoll.x = std::acosf(glm::dot(defaultForward, temp));
+
+	// Determine yaw sign
+	temp = glm::cross(defaultForward, this->f);
+
+	yawPitchRoll.x = (temp.y > 0.0f) ? yawPitchRoll.x : -yawPitchRoll.x;
+
+	// Calculate pitch
+	temp = glm::normalize(glm::vec3(defaultForward.x, this->f.y, defaultForward.z));
+
+	yawPitchRoll.y = std::acosf(glm::dot(defaultForward, temp));
+
+	// Determine pitch sign
+	yawPitchRoll.y = (this->f.y > defaultForward.y) ? yawPitchRoll.y : -yawPitchRoll.y;
+
+	// Calculate roll
+	temp = glm::normalize(glm::vec3(this->r.x, 0.0f, this->r.z));
+
+	yawPitchRoll.z = std::acosf(glm::dot(this->r, temp));
+
+	// Determine roll sign
+	yawPitchRoll.z = (this->r.y < 0.0f) ? yawPitchRoll.z : -yawPitchRoll.z;
+
+	return yawPitchRoll;
+}
+
 glm::vec3 Transform::getDefaultForward() const
 {
 	return this->defaultForward;

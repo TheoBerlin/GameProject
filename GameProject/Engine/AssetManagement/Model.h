@@ -39,12 +39,22 @@ class Model
 		void initInstancing();
 
 		/*
-			Updates specific entities transform in vertexbuffer on model
+			GENERAL USAGE: Can be used to initilize a VBO on a specfic mesh
+		*/
+		void initInstancing(unsigned meshIndex, const void * data, size_t dataSize, const AttributeLayout & attributeLayout);
+
+		/*
+			Updates all meshes second vbo with entities transform data
 		*/
 		void updateInstancingSpecificData(unsigned renderingGroupIndex);
 
 		/*
-			Updates vertex buffer for models meshes rendering groups transforms
+			GENERAL USAGE: This function can be used to specify the data, mesh and vbo which you want to update.
+		*/
+		void updateInstancingSpecificData(const void * data, size_t dataSize, unsigned offset, unsigned meshIndex, unsigned vboIndex);
+
+		/*
+			Updates vertex buffer for models meshes with rendering groups transforms
 		*/
 		void updateInstancingData();
 

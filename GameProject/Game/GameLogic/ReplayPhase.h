@@ -13,6 +13,7 @@ class ReplayPhase : public Phase
 public:
     ReplayPhase(GuidingPhase* guidingPhase);
     ReplayPhase(AimPhase* aimPhase);
+	~ReplayPhase();
 
     Entity* getFreeCam() const;
 

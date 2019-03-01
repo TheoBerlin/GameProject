@@ -1,8 +1,10 @@
 #include "CameraTransition.h"
 
+#include <Engine/Components/Camera.h>
 #include <Engine/Entity/Entity.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Events/Events.h>
+#include <Utils/Logger.h>
 #include <glm/gtx/quaternion.hpp>
 
 CameraTransition::CameraTransition(Entity* host)
@@ -11,17 +13,17 @@ CameraTransition::CameraTransition(Entity* host)
 {
 }
 
-CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength)
+CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
     :Component(host, "CameraTransition")
 {
-    setDestination(newPos, newForward, transitionLength);
+    setDestination(newPos, newForward, newFOV, transitionLength);
 }
 
 CameraTransition::~CameraTransition()
 {
 }
 
-void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float transitionLength)
+void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
 {
     this->isTransitioning = true;
     this->transitionTime = 0.0f;
@@ -37,6 +39,17 @@ void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& 
     this->beginQuat = transform->getRotationQuat();
 
 	this->endQuat = glm::rotation(transform->getDefaultForward(), newForward);
+
+    // Attempt to get entity camera to read and write FOV
+    entityCam = dynamic_cast<Camera*>(host->getComponent("Camera"));
+
+    if (!entityCam) {
+        LOG_WARNING("Failed to find camera component, will not edit FOV");
+        return;
+    }
+
+    beginFOV = entityCam->getFOV();
+    endFOV = newFOV;
 }
 
 void CameraTransition::update(const float& dt)
@@ -70,4 +83,13 @@ void CameraTransition::update(const float& dt)
 
     transform->setForward(currentRotationQuat * host->getTransform()->getDefaultForward());
 	transform->setPosition(currentPosition);
+
+    // Lerp FOV if the entity has a camera
+    if (!entityCam) {
+        return;
+    }
+
+    float currentFOV = glm::mix(beginFOV, endFOV, T);
+
+    entityCam->setFOV(currentFOV);
 }

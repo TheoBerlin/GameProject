@@ -7,8 +7,8 @@
 OversightController::OversightController(Entity* host)
     :Component(host, "OverviewCamera")
 {
-    prevMousePosX = 0.0f;
-    mouseMoveX = 0.0f;
+    prevMousePosX = 0;
+    mouseMoveX = 0;
 
     mouseSensitivity = Settings::get().getMouseSensitivity();
 
@@ -16,28 +16,13 @@ OversightController::OversightController(Entity* host)
 
     windowHeight = Display::get().getHeight();
 
-    // Set the forward vector to be horizontal, then pitch it
-    Transform* transform = host->getTransform();
-
-    // Set the desired pitch
-    glm::vec3 forward = transform->getForward();
-    glm::vec3 horizontalForward = glm::normalize(glm::vec3(forward.x, 0.0f, forward.z));
-
-    float currentPitch = std::acosf(glm::dot(horizontalForward, forward));
-
-    currentPitch = (forward.y > 0.0f) ? currentPitch : -currentPitch;
-
-    float deltaPitch = pitch - currentPitch;
-
-    transform->rotate(0.0f, deltaPitch);
-
     // Lock mouse and get mouse position
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     double cursorPos;
     glfwGetCursorPos(Display::get().getWindowPtr(), &cursorPos, nullptr);
 
-    this->prevMousePosX = (float)cursorPos;
+    this->prevMousePosX = (int)cursorPos;
 
     EventBus::get().subscribe(this, &OversightController::handleMouseMove);
     EventBus::get().subscribe(this, &OversightController::handleKeyInput);
@@ -101,9 +86,9 @@ void OversightController::update(const float& dt)
 
 void OversightController::handleMouseMove(MouseMoveEvent* event)
 {
-    mouseMoveX += (float)event->posX - prevMousePosX;
+    mouseMoveX += event->posX - prevMousePosX;
 
-    prevMousePosX = (float)event->posX;
+    prevMousePosX = event->posX;
 
     // Divide by window height to separate turn speed from screen resolution
     rotateFactor += mouseSensitivity * mouseMoveX / windowHeight;
@@ -144,5 +129,5 @@ void OversightController::applyRotation(const float& dt)
 
     transform->rotate(rotationAngle, 0.0f);
 
-    mouseMoveX = 0.0f;
+    mouseMoveX = 0;
 }

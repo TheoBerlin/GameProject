@@ -6,6 +6,7 @@
 class Entity;
 class PathTreader;
 class RollNullifier;
+class Hover;
 struct KeyPoint;
 
 struct MovingTarget {
@@ -14,6 +15,7 @@ struct MovingTarget {
 };
 
 struct StaticTarget {
+    Hover* hoverAnimation;
 };
 
 class TargetManager
@@ -42,6 +44,9 @@ private:
 
     void resetStaticTargets();
     void resetMovingTargets();
+
+	void resetStaticCollision();
+	void resetMovingCollision();
 
     std::vector<MovingTarget> movingTargets;
     std::vector<StaticTarget> staticTargets;

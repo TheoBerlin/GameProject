@@ -2,6 +2,7 @@
 
 #include <Engine/AssetManagement/ModelLoader.h>
 #include <Engine/Components/FreeMove.h>
+#include <Engine/Config.h>
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
@@ -30,8 +31,10 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     arrow->startTreading();
 
     // Add path visualizer for debugging
-    pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
-    pathVisualizer->addPath(oldArrowGuider->getPath());
+    if (ENABLE_PATH_VISUALIZERS) {
+        pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
+        pathVisualizer->addPath(oldArrowGuider->getPath());
+    }
 
     // Remove old arrow entity
     Entity* oldArrow = guidingPhase->getPlayerArrow();
@@ -47,6 +50,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     camTransform->resetRoll();
 
 	Camera* camera = new Camera(freeCam, "Camera");
+    camera->setFOV(level.player.replayCamera.FOV);
 	camera->init();
 
 	freeMove = new FreeMove(freeCam);
@@ -54,9 +58,18 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	// Reset targets
 	level.targetManager->resetTargets();
 
+    // Begin replaying playthrough
+    level.replaySystem->startReplaying();
+
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
+}
+
+ReplayPhase::~ReplayPhase()
+{
+	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
 }
 
 Entity* ReplayPhase::getFreeCam() const
@@ -83,23 +96,24 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     if (event->key == GLFW_KEY_2) {
         EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 
-        // Begin transition to aim phase
         freeCam->removeComponent(freeMove->getName());
 
+        // Stop replaying playthrough
+        level.replaySystem->stopReplaying();
+
         // Begin camera transition to the arrow
-        glm::vec3 newPos = level.player.arrowCamera.position;
-        glm::vec3 newForward = level.player.arrowCamera.direction;
-        float transitionLength = 2.0f;
+        CameraSetting currentCamSettings;
 
-        glm::vec3 currentPosition = freeCam->getTransform()->getPosition();
-        glm::vec3 currentForward = freeCam->getTransform()->getForward();
+        Transform* camTransform = freeCam->getTransform();
 
-        transitionEntity->getTransform()->setPosition(currentPosition);
-        transitionEntity->getTransform()->setForward(currentForward);
+        currentCamSettings.position = camTransform->getPosition();
+        currentCamSettings.direction = camTransform->getForward();
+        currentCamSettings.offset = level.player.replayCamera.offset;
+        currentCamSettings.FOV = level.player.replayCamera.FOV;
 
-        transitionComponent->setDestination(newPos, newForward, transitionLength);
+        CameraSetting newCamSettings = level.player.arrowCamera;
 
-        Display::get().getRenderer().setActiveCamera(transitionCam);
+        this->setupTransition(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &ReplayPhase::transitionToAim);
     }

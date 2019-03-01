@@ -34,10 +34,6 @@ FreeMove::~FreeMove()
 	EventBus::get().unsubscribe(this, &FreeMove::clickMouse);
 }
 
-void FreeMove::init()
-{
-}
-
 void FreeMove::update(const float & dt)
 {
 	Transform * mat = host->getTransform();

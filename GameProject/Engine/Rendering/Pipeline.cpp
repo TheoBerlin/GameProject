@@ -4,22 +4,33 @@
 #include "Engine/Entity/Entity.h"
 #include "Engine/Events/EventBus.h"
 #include "Utils/Logger.h"
-
+#include "Display.h"
 #include "../Config.h"
 #include <Engine/Imgui/imgui.h>
+
+#include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
 
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
-
-	this->quad = ModelLoader::loadModel("Game/assets/postProcessQuad.fbx");
+	
+	//Create quad for drwaing textures to.
+	this->createQuad();
 
 	/*
 		Loading in shaders, Quad and Z pre pass are necessary for drawing texture to window and depth pre pass
 		Test shader will be swapped out with a option to choose between multiple shaders for rendering Entities
 	*/
-	this->entityShaderInstanced = new Shader("./Engine/Rendering/Shaders/EntityShaderInstanced.vert", "./Engine/Rendering/Shaders/EntityShaderInstanced.frag");
-	this->quadShader = new Shader("./Engine/Rendering/Shaders/PostProcessVert.vert", "./Engine/Rendering/Shaders/PostProcessFrag.frag");
+	this->entityShaders.push_back(new EntityShader("./Engine/Rendering/Shaders/EntityShaderInstanced.vert", "./Engine/Rendering/Shaders/EntityShaderInstanced.frag",
+											&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+
+	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+
+	this->postProcessShaders.push_back(new QuadShader());
+	this->postProcessShaders.push_back(new BlurShader());
+
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
 	this->ZprePassShaderInstanced = new Shader("./Engine/Rendering/Shaders/ZPrepassInstanced.vert", "./Engine/Rendering/Shaders/ZPrepassInstanced.frag");
@@ -31,8 +42,8 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
 	float shadowResScale = 4.0f;
-	shadowWidth = Display::get().getWidth() * shadowResScale;
-	shadowHeight = Display::get().getHeight() * shadowResScale;
+	shadowWidth = (unsigned)(Display::get().getWidth() * shadowResScale);
+	shadowHeight = (unsigned)(Display::get().getHeight() * shadowResScale);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
 
@@ -46,9 +57,10 @@ Pipeline::Pipeline()
 	this->addUniformBuffer(0, this->testShader->getID(), "Material");
 	this->addUniformBuffer(1, this->testShader->getID(), "DirectionalLight");
 
-	this->addUniformBuffer(0, this->entityShaderInstanced->getID(), "Material");
-	this->addUniformBuffer(1, this->entityShaderInstanced->getID(), "DirectionalLight");
-
+	for (size_t i = 0; i < this->entityShaders.size(); i++) {
+		this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
+		this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+	}
 	/*
 		Set up Directional Light
 	*/
@@ -60,22 +72,28 @@ Pipeline::Pipeline()
 
 Pipeline::~Pipeline()
 {
-	delete this->quadShader;
+	for(EntityShader* shader : this->entityShaders)
+		delete shader;
+
+	for (PostProcessShader* shader : this->postProcessShaders)
+		delete shader;
+
 	delete this->ZprePassShader;
 	delete this->ZprePassShaderInstanced;
 	delete this->testShader;
-	delete this->entityShaderInstanced;
 
 	for(UniformBuffer* ubo : this->uniformBuffers)
 		delete ubo;
 
 	this->uniformBuffers.clear();
+
+	delete this->quad;
 }
 
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)
 {
 	if(!toScreen)
-		this->fbo.bind();;
+		this->fbo.bind();
 	this->prePassDepthOn();
 	this->ZprePassShader->bind();
 
@@ -89,7 +107,7 @@ void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toSc
 		this->fbo.unbind();
 }
 
-void Pipeline::prePassDepthModel(const std::vector<Model*>& renderingModels, bool toScreen)
+void Pipeline::prePassDepthModel(const std::vector<std::pair<Model*, SHADERS>>& renderingModels, bool toScreen)
 {
 	if (!toScreen)
 		this->fbo.bind();
@@ -99,8 +117,8 @@ void Pipeline::prePassDepthModel(const std::vector<Model*>& renderingModels, boo
 	//Draw renderingList
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 	
-	for (Model* model : renderingModels) {
-		drawModelPrePassInstanced(model);
+	for (auto pair : renderingModels) {
+		drawModelPrePassInstanced(pair.first);
 	}
 
 	this->ZprePassShaderInstanced->unbind();
@@ -126,6 +144,44 @@ void Pipeline::prePassDepthOff()
 	glDepthFunc(GL_LEQUAL);
 	glColorMask(1, 1, 1, 1);
 	glDepthMask(GL_FALSE);
+}
+
+void Pipeline::createQuad()
+{
+	this->quad = new Model;
+
+	//Set up post process quad
+	std::vector<Vertex>* vertices = new	std::vector<Vertex>();
+	std::vector<GLuint>* indicies = new std::vector<GLuint>();
+
+	Vertex vertex;
+	vertex.Normal = glm::vec3(0.0);
+
+	vertex.Position = glm::vec3(-1.0, -1.0, 0.0);
+	vertex.TexCoords = glm::vec2(0.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, -1.0, 0.0);
+	vertex.TexCoords = glm::vec2(1.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 1.0, 0.0);
+	vertex.TexCoords = glm::vec2(1.0, 1.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(-1.0, 1.0, 0.0);
+	vertex.TexCoords = glm::vec2(0.0, 1.0);
+	vertices->push_back(vertex);
+
+	indicies->push_back(0);
+	indicies->push_back(1);
+	indicies->push_back(2);
+	indicies->push_back(2);
+	indicies->push_back(3);
+	indicies->push_back(0);
+
+	Mesh* quadMesh = new Mesh(vertices, indicies, 0, this->quad);
+	this->quad->addMesh(quadMesh);
 }
 
 void Pipeline::addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName)
@@ -166,20 +222,16 @@ void Pipeline::drawToScreen(const std::vector<Entity*>& renderingList)
 	this->testShader->unbind();
 }
 
-void Pipeline::drawModelToScreen(const std::vector<Model*>& renderingModels)
+void Pipeline::drawModelToScreen(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
 {
 	glEnable(GL_DEPTH_TEST);
 
-	this->entityShaderInstanced->bind();
+	this->entityShaders[SHADERS::DEFAULT]->bind();
 
-	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
-
-	for (Model* model : renderingModels) {
-		drawInstanced(model);
+	for (auto pair : renderingModels) {
+		drawInstanced(pair.first);
 	}
-
-	this->entityShaderInstanced->unbind();
+	this->entityShaders[SHADERS::DEFAULT]->unbind();
 }
 
 /*
@@ -208,47 +260,71 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	return this->fbo.getColorTexture(0);
 }
 
-Texture * Pipeline::drawModelToTexture(const std::vector<Model*>& renderingModels)
+Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
 {
 
 	this->fbo.bind();
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	this->entityShaderInstanced->bind();
+	for (auto pair : renderingModels) {
 
-	this->entityShaderInstanced->setUniformMatrix4fv("lightMatrix", 1, false, &(lightSpaceMatrix[0][0]));
-	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
+		this->entityShaders[pair.second]->bind();
 
-	Texture * shadowTex = getShadowFbo()->getDepthTexture();
-	this->entityShaderInstanced->setTexture2D("shadowTex", 1, shadowTex->getID());
-
-	for (Model* model : renderingModels) {
-		drawInstanced(model);
+		drawInstanced(pair.first, pair.second);
+	
+		this->entityShaders[pair.second]->unbind();
 	}
 
-	this->entityShaderInstanced->unbind();
 	this->fbo.unbind();
 
 	return this->fbo.getColorTexture(0);
 }
 
-void Pipeline::drawTextureToQuad(Texture * tex)
+void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, bool drawToFBO)
 {
-
-	glDisable(GL_DEPTH_TEST);
-
-	this->quadShader->bind();
-	this->quadShader->setTexture2D("tex", 0, tex->getID());
+	PostProcessShader * ppShader = this->postProcessShaders[shader];
 
 	Mesh* mesh = this->quad->getMesh(0);
 	mesh->bindVertexArray();
 	IndexBuffer& ib = mesh->getIndexBuffer();
 	ib.bind();
-	glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 
-	this->quadShader->unbind();
+	if (shader != SHADERS_POST_PROCESS::BLUR_FILTER) {
+		glDisable(GL_DEPTH_TEST);
+
+		if (drawToFBO)
+			this->fbo.bind();
+		ppShader->bind(tex);
+
+		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
+
+		ppShader->unbind();
+		if (drawToFBO)
+			this->fbo.unbind();
+	}
+	else {
+		BlurShader * blurShader = dynamic_cast<BlurShader*>(ppShader);
+		glDisable(GL_DEPTH_TEST);
+
+		this->fbo.bind();
+		
+		blurShader->bind(tex, true);
+
+		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
+
+		if(!drawToFBO)
+			this->fbo.unbind();
+		
+		blurShader->bind(fbo.getColorTexture(0), false);
+
+		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
+		
+		blurShader->unbind();
+
+		if (drawToFBO)
+			this->fbo.unbind();
+	}
 }
 
 void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
@@ -304,7 +380,7 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, co
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
-void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingModels)
+void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
 {
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
@@ -323,8 +399,8 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingMo
 
 	//Draw renderingList
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
-	for (Model* model : renderingModels) {
-		drawModelPrePassInstanced(model);
+	for (auto pair : renderingModels) {
+		drawModelPrePassInstanced(pair.first);
 	}
 
 	this->ZprePassShaderInstanced->unbind();
@@ -332,6 +408,12 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<Model*>& renderingMo
 	this->shadowFbo.unbind();
 
 	Display::get().updateView(displayWidth, displayHeight);
+}
+
+void Pipeline::updateShaders(const float & dt)
+{
+	for (EntityShader* shader : this->entityShaders)
+		shader->update(dt);
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
@@ -397,7 +479,7 @@ void Pipeline::drawModelPrePass(Model * model)
 	}
 }
 
-void Pipeline::drawInstanced(Model * model)
+void Pipeline::drawInstanced(Model * model, SHADERS shader)
 {
 
 	for (size_t i = 0; i < model->meshCount(); i++)
@@ -410,7 +492,7 @@ void Pipeline::drawInstanced(Model * model)
 		this->uniformBuffers[0]->setSubData((void*)&material, sizeof(material) - sizeof(material.textures), 0);
 
 		for (Texture* texture : material.textures) {
-			this->entityShaderInstanced->setTexture2D("tex", 0, texture->getID());
+			this->entityShaders[shader]->updateMeshData(texture->getID());
 		}
 
 		mesh->bindVertexArray();
