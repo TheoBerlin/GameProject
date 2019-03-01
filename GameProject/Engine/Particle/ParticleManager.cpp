@@ -53,19 +53,16 @@ ParticleManager::~ParticleManager()
 void ParticleManager::addEmitter(ParticleEmitter* emitter)
 {
 	emitter->setEmitterVectorIndex(this->emitters.size());
-	printf("Added emitter[%d]	Total[%d]\n", emitter->getEmitterVectorIndex(), this->emitters.size() + 1);
 	this->emitters.push_back(emitter);
 
 	// Update vbo to new size
-	this->va.updateBuffer(1, NULL, this->getMaxParticles() * sizeof(Particle));
+	this->va.setBuffer(1, NULL, this->getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
 }
 
 void ParticleManager::removeEmitter(ParticleEmitter* emitter)
 {
 	size_t lastEmitterIndex = this->emitters.size() - 1;
 	size_t index = emitter->getEmitterVectorIndex();
-
-	printf("Remove emitter[%d]\n", index);
 
 	if (index >= 0 && index <= lastEmitterIndex) {
 		ParticleEmitter* pe = this->emitters[index];
@@ -83,7 +80,6 @@ void ParticleManager::removeEmitter(ParticleEmitter* emitter)
 
 			//Loop through emitters from removed emitter and update vector index
 			while (index < this->emitters.size()) {
-				printf("----->  Changed emitter[%d]->[%d]\n", this->emitters[index]->getEmitterVectorIndex(), index);
 				this->emitters[index]->setEmitterVectorIndex(index);
 				index++;
 			}
@@ -91,6 +87,9 @@ void ParticleManager::removeEmitter(ParticleEmitter* emitter)
 		else 
 			this->emitters.pop_back();
 	}
+
+	// Update vbo to new size
+	this->va.setBuffer(1, NULL, this->getMaxParticles() * sizeof(Particle), GL_STREAM_DRAW);
 
 }
 
@@ -107,7 +106,8 @@ int ParticleManager::getParticleCount() const
 {
 	int countParticle = 0;
 	for (int i = 0; i < emitters.size(); i++) {
-		countParticle += emitters[i]->getParticleArray().size();
+		if(!emitters[i]->isDead())
+			countParticle += emitters[i]->getParticleArray().size();
 	}
 	return countParticle;
 }
@@ -134,6 +134,7 @@ void ParticleManager::updateBuffer()
 			offset += size * sizeof(Particle);
 			this->hasParticlesVisble = true;
 		}
+		
 	}
 
 }
