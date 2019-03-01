@@ -8,6 +8,7 @@
 #include "GLFW/glfw3.h"
 
 #include "../Rendering/GLAbstraction/RenderingResources.h"
+#include <cmath>
 #include "Utils/Utils.h"
 
 CollisionHandler::CollisionHandler()
@@ -249,15 +250,17 @@ std::vector<unsigned short*> CollisionHandler::addCollisionToEntity(Entity * ent
 
 void CollisionHandler::addShape(Model* modelPtr, Vertex* vertices, unsigned int numVertices)
 {
-	std::tuple<glm::vec3, glm::vec3, glm::quat> obb = getOBB(modelPtr, vertices, numVertices);
-	//std::pair<glm::vec3, glm::vec3> aabb = getAABB(vertices, numVertices);
+	//AABB aabb = getAABB(vertices, numVertices);
+	//OBB obb(aabb.first, aabb.second, glm::quat(1.f, 0.f, 0.f, 0.f));
+
+	OBB obb = getOBB(modelPtr, vertices, numVertices);
 	if (std::get<0>(obb).x == 0 && std::get<0>(obb).y == 0 && std::get<0>(obb).z == 0) return;
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
 	glm::vec3 size = std::get<0>(obb)*.5f;
 	size.x = glm::max(size.x, 0.01f);
 	size.y = glm::max(size.y, 0.01f);
 	size.z = glm::max(size.z, 0.01f);
-	constructShape(data, /*aabb.second, aabb.first*.5f*/std::get<1>(obb), size, std::get<2>(obb));
+	constructShape(data, std::get<1>(obb), size, std::get<2>(obb));
 	this->shapesMap[modelPtr].push_back(data);
 }
 
@@ -282,7 +285,7 @@ glm::quat CollisionHandler::toGlmQuat(const rp3d::Quaternion & vec)
 	return q;
 }
 
-std::pair<glm::vec3, glm::vec3> CollisionHandler::getAABB(Vertex * vertices, unsigned int numVertices, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
+CollisionHandler::AABB CollisionHandler::getAABB(Vertex * vertices, unsigned int numVertices, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
 {
 	glm::vec3 min = glm::vec3(10000.0f);
 	glm::vec3 max = glm::vec3(-10000.0f);
@@ -303,10 +306,10 @@ std::pair<glm::vec3, glm::vec3> CollisionHandler::getAABB(Vertex * vertices, uns
 
 	glm::vec3 pos = e1 * (min.x + (max.x - min.x)*.5f) + e2 * (min.y + (max.y - min.y)*.5f) + e3 * (min.z + (max.z - min.z)*.5f);
 
-	return std::pair<glm::vec3, glm::vec3>(glm::max(max - min, 0.01f), pos);
+	return AABB(glm::max(max - min, 0.01f), pos);
 }
 
-std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* modelPtr, Vertex * vertices, unsigned int numVertices)
+CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertices, unsigned int numVertices)
 {
 	std::vector<Vertex> verts(vertices, vertices + numVertices);
 
@@ -314,7 +317,7 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 	glm::vec3 centroid(0.0f);
 	for (Vertex& v : verts)
 		centroid += v.Position;
-	centroid /= numVertices;
+	centroid /= (float)numVertices;
 
 	// Distance from centroid to vertex.
 	std::vector<glm::vec3> changeInPos;
@@ -343,11 +346,11 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 			cov[i][j] = getElem(changeInPos, changeInPos, i, j);
 	
 	/*
-	// This might be needed.
+	// Normalize the matrix. This might not be needed.
 	for (unsigned i = 0; i < 3; i++)
 		for (unsigned j = 0; j < 3; j++)
 			cov[i][j] /= 3.f;
-			*/
+		*/	
 
 	// Find characteristic equation det(A-l*I) = 0
 	double a = -(double)(cov[0][0] + cov[1][1] + cov[2][2]);
@@ -364,7 +367,7 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 	if (cubicResult.twoEqual || (cubicResult.x2_real == cubicResult.x3_real))
 	{
 		glm::vec3 e = Utils::calcEigenvector(cubicResult.x1_real, mat);
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e), glm::vec3{ 1.f, 1.f, 0.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e), glm::vec3{ 1.f, 1.f, 0.f }));
 	}
 	else
 	{
@@ -372,11 +375,19 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 		glm::vec3 e2 = Utils::calcEigenvector(cubicResult.x2_real, mat);
 		glm::vec3 e3 = Utils::calcEigenvector(cubicResult.x3_real, mat);
 
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 0.f, 0.f }));
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2), glm::vec3{ 0.f, 1.f, 0.f }));
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3), glm::vec3{ 0.f, 0.f, 1.f }));
 		
 		glm::vec3 e4 = e3;
+		
 		float x = cubicResult.x1_real;
 		float y = cubicResult.x2_real;
-		if (x < cubicResult.x2_real)
+
+		if (y > cubicResult.x3_real)
+			e4 = e2;
+
+		if (x < y)
 		{
 			e4 = e1;
 			e1 = e2;
@@ -391,15 +402,21 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 			y = x;
 			x = cubicResult.x3_real;
 		}
-		
-		glm::vec3 v1 = glm::cross(e1, e4);
-		e4 = glm::cross(v1, e1);
 
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 0.f, 0.f }));
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e4), glm::vec3{ 0.f, 1.f, 0.f }));
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(v1), glm::vec3{ 0.f, 0.f, 1.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 1.f, 1.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e4), glm::vec3{ 0.f, 1.f, 1.f }));
 		
-		std::pair<glm::vec3, glm::vec3> aabb = getAABB(vertices, numVertices, glm::normalize(e1), glm::normalize(v1), glm::normalize(e4));
+		e1 = glm::normalize(e1);
+		//e4 = glm::normalize(e4);
+		//e4 = glm::normalize(e3);
+		glm::vec3 v1 = glm::normalize(glm::cross(e1, e4));
+		e4 = glm::normalize(glm::cross(e1, v1)); // cross(v1, e1)
+
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e1, glm::vec3{ 1.f, 0.f, 0.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + v1, glm::vec3{ 0.f, 1.f, 0.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e4, glm::vec3{ 0.f, 0.f, 1.f }));
+		
+		AABB aabb = getAABB(vertices, numVertices, e1, v1, e4);
 
 		auto length2 = [](const glm::vec3& v)->float {return v.x*v.x + v.y*v.y + v.z*v.z; };
 
@@ -410,7 +427,115 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 		rot.y = a.y;
 		rot.z = a.z;
 		rot.w = glm::sqrt(length2(b1) * length2(e1)) + glm::dot(b1, e1);
-		return std::tuple<glm::vec3, glm::vec3, glm::quat>(aabb.first, aabb.second, rot);
+		
+		glm::quat rot2;
+		glm::vec3 b2(0.f, 0.f, 1.f);
+		glm::vec3 a2 = glm::cross(b2, e4);
+		rot2.x = a2.x;
+		rot2.y = a2.y;
+		rot2.z = a2.z;
+		rot2.w = glm::sqrt(length2(b2) * length2(e4)) + glm::dot(b2, e4);
+		
+		glm::mat3 rotMat(e1, v1, e4);
+		glm::quat rot3 = glm::quat_cast(rotMat);
+		
+		a = glm::cross(glm::vec3{ 1.f, 0.f, 0.f }, glm::vec3{0.f, 0.f, -1.f});
+		rot.x = a.x;
+		rot.y = a.y;
+		rot.z = a.z;
+		rot.w = glm::sqrt(length2(b1) * length2(e1)) + glm::dot(b1, e1);
+
+		glm::vec3 u = glm::normalize(glm::vec3{1.f, 0.f, 0.f});
+		glm::vec3 v = glm::normalize(e1);//glm::vec3{0.f, 0.f, 1.f});
+		glm::vec3 n = glm::normalize(glm::cross(u, v));
+		float angle = acosf(glm::dot(u, v));
+		rot.x = n.x*sinf(angle/2.f);
+		rot.y = n.y*sinf(angle/2.f);
+		rot.z = n.z*sinf(angle/2.f);
+		rot.w = cosf(angle/2.f);
+
+		float d = glm::dot(glm::vec3{ 1.f, 0.f, 0.f }, e1);
+		if (d > 0.999f || d < -0.999f)
+			rot = glm::quat(1.f, 0.f, 0.f, 0.f);
+		//glm::quat r = rot;
+		auto length2Quat = [](const glm::quat& q)->float { return q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w; };
+
+		float k = length2Quat(rot);
+		
+		glm::vec3 vv = glm::normalize(rot * glm::vec3(0.f, 0.f, 1.f));
+		glm::vec3 vv2 = glm::normalize(e4);
+
+		u = glm::normalize(vv);
+		v = glm::normalize(vv2);//glm::vec3{0.f, 0.f, 1.f});
+		n = glm::normalize(glm::cross(u, v));
+		angle = acosf(glm::dot(u, v));
+		rot2.x = n.x*sinf(angle / 2.f);
+		rot2.y = n.y*sinf(angle / 2.f);
+		rot2.z = n.z*sinf(angle / 2.f);
+		rot2.w = cosf(angle / 2.f);
+
+		d = glm::dot(vv2, vv);
+		if (d > 0.999f || d < -0.999f)
+			rot2 = glm::quat(1.f, 0.f, 0.f, 0.f);
+
+		k = length2Quat(rot2);
+
+		glm::quat r = rot2 * rot;//rot2 * rot * glm::inverse(rot2);
+		
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + r * glm::vec3{1.f, 0.f, 0.f}, glm::vec3{ 0.5f, 0.f, 0.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + r * glm::vec3{ 0.f, 1.f, 0.f }, glm::vec3{ 0.f, 0.5f, 0.f }));
+		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + r * glm::vec3{ 0.f, 0.f, 1.f }, glm::vec3{ 0.f, 0.f, 0.5f }));
+
+		/*
+		u = glm::normalize(glm::vec3{ 0.f, 1.f, 0.f });
+		v = glm::normalize(v1);//glm::vec3{0.f, 0.f, 1.f});
+		n = glm::normalize(glm::cross(u, v));
+		angle = acosf(glm::dot(u, v));
+		rot3.x = n.x*sinf(angle / 2.f);
+		rot3.y = n.y*sinf(angle / 2.f);
+		rot3.z = n.z*sinf(angle / 2.f);
+		rot3.w = cosf(angle / 2.f);
+
+		d = glm::dot(glm::vec3{ 0.f, 1.f, 0.f }, e1);
+		if (d > 0.999f || d < -0.999f)
+			rot3 = glm::quat(1.f, 0.f, 0.f, 0.f);
+
+		k = length2Quat(rot3);
+
+		r = rot3 * rot2 * glm::inverse(rot3);
+
+		k = length2Quat(r);
+		*/
+
+		//e1 = {0.f, 0.f, 1.f};
+		//v1 = { 0.f, 1.f, 0.f };//{cosf(glm::pi<float>()*.25f), sinf(glm::pi<float>()*.25f), 0.f };
+		//e4 = {-1.f, 0.f, 0.f};
+
+		//e4 = -e4;
+
+		/*
+		glm::mat3 m({1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f});
+		glm::mat3 m2(e1, v1, e4);
+		m = glm::inverse(m);
+		
+		m[0][0] = glm::dot({ 1.f, 0.f, 0.f }, glm::normalize(e1));
+		m[1][0] = glm::dot({ 1.f, 0.f, 0.f }, glm::normalize(e4));
+		m[2][0] = glm::dot({ 1.f, 0.f, 0.f }, glm::normalize(v1));
+
+		m[0][1] = glm::dot({ 0.f, 1.f, 0.f }, glm::normalize(e1));
+		m[1][1] = glm::dot({ 0.f, 1.f, 0.f }, glm::normalize(e4));
+		m[2][1] = glm::dot({ 0.f, 1.f, 0.f }, glm::normalize(v1));
+
+		m[0][2] = glm::dot({ 0.f, 0.f, 1.f }, glm::normalize(e1));
+		m[1][2] = glm::dot({ 0.f, 0.f, 1.f }, glm::normalize(e4));
+		m[2][2] = glm::dot({ 0.f, 0.f, 1.f }, glm::normalize(v1));
+		
+		r = glm::quat_cast(m);
+
+		k = length2Quat(r);
+		*/
+		
+		return OBB(aabb.first, aabb.second, r);
 		
 		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2), glm::vec3{ 0.f, 1.f, 0.f }));
 		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3), glm::vec3{ 0.f, 0.f, 1.f }));
@@ -424,7 +549,7 @@ std::tuple<glm::vec3, glm::vec3, glm::quat> CollisionHandler::getOBB(Model* mode
 	
 	//glm::vec3 e = Utils::calcEigenvector(-1, mat3);
 
-	return std::tuple<glm::vec3, glm::vec3, glm::quat>();
+	return OBB();
 }
 
 void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, glm::quat rot, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)
@@ -444,6 +569,14 @@ void CollisionHandler::addCollisionShapeToBody(rp3d::CollisionBody * body, Colli
 {
 	rp3d::Quaternion shapeRot;
 	shapeRot.setAllValues(data->rot.x, data->rot.y, data->rot.z, data->rot.w);
+	/*shapeRot.setAllValues(0.f, 1.f, 0.f, 1.5707963f);
+	float angle = shapeRot.w / 2.f;
+	shapeRot.w = cos(angle);
+	shapeRot.x = shapeRot.x*sin(angle);
+	shapeRot.y = shapeRot.y*sin(angle);
+	shapeRot.z = shapeRot.z*sin(angle);
+	*/
+	//shapeRot = shapeRot.getUnit();
 	rp3d::ProxyShape* proxyShape = body->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
 	proxyShape->setUserData((void*)data);
 	proxyShape->setCollisionCategoryBits(data->category);

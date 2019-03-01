@@ -14,7 +14,7 @@ void LevelParser::readEntityTargets(Level& level)
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
+		model = ModelLoader::loadModel("./Game/assets/droneTarget2.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -60,7 +60,7 @@ void LevelParser::readEntityBoxes(Level& level)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
+		model = ModelLoader::loadModel("./Game/assets/Test2.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)

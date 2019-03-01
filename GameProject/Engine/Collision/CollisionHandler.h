@@ -69,8 +69,10 @@ private:
 	std::vector<glm::mat4> matricesLines;
 	std::vector<glm::vec3> colorsLines;
 
-	std::pair<glm::vec3, glm::vec3> getAABB(Vertex* vertices, unsigned int numVertices, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
-	std::tuple<glm::vec3, glm::vec3, glm::quat> getOBB(Model* ptr, Vertex* vertices, unsigned int numVertices);
+	typedef std::pair<glm::vec3, glm::vec3> AABB;
+	typedef std::tuple<glm::vec3, glm::vec3, glm::quat> OBB;
+	AABB getAABB(Vertex* vertices, unsigned int numVertices, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
+	OBB getOBB(Model* ptr, Vertex* vertices, unsigned int numVertices);
 	void constructShape(CollisionShapeDrawingData* data, const glm::vec3& pos, const glm::vec3& size, glm::quat rot = glm::quat(1.f, 0.f, 0.f, 0.f), CATEGORY cat = CATEGORY::NO_COLLISION, const glm::vec3& scale = {1.f, 1.f, 1.f}, const glm::vec3& color = { 1.f, 1.f, 1.f });
 	void addCollisionShapeToBody(rp3d::CollisionBody* body, CollisionShapeDrawingData* data);
 
