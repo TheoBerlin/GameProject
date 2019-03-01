@@ -35,7 +35,7 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 	vbo->setAttribCount(attributes.attribs.size());
 }
 
-void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset)
+void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset, const unsigned& usage)
 {
 	this->bind();
 	if (vboIndex < this->buffers.size()) {
@@ -46,12 +46,21 @@ void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t
 			vbo->updateData(data, dataSize, offset);
 		}
 		else {
-			vbo->bind();
-
-			glBufferData(GL_ARRAY_BUFFER, dataSize + offset, data, GL_DYNAMIC_DRAW);	
-			vbo->setDataSize(dataSize + offset);
+			vbo->make(data, dataSize + offset, usage);
 		}
 
+	}
+
+}
+
+void VertexArray::setBuffer(unsigned vboIndex, const void * data, const size_t dataSize, const unsigned& usage)
+{
+	this->bind();
+	if (vboIndex < this->buffers.size()) {
+
+		VertexBuffer* vbo = this->buffers[vboIndex];
+		
+		vbo->make(data, dataSize, usage);
 	}
 
 }
