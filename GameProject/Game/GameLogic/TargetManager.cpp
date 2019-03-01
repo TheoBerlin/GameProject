@@ -70,7 +70,7 @@ std::vector<MovingTarget> TargetManager::getMovingTargets() const
 	return movingTargets;
 }
 
-std::vector<StaticTarget> TargetManager::getStaticTarget() const
+std::vector<StaticTarget> TargetManager::getStaticTargets() const
 {
 	return staticTargets;
 }

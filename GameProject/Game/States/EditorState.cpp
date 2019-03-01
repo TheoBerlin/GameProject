@@ -9,6 +9,7 @@
 
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
+#include <Game/components/Hover.h>
 #include <Engine/InputHandler.h>
 
 #include <Game/GameLogic/TargetManager.h>
@@ -42,15 +43,19 @@ EditorState::EditorState()
 	level.collisionHandler = &this->collisionHandler;
 	level.gui = &this->getGUI();
 
-	Display::get().getRenderer().initInstancing();
-
+	EventBus::get().subscribe(this, &EditorState::pauseGame);
 	InputHandler ih(Display::get().getWindowPtr());
-
 }
 
 EditorState::~EditorState()
 {
 	delete targetManager;
+	EventBus::get().unsubscribe(this, &EditorState::pauseGame);
+
+	Display::get().getRenderer().clearRenderingModels();
+
+	// Delete all loaded models
+	ModelLoader::unloadAllModels();
 }
 
 void EditorState::start()
@@ -68,7 +73,7 @@ void EditorState::end()
 {
 	/*
 	All entities removes themselves from the rendering group of their model
-*/
+	*/
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
@@ -148,7 +153,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 #endif
 
 	if (activeWindow[0])
-		levelWindow();
+		levelWindow(entityManager);
 	if (activeWindow[1])
 		entityWindow(entityManager);
 	if (activeWindow[2])
@@ -171,7 +176,18 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				for (int j = 0; j < targetManager->getMovingTargets().size(); j++) {
 					if (entityManager.getEntity(i) == targetManager->getMovingTargets()[j].pathTreader->getHost()) {
 						currentIsTarget = true;
+						EditorPathing path;
+						path.index = i;
+						for(int k = 0; k < targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++)
+							path.path.push_back(targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position);
+						pathing.push_back(path);
 						break;
+					}
+				}
+				for (int j = 0; j < targetManager->getStaticTargets().size(); j++) {
+					if (entityManager.getEntity(i) == targetManager->getStaticTargets()[j].hoverAnimation->getHost()) {
+					currentIsTarget = true;
+					break;
 					}
 				}
 			}
@@ -211,6 +227,31 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
 			currentIsTarget = !currentIsTarget;
 		}
+		if (currentIsTarget) {
+			ImGui::SameLine();
+			if (ImGui::Button("Add Path")) {
+				bool found = false;
+				for (int i = 0; i < pathing.size(); i++) {
+					if (pathing[i].index = currentEntity) {
+						pathing[i].path.push_back(glm::vec3(0.0f));
+						found = true;
+					}
+				}
+				if (!found) {
+					EditorPathing path;
+					path.index = currentEntity;
+					path.path.push_back(curEntity->getTransform()->getPosition());
+					pathing.push_back(path);
+				}
+			}
+			for (int i = 0; i < pathing.size(); i++) {
+				if (pathing[i].index == currentEntity) {
+					for (int j = 0; j < pathing[i].path.size(); j++) {
+						ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &pathing[i].path[j][0], 2);
+					}
+				}
+			}
+		}
 		//Model Info
 		Model* model = curEntity->getModel();
 		ImGui::Text("Model Info");
@@ -227,14 +268,16 @@ void EditorState::entityWindow(EntityManager& entityManager)
 #endif
 }
 
-void EditorState::levelWindow()
+void EditorState::levelWindow(EntityManager& entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Level Window");
 	levelName.reserve(64);
 	ImGui::InputText("LevelName", (char*)levelName.c_str(), levelName.capacity());
 	if (ImGui::Button("Load")) {
+		entityManager.removeEntities();
 		levelParser.readLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
+		Display::get().getRenderer().initInstancing();
 	}
 	ImGui::End();
 #endif
@@ -249,4 +292,12 @@ void EditorState::cameraWindow()
 		freeMove->setSpeed(camSpeed);
 	ImGui::End();
 #endif
+}
+
+void EditorState::pauseGame(KeyEvent * ev)
+{
+	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
+
+		this->pushState(new PauseState());
+	}
 }

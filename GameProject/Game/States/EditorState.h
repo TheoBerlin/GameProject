@@ -4,24 +4,20 @@
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
 #include "Engine/Collision/CollisionHandler.h"
+#include "PauseState.h"
 
 class EditorState : public State
 {
-public:
-	EditorState();
-	virtual ~EditorState();
-
-	void start() override;
-	void end() override;
-	void update(const float dt) override;
-	void updateLogic(const float dt) override;
-	void render() override;
-
 private:
+	struct EditorPathing {
+		int index;
+		std::vector<glm::vec3> path;
+	};
+
 	//ImGui windows
 	void mainWindow(EntityManager& entityManager);
 	void entityWindow(EntityManager& entityManager);
-	void levelWindow();
+	void levelWindow(EntityManager& entityManager);
 	void cameraWindow();
 
 	std::string levelName;
@@ -29,6 +25,7 @@ private:
 	std::string currentModel;
 	int currentEntity = -1;
 	bool currentIsTarget;
+	std::vector<EditorPathing> pathing;
 	bool activeWindow[3];
 	Entity camera;
 	float camSpeed;
@@ -39,4 +36,16 @@ private:
 	TargetManager* targetManager;
 	GameLogic gameLogic;
 	CollisionHandler collisionHandler;
+
+	void pauseGame(KeyEvent * ev);
+
+public:
+	EditorState();
+	virtual ~EditorState();
+
+	void start() override;
+	void end() override;
+	void update(const float dt) override;
+	void updateLogic(const float dt) override;
+	void render() override;
 };

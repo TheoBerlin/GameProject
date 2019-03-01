@@ -33,7 +33,7 @@ public:
 
 	//Get the arrays
 	std::vector<MovingTarget> getMovingTargets() const;
-	std::vector<StaticTarget> getStaticTarget() const;
+	std::vector<StaticTarget> getStaticTargets() const;
 
     // Reset target components such as the path treader
     void resetTargets();

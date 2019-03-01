@@ -46,6 +46,11 @@ void PathTreader::setPath(const std::vector<KeyPoint>& path)
     currentPointIndex = 0;
 }
 
+std::vector<KeyPoint> PathTreader::getPath() const
+{
+	return path;
+}
+
 void PathTreader::startTreading()
 {
     if (path.size() < 2) {
