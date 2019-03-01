@@ -21,9 +21,11 @@ public:
 	glm::vec3 getUp();
 	// Returns the cameras forward-vector
 	glm::vec3 getForward() const;
+
 	void setForward(const glm::vec3 & forward);
+
 	// Returns the cameras right-vector
-	glm::vec3 getRight();
+	glm::vec3 getRight() const;
 
 	// Returns the View-Projection matrix
 	glm::mat4 getVP() const;
