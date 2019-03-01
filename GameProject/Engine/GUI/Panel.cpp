@@ -64,17 +64,17 @@ glm::vec4 Panel::getColor() const
 	return this->color;
 }
 
-glm::vec2 Panel::getGlobalPosition() const
+glm::ivec2 Panel::getGlobalPosition() const
 {
 	return this->globalPos;
 }
 
-void Panel::setPosition(glm::vec2 pos)
+void Panel::setPosition(glm::ivec2 pos)
 {
 	this->pos = pos;
 }
 
-glm::vec2 Panel::getPosition() const
+glm::ivec2 Panel::getPosition() const
 {
 	return this->pos;
 }
@@ -103,8 +103,8 @@ void Panel::addText(const std::string & str, int x, int y, const std::string& fo
 	text->updateText(str, FontManager::getFont(font));
 
 	// Set its position and add it to the textList.
-	glm::vec2 relativePos = glm::vec2(x, y);
-	this->textList.push_back(std::pair<Text*, glm::vec2>(text, relativePos));
+	glm::ivec2 relativePos = glm::ivec2(x, y);
+	this->textList.push_back(std::pair<Text*, glm::ivec2>(text, relativePos));
 
 	this->shouldUpdate = true;
 }
@@ -113,7 +113,7 @@ void Panel::updateText(unsigned int index, const std::string & str, int x, int y
 {
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].first->updateText(str);
-		this->textList[index].second = glm::vec2(x, y);
+		this->textList[index].second = glm::ivec2(x, y);
 		this->shouldUpdate = true;
 	}
 	else
@@ -126,7 +126,7 @@ void Panel::updateText(unsigned int index, const std::string & str, int x, int y
 void Panel::updateText(unsigned int index, int x, int y)
 {
 	if (index >= 0 && index < this->textList.size()) {
-		this->textList[index].second = glm::vec2(x, y);
+		this->textList[index].second = glm::ivec2(x, y);
 		this->shouldUpdate = true;
 	}
 	else
@@ -183,7 +183,7 @@ void Panel::rebake()
 	}
 }
 
-std::vector<std::pair<Text*, glm::vec2>>& Panel::getTextList()
+std::vector<std::pair<Text*, glm::ivec2>>& Panel::getTextList()
 {
 	return textList;
 }

@@ -78,9 +78,9 @@ void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 {
 	if (this->active)
 	{
-		unsigned int py = (unsigned int)((int)Display::get().getHeight() - (int)evnt->posY);
-		if (evnt->posX >= this->globalPos.x && evnt->posX <= this->globalPos.x + this->size.x &&
-			py >= this->globalPos.y && py <= this->globalPos.y + this->size.y)
+		int py = ((int)Display::get().getHeight() - (int)evnt->posY);
+		if ((int)evnt->posX >= this->globalPos.x && (int)evnt->posX <= this->globalPos.x + (int)this->size.x &&
+			py >= this->globalPos.y && py <= this->globalPos.y + (int)this->size.y)
 		{
 			this->isHovering = true;
 			toHoverStyle();
