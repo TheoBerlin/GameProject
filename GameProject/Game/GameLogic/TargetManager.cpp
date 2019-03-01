@@ -89,6 +89,9 @@ void TargetManager::resetStaticTargets()
 		if(attachmentIndex != -1)
 			host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
 				attachmentIndex *sizeof(glm::vec3), 0, 2);
+
+		//Remove explosion component
+		host->removeComponent("Explosion");
 	
 		
     }

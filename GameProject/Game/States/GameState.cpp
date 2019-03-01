@@ -42,19 +42,6 @@ GameState::GameState(const std::string& levelJSON)
 	//For pause event
 	this->hasSubscribedToPause = false;
 
-	//Particle Emitter init
-	ParticleManager::get().addEmitter(&emitter);
-	emitter.setPosition(glm::vec3(0, 2.0f, -0.0f));
-	emitter.setSpread(0.0f);
-	emitter.setVelocity(glm::vec3(0.0f, 0.0f, 0.0f));
-	emitter.setAcceleration(glm::vec3(0.0f, 0.0f, 0.0f));
-	emitter.setMaxParticle(800);
-	emitter.setSpawnRate(80);
-	emitter.setStartColour(glm::vec4(0.8f, 0.0f, 1.0f, 1.0f));
-	emitter.setEndColour(glm::vec4(0.8f, 0.0f, 1.0f, 0.0f));
-	emitter.setLifeTime(10.0f);
-	emitter.setScaleChange(1.0f);
-	emitter.setScale(0.1f);
 }
 
 GameState::~GameState()
@@ -105,20 +92,17 @@ void GameState::update(const float dt)
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 
-	//Particle tracing
-	//Increase movement speed
-	if (entityManager.getTracedEntity("PlayerArrow") != nullptr)
-		if(entityManager.getTracedEntity("PlayerArrow")->getComponent("ArrowGuider") != nullptr)
-			dynamic_cast<ArrowGuider*>(entityManager.getTracedEntity("PlayerArrow")->getComponent("ArrowGuider"))->setMovementSpeed(5.0f);
-	//Get arrow replay position
-	if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
-		ParticleManager::get().update(dt);
-		emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
-		emitter.playEmitter(0);
-	}
-	else {
-		emitter.stopEmitter();
-	}
+	////Get arrow replay position
+	//if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
+	//	ParticleManager::get().update(dt);
+	//	emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
+	//	emitter.playEmitter(2);
+	//}
+	//else {
+	//	emitter.stopEmitter();
+	//}
+
+	ParticleManager::get().update(dt);
 
 	for (unsigned int i = 0; i < entities.size(); i += 1) {
 		entities[i]->update(dt);

@@ -25,7 +25,6 @@ private:
 	bool hasSubscribedToPause;
 
 	LevelParser levelParser;
-	ParticleEmitter emitter;
 	TargetManager* targetManager;
 	GameLogic gameLogic;
 	CollisionHandler collisionHandler;

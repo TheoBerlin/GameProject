@@ -1,13 +1,18 @@
 #include "Component.h"
 
 #include <Engine/Entity/Entity.h>
+#include "Utils/Logger.h"
 
 Component::Component(Entity* parentEntity, const std::string & tagName)
 {
 	this->tagName = tagName;
 
-	parentEntity->addComponent(this);
-	this->setHost(parentEntity);
+	if (parentEntity->addComponent(this)) 
+		this->setHost(parentEntity);
+	else {
+		LOG_WARNING("Component already exists on entity");
+		delete this;
+	}
 }
 
 Component::~Component()
