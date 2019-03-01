@@ -11,7 +11,6 @@ Component::Component(Entity* parentEntity, const std::string & tagName)
 		this->setHost(parentEntity);
 	else {
 		LOG_WARNING("Component already exists on entity");
-		delete this;
 	}
 }
 
