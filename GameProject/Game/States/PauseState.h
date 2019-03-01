@@ -3,7 +3,7 @@
 #include "../../Engine/States/State.h"
 #include "Engine/Rendering/GLAbstraction/Texture.h"
 
-class KeyEvent;
+struct KeyEvent;
 
 class PauseState : public State
 {
