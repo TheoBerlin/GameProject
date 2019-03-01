@@ -19,4 +19,13 @@ public:
 	void setEntitesPointer(std::unordered_map<rp3d::CollisionBody*, Entity*>* entites);
 private:
 	std::unordered_map<rp3d::CollisionBody*, Entity*>* entites;
+
+	/*
+		Check if an entity with its components has already been hit.
+		Param:
+			The entity to be checked.
+		Return:
+			True if entity is hit, false if not.
+	*/
+	bool checkIfHit(Entity* e);
 };
