@@ -340,17 +340,18 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 	};
 
 	// Calculate the covariance matrix
-	float cov[3][3];
+	/*float cov[3][3];
 	for (unsigned i = 0; i < 3; i++)
 		for (unsigned j = 0; j < 3; j++)
 			cov[i][j] = getElem(changeInPos, changeInPos, i, j);
-	
-	/*
+	*/
+	float cov[3][3] = { {3.f, 0.f, 0.f}, {1.f, 2.f, 0.f}, {4.f, 6.f, 5.f} };
+
 	// Normalize the matrix. This might not be needed.
-	for (unsigned i = 0; i < 3; i++)
+	/*for (unsigned i = 0; i < 3; i++)
 		for (unsigned j = 0; j < 3; j++)
 			cov[i][j] /= 3.f;
-		*/	
+		*/
 
 	// Find characteristic equation det(A-l*I) = 0
 	double a = -(double)(cov[0][0] + cov[1][1] + cov[2][2]);
@@ -371,9 +372,32 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 	}
 	else
 	{
-		glm::vec3 e1 = Utils::calcEigenvector(cubicResult.x1_real, mat);
-		glm::vec3 e2 = Utils::calcEigenvector(cubicResult.x2_real, mat);
-		glm::vec3 e3 = Utils::calcEigenvector(cubicResult.x3_real, mat);
+		float ddd[3];
+		float eee[3];
+		float** matF = new float*[3];
+		for (int i = 0; i < 3; i++)
+		{
+			float* matFI = new float[3];
+			matF[i] = matFI;
+			for (int j = 0; j < 3; j++)
+				matF[i][j] = mat[j][i];
+		}
+		Utils::tred2((float**)matF, 3-1, ddd, eee);
+
+		std::vector<glm::vec3> vvvvv;
+		for (int i = 0; i < 3; i++)
+		{
+			glm::vec3 v;
+			for (int j = 0; j < 3; j++)
+				v[j] = matF[i][j];
+			vvvvv.push_back(v);
+			delete[] matF[i];
+		}
+		delete[] matF;
+
+		glm::vec3 e1 = vvvvv[0];//Utils::calcEigenvector((double)cubicResult.x1_real, (glm::dmat3)mat);
+		glm::vec3 e2 = vvvvv[1];//Utils::calcEigenvector((double)cubicResult.x2_real, (glm::dmat3)mat);
+		glm::vec3 e3 = vvvvv[2];//Utils::calcEigenvector((double)cubicResult.x3_real, (glm::dmat3)mat);
 
 		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 0.f, 0.f }));
 		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2), glm::vec3{ 0.f, 1.f, 0.f }));

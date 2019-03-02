@@ -17,10 +17,14 @@ struct Utils
 
 		bool twoEqual = false;
 	};
-	static CubicResult solveCubic(float a, float b, float c);
+	static CubicResult solveCubic(double a, double b, double c);
 
 	static std::vector<double> solveSystem(std::vector< std::vector<double>> A, bool& success);
 
-	static glm::vec3 calcEigenvector(float eigenValue, const glm::mat3& mat);
+	static glm::dvec3 calcEigenvector(double eigenValue, const glm::dmat3& mat);
+
+	static glm::mat3 calcEigenVectorsFromSymmetricMat(const glm::mat3& mat);
+
+	static void tred2(float **a, int n, float d[], float e[]);
 
 };
