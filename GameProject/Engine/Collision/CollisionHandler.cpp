@@ -340,12 +340,12 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 	};
 
 	// Calculate the covariance matrix
-	/*float cov[3][3];
+	float cov[3][3];
 	for (unsigned i = 0; i < 3; i++)
 		for (unsigned j = 0; j < 3; j++)
 			cov[i][j] = getElem(changeInPos, changeInPos, i, j);
-	*/
-	float cov[3][3] = { {3.f, 0.f, 0.f}, {1.f, 2.f, 0.f}, {4.f, 6.f, 5.f} };
+	
+	//float cov[3][3] = { {2.f, 1.f, 1.f}, {1.f, 2.f, 1.f}, {1.f, 1.f, 2.f} };
 
 	// Normalize the matrix. This might not be needed.
 	/*for (unsigned i = 0; i < 3; i++)
@@ -365,13 +365,16 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 
 	glm::mat3 mat({ cov[0][0], cov[0][1], cov[0][2] }, { cov[1][0], cov[1][1], cov[1][2] }, { cov[2][0], cov[2][1], cov[2][2] });
 
-	if (cubicResult.twoEqual || (cubicResult.x2_real == cubicResult.x3_real))
+	std::pair<glm::mat3, glm::mat3> jacobiResult = Utils::jacobiMethod2(mat);
+
+	/*if (cubicResult.twoEqual || (cubicResult.x2_real == cubicResult.x3_real))
 	{
-		glm::vec3 e = Utils::calcEigenvector(cubicResult.x1_real, mat);
+		//glm::vec3 e = Utils::calcEigenvector(cubicResult.x1_real, mat);
 		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e), glm::vec3{ 1.f, 1.f, 0.f }));
 	}
-	else
+	else*/
 	{
+		/*
 		float ddd[3];
 		float eee[3];
 		float** matF = new float*[3];
@@ -395,20 +398,25 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 		}
 		delete[] matF;
 
-		glm::vec3 e1 = vvvvv[0];//Utils::calcEigenvector((double)cubicResult.x1_real, (glm::dmat3)mat);
-		glm::vec3 e2 = vvvvv[1];//Utils::calcEigenvector((double)cubicResult.x2_real, (glm::dmat3)mat);
-		glm::vec3 e3 = vvvvv[2];//Utils::calcEigenvector((double)cubicResult.x3_real, (glm::dmat3)mat);
+		*/
+		//glm::vec3 e1 = {1.f, 0.f, 0.f};// Utils::calcEigenvector((double)cubicResult.x1_real, (glm::dmat3)mat);
+		//glm::vec3 e2 = { 0.f, 1.f, 0.f };//Utils::calcEigenvector((double)cubicResult.x2_real, (glm::dmat3)mat);
+		//glm::vec3 e3 = { 0.f, 0.f, 1.f };//Utils::calcEigenvector((double)cubicResult.x3_real, (glm::dmat3)mat);
 
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 0.f, 0.f }));
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2), glm::vec3{ 0.f, 1.f, 0.f }));
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3), glm::vec3{ 0.f, 0.f, 1.f }));
+		glm::vec3 e1 = jacobiResult.second[0];//Utils::powerMethod(mat);
+		glm::vec3 e2 = jacobiResult.second[1];//Utils::powerMethodInv(mat);
+		glm::vec3 e3 = jacobiResult.second[2];//glm::normalize(glm::cross(e1, e2));
+
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e1, glm::vec3{ 1.f, 0.f, 0.f }));
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e2, glm::vec3{ 0.f, 1.f, 0.f }));
+		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e3, glm::vec3{ 0.f, 0.f, 1.f }));
 		
 		glm::vec3 e4 = e3;
 		
-		float x = cubicResult.x1_real;
-		float y = cubicResult.x2_real;
+		float x = jacobiResult.first[0][0];
+		float y = jacobiResult.first[1][1];
 
-		if (y > cubicResult.x3_real)
+		if (y > jacobiResult.first[2][2])
 			e4 = e2;
 
 		if (x < y)
@@ -416,15 +424,15 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 			e4 = e1;
 			e1 = e2;
 			y = x;
-			x = cubicResult.x2_real;
+			x = jacobiResult.first[1][1];
 		}
 
-		if (x < cubicResult.x3_real)
+		if (x < jacobiResult.first[2][2])
 		{
 			e4 = e1;
 			e1 = e3;
 			y = x;
-			x = cubicResult.x3_real;
+			x = jacobiResult.first[2][2];
 		}
 
 		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 1.f, 1.f }));
@@ -443,7 +451,7 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 		AABB aabb = getAABB(vertices, numVertices, e1, v1, e4);
 
 		auto length2 = [](const glm::vec3& v)->float {return v.x*v.x + v.y*v.y + v.z*v.z; };
-
+		/*
 		glm::quat rot;
 		glm::vec3 b1(1.f, 0.f, 0.f);
 		glm::vec3 a = glm::cross(b1, e1);
@@ -468,7 +476,8 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 		rot.y = a.y;
 		rot.z = a.z;
 		rot.w = glm::sqrt(length2(b1) * length2(e1)) + glm::dot(b1, e1);
-
+		*/
+		glm::quat rot;
 		glm::vec3 u = glm::normalize(glm::vec3{1.f, 0.f, 0.f});
 		glm::vec3 v = glm::normalize(e1);//glm::vec3{0.f, 0.f, 1.f});
 		glm::vec3 n = glm::normalize(glm::cross(u, v));
@@ -489,6 +498,7 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 		glm::vec3 vv = glm::normalize(rot * glm::vec3(0.f, 0.f, 1.f));
 		glm::vec3 vv2 = glm::normalize(e4);
 
+		glm::quat rot2;
 		u = glm::normalize(vv);
 		v = glm::normalize(vv2);//glm::vec3{0.f, 0.f, 1.f});
 		n = glm::normalize(glm::cross(u, v));
