@@ -339,251 +339,62 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 		return a;
 	};
 
-	// Calculate the covariance matrix
-	float cov[3][3];
+	// Calculate the covariance matrix. By multiplying the Nx3 matrix with its transpose from the left we get a 3x3 matrix which will be the covariance matrix after normalization. 
+	glm::mat3 cov;
 	for (unsigned i = 0; i < 3; i++)
 		for (unsigned j = 0; j < 3; j++)
-			cov[i][j] = getElem(changeInPos, changeInPos, i, j);
-	
-	//float cov[3][3] = { {2.f, 1.f, 1.f}, {1.f, 2.f, 1.f}, {1.f, 1.f, 2.f} };
+			cov[j][i] = getElem(changeInPos, changeInPos, i, j) / 3.f; // Multiply by its transpose and divide by the dimension size to normalize it.
 
-	// Normalize the matrix. This might not be needed.
-	/*for (unsigned i = 0; i < 3; i++)
-		for (unsigned j = 0; j < 3; j++)
-			cov[i][j] /= 3.f;
-		*/
+	// Calculate the eigenvectors from the covariance matrix. This will also give us the eigenvalues as a byproduct but we will not use them.
+	std::pair<glm::vec3, glm::mat3> jacobiResult = Utils::jacobiMethod(cov);
 
-	// Find characteristic equation det(A-l*I) = 0
-	double a = -(double)(cov[0][0] + cov[1][1] + cov[2][2]);
-	double b = -(double)(-cov[0][0] * cov[1][1] - cov[0][0] * cov[2][2] - cov[1][1] * cov[2][2] + cov[1][2] * cov[2][1] + cov[0][1] * cov[1][0] + cov[0][2] * cov[2][0]);
-	double c = -(double)(cov[0][0] * cov[1][1] * cov[2][2] - cov[0][0] * cov[1][2] * cov[2][1] - cov[0][1] * cov[1][0] * cov[2][2] + cov[0][1] * cov[1][2] * cov[2][0] + cov[0][2] * cov[1][0] * cov[2][1] - cov[0][2] * cov[1][1] * cov[2][0]);
+	glm::vec3 e1 = glm::normalize(jacobiResult.second[0]);
+	glm::vec3 e2 = glm::normalize(jacobiResult.second[1]);
+	glm::vec3 e3 = glm::normalize(jacobiResult.second[2]);
+	/*
+	this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e1, glm::vec3{ 1.f, 0.f, 0.f }));
+	this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e2, glm::vec3{ 0.f, 1.f, 0.f }));
+	this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e3, glm::vec3{ 0.f, 0.f, 1.f }));
+	*/
 
-	// Solve the cubic equation.
-	Utils::CubicResult cubicResult = Utils::solveCubic(a, b, c);
+	// Get the AABB in the base [e1 e2 e3].
+	AABB aabb = getAABB(vertices, numVertices, e1, e2, e3);
 
-	// For finding eigenvectors: http://wwwf.imperial.ac.uk/metric/metric_public/matrices/eigenvalues_and_eigenvectors/eigenvalues2.html
+	/*
+	Return a quaternion to describe the rotation from v1 to v2.
+	*/
+	auto rotateTo = [](const glm::vec3& v1, const glm::vec3& v2)->glm::quat {
+		glm::quat q;
+		glm::vec3 n = glm::normalize(glm::cross(v1, v2));
+		float angle = acosf(glm::dot(v1, v2));
+		q.x = n.x*sinf(angle / 2.f);
+		q.y = n.y*sinf(angle / 2.f);
+		q.z = n.z*sinf(angle / 2.f);
+		q.w = cosf(angle / 2.f);
+		return q;
+	};
 
-	glm::mat3 mat({ cov[0][0], cov[0][1], cov[0][2] }, { cov[1][0], cov[1][1], cov[1][2] }, { cov[2][0], cov[2][1], cov[2][2] });
+	// Rotate the x-axis to the first eigenvector.
+	glm::vec3 vx = glm::vec3{ 1.f, 0.f, 0.f };
+	glm::quat rotX = rotateTo(vx, e1);
 
-	std::pair<glm::mat3, glm::mat3> jacobiResult = Utils::jacobiMethod2(mat);
-
-	/*if (cubicResult.twoEqual || (cubicResult.x2_real == cubicResult.x3_real))
-	{
-		//glm::vec3 e = Utils::calcEigenvector(cubicResult.x1_real, mat);
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e), glm::vec3{ 1.f, 1.f, 0.f }));
-	}
-	else*/
-	{
-		/*
-		float ddd[3];
-		float eee[3];
-		float** matF = new float*[3];
-		for (int i = 0; i < 3; i++)
-		{
-			float* matFI = new float[3];
-			matF[i] = matFI;
-			for (int j = 0; j < 3; j++)
-				matF[i][j] = mat[j][i];
-		}
-		Utils::tred2((float**)matF, 3-1, ddd, eee);
-
-		std::vector<glm::vec3> vvvvv;
-		for (int i = 0; i < 3; i++)
-		{
-			glm::vec3 v;
-			for (int j = 0; j < 3; j++)
-				v[j] = matF[i][j];
-			vvvvv.push_back(v);
-			delete[] matF[i];
-		}
-		delete[] matF;
-
-		*/
-		//glm::vec3 e1 = {1.f, 0.f, 0.f};// Utils::calcEigenvector((double)cubicResult.x1_real, (glm::dmat3)mat);
-		//glm::vec3 e2 = { 0.f, 1.f, 0.f };//Utils::calcEigenvector((double)cubicResult.x2_real, (glm::dmat3)mat);
-		//glm::vec3 e3 = { 0.f, 0.f, 1.f };//Utils::calcEigenvector((double)cubicResult.x3_real, (glm::dmat3)mat);
-
-		glm::vec3 e1 = jacobiResult.second[0];//Utils::powerMethod(mat);
-		glm::vec3 e2 = jacobiResult.second[1];//Utils::powerMethodInv(mat);
-		glm::vec3 e3 = jacobiResult.second[2];//glm::normalize(glm::cross(e1, e2));
-
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e1, glm::vec3{ 1.f, 0.f, 0.f }));
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e2, glm::vec3{ 0.f, 1.f, 0.f }));
-		this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e3, glm::vec3{ 0.f, 0.f, 1.f }));
+	// If the first eigenvector is parallel to the x-axis, do not rotate.
+	float d = glm::dot(vx, e1);
+	if (abs(d) > 0.999f)
+		rotX = glm::quat(1.f, 0.f, 0.f, 0.f);
 		
-		glm::vec3 e4 = e3;
+	// Rotate the z-axis by the previous rotation and then rotate that vector to the second eigenvector.
+	// This is equivalent to make a roll around the previously calculated axis to match the second and third eigenvector..
+	glm::vec3 vz = glm::normalize(rotX * glm::vec3(0.f, 0.f, 1.f));
+	glm::quat roll = rotateTo(vz, e3);
+
+	// If the second eigenvector is parallel to the new z-axis, do not rotate.
+	d = glm::dot(e3, vz);
+	if (abs(d) > 0.999f)
+		roll = glm::quat(1.f, 0.f, 0.f, 0.f);
+
+	return OBB(aabb.first, aabb.second, roll * rotX);
 		
-		float x = jacobiResult.first[0][0];
-		float y = jacobiResult.first[1][1];
-
-		if (y > jacobiResult.first[2][2])
-			e4 = e2;
-
-		if (x < y)
-		{
-			e4 = e1;
-			e1 = e2;
-			y = x;
-			x = jacobiResult.first[1][1];
-		}
-
-		if (x < jacobiResult.first[2][2])
-		{
-			e4 = e1;
-			e1 = e3;
-			y = x;
-			x = jacobiResult.first[2][2];
-		}
-
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e1), glm::vec3{ 1.f, 1.f, 1.f }));
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e4), glm::vec3{ 0.f, 1.f, 1.f }));
-		
-		e1 = glm::normalize(e1);
-		//e4 = glm::normalize(e4);
-		//e4 = glm::normalize(e3);
-		glm::vec3 v1 = glm::normalize(glm::cross(e1, e4));
-		e4 = glm::normalize(glm::cross(e1, v1)); // cross(v1, e1)
-
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e1, glm::vec3{ 1.f, 0.f, 0.f }));
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + v1, glm::vec3{ 0.f, 1.f, 0.f }));
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e4, glm::vec3{ 0.f, 0.f, 1.f }));
-		
-		AABB aabb = getAABB(vertices, numVertices, e1, v1, e4);
-
-		auto length2 = [](const glm::vec3& v)->float {return v.x*v.x + v.y*v.y + v.z*v.z; };
-		/*
-		glm::quat rot;
-		glm::vec3 b1(1.f, 0.f, 0.f);
-		glm::vec3 a = glm::cross(b1, e1);
-		rot.x = a.x;
-		rot.y = a.y;
-		rot.z = a.z;
-		rot.w = glm::sqrt(length2(b1) * length2(e1)) + glm::dot(b1, e1);
-		
-		glm::quat rot2;
-		glm::vec3 b2(0.f, 0.f, 1.f);
-		glm::vec3 a2 = glm::cross(b2, e4);
-		rot2.x = a2.x;
-		rot2.y = a2.y;
-		rot2.z = a2.z;
-		rot2.w = glm::sqrt(length2(b2) * length2(e4)) + glm::dot(b2, e4);
-		
-		glm::mat3 rotMat(e1, v1, e4);
-		glm::quat rot3 = glm::quat_cast(rotMat);
-		
-		a = glm::cross(glm::vec3{ 1.f, 0.f, 0.f }, glm::vec3{0.f, 0.f, -1.f});
-		rot.x = a.x;
-		rot.y = a.y;
-		rot.z = a.z;
-		rot.w = glm::sqrt(length2(b1) * length2(e1)) + glm::dot(b1, e1);
-		*/
-		glm::quat rot;
-		glm::vec3 u = glm::normalize(glm::vec3{1.f, 0.f, 0.f});
-		glm::vec3 v = glm::normalize(e1);//glm::vec3{0.f, 0.f, 1.f});
-		glm::vec3 n = glm::normalize(glm::cross(u, v));
-		float angle = acosf(glm::dot(u, v));
-		rot.x = n.x*sinf(angle/2.f);
-		rot.y = n.y*sinf(angle/2.f);
-		rot.z = n.z*sinf(angle/2.f);
-		rot.w = cosf(angle/2.f);
-
-		float d = glm::dot(glm::vec3{ 1.f, 0.f, 0.f }, e1);
-		if (d > 0.999f || d < -0.999f)
-			rot = glm::quat(1.f, 0.f, 0.f, 0.f);
-		//glm::quat r = rot;
-		auto length2Quat = [](const glm::quat& q)->float { return q.x*q.x + q.y*q.y + q.z*q.z + q.w*q.w; };
-
-		float k = length2Quat(rot);
-		
-		glm::vec3 vv = glm::normalize(rot * glm::vec3(0.f, 0.f, 1.f));
-		glm::vec3 vv2 = glm::normalize(e4);
-
-		glm::quat rot2;
-		u = glm::normalize(vv);
-		v = glm::normalize(vv2);//glm::vec3{0.f, 0.f, 1.f});
-		n = glm::normalize(glm::cross(u, v));
-		angle = acosf(glm::dot(u, v));
-		rot2.x = n.x*sinf(angle / 2.f);
-		rot2.y = n.y*sinf(angle / 2.f);
-		rot2.z = n.z*sinf(angle / 2.f);
-		rot2.w = cosf(angle / 2.f);
-
-		d = glm::dot(vv2, vv);
-		if (d > 0.999f || d < -0.999f)
-			rot2 = glm::quat(1.f, 0.f, 0.f, 0.f);
-
-		k = length2Quat(rot2);
-
-		glm::quat r = rot2 * rot;//rot2 * rot * glm::inverse(rot2);
-		
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + r * glm::vec3{1.f, 0.f, 0.f}, glm::vec3{ 0.5f, 0.f, 0.f }));
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + r * glm::vec3{ 0.f, 1.f, 0.f }, glm::vec3{ 0.f, 0.5f, 0.f }));
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + r * glm::vec3{ 0.f, 0.f, 1.f }, glm::vec3{ 0.f, 0.f, 0.5f }));
-
-		/*
-		u = glm::normalize(glm::vec3{ 0.f, 1.f, 0.f });
-		v = glm::normalize(v1);//glm::vec3{0.f, 0.f, 1.f});
-		n = glm::normalize(glm::cross(u, v));
-		angle = acosf(glm::dot(u, v));
-		rot3.x = n.x*sinf(angle / 2.f);
-		rot3.y = n.y*sinf(angle / 2.f);
-		rot3.z = n.z*sinf(angle / 2.f);
-		rot3.w = cosf(angle / 2.f);
-
-		d = glm::dot(glm::vec3{ 0.f, 1.f, 0.f }, e1);
-		if (d > 0.999f || d < -0.999f)
-			rot3 = glm::quat(1.f, 0.f, 0.f, 0.f);
-
-		k = length2Quat(rot3);
-
-		r = rot3 * rot2 * glm::inverse(rot3);
-
-		k = length2Quat(r);
-		*/
-
-		//e1 = {0.f, 0.f, 1.f};
-		//v1 = { 0.f, 1.f, 0.f };//{cosf(glm::pi<float>()*.25f), sinf(glm::pi<float>()*.25f), 0.f };
-		//e4 = {-1.f, 0.f, 0.f};
-
-		//e4 = -e4;
-
-		/*
-		glm::mat3 m({1.f, 0.f, 0.f}, {0.f, 1.f, 0.f}, {0.f, 0.f, 1.f});
-		glm::mat3 m2(e1, v1, e4);
-		m = glm::inverse(m);
-		
-		m[0][0] = glm::dot({ 1.f, 0.f, 0.f }, glm::normalize(e1));
-		m[1][0] = glm::dot({ 1.f, 0.f, 0.f }, glm::normalize(e4));
-		m[2][0] = glm::dot({ 1.f, 0.f, 0.f }, glm::normalize(v1));
-
-		m[0][1] = glm::dot({ 0.f, 1.f, 0.f }, glm::normalize(e1));
-		m[1][1] = glm::dot({ 0.f, 1.f, 0.f }, glm::normalize(e4));
-		m[2][1] = glm::dot({ 0.f, 1.f, 0.f }, glm::normalize(v1));
-
-		m[0][2] = glm::dot({ 0.f, 0.f, 1.f }, glm::normalize(e1));
-		m[1][2] = glm::dot({ 0.f, 0.f, 1.f }, glm::normalize(e4));
-		m[2][2] = glm::dot({ 0.f, 0.f, 1.f }, glm::normalize(v1));
-		
-		r = glm::quat_cast(m);
-
-		k = length2Quat(r);
-		*/
-		
-		return OBB(aabb.first, aabb.second, r);
-		
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e2), glm::vec3{ 0.f, 1.f, 0.f }));
-		//this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + glm::normalize(e3), glm::vec3{ 0.f, 0.f, 1.f }));
-	}
-
-	//if(lines.empty())
-	//	this->lines.push_back(std::pair<glm::vec3, glm::vec3>({ 0.f, 0.f, 0.f }, {0.f, 6.f, 0.f}));
-
-	//glm::mat3 mat3({ -2.f, -4.f, 2.f }, { -2.f, 1.f, 2.f }, { 4.f, 2.f, 5.f }); // eigenValues: 3, -5, 6
-	//glm::mat3 mat3({ 3.f, 2.f, 4.f }, { 2.f, 0.f, 2.f }, { 4.f, 2.f, 3.f }); // eigenValues: -1, -1, 8
-	
-	//glm::vec3 e = Utils::calcEigenvector(-1, mat3);
-
-	return OBB();
 }
 
 void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, glm::quat rot, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)

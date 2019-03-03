@@ -64,12 +64,12 @@ void Renderer::initInstancing()
 		model->initInstancing();
 	}
 
-	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Test2.fbx"), SHADERS::DEFAULT));
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Cube.fbx"), SHADERS::DEFAULT));
 	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/floor.fbx"), SHADERS::DEFAULT));
 	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Arrow.fbx"), SHADERS::DEFAULT));
 
 
-	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget2.fbx");
+	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
 	this->renderingModels.push_back(std::make_pair(model, SHADERS::DRONE_SHADER));
 	/*
 		Initilize colors vertexBuffer for collision color changing
