@@ -2,6 +2,7 @@
 
 #include <utility>
 #include "glm/glm.hpp"
+#include "glm/gtc/quaternion.hpp"
 
 struct Utils
 {
@@ -16,4 +17,17 @@ struct Utils
 	*/
 	static std::pair<glm::vec3, glm::mat3> jacobiMethod(const glm::mat3& mat, unsigned int maxIterations = 100);
 
+	/*
+	Return a quaternion which describes the rotation from vector v1 to v2.
+	*/
+	static glm::quat rotateTo(const glm::vec3& v1, const glm::vec3& v2);
+
+	/*
+	Converting from Euler angles to quaternion.
+	Atrugments:
+		yaw: Angle in radians of a rotation around the y-axis. 
+		pitch: Angle in radians of a rotation around the x-axis.
+		roll: Angle in radians of a rotation around the z-axis.
+	*/
+	static glm::quat toQuaternion(float yaw, float pitch, float roll);
 };

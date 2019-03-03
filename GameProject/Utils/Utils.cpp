@@ -143,9 +143,38 @@ std::pair<glm::vec3, glm::mat3> Utils::jacobiMethod(const glm::mat3 & mat, unsig
 
 		// Get newest off-diagonal element.
 		index = findMax(e);
-		max = abs(e[index.y][index.x]);
+		max = fabs(e[index.y][index.x]);
 
 		it++;
 	}
 	return std::pair<glm::vec3, glm::mat3>(glm::vec3(e[0][0], e[1][1], e[2][2]), v);
+}
+
+glm::quat Utils::rotateTo(const glm::vec3 & v1, const glm::vec3 & v2)
+{
+	glm::quat q;
+	glm::vec3 n = glm::normalize(glm::cross(v1, v2));
+	float angle = acosf(glm::dot(v1, v2)) * .5f;
+	q.x = n.x*sinf(angle);
+	q.y = n.y*sinf(angle);
+	q.z = n.z*sinf(angle);
+	q.w = cosf(angle);
+	return q;
+}
+
+glm::quat Utils::toQuaternion(float yaw, float pitch, float roll)
+{
+	float cy = cos(roll * .5f);
+	float sy = sin(roll * .5f);
+	float cp = cos(yaw * .5f);
+	float sp = sin(yaw * .5f);
+	float cr = cos(pitch * .5f);
+	float sr = sin(pitch * .5f);
+
+	glm::quat q;
+	q.w = cy * cp * cr + sy * sp * sr;
+	q.x = cy * cp * sr - sy * sp * cr;
+	q.y = sy * cp * sr + cy * sp * cr;
+	q.z = sy * cp * cr - cy * sp * sr;
+	return q;
 }

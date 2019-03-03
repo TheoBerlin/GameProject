@@ -6,6 +6,7 @@
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
 #include <Utils/Logger.h>
+#include <Utils/Utils.h>
 
 void LevelParser::readEntityTargets(Level& level)
 {
@@ -48,8 +49,40 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 
 		entity->setModel(model);
-		auto categories = level.collisionHandler->addCollisionToEntity(entity, CATEGORY::DRONE_BODY);
-		*(categories[2]) = CATEGORY::DRONE_EYE;
+		std::vector<CollisionHandler::ShapeData> shapeData;
+
+		// If no spcific data than this will be used.
+		CollisionHandler::ShapeData droneData;
+		droneData.category = CATEGORY::DRONE_BODY;
+		droneData.scale = entity->getTransform()->getScale();
+		shapeData.push_back(droneData);
+
+		// Main body need to be roteded and repositioned for us to be happy.
+		CollisionHandler::ShapeData droneBodyData;
+		droneBodyData.category = CATEGORY::DRONE_BODY;
+		droneBodyData.scale = entity->getTransform()->getScale();
+		droneBodyData.offset = glm::vec3(0.f, -0.05f, 0.f);
+		droneBodyData.rotation = Utils::toQuaternion(0.f, glm::pi<float>() / 8.f, 0.f);
+		droneBodyData.index = 4;
+		shapeData.push_back(droneBodyData);
+		
+		// Eye of the drone.
+		CollisionHandler::ShapeData droneEyeData;
+		droneEyeData.category = CATEGORY::DRONE_EYE;
+		droneEyeData.scale = entity->getTransform()->getScale();
+		droneEyeData.index = 2;
+
+		// Inner eye of the drone.
+		CollisionHandler::ShapeData droneEyeData2;
+		droneEyeData2.category = CATEGORY::DRONE_EYE;
+		droneEyeData2.scale = entity->getTransform()->getScale();
+		droneEyeData2.index = 3;
+		shapeData.push_back(droneEyeData);
+		
+		level.collisionHandler->addCollisionToEntity(entity, shapeData, false);
+
+		//level.collisionHandler->addCollisionToEntity(entity, CATEGORY::DRONE_BODY, false, Utils::toQuaternion(0.f, glm::pi<float>()/8.f, 0.f));
+		//*(categories[2]) = CATEGORY::DRONE_EYE;
 	}
 }
 

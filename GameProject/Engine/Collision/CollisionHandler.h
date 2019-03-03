@@ -35,16 +35,33 @@ public:
 	void createCollisionBodies(unsigned num);
 	// Returns an unused collision body, nullptr if noone is available.
 	rp3d::CollisionBody* getUnusedBody();
-	// Add collision body to an entity with a predefined shape
-	//void addCollisionToEntity(Entity * entity, SHAPE shape);
 	// Remove a collision body from the world, this will stop collision checking and destory the pointer
 	void removeCollisionBody(rp3d::CollisionBody * body);
 	// Remove collision from an entity
 	void removeCollisionBody(Entity * entity);
 
 	// Add collision body to an entity with a predefined shape
-	std::vector<unsigned short*> addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer = false);
-	void addShape(Model* modelPtr, Vertex* vertices, unsigned int numVertices);
+	void addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer = false, glm::quat rot = glm::quat(1.f, 0.f, 0.f, 0.f));
+
+	struct ShapeData
+	{
+		CATEGORY category;
+		glm::vec3 scale = glm::vec3(1.f);
+		glm::vec3 offset = glm::vec3(0.f);
+		glm::quat rotation = glm::quat(1.f, 0.f, 0.f, 0.f);
+		int index = -1; // The index of the shape this data will affect. If -1, this will effect the one in the same position as the position in the array. 
+	};
+	void addCollisionToEntity(Entity* entity, const std::vector<ShapeData>& shapeData, bool isPlayer = false);
+
+	/*
+	Construct a bounding box around the model.
+	Arguments:
+		modelPtr: A pointer to the model which this shape belongs to. This is used when an entity want to use a shape which already exist.
+		vertices: A pointer to a list of vertices.
+		numVertices: The length of the list of vertices.
+		makeAABB: true if the bounding box should be axis-aligned.
+	*/
+	void constructBoundingBox(Model* modelPtr, Vertex* vertices, unsigned int numVertices, bool makeAABB = false);
 
 	rp3d::Vector3 toReactVec(const glm::vec3& vec);
 	glm::vec3 toGlmVec(const rp3d::Vector3& vec);
@@ -74,7 +91,10 @@ private:
 	AABB getAABB(Vertex* vertices, unsigned int numVertices, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
 	OBB getOBB(Model* ptr, Vertex* vertices, unsigned int numVertices);
 	void constructShape(CollisionShapeDrawingData* data, const glm::vec3& pos, const glm::vec3& size, glm::quat rot = glm::quat(1.f, 0.f, 0.f, 0.f), CATEGORY cat = CATEGORY::NO_COLLISION, const glm::vec3& scale = {1.f, 1.f, 1.f}, const glm::vec3& color = { 1.f, 1.f, 1.f });
-	void addCollisionShapeToBody(rp3d::CollisionBody* body, CollisionShapeDrawingData* data);
+	void addCollisionShapeToBody(rp3d::CollisionBody * body, rp3d::CollisionShape* shape, CATEGORY category, const glm::vec3& pos, const glm::quat& rotation, CollisionShapeDrawingData* data = nullptr);
+
+	void addVariedCollisionShapeToBody(unsigned int index, CollisionShapeDrawingData* shape, rp3d::CollisionBody* body, CATEGORY category, const glm::vec3& scale, const glm::vec3& offset, const glm::quat& rotation);
+	rp3d::Transform getTransformFromEntity(Entity* entity);
 
 	std::unordered_map<rp3d::CollisionBody*, Entity*> entities;
 
@@ -111,8 +131,6 @@ private:
 	std::vector<glm::mat4> matrices;
 	std::vector<glm::vec3> colors;
 
-	//void addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color = { 0.0f, 1.0f, 0.0f }, const glm::vec3& pos = { 0.0, 0.0, 0.0 });
-	//std::vector<std::vector<CollisionShapeDrawingData*>> shapes;
 	std::vector<rp3d::ProxyShape*> proxyShapes;
 
 	bool drawCollisionShapes;

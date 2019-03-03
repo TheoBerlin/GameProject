@@ -320,7 +320,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* m
 		mesh.vertices->push_back(vertex);
 	}
 
-	ch->addShape(model, &(*mesh.vertices)[preIndices], assimpMesh->mNumVertices);
+	ch->constructBoundingBox(model, &(*mesh.vertices)[preIndices], assimpMesh->mNumVertices);
 
 	// Process indices
 	for (unsigned int i = 0; i < assimpMesh->mNumFaces; i += 1) {
