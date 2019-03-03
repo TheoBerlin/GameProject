@@ -44,12 +44,6 @@ CollisionHandler::~CollisionHandler()
 	// Clear the bodies list of pointers
 	this->bodies.clear();
 
-	/*for (auto shapeVector : this->shapes)
-		for (auto data : shapeVector) {
-			delete data->shape;
-			delete data;
-		}*/
-
 	// Delete all the shapes
 	for(auto& shapevector : this->shapesMap)
 		for (auto data : shapevector.second) {
@@ -414,14 +408,6 @@ void CollisionHandler::addCollisionShapeToBody(rp3d::CollisionBody * body, Colli
 {
 	rp3d::Quaternion shapeRot;
 	shapeRot.setAllValues(data->rot.x, data->rot.y, data->rot.z, data->rot.w);
-	/*shapeRot.setAllValues(0.f, 1.f, 0.f, 1.5707963f);
-	float angle = shapeRot.w / 2.f;
-	shapeRot.w = cos(angle);
-	shapeRot.x = shapeRot.x*sin(angle);
-	shapeRot.y = shapeRot.y*sin(angle);
-	shapeRot.z = shapeRot.z*sin(angle);
-	*/
-	//shapeRot = shapeRot.getUnit();
 	rp3d::ProxyShape* proxyShape = body->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
 	proxyShape->setUserData((void*)data);
 	proxyShape->setCollisionCategoryBits(data->category);
