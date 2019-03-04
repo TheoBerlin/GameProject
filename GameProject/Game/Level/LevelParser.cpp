@@ -289,7 +289,7 @@ Model * LevelParser::createQuat()
 	std::vector<GLuint>* indicies = new std::vector<GLuint>();
 
 	Vertex vertex;
-	vertex.Normal = glm::vec3(0.0, 0.0, -1.0);
+	vertex.Normal = glm::vec3(0.0, 0.0, 1.0);
 
 	vertex.Position = glm::vec3(0.0, 0.0, 0.0);
 	vertex.TexCoords = glm::vec2(0.0, 0.0);
@@ -319,9 +319,9 @@ Model * LevelParser::createQuat()
 
 	Material mat;
 	float f = 0.5f;
-	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/noise.jpg");
+	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
 	mat.textures.push_back(tex);
-	mat.Ks_factor = glm::vec4(1.0f);
+	mat.Ks_factor = glm::vec4(40.0f);
 	quad->addMaterial(mat);
 
 	return quad;
