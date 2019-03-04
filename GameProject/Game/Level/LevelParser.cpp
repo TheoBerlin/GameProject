@@ -5,6 +5,8 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
+#include <Engine/AssetManagement/Mesh.h>
+#include <Engine/Rendering/GLAbstraction/RenderingResources.h>
 #include <Utils/Logger.h>
 
 void LevelParser::readEntityTargets(Level& level)
@@ -89,7 +91,68 @@ void LevelParser::readEntityBoxes(Level& level)
 
 void LevelParser::readEntityWalls(Level& level)
 {
-	//Add read for walls
+	float height = 5.0f;
+
+	std::vector<glm::vec3> points;
+	points.push_back(glm::vec3(-5.0, 0.0, -5.0));
+	points.push_back(glm::vec3(5.0, 0.0, -5.0));
+	points.push_back(glm::vec3(5.0, 0.0, 5.0));
+	points.push_back(glm::vec3(3.0, 0.0, 5.0));
+	points.push_back(glm::vec3(3.0, 0.0, 20.0));
+	points.push_back(glm::vec3(5.0, 0.0, 20.0));
+	points.push_back(glm::vec3(5.0, 0.0, 25.0));
+	points.push_back(glm::vec3(-5.0, 0.0, 25.0));
+	points.push_back(glm::vec3(-5.0, 0.0, 20.0));
+	points.push_back(glm::vec3(-3.0, 0.0, 20.0));
+	points.push_back(glm::vec3(-3.0, 0.0, 5.0));
+	points.push_back(glm::vec3(-3.0, 0.0, 5.0));
+	points.push_back(glm::vec3(-5.0, 0.0, 5.0));
+
+	std::vector<glm::vec2> scales;
+
+	Model* model = createQuat();
+
+	// ADD NAME FOR LEVEL EDITOR LATER
+	std::vector<glm::mat4> mats;
+	for (int i = 0; i < points.size(); i++)
+	{
+		Entity* entity = level.entityManager->addEntity();
+		glm::vec3* p1 = &points[i];
+		glm::vec3* p2 = &points[(i + 1) % (points.size())];
+		
+		glm::vec3 width = *p2 - *p1;
+
+		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+			angle = -angle;
+		entity->getTransform()->setRotation(glm::vec3(0.0f, angle, 0.0f));
+
+		float dist = glm::length(width);
+		entity->getTransform()->setScale(glm::vec3(dist, height, 1.0f));
+
+		entity->getTransform()->setPosition(*p1);
+
+		mats.push_back(entity->getTransform()->getMatrix());
+		entity->setModel(model);
+
+		scales.push_back(glm::vec2(glm::length(width), height));
+	}
+
+	Mesh* mesh = model->getMesh(0);
+
+	AttributeLayout matLayout;
+	matLayout.push(4, 1);
+	matLayout.push(4, 1);
+	matLayout.push(4, 1);
+	matLayout.push(4, 1);
+	mesh->addBuffer(&mats[0][0], mats.size() * sizeof(glm::mat4), matLayout);
+
+	AttributeLayout scaleLayout;
+	scaleLayout.push(2, 1);
+	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
+
+
+	ModelLoader::addModel("wall", model);
 }
 
 void LevelParser::readEntityFloor(Level& level)
@@ -193,6 +256,52 @@ void LevelParser::createCollisionBodies(Level& level)
 	bodiesNeeded += jsonFile["Boxes"].size();
 
 	level.collisionHandler->createCollisionBodies(bodiesNeeded);
+}
+
+Model * LevelParser::createQuat()
+{
+	Model* quad = new Model();
+
+	std::vector<Vertex>* vertices = new	std::vector<Vertex>();
+	std::vector<GLuint>* indicies = new std::vector<GLuint>();
+
+	Vertex vertex;
+	vertex.Normal = glm::vec3(0.0, 0.0, -1.0);
+
+	vertex.Position = glm::vec3(0.0, 0.0, 0.0);
+	vertex.TexCoords = glm::vec2(0.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 0.0, 0.0);
+	vertex.TexCoords = glm::vec2(1.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 1.0, 0.0);
+	vertex.TexCoords = glm::vec2(1.0, 1.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(0.0, 1.0, 0.0);
+	vertex.TexCoords = glm::vec2(0.0, 1.0);
+	vertices->push_back(vertex);
+
+	indicies->push_back(0);
+	indicies->push_back(1);
+	indicies->push_back(2);
+	indicies->push_back(2);
+	indicies->push_back(3);
+	indicies->push_back(0);
+
+	Mesh* quadMesh = new Mesh(vertices, indicies, 0, quad);
+	quad->addMesh(quadMesh);
+
+	Material mat;
+	float f = 0.5f;
+	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/noise.jpg");
+	mat.textures.push_back(tex);
+	mat.Ks_factor = glm::vec4(1.0f);
+	quad->addMaterial(mat);
+
+	return quad;
 }
 
 void LevelParser::readLevel(std::string file, Level& level)

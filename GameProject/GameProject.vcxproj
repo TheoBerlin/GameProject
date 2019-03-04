@@ -97,9 +97,9 @@
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\WallShader.cpp" />
   </ItemGroup>
   <ItemGroup>
-
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\CollisionInfo.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.h" />
@@ -189,6 +189,7 @@
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\WallShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />

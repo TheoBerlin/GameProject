@@ -33,6 +33,8 @@ private:
 
 	void createCollisionBodies(Level& level);
 
+	Model* createQuat();
+
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
 	void readLevel(std::string file, Level& level);
