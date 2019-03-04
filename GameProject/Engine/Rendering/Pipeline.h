@@ -19,6 +19,7 @@ struct DirectionalLight {
 enum SHADERS {
 	DEFAULT = 0,
 	DRONE_SHADER = 1, // Requires a third vbo with colors bound to location 7.
+	WALL = 2, //  Requires a third vbo with scale bound to location 7.
 };
 
 enum SHADERS_POST_PROCESS {

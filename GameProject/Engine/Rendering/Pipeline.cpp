@@ -9,6 +9,7 @@
 #include <Engine/Imgui/imgui.h>
 
 #include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
 
@@ -27,6 +28,8 @@ Pipeline::Pipeline()
 											&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
 
 	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+
+	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
