@@ -10,9 +10,6 @@
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/AimPhase.h>
-#include <Engine/GUI/FontManager.h>
-#include <Engine/GUI/Panel.h>
-#include <Engine/GUI/Button.h>
 
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)

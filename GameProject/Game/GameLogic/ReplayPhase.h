@@ -7,7 +7,6 @@
 
 class GuidingPhase;
 class AimPhase;
-class Panel;
 
 class ReplayPhase : public Phase
 {
