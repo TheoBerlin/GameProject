@@ -26,7 +26,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	Do stuff when collision happens
 	*/
 
-	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
+	level.collisionHandler->addCollisionToEntity(this->playerArrow, CATEGORY::ARROW, true);
 
 	// Begin recording collisions
 	level.replaySystem->startRecording();

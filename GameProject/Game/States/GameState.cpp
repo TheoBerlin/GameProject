@@ -11,6 +11,8 @@
 #include <Engine/Components/Camera.h>
 #include <Engine/InputHandler.h>
 
+#include <Engine/Collision/CollisionConfig.h>
+
 #include <Game/GameLogic/TargetManager.h>
 #include "Game/components/ArrowGuider.h"
 
@@ -130,7 +132,7 @@ void GameState::render()
 	*/
 	renderer.drawAllInstanced();
 
-#ifdef ENABLE_COLLISION_BOXES
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
 	this->collisionHandler.updateDrawingData();
 	this->collisionHandler.drawCollisionBoxes();
 #endif

@@ -5,14 +5,16 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "TextureManager.h"
-#include <map>
+#include <unordered_map>
 
+class CollisionHandler;
 class ModelLoader
 {
 public:
 	~ModelLoader();
 
     static Model* loadModel(std::string fileName);
+	static Model* loadModel(std::string fileName, CollisionHandler* ch);
 
 	static std::vector<Model*> getModels();
 	static Model* getModel(const std::string & name);
@@ -20,7 +22,14 @@ public:
     static size_t modelCount();
 
 private:
-    static std::map<std::string, Model*> loadedModels;
+    static std::unordered_map<std::string, Model*> loadedModels;
+
+	struct MeshData
+	{
+		std::vector<Vertex>* vertices;
+		std::vector<unsigned int>* indices;
+		unsigned int materialIndex;
+	};
 
     // Functions for processing assimp's loaded data to our own resource formats
 
@@ -28,5 +37,7 @@ private:
     static void processMaterial(aiMaterial* material, Model* model, aiTextureType type, const std::string& directory);
     static void processNode(const aiScene* scene, aiNode* node, Model* model);
     static void processMesh(aiMesh* assimpMesh, Model* model);
+	static void processNode(const aiScene* scene, aiNode* node, Model* model, CollisionHandler* ch, std::unordered_map<unsigned int, MeshData>* meshMapIn = nullptr);
+	static void processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* model, std::unordered_map<unsigned int, MeshData>& meshMap, const std::string& nodeName);
     static TextureType convertTextureType(const aiTextureType& assimpType);
 };
