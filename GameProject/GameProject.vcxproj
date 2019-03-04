@@ -93,6 +93,8 @@
     <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Collision\VarientMap.h" />
+    <ClInclude Include="Engine\Collision\CollisionConfig.h" />
     <ClInclude Include="Engine\Collision\CollisionInfo.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.h" />
     <ClInclude Include="Engine\Collision\CollisionRenderer.h" />

@@ -9,7 +9,6 @@
 #define IMGUI
 
 //Debug defines
-#define ENABLE_COLLISION_BOXES
 #define ENABLE_PATH_VISUALIZERS false
 
 // Common defines

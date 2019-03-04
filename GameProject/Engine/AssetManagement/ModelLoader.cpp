@@ -136,7 +136,6 @@ void ModelLoader::unloadAllModels()
         delete itr->second;
 		itr->second = nullptr;
     }
-
 }
 
 size_t ModelLoader::modelCount()
@@ -263,7 +262,8 @@ void ModelLoader::processNode(const aiScene * scene, aiNode * node, Model * mode
 			LOG_WARNING("Ignoring mesh: Missing TX coordinates");
 			continue;
 		}
-		processMesh(scene->mMeshes[node->mMeshes[i]], ch, model, *meshMap);
+		aiString name = node->mName;
+		processMesh(scene->mMeshes[node->mMeshes[i]], ch, model, *meshMap, name.C_Str());
 	}
 
 	// Recursively process child nodes
@@ -283,7 +283,7 @@ void ModelLoader::processNode(const aiScene * scene, aiNode * node, Model * mode
 	}
 }
 
-void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* model, std::unordered_map<unsigned int, ModelLoader::MeshData>& meshMap)
+void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* model, std::unordered_map<unsigned int, ModelLoader::MeshData>& meshMap, const std::string& nodeName)
 {
 	// Store material index
 	// The materials in assimp are stored in the same order as in the new model,
@@ -320,7 +320,7 @@ void ModelLoader::processMesh(aiMesh* assimpMesh, CollisionHandler* ch, Model* m
 		mesh.vertices->push_back(vertex);
 	}
 
-	ch->constructBoundingBox(model, &(*mesh.vertices)[preIndices], assimpMesh->mNumVertices);
+	ch->constructBoundingBox(model, &(*mesh.vertices)[preIndices], assimpMesh->mNumVertices, nodeName);
 
 	// Process indices
 	for (unsigned int i = 0; i < assimpMesh->mNumFaces; i += 1) {

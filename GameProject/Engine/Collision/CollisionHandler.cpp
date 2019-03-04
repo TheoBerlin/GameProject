@@ -27,14 +27,13 @@ CollisionHandler::CollisionHandler()
 	// Create the world with the settings
 	this->world = new rp3d::CollisionWorld(settings);
 
-#ifdef ENABLE_COLLISION_BOXES
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
 	//Register callback for drawing GUI
 	EventBus::get().subscribe(this, &CollisionHandler::toggleDrawing);
 
 	this->drawCollisionShapes = false;
 #endif
 }
-
 
 CollisionHandler::~CollisionHandler()
 {
@@ -115,7 +114,7 @@ void CollisionHandler::removeCollisionBody(Entity * entity)
 		// Remove the proxy collision shape
 		rp3d::ProxyShape* nextElement = current->getNext();
 		
-		// TEMPORARY
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
 		rp3d::ProxyShape* proxyPtr;
 		size_t size = this->proxyShapes.size();
 		for (size_t i = 0; i < size; i++) {
@@ -125,6 +124,7 @@ void CollisionHandler::removeCollisionBody(Entity * entity)
 				this->proxyShapes.pop_back();
 			}
 		}
+#endif
 
 		body->removeCollisionShape(current);
 
@@ -173,22 +173,10 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, CATEGORY cat, bool 
 		this->player = entityBody;
 
 	
-#ifdef ENABLE_COLLISION_BOXES
 	unsigned int index = 0;
 	glm::vec3 entityScale = entity->getTransform()->getScale();
 	for (auto data : this->shapesMap[entity->getModel()]) 
-	{	
-		addVariedCollisionShapeToBody(index, data, entityBody, cat, entityScale, glm::vec3(0.f), rot);
-		index++;
-	}
-
-#else
-
-	for (auto data : this->shapesMap[modelPtr]) {
-		entityBody->addCollisionShape(data->shape, rp3d::Transform(this->toReactVec(data->pos), shapeRot));
-	}
-
-#endif
+		addVariedCollisionShapeToBody(index++, data, entityBody, cat, entityScale, glm::vec3(1.f), glm::vec3(0.f), rot);
 
 	entityBody->setTransform(transform);
 
@@ -231,18 +219,23 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, const std::vector<S
 	if (isPlayer)
 		this->player = entityBody;
 
+
+	unsigned int numShapes = this->shapesMap[entity->getModel()].size();
 	
 	// List of indices which corresponds to data in the shapeData list. -1 means it has not been chosen yet.
-	std::vector<int> orderedDataExist(this->shapesMap[entity->getModel()].size());
-	for (int& i : orderedDataExist)
-		i = -1;
+	std::vector<int> orderedDataExist(numShapes, -1);
+
+	std::vector<std::string> orderedDataNames;
+	for (auto data : this->shapesMap[entity->getModel()])
+		orderedDataNames.push_back(data->name);
+
 	// Put the right shapeData on the appropriate index.
-	std::vector<ShapeData> orderedData(this->shapesMap[entity->getModel()].size());
+	std::vector<ShapeData> orderedData(numShapes);
 	for (unsigned int i = 0; i < orderedData.size(); i++) {
 		for (unsigned int j = 0; j < shapeData.size(); j++) {
 			ShapeData d = shapeData[j];
 			// If not chosen, pick a shape with index of -1.
-			if (orderedDataExist[i] < 0 && d.index == -1) {
+			if (orderedDataExist[i] < 0 && (d.index == -1 && d.name.empty())) {
 				orderedData[i] = d;
 			}
 
@@ -252,25 +245,20 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, const std::vector<S
 				orderedDataExist[i] = j;
 			}
 
-			// If this has the correct index. Pick this and go to next ordered element.
-			if (i == d.index) {
+			// If this has the correct index or name. Pick this and go to next ordered element.
+			if (i == d.index || (d.name == orderedDataNames[i] && d.name.empty() == false)) {
 				orderedData[i] = d;
 				orderedDataExist[i] = j;
 				break;
 			}
 		}
-
-		// This is for debugging purposes. Can be deleted.
-		if (orderedDataExist[i] == -1)
-			orderedDataExist[i] = -2;
 	}
 
 	unsigned int index = 0;
 	for (auto data : this->shapesMap[entity->getModel()])
 	{
 		ShapeData shape = orderedData[index];
-		addVariedCollisionShapeToBody(index, data, entityBody, shape.category, shape.scale, shape.offset, shape.rotation);
-		index++;
+		addVariedCollisionShapeToBody(index++, data, entityBody, shape.category, shape.scale, shape.localScale, shape.offset, shape.rotation);
 	}
 
 	entityBody->setTransform(transform);
@@ -281,7 +269,7 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, const std::vector<S
 	this->entities[entityBody] = entity;
 }
 
-void CollisionHandler::constructBoundingBox(Model* modelPtr, Vertex* vertices, unsigned int numVertices, bool makeAABB)
+void CollisionHandler::constructBoundingBox(Model* modelPtr, Vertex* vertices, unsigned int numVertices, const std::string& name, bool makeAABB)
 {
 	OBB boundingBox;
 	if (makeAABB) {
@@ -301,6 +289,7 @@ void CollisionHandler::constructBoundingBox(Model* modelPtr, Vertex* vertices, u
 	size.y = glm::max(size.y, 0.01f);
 	size.z = glm::max(size.z, 0.01f);
 	constructShape(data, std::get<1>(boundingBox), size, std::get<2>(boundingBox));
+	data->name = name;
 	this->shapesMap[modelPtr].push_back(data);
 }
 
@@ -391,11 +380,6 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 	glm::vec3 e1 = glm::normalize(jacobiResult.second[0]);
 	glm::vec3 e2 = glm::normalize(jacobiResult.second[1]);
 	glm::vec3 e3 = glm::normalize(jacobiResult.second[2]);
-	/*
-	this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e1, glm::vec3{ 1.f, 0.f, 0.f }));
-	this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e2, glm::vec3{ 0.f, 1.f, 0.f }));
-	this->lines[modelPtr].push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(centroid, centroid + e3, glm::vec3{ 0.f, 0.f, 1.f }));
-	*/
 
 	// Get the AABB in the base [e1 e2 e3].
 	AABB aabb = getAABB(vertices, numVertices, e1, e2, e3);
@@ -420,12 +404,13 @@ CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertice
 		roll = glm::quat(1.f, 0.f, 0.f, 0.f);
 
 	return OBB(aabb.first, aabb.second, roll * rotX);
-		
 }
 
 void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, glm::quat rot, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)
 {
+#ifdef ENABLE_COLLISION_BOXES
 	data->color = color;
+#endif
 	data->scale = scale;
 	data->pos = pos;
 	data->size = size;
@@ -441,33 +426,36 @@ void CollisionHandler::addCollisionShapeToBody(rp3d::CollisionBody * body, rp3d:
 	rp3d::Quaternion shapeRot;
 	shapeRot.setAllValues(rotation.x, rotation.y, rotation.z, rotation.w);
 	rp3d::ProxyShape* proxyShape = body->addCollisionShape(shape, rp3d::Transform(this->toReactVec(pos), shapeRot));
+	proxyShape->setCollisionCategoryBits(category);
 	if(data != nullptr)
 		proxyShape->setUserData((void*)data);
-	proxyShape->setCollisionCategoryBits(category);
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
 	this->proxyShapes.push_back(proxyShape);
+#endif
 }
 
-void CollisionHandler::addVariedCollisionShapeToBody(unsigned int index, CollisionShapeDrawingData* shape, rp3d::CollisionBody* body, CATEGORY category, const glm::vec3& scale, const glm::vec3& offset, const glm::quat& rotation)
+void CollisionHandler::addVariedCollisionShapeToBody(unsigned int index, CollisionShapeDrawingData* shape, rp3d::CollisionBody* body, CATEGORY category, const glm::vec3& scale, const glm::vec3& localScale, const glm::vec3& offset, const glm::quat& rotation)
 {
 	bool addVarient = false;
 	// Construct new shape if scale does not match.
+	glm::vec3 totalScale = scale * localScale;
 	if (shape->scale != scale)
 	{
 		// Add shape for this scale if it does not exist.
-		if (this->varientShapesMap.find(std::make_tuple(scale.x, scale.y, scale.z)) == this->varientShapesMap.end())
+		if (this->varientShapesMap.find(std::make_tuple(totalScale.x, totalScale.y, totalScale.z)) == this->varientShapesMap.end())
 		{
-			this->varientShapesMap.insert(std::pair<MapKey, MapData>(std::make_tuple(scale.x, scale.y, scale.z), MapData()));
+			this->varientShapesMap.insert(std::pair<MapKey, MapData>(std::make_tuple(totalScale.x, totalScale.y, totalScale.z), MapData()));
 			addVarient = true;
 		}
 
 		CollisionShapeDrawingData* newShape = nullptr;
-		MapData& map = this->varientShapesMap[std::make_tuple(scale.x, scale.y, scale.z)];
+		MapData& map = this->varientShapesMap[std::make_tuple(totalScale.x, totalScale.y, totalScale.z)];
 
 		// Add new shape if it does not exist.
 		if(map.shapes.size()-1 < index || addVarient)
 		{
 			newShape = new CollisionShapeDrawingData();
-			constructShape(newShape, shape->pos*scale, shape->size*scale, shape->rot, category, scale, { 1.f, 0.f, 1.f });
+			constructShape(newShape, shape->pos*scale, shape->size*totalScale, shape->rot, category, totalScale, { 1.f, 0.f, 1.f });
 			map.shapes.push_back(newShape);
 		}
 		else
@@ -476,11 +464,11 @@ void CollisionHandler::addVariedCollisionShapeToBody(unsigned int index, Collisi
 			newShape = map.shapes[index];
 		}
 
-		addCollisionShapeToBody(body, newShape->shape, (CATEGORY)newShape->category, newShape->pos + offset, rotation * newShape->rot, newShape);
+		addCollisionShapeToBody(body, newShape->shape, (CATEGORY)(newShape->category != (unsigned short)category ? category : newShape->category), newShape->pos + offset, rotation * newShape->rot, newShape);
 	}
 	else
 	{
-		addCollisionShapeToBody(body, shape->shape, (CATEGORY)shape->category, shape->pos + offset, rotation * shape->rot, shape);
+		addCollisionShapeToBody(body, shape->shape, (CATEGORY)(shape->category != (unsigned short)category ? category : shape->category), shape->pos + offset, rotation * shape->rot, shape);
 	}
 }
 
@@ -493,7 +481,7 @@ rp3d::Transform CollisionHandler::getTransformFromEntity(Entity * entity)
 	return rp3d::Transform(pos, rotation);
 }
 
-#ifdef ENABLE_COLLISION_BOXES
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
 
 void CollisionHandler::toggleDrawing(KeyEvent * ev)
 {
@@ -505,69 +493,77 @@ void CollisionHandler::toggleDrawing(KeyEvent * ev)
 void CollisionHandler::updateDrawingData()
 {
 	if (this->drawCollisionShapes) {
+	#if defined(ENABLE_COLLISION_BOXES)
 		this->matrices.clear();
 		this->colors.clear();
+	#endif
+
+	#if defined(ENABLE_AXIS_FOR_COLLISION_BOXES)
+		this->lines.clear();
+	#endif
 
 		for (auto proxyShape : this->proxyShapes) {
 			CollisionShapeDrawingData* data = (CollisionShapeDrawingData*)(proxyShape->getUserData());
 			rp3d::Transform trans = proxyShape->getLocalToWorldTransform();
-			glm::vec3 eulerAngles = glm::eulerAngles(this->toGlmQuat(trans.getOrientation()));
+			glm::quat rot = this->toGlmQuat(trans.getOrientation());
+			glm::vec3 pos = this->toGlmVec(trans.getPosition());
+
+	#if defined(ENABLE_COLLISION_BOXES)
+			glm::vec3 eulerAngles = glm::eulerAngles(rot);
 
 			glm::mat4 mat(1.0f);
-			mat = glm::translate(mat, this->toGlmVec(trans.getPosition()));
+			mat = glm::translate(mat, pos);
 			mat = glm::rotate(mat, eulerAngles.z, glm::vec3(0.0f, 0.0f, 1.0f));
 			mat = glm::rotate(mat, eulerAngles.y, glm::vec3(0.0f, 1.0f, 0.0f));
 			mat = glm::rotate(mat, eulerAngles.x, glm::vec3(1.0f, 0.0f, 0.0f));
 			mat = glm::scale(mat, data->size);
 			this->matrices.push_back(mat);
 			this->colors.push_back(data->color);
+	#endif
+
+	#if defined(ENABLE_AXIS_FOR_COLLISION_BOXES)
+			glm::vec3 e1 = rot * glm::vec3(1.f, 0.f, 0.f) * 0.2f;
+			glm::vec3 e2 = rot * glm::vec3(0.f, 1.f, 0.f) * 0.2f;
+			glm::vec3 e3 = rot * glm::vec3(0.f, 0.f, 1.f) * 0.2f;
+
+			this->lines.push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(pos, pos + e1, glm::vec3{ 1.f, 0.f, 0.f }));
+			this->lines.push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(pos, pos + e2, glm::vec3{ 0.f, 1.f, 0.f }));
+			this->lines.push_back(std::tuple<glm::vec3, glm::vec3, glm::vec3>(pos, pos + e3, glm::vec3{ 0.f, 0.f, 1.f }));
+	#endif
 		}
 
+	#if defined(ENABLE_COLLISION_BOXES)
 		this->cRenderer.updateColors(colors);
 		this->cRenderer.updateMatrices(matrices);
+	#endif
 
-
+	#if defined(ENABLE_AXIS_FOR_COLLISION_BOXES)
 		// Update lines
 		if (this->lines.empty() == false)
 		{
-			this->lines2.clear();
+			this->linesDivided.clear();
 			this->matricesLines.clear();
 			this->colorsLines.clear();
-			for (auto& lineArr : this->lines) {
-				glm::mat4 mat(1.0f);
-				for (std::tuple<glm::vec3, glm::vec3, glm::vec3>& line : lineArr.second)
-				{
-					this->lines2.push_back(std::get<0>(line));
-					this->lines2.push_back(std::get<1>(line));
-					this->matricesLines.push_back(mat);
-					this->colorsLines.push_back(std::get<2>(line));
-					this->colorsLines.push_back(std::get<2>(line));
-				}
+			glm::mat4 mat(1.0f);
+			for (std::tuple<glm::vec3, glm::vec3, glm::vec3>& line : this->lines)
+			{
+				this->linesDivided.push_back(std::get<0>(line));
+				this->linesDivided.push_back(std::get<1>(line));
+				this->matricesLines.push_back(mat);
+				this->colorsLines.push_back(std::get<2>(line));
+				this->colorsLines.push_back(std::get<2>(line));
 			}
 
-			this->cRenderer.updateLines(this->lines2);
+			this->cRenderer.updateLines(this->linesDivided);
 			this->cRenderer.updateColorsLine(colorsLines);
 			this->cRenderer.updateMatricesLine(matricesLines);
 		}
+	#endif
 	}
 }
-
 void CollisionHandler::drawCollisionBoxes()
 {
 	if (this->drawCollisionShapes)
 		this->cRenderer.render();
 }
-#else
-
-
-void CollisionHandler::addShape(SHAPE shape, CATEGORY cat, const glm::vec3& scale, const glm::vec3 & pos)
-{
-	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
-	data->pos = pos;
-	data->shape = new rp3d::BoxShape(this->toReactVec(scale));
-	data->category = cat;
-
-	this->shapes[(size_t)shape].push_back(data);
-}
-
 #endif

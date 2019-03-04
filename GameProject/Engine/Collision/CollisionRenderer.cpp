@@ -6,6 +6,8 @@
 #include "Engine/Rendering/Display.h"
 #include "Engine/Rendering/Renderer.h"
 
+#include "CollisionConfig.h"
+
 CollisionRenderer::CollisionRenderer()
 {
 	this->shader = new Shader("./Engine/Rendering/Shaders/CollisionBox.vert", "./Engine/Rendering/Shaders/CollisionBox.frag");
@@ -129,16 +131,19 @@ void CollisionRenderer::render()
 	this->shader->bind();
 	this->shader->setUniformMatrix4fv("vp", 1, false, &(Display::get().getRenderer().getActiveCamera()->getVP()[0][0]));
 
+#ifdef ENABLE_COLLISION_BOXES
 	// Draw boxes.
 	this->collisionBoxMesh->bindVertexArray();
 	IndexBuffer& ibBox = this->collisionBoxMesh->getIndexBuffer();
 	ibBox.bind();
 	glDrawElementsInstanced(GL_LINE_STRIP, ibBox.getCount(), GL_UNSIGNED_INT, 0, this->instanceCountBox);
+#endif
 
 	// Draw lines.
+#ifdef ENABLE_AXIS_FOR_COLLISION_BOXES
 	this->lineMesh->bindVertexArray();
 	IndexBuffer& ibLine = this->lineMesh->getIndexBuffer();
 	ibLine.bind();
 	glDrawElementsInstanced(GL_LINES, ibLine.getCount(), GL_UNSIGNED_INT, 0, this->instanceCountLine);
-	//glDrawArraysInstanced(GL_LINES, 0, 2, this->instanceCountLine);
+#endif
 }
