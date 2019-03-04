@@ -92,16 +92,6 @@ void GameState::update(const float dt)
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 
-	////Get arrow replay position
-	//if (entityManager.getTracedEntity("ArrowReplay") != nullptr) {
-	//	ParticleManager::get().update(dt);
-	//	emitter.setPosition(entityManager.getTracedEntity("ArrowReplay")->getTransform()->getPosition());
-	//	emitter.playEmitter(2);
-	//}
-	//else {
-	//	emitter.stopEmitter();
-	//}
-
 	ParticleManager::get().update(dt);
 
 	for (unsigned int i = 0; i < entities.size(); i += 1) {
