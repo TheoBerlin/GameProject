@@ -47,7 +47,7 @@ float ShadowCalculation(vec4 fragLightSpace)
 void main()
 {
     vec2 limit = vec2(fragUv.x * fragScale.x, fragUv.y * fragScale.y);
-    limit /= 10;
+    limit = vec2(limit.x / 10.0, limit.y / 5.0);
 
     vec3 texColor = texture2D(tex, vec2(mod(limit.x, 1.0), mod(limit.y, 1.0))).rgb;
     //vec3 texColor = texture2D(tex, fragUv).rgb;

@@ -19,7 +19,7 @@ void main()
 {
     fragScale = scaleUV;
     fragNormal = (transform * vec4(normal, 0.0)).xyz;
-    fragUv = uv;
+    fragUv = vec2(uv.x, 1 - uv.y);
     fragPos = (transform * vec4(position, 1.0)).xyz;
     fragLightPos = lightMatrix * transform * vec4(position, 1.0);
     gl_Position = vp * transform * vec4(position, 1.0);
