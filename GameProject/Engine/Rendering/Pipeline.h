@@ -7,8 +7,13 @@
 #include "Engine/Rendering/Shaders/ShaderShells/EntityShader.h"
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
+#include "Engine/Particle/ParticleManager.h"
+#include "Engine/Rendering/GLAbstraction/VertexArray.h"
+#include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
+
 
 class Entity;
+class PostProcessShader;
 
 struct DirectionalLight {
 	glm::vec4 direction;
@@ -20,11 +25,22 @@ enum SHADERS {
 	DRONE_SHADER = 1, // Requires a third vbo with colors bound to location 7.
 };
 
+enum SHADERS_POST_PROCESS {
+	NO_FILTER = 0,
+	BLUR_FILTER = 1, 
+};
+
 class Pipeline
 {
 public:
 	Pipeline();
 	~Pipeline();
+
+	/*
+		Used for rendering particles
+	*/
+	Texture* drawParticle();
+
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
@@ -43,10 +59,12 @@ public:
 	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
 	Texture* drawModelToTexture(const std::vector<std::pair<Model*, SHADERS>>& renderingModels);
 
+	Texture* combineTextures(Texture* sceen, Texture* particles);
+
 	/*
 		Use texture to draw to quad which cover the whole screen
 	*/
-	void drawTextureToQuad(Texture* tex);
+	void drawTextureToQuad(Texture* tex, SHADERS_POST_PROCESS shader = SHADERS_POST_PROCESS::NO_FILTER, bool drawToFBO = false);
 
 	/*
 		Draws models using instancing - seperate drawing method from functions above
@@ -91,7 +109,6 @@ private:
 
 	// New rendering draw functions
 	void drawModelPrePassInstanced(Model * model);
-
 	void updateFramebufferDimension(WindowResizeEvent* event);
 
 	void prePassDepthOn();
@@ -100,11 +117,14 @@ private:
 	Shader* ZprePassShader;				// Old rendering
 	Shader* testShader;					// Old rendering
 	Shader* ZprePassShaderInstanced;
-	Shader* entityShaderInstanced;
 	Shader* quadShader;
+	Shader* particleShader;
+	Shader* combineShader;
 
 	std::vector<EntityShader*> entityShaders;
+	std::vector<PostProcessShader*> postProcessShaders;
 
+	void createQuad();
 	Model* quad;
 
 	DirectionalLight mainLight;

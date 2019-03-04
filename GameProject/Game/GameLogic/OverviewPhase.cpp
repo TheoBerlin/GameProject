@@ -24,7 +24,7 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
     /*
 		Create arrow entity
 	*/
-	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
+	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx", level.collisionHandler);
 
     playerArrow = level.entityManager->addTracedEntity("PlayerArrow");
 
@@ -40,6 +40,12 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
 	new PlayerCollision(playerArrow);
 
     commonSetup();
+}
+
+OverviewPhase::~OverviewPhase()
+{
+	EventBus::get().unsubscribe(this, &OverviewPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &OverviewPhase::transitionToAim);
 }
 
 Entity* OverviewPhase::getOverviewCamera() const

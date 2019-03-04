@@ -2,6 +2,7 @@
 
 #include <Engine/Collision/CollisionHandler.h>
 #include <Engine/Entity/EntityManager.h>
+#include <Engine/Particle/ParticleManager.h>
 #include <Engine/GUI/GUI.h>
 #include <Game/GameLogic/TargetManager.h>
 #include <Game/GameLogic/ReplaySystem.h>

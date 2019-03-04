@@ -10,8 +10,8 @@ class Model;
 class Mesh
 {
 public:
-    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent);
-	Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout);
+    Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent, GLenum usage = GL_STATIC_DRAW);
+	Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout, GLenum usage = GL_STATIC_DRAW);
     ~Mesh();
 
     void bindVertexArray();

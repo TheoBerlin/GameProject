@@ -1,7 +1,7 @@
 #include "Mesh.h"
 #include "Model.h"
 
-Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent)
+Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent, GLenum usage)
     : vertices(vertices),
     vertexIndices(vertexIndices),
     materialIndex(materialIndex),
@@ -10,7 +10,7 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 	// Load mesh to GPU.
     this->vao = new VertexArray();
 	this->vao->bind();
-	VertexBuffer* vbo = new VertexBuffer((void*)&((*vertices)[0].Position.x), vertices->size() * sizeof(Vertex));
+	VertexBuffer* vbo = new VertexBuffer((void*)&((*vertices)[0].Position.x), vertices->size() * sizeof(Vertex), usage);
 	AttributeLayout layout;
 	layout.push(3); // vec3 Position
 	layout.push(3); // vec3 Normal
@@ -21,17 +21,17 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 	this->ib = new IndexBuffer((void*)&((*vertexIndices)[0]), vertexIndices->size());
 }
 
-Mesh::Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout)
+Mesh::Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout, GLenum usage)
 {
 	// Load mesh to GPU.
 	this->vao = new VertexArray();
 	this->vao->bind();
 
-	VertexBuffer* vbo = new VertexBuffer(data, dataSize);
+	VertexBuffer* vbo = new VertexBuffer(data, dataSize, usage);
 	this->vao->addBuffer(vbo, layout);
 
 	this->vao->bind();
-	this->ib = new IndexBuffer(indices, indicesSize);
+	this->ib = new IndexBuffer(indices, indicesSize, usage);
 }
 
 void Mesh::bindVertexArray()

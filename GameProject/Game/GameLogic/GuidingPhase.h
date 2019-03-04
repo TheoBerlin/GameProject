@@ -10,6 +10,7 @@ class GuidingPhase : public Phase
 {
 public:
     GuidingPhase(AimPhase* other);
+	~GuidingPhase();
 
     void update(const float& dt);
 

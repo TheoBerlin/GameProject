@@ -7,6 +7,7 @@ class Entity;
 class PathTreader;
 class RollNullifier;
 class Hover;
+class Explosion;
 struct KeyPoint;
 
 struct MovingTarget {
@@ -16,6 +17,7 @@ struct MovingTarget {
 
 struct StaticTarget {
     Hover* hoverAnimation;
+	Explosion* explosion;
 };
 
 class TargetManager

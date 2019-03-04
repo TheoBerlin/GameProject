@@ -27,7 +27,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	/*
 	Do stuff when collision happens
 	*/
-	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
+	level.collisionHandler->addCollisionToEntity(this->playerArrow, CATEGORY::ARROW, true);
 
 	// Begin recording collisions
 	level.replaySystem->startRecording();
@@ -39,6 +39,13 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 void GuidingPhase::update(const float& dt)
 {
     flightTimer += dt;
+}
+
+GuidingPhase::~GuidingPhase()
+{
+	EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
+	EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
 }
 
 Entity* GuidingPhase::getPlayerArrow() const
