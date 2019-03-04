@@ -70,6 +70,11 @@ void TargetManager::resetTargets()
     resetStaticTargets();
 }
 
+unsigned TargetManager::getTargetCount()
+{
+	return this->movingTargets.size() + this->staticTargets.size();
+}
+
 void TargetManager::setupTargetGeneric(Entity* host)
 {
     host->getTransform()->setScale(0.25f);

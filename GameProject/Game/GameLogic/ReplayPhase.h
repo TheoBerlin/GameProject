@@ -15,6 +15,8 @@ public:
     ReplayPhase(AimPhase* aimPhase);
 	~ReplayPhase();
 
+	void update(const float& dt);
+
     Entity* getFreeCam() const;
 
     Entity* getReplayArrow() const;
@@ -24,6 +26,8 @@ private:
     void handleKeyInput(KeyEvent* event);
 
     void transitionToAim(CameraTransitionEvent* event);
+
+	float timeLeft;
 
     Entity* freeCam;
     FreeMove* freeMove;

@@ -32,6 +32,9 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	// Begin recording collisions
 	level.replaySystem->startRecording();
 
+	// Start scoreManager timer
+	level.scoreManager->start();
+
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
@@ -76,6 +79,8 @@ void GuidingPhase::beginReplayTransition()
 
     level.replaySystem->stopRecording();
 
+	level.scoreManager->stop();
+
     // Get flight time
     flightTime = flightTimer;
 
@@ -117,7 +122,22 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 	// Check if the arrow hit static geometry
     unsigned int category = ev->shape2->getCollisionCategoryBits();
 
-    if (category == CATEGORY::STATIC) {
-        beginReplayTransition();
-    }
+	switch (category)
+	{
+		case CATEGORY::STATIC:
+		{
+			beginReplayTransition();
+			break;
+		}
+		case CATEGORY::DRONE_BODY:
+		{
+			level.scoreManager->score();
+			break;
+		}
+		case CATEGORY::DRONE_EYE:
+		{
+			level.scoreManager->scoreBonus();
+			break;
+		}
+	}
 }

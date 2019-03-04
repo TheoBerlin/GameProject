@@ -33,6 +33,9 @@ public:
     // Reset target components such as the path treader
     void resetTargets();
 
+	// Returns the number of targets in target manager
+	unsigned getTargetCount();
+
 private:
     // Common setup for targets
     void setupTargetGeneric(Entity* host);

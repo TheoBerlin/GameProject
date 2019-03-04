@@ -7,6 +7,7 @@
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
 #include "Engine/Collision/CollisionHandler.h"
+#include <Game/GameLogic/ScoreManager.h>
 
 class GameState : public State
 {
@@ -29,4 +30,5 @@ private:
 	GameLogic gameLogic;
 	CollisionHandler collisionHandler;
 	ReplaySystem replaySystem;
+	ScoreManager scoreManager;
 };

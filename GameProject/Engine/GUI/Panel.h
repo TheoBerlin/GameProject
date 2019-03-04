@@ -49,17 +49,17 @@ public:
 	/*
 	Get the position in pixels.
 	*/
-	glm::vec2 getGlobalPosition() const;
+	glm::ivec2 getGlobalPosition() const;
 
 	/*
 	Set the poisition in pixels. This will not rebake the texture!
 	*/
-	void setPosition(glm::vec2 pos);
+	void setPosition(glm::ivec2 pos);
 
 	/*
 	Get the position in pixels.
 	*/
-	glm::vec2 getPosition() const;
+	glm::ivec2 getPosition() const;
 
 	/*
 	Set the size in pixels. This will not rebake the texture!
@@ -141,7 +141,14 @@ public:
 	Return:
 		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
 	*/
-	std::vector<std::pair<Text*, glm::vec2>>& getTextList();
+	std::vector<std::pair<Text*, glm::ivec2>>& getTextList();
+
+		/*
+	Get a list of the current text elements.
+	Return:
+		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
+	*/
+	Text * getText(const unsigned& index);
 
 	/*
 	Get a list of the current children attached to the panel.
@@ -263,15 +270,15 @@ protected:
 
 	Panel* parent;
 	std::vector<Panel*> children;
-	std::vector<std::pair<Text*, glm::vec2>> textList;
+	std::vector<std::pair<Text*, glm::ivec2>> textList;
 
 	Texture* bakedTexture;
 	Texture* backgroundTexture;
 
 	glm::vec4 color;
 
-	glm::vec2 globalPos;
-	glm::vec2 pos;
+	glm::ivec2 globalPos;
+	glm::ivec2 pos;
 	glm::uvec2 size;
 
 	std::vector<std::pair<bool, GUI::OPTION_VALUE>> options;

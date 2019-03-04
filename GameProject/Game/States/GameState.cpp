@@ -32,6 +32,7 @@ GameState::GameState(const std::string& levelJSON)
 	level.collisionHandler = &this->collisionHandler;
 	level.gui = &this->getGUI();
 	level.replaySystem = &this->replaySystem;
+	level.scoreManager = &this->scoreManager;
 
 	levelParser.readLevel(levelJSON, level);
 
@@ -83,13 +84,14 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
-	gameLogic.update(dt);
-
 	if (!this->hasSubscribedToPause) {
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
 		this->hasSubscribedToPause = true;
 	}
+
+	// Update gamelogic
+	this->gameLogic.update(dt);
 
 	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();

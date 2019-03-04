@@ -11,6 +11,7 @@
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/AimPhase.h>
 
+
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase)
 {
@@ -61,9 +62,20 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     // Begin replaying playthrough
     level.replaySystem->startReplaying();
 
+	this->timeLeft = level.scoreManager->getTotalTime();
+
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
+}
+
+void ReplayPhase::update(const float & dt)
+{
+	this->timeLeft -= dt;
+	if (this->timeLeft <= 0 && !level.scoreManager->resultsVisible())
+	{
+		level.scoreManager->showResults(level);
+	}
 }
 
 ReplayPhase::~ReplayPhase()
