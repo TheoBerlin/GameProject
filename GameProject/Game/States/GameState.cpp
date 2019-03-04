@@ -84,8 +84,6 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
-	gameLogic.update(dt);
-
 	if (!this->hasSubscribedToPause) {
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
