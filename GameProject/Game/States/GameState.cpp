@@ -12,6 +12,7 @@
 #include <Engine/InputHandler.h>
 
 #include <Game/GameLogic/TargetManager.h>
+#include "Game/components/ArrowGuider.h"
 
 #include "Game/States/PauseState.h"
 
@@ -40,6 +41,7 @@ GameState::GameState(const std::string& levelJSON)
 
 	//For pause event
 	this->hasSubscribedToPause = false;
+
 }
 
 GameState::~GameState()
@@ -89,6 +91,8 @@ void GameState::update(const float dt)
 	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
+
+	ParticleManager::get().update(dt);
 
 	for (unsigned int i = 0; i < entities.size(); i += 1) {
 		entities[i]->update(dt);

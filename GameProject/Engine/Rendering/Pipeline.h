@@ -7,6 +7,10 @@
 #include "Engine/Rendering/Shaders/ShaderShells/EntityShader.h"
 #include "Engine/AssetManagement/ModelLoader.h"
 #include "Engine/Components/Camera.h"
+#include "Engine/Particle/ParticleManager.h"
+#include "Engine/Rendering/GLAbstraction/VertexArray.h"
+#include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
+
 
 class Entity;
 class PostProcessShader;
@@ -31,6 +35,12 @@ class Pipeline
 public:
 	Pipeline();
 	~Pipeline();
+
+	/*
+		Used for rendering particles
+	*/
+	Texture* drawParticle();
+
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
@@ -48,6 +58,8 @@ public:
 	*/
 	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
 	Texture* drawModelToTexture(const std::vector<std::pair<Model*, SHADERS>>& renderingModels);
+
+	Texture* combineTextures(Texture* sceen, Texture* particles);
 
 	/*
 		Use texture to draw to quad which cover the whole screen
@@ -97,7 +109,6 @@ private:
 
 	// New rendering draw functions
 	void drawModelPrePassInstanced(Model * model);
-
 	void updateFramebufferDimension(WindowResizeEvent* event);
 
 	void prePassDepthOn();
@@ -106,6 +117,9 @@ private:
 	Shader* ZprePassShader;				// Old rendering
 	Shader* testShader;					// Old rendering
 	Shader* ZprePassShaderInstanced;
+	Shader* quadShader;
+	Shader* particleShader;
+	Shader* combineShader;
 
 	std::vector<EntityShader*> entityShaders;
 	std::vector<PostProcessShader*> postProcessShaders;

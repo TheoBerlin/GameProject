@@ -37,9 +37,9 @@ void Camera::init()
 	updateView();
 }
 
-glm::vec3 Camera::getUp() const
+glm::vec3 Camera::getUp()
 {
-	return this->u;
+	return this->getHost()->getTransform()->getUp();
 }
 
 glm::vec3 Camera::getForward() const
