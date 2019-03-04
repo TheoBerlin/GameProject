@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
     <ClCompile Include="Engine\GUI\Button.cpp" />
@@ -83,8 +84,14 @@
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
+    <ClCompile Include="Engine\GUI\ScrollPanel\List.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
+    <ClCompile Include="Game\States\PauseState.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.cpp" />
+    <ClCompile Include="Engine\GUI\ScrollPanel\ScrollPanel.cpp" />
+    <ClCompile Include="Engine\GUI\ScrollPanel\ScrollBar.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
@@ -93,6 +100,8 @@
     <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
     <ClInclude Include="Engine\Collision\CollisionConfig.h" />
     <ClInclude Include="Engine\Collision\CollisionInfo.h" />
@@ -171,6 +180,12 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
+    <ClInclude Include="Game\States\PauseState.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\List.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollPanel.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollBar.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Engine\Components\PlayerCollision.h" />

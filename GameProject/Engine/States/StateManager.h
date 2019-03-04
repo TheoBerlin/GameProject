@@ -30,7 +30,7 @@ public:
 	/* 
 	Remove top state from stack and call its "end" function. Will destroy state if is marked as such.
 	*/
-	void pop();
+	void pop(unsigned popAmount = 1);
 
 	/*
 	Add a state on top of stack and call its "start" function.

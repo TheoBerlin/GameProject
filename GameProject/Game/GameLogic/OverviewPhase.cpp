@@ -42,6 +42,12 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
     commonSetup();
 }
 
+OverviewPhase::~OverviewPhase()
+{
+	EventBus::get().unsubscribe(this, &OverviewPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &OverviewPhase::transitionToAim);
+}
+
 Entity* OverviewPhase::getOverviewCamera() const
 {
     return overviewCamera;

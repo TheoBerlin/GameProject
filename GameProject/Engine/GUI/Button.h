@@ -46,7 +46,7 @@ public:
 	void setCallback(std::function<void(void)> func);
 
 	/*
-	Remove the callback function. 
+	Remove the callback function.
 	*/
 	void removeCallback();
 

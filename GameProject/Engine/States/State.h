@@ -33,7 +33,7 @@ public:
 	/*
 	Pop state from stack. Can not pop in destructor.
 	*/
-	void popState();
+	void popState(unsigned popAmount = 1);
 
 	StateManager& getStateManager();
 	EntityManager& getEntityManager();

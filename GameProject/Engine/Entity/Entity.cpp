@@ -97,15 +97,20 @@ Component* Entity::getComponent(const std::string& componentName)
 
 void Entity::setModel(Model * model)
 {
-	/*
-		Remove itself from old model, Complexity: Linear on the entities after the entity deleted 
-	*/
-	if (this->renderingGroupIndex != -1)
-		this->model->removeEntity(this->renderingGroupIndex);
+	if (model != nullptr) {
+		/*
+			Remove itself from old model, Complexity: Linear on the entities after the entity deleted
+		*/
+		if (this->renderingGroupIndex != -1)
+			this->model->removeEntity(this->renderingGroupIndex);
 
-	this->renderingGroupIndex = model->addEntity(this);
-	this->model = model;
-	this->model->updateInstancingData();
+		this->renderingGroupIndex = model->addEntity(this);
+		this->model = model;
+		this->model->updateInstancingData();
+	}
+	else {
+		this->model = nullptr;
+	}
 }
 
 void Entity::detachFromModel()

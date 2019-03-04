@@ -132,10 +132,12 @@ Model * ModelLoader::getModel(const std::string & name)
 
 void ModelLoader::unloadAllModels()
 {
-    for (std::unordered_map<std::string, Model*>::iterator itr = loadedModels.begin(); itr != loadedModels.end(); itr++) {
-        delete itr->second;
+    for (std::map<std::string, Model*>::iterator itr = loadedModels.begin(); itr != loadedModels.end(); itr++) {
+		LOG_INFO("Deleted Model [%s] from memory", itr->first.c_str());
+		delete itr->second;
 		itr->second = nullptr;
     }
+	loadedModels.clear();
 }
 
 size_t ModelLoader::modelCount()
