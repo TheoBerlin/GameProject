@@ -47,7 +47,7 @@ void StaticTargetCollision::collide(PlayerCollisionEvent * evnt)
 		// Change color on collision of drone entity
 		this->host->getModel()->updateInstancingSpecificData(&glm::vec3(1.0, 0.0, 0.0)[0], sizeof(glm::vec3),
 			this->host->getRenderingGroupIndex() * sizeof(glm::vec3), 0, 2);
-		
+
 		rp3d::CollisionBody* body = evnt->entity2->getCollisionBody();
 
 		this->shape = body->getProxyShapesList();

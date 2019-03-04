@@ -17,20 +17,18 @@ enum CATEGORY
 	DRONE_EYE = 0x0008
 };
 
-#ifdef ENABLE_COLLISION_BOXES
-
+#include <glm/vec3.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <reactphysics3d/reactphysics3d.h>
 
 struct CollisionShapeDrawingData {
 	glm::vec3 color;
+
 	glm::vec3 scale;
+	glm::vec3 size;
 	glm::vec3 pos;
+	glm::quat rot;
+	std::string name;
 	unsigned short category;
 	rp3d::CollisionShape * shape;
 };
-#else
-struct CollisionShapeDrawingData {
-	glm::vec3 pos;
-	rp3d::CollisionShape * shape;
-	unsigned short category;
-};
-#endif

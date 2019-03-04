@@ -4,6 +4,9 @@
 #include <Engine/Events/EventBus.h>
 #include <Game/Level/Level.h>
 
+#include "Engine/Entity/Entity.h"
+#include "Game/Components/Explosion.h"
+
 ReplaySystem::ReplaySystem()
     :replayTime(0.0f),
     isRecording(false),
@@ -26,6 +29,12 @@ void ReplaySystem::update(const float& dt)
 
     // Advance collisionIndex and republish events
     while (collisionIndex < collisions.size() && collisions[collisionIndex].time < replayTime) {
+		
+		//Adds explosion on collision
+		Component * explosionComponent = collisions[collisionIndex].event.entity2->getComponent("Explosion");
+		if(explosionComponent)
+			dynamic_cast<Explosion*>(explosionComponent)->explode();
+
         EventBus::get().publish(&collisions[collisionIndex].event);
 
         collisionIndex += 1;

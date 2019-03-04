@@ -7,7 +7,6 @@
 #include "Display.h"
 #include "../Config.h"
 #include <Engine/Imgui/imgui.h>
-
 #include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
@@ -33,11 +32,15 @@ Pipeline::Pipeline()
 
 	this->testShader = new Shader("./Engine/Rendering/Shaders/EntityShader.vert", "./Engine/Rendering/Shaders/EntityShader.frag");
 	this->ZprePassShader = new Shader("./Engine/Rendering/Shaders/ZPrepassVert.vert", "./Engine/Rendering/Shaders/ZPrepassFrag.frag");
+	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
 	this->ZprePassShaderInstanced = new Shader("./Engine/Rendering/Shaders/ZPrepassInstanced.vert", "./Engine/Rendering/Shaders/ZPrepassInstanced.frag");
+	this->combineShader = new Shader("./Engine/Rendering/Shaders/CombineShader.vert", "./Engine/Rendering/Shaders/CombineShader.frag");
+
 	Display& display = Display::get();
 
 	int width = display.getWidth();
 	int height = display.getHeight();
+	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
@@ -46,6 +49,13 @@ Pipeline::Pipeline()
 	shadowHeight = (unsigned)(Display::get().getHeight() * shadowResScale);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
+	//Particle init
+	ParticleManager::get().init();
+
+	fbo.bind();
+	GLenum buf[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, buf);
+	fbo.unbind();
 
 	this->uniformBuffers.resize(7);
 	for (UniformBuffer* ubo : this->uniformBuffers)
@@ -81,13 +91,46 @@ Pipeline::~Pipeline()
 	delete this->ZprePassShader;
 	delete this->ZprePassShaderInstanced;
 	delete this->testShader;
+	delete this->particleShader;
+	delete this->combineShader;
 
-	for(UniformBuffer* ubo : this->uniformBuffers)
+	for (UniformBuffer* ubo : this->uniformBuffers)
 		delete ubo;
 
 	this->uniformBuffers.clear();
 
 	delete this->quad;
+}
+
+Texture* Pipeline::drawParticle()
+{
+	ParticleManager& pm = ParticleManager::get();
+
+	//Updates vbo if particles are visible also updates particle managers hasVisibleParticles
+	if (pm.getParticleCount() != 0) {
+		pm.updateBuffer();
+	}
+
+	if (pm.hasVisibleParticles()) {
+		fbo.bind();
+		this->particleShader->bind();
+		
+
+		this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+		this->particleShader->setUniform3f("cameraUp", this->camera->getView()[0][1], this->camera->getView()[1][1], this->camera->getView()[2][1]);
+		this->particleShader->setUniform3f("cameraRight", this->camera->getView()[0][0], this->camera->getView()[1][0], this->camera->getView()[2][0]);
+
+		glDepthMask(GL_TRUE);
+		glEnable(GL_DEPTH_TEST);
+
+		pm.getVertexArray()->bind();
+		glDrawArraysInstanced(GL_TRIANGLE_STRIP, 0, 4, pm.getParticleCount());
+
+		this->particleShader->unbind();
+		fbo.unbind();
+	}
+
+	return fbo.getColorTexture(1);
 }
 
 void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen)
@@ -507,6 +550,27 @@ void Pipeline::drawInstanced(Model * model, SHADERS shader)
 void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 {
 	this->fbo.updateDimensions(0, event->width, event->height);
+}
+
+Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)
+{
+	fbo.bind();
+	glDisable(GL_DEPTH_TEST);
+
+	this->combineShader->bind();
+	this->combineShader->setTexture2D("tex", 0, sceen->getID());
+	this->combineShader->setTexture2D("particles", 1, particles->getID());
+
+	Mesh* mesh = this->quad->getMesh(0);
+	mesh->bindVertexArray();
+	IndexBuffer& ib = mesh->getIndexBuffer();
+	ib.bind();
+	glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
+
+	this->combineShader->unbind();
+	fbo.unbind();
+
+	return fbo.getColorTexture(0);
 }
 
 void Pipeline::drawModel(Model * model, Shader* shader)
