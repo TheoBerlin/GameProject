@@ -36,9 +36,10 @@ public:
 	Pipeline();
 	~Pipeline();
 
-	//PARTICLE TEST
+	/*
+		Used for rendering particles
+	*/
 	Texture* drawParticle();
-
 
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing

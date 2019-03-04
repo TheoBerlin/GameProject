@@ -127,9 +127,9 @@ void ParticleEmitter::update(float dt)
 	}
 	//Update all particles
 	this->allParticlesDead = true;
-	for (int i = 0; i < particles.size(); i++) {
+	for (size_t i = 0; i < particles.size(); i++) {
 		//Particle is dead if life is 0 or less
-		if (particlesInfo[i].life > 0 && particles[i].colour.w != 0.0) {
+		if (particlesInfo[i].life > 0 && particles[i].colour.w != 0.0f) {
 			particleUpdate(i, dt, acceleration, scaleChange);
 			this->allParticlesDead = false;
 		}

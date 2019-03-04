@@ -25,7 +25,6 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 		AttributeSettings attrib = attributes.attribs[i];
 
 		glEnableVertexAttribArray(this->nextLocation);
-		//vbo->setLocation(attrib.location, i);
 		glVertexAttribPointer(this->nextLocation, attrib.size, GL_FLOAT, GL_FALSE, attributes.stride * sizeof(float), (void*)attrib.offset);
 		glVertexAttribDivisor(this->nextLocation, attrib.divisor);
 		this->nextLocation++;
@@ -62,7 +61,6 @@ void VertexArray::setBuffer(unsigned vboIndex, const void * data, const size_t d
 		
 		vbo->make(data, dataSize, usage);
 	}
-
 }
 
 

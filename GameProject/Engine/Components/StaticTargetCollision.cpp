@@ -4,7 +4,6 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include <Engine/Collision/CollisionInfo.h>
 
-#include "Engine/Components/Explosion.h"
 
 StaticTargetCollision::StaticTargetCollision(Entity * parentEntity, const std::string & tagName) : Component(parentEntity, tagName)
 {
@@ -49,8 +48,6 @@ void StaticTargetCollision::collide(PlayerCollisionEvent * evnt)
 		this->host->getModel()->updateInstancingSpecificData(&glm::vec3(1.0, 0.0, 0.0)[0], sizeof(glm::vec3),
 			this->host->getRenderingGroupIndex() * sizeof(glm::vec3), 0, 2);
 
-		//Add Explosion component
-		Explosion* e = new Explosion(this->host);
 		rp3d::CollisionBody* body = evnt->entity2->getCollisionBody();
 
 		this->shape = body->getProxyShapesList();
