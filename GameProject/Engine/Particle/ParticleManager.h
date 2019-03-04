@@ -44,8 +44,8 @@ public:
 	*/
 	void removeEmitter(ParticleEmitter* emitter);
 
-	int getMaxParticles() const;
-	int getParticleCount() const;
+	unsigned getMaxParticles() const;
+	unsigned getParticleCount() const;
 	VertexBuffer* getVertexBuffer() const;
 	VertexArray* getVertexArray();
 	void updateBuffer();

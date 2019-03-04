@@ -49,7 +49,6 @@ Pipeline::Pipeline()
 	shadowHeight = (unsigned)(Display::get().getHeight() * shadowResScale);
 	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
 
-
 	//Particle init
 	ParticleManager::get().init();
 
@@ -57,8 +56,6 @@ Pipeline::Pipeline()
 	GLenum buf[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, buf);
 	fbo.unbind();
-
-
 
 	this->uniformBuffers.resize(7);
 	for (UniformBuffer* ubo : this->uniformBuffers)

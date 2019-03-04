@@ -20,7 +20,7 @@ ParticleEmitter::ParticleEmitter()
 	loop = false;
 	duration = 0;
 	oldestParticle = 0;
-	emissionTime = 0;
+	spawnTime = 0;
 }
 
 void ParticleEmitter::operator=(ParticleEmitter & oldEmitter)
@@ -42,7 +42,7 @@ void ParticleEmitter::operator=(ParticleEmitter & oldEmitter)
 	loop = false;
 	duration = 0;
 	oldestParticle = 0;
-	emissionTime = 0;
+	spawnTime = 0;
 }
 
 void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 acceleration, float scale)
@@ -90,19 +90,19 @@ void ParticleEmitter::update(float dt)
 		duration -= dt;
 
 	if (loop || duration > 0) {
-		emissionTime += dt;
-		int totalSpawn = 0;
+		spawnTime += dt;
+		unsigned totalSpawn = 0;
 
 		//Since logic update is caped, we can spawn multiple particals per frame
 		//Keep spawning particles to accieve appropiate spawn rate
-		while (emissionTime >= ((float)1 / spawnRate)) {
+		while (spawnTime >= (1.0f / spawnRate)) {
 			totalSpawn++;
-			emissionTime -= ((float)1 / spawnRate);
+			spawnTime -= (1.0f / spawnRate);
 		}
 
 		glm::vec3 dif = position - prevPosition;
 
-		for (int i = 0; i < totalSpawn; i++) {
+		for (unsigned i = 0; i < totalSpawn; i++) {
 			//If all particles have not been spawned create a new one, else reset the oldest particle
 			if (particles.size() < maxParticle) {
 				//Create a new particle

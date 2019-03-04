@@ -93,19 +93,19 @@ void ParticleManager::removeEmitter(ParticleEmitter* emitter)
 
 }
 
-int ParticleManager::getMaxParticles() const
+unsigned ParticleManager::getMaxParticles() const
 {
 	int maxParticle = 0;
-	for (int i = 0; i < emitters.size(); i++) {
+	for (size_t i = 0; i < emitters.size(); i++) {
 		maxParticle += emitters[i]->getMaxParticle();
 	}
 	return maxParticle;
 }
 
-int ParticleManager::getParticleCount() const
+unsigned ParticleManager::getParticleCount() const
 {
 	int countParticle = 0;
-	for (int i = 0; i < emitters.size(); i++) {
+	for (size_t i = 0; i < emitters.size(); i++) {
 		if(!emitters[i]->isDead())
 			countParticle += emitters[i]->getParticleArray().size();
 	}

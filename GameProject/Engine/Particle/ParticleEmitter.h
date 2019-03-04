@@ -37,7 +37,7 @@ private:
 	float spread;
 	float lifeTime;
 
-	float emissionTime;
+	float spawnTime;
 	float duration;
 	bool loop;
 	bool allParticlesDead;
