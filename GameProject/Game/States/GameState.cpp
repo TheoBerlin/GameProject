@@ -110,8 +110,6 @@ void GameState::update(const float dt)
 		Update shaders
 	*/
 	renderer.updateShaders(dt);
-
-	this->replaySystem.update(dt);
 }
 
 void GameState::updateLogic(const float dt)

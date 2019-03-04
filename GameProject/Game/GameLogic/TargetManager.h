@@ -40,11 +40,15 @@ private:
     // Common setup for targets
     void setupTargetGeneric(Entity* host);
 
+    // Resets animations and collision states
     void resetStaticTargets();
     void resetMovingTargets();
 
-	void resetStaticCollision();
-	void resetMovingCollision();
+    void resetStaticAnimations();
+    void resetMovingAnimations();
+
+	void resetStaticCollisions();
+	void resetMovingCollisions();
 
     std::vector<MovingTarget> movingTargets;
     std::vector<StaticTarget> staticTargets;

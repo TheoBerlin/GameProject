@@ -16,6 +16,7 @@ public:
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
+    float getFlightTime();
 
 private:
     void handleKeyInput(KeyEvent* event);

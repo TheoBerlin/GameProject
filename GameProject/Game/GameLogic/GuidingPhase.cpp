@@ -61,6 +61,11 @@ ArrowGuider* GuidingPhase::getArrowGuider() const
     return arrowGuider;
 }
 
+float GuidingPhase::getFlightTime()
+{
+    return flightTimer;
+}
+
 void GuidingPhase::handleKeyInput(KeyEvent* event)
 {
     if (event->action != GLFW_PRESS) {
