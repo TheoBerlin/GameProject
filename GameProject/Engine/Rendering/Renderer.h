@@ -5,6 +5,8 @@
 #include "GLAbstraction/Shader.h"
 #include "Pipeline.h"
 
+#include "Engine/Particle/ParticleManager.h"
+
 class Model;
 class Entity;
 class Renderer
@@ -29,7 +31,7 @@ public:
 	void push(Entity* entity);
 
 	/*
-		Draw all entites in the rendering list and clear it.
+	Draw all entites in the rendering list and clear it.
 	*/
 	void drawAll();
 
@@ -76,6 +78,10 @@ public:
 
 private:
 	Pipeline pipeline;
+
+	ParticleManager* particleManager;
+	Texture* postProcessTexture;
+	Texture* tex;
 
 	std::vector<Entity*> renderingList;
 	std::vector<std::pair<Model*, SHADERS>> renderingModels;

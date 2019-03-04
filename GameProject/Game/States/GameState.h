@@ -1,5 +1,8 @@
 #pragma once
 
+#include "Engine/Particle/ParticleManager.h"
+#include "Engine/Events/EventBus.h"
+#include "Engine/Events/Events.h"
 #include <Engine/States/State.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
@@ -16,7 +19,6 @@ public:
 	void update(const float dt) override;
 	void updateLogic(const float dt) override;
 	void render() override;
-
 private:
 	void pauseGame(KeyEvent * ev);
 
