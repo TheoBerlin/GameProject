@@ -27,6 +27,10 @@ private:
 	void readEntityFloor(Level& level);
 	void readPlayer(Level& level);
 
+	void writeEntityBoxes(Level& level);
+	void writeEntityTargets(Level& level);
+	void writePlayer(Level& level);
+
 	void readVec3(json::json& file, glm::vec3& vec);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 	void readCameraSetting(json::json& file, CameraSetting& camera);
@@ -36,5 +40,6 @@ private:
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
 	void readLevel(std::string file, Level& level);
+	void writeLevel(std::string file, Level& level);
 
 };

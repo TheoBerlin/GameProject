@@ -41,6 +41,14 @@ void EntityManager::addEntity(Entity* entity)
 	this->entities.push_back(entity);
 }
 
+void EntityManager::removedEntity(unsigned int index)
+{
+	if (index < entities.size()) {
+		delete entities[index];
+		entities.erase(entities.begin() + index);
+	}
+}
+
 Entity* EntityManager::getEntity(unsigned int index)
 {
 	Entity* entity = nullptr;

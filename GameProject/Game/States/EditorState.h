@@ -18,7 +18,8 @@ private:
 	void mainWindow(EntityManager& entityManager);
 	void entityWindow(EntityManager& entityManager);
 	void levelWindow(EntityManager& entityManager);
-	void cameraWindow();
+	void playerWindow(EntityManager& entityManager);
+	void editorWindow();
 
 	std::string levelName;
 	std::string currentItem;
@@ -26,7 +27,7 @@ private:
 	int currentEntity = -1;
 	bool currentIsTarget;
 	std::vector<EditorPathing> pathing;
-	bool activeWindow[3];
+	bool activeWindow[4];
 	Entity camera;
 	float camSpeed;
 	FreeMove* freeMove;

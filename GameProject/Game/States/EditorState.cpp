@@ -26,8 +26,8 @@ EditorState::EditorState()
 	// Set up the player camera
 	Transform* camTransform = camera.getTransform();
 
-	camTransform->setPosition(glm::vec3(0.0f, 5.0, -2.0f));
-	camTransform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
+	camTransform->setPosition(glm::vec3(0.0f, 1.0, 4.0f));
+	camTransform->setForward(glm::vec3(0.0f, 0.0f, -1.0f));
 	camTransform->resetRoll();
 
 	Camera* c = new Camera(&camera, "Camera");
@@ -145,8 +145,10 @@ void EditorState::mainWindow(EntityManager & entityManager)
 		activeWindow[0] = !activeWindow[0];
 	if (ImGui::Button("Entities"))
 		activeWindow[1] = !activeWindow[1];
-	if (ImGui::Button("Camera"))
+	if (ImGui::Button("Player"))
 		activeWindow[2] = !activeWindow[2];
+	if (ImGui::Button("Camera"))
+		activeWindow[3] = !activeWindow[3];
 	ImGui::NewLine();
 
 	ImGui::End();
@@ -157,7 +159,9 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (activeWindow[1])
 		entityWindow(entityManager);
 	if (activeWindow[2])
-		cameraWindow();
+		playerWindow(entityManager);
+	if (activeWindow[3])
+		editorWindow();
 }
 
 void EditorState::entityWindow(EntityManager& entityManager)
@@ -207,6 +211,9 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		currentEntity = entityManager.getEntitySize() - 1;
 		currentIsTarget = false;
 	}
+	if (ImGui::Button("Remove Entity")) {
+		entityManager.removedEntity(currentEntity);
+	}
 	if (currentEntity != -1) {
 		Entity* curEntity = entityManager.getEntity(currentEntity);
 		//Entity Info
@@ -244,6 +251,13 @@ void EditorState::entityWindow(EntityManager& entityManager)
 					pathing.push_back(path);
 				}
 			}
+
+			if (pathing.size() > 0) {
+				ImGui::SameLine();
+				if (ImGui::Button("Remove Path")) {
+					pathing.erase(pathing.end() - 1);
+				}
+			}
 			for (int i = 0; i < pathing.size(); i++) {
 				if (pathing[i].index == currentEntity) {
 					for (int j = 0; j < pathing[i].path.size(); j++) {
@@ -274,6 +288,10 @@ void EditorState::levelWindow(EntityManager& entityManager)
 	ImGui::Begin("Level Window");
 	levelName.reserve(64);
 	ImGui::InputText("LevelName", (char*)levelName.c_str(), levelName.capacity());
+	if (ImGui::Button("Save")) {
+		levelParser.writeLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
+	}
+	ImGui::SameLine();
 	if (ImGui::Button("Load")) {
 		entityManager.removeEntities();
 		levelParser.readLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
@@ -283,7 +301,31 @@ void EditorState::levelWindow(EntityManager& entityManager)
 #endif
 }
 
-void EditorState::cameraWindow()
+void EditorState::playerWindow(EntityManager & entityManager)
+{
+#ifdef IMGUI
+	ImGui::Begin("Player Window");
+
+	ImGui::InputFloat3("Overview Position", &level.player.oversightCamera.position[0], 2);
+	ImGui::InputFloat3("Overview Direction", &level.player.oversightCamera.direction[0], 2);
+	ImGui::InputFloat3("Overview Offset", &level.player.oversightCamera.offset[0], 2);
+	ImGui::InputFloat("Overview FOV", &level.player.oversightCamera.FOV, 1);
+
+	ImGui::InputFloat3("Arrow Position", &level.player.arrowCamera.position[0], 2);
+	ImGui::InputFloat3("Arrow Direction", &level.player.arrowCamera.direction[0], 2);
+	ImGui::InputFloat3("Arrow Offset", &level.player.arrowCamera.offset[0], 2);
+	ImGui::InputFloat("Arrow FOV", &level.player.arrowCamera.FOV, 1);
+
+	ImGui::InputFloat3("Replay Position", &level.player.replayCamera.position[0], 2);
+	ImGui::InputFloat3("Replay Direction", &level.player.replayCamera.direction[0], 2);
+	ImGui::InputFloat3("Replay Offset", &level.player.replayCamera.offset[0], 2);
+	ImGui::InputFloat("Replay FOV", &level.player.replayCamera.FOV, 1);
+
+	ImGui::End();
+#endif
+}
+
+void EditorState::editorWindow()
 {
 #ifdef IMGUI
 	ImGui::Begin("Level Window");

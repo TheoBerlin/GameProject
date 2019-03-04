@@ -15,6 +15,7 @@ public:
 
 	Entity* addEntity();  //Used for entites that are static wont change until level is unloaded.
 	void addEntity(Entity* entity);
+	void removedEntity(unsigned int index);
 	Entity* getEntity(unsigned int index);
 	int getEntitySize() const;
 	Entity* addTracedEntity(const std::string & name); //Used for entites that we want to track, and do changes to during runtime.

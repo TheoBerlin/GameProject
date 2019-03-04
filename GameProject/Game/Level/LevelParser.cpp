@@ -6,6 +6,7 @@
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
 #include <Utils/Logger.h>
+#include <Game/components/Hover.h>
 
 void LevelParser::readEntityTargets(Level& level)
 {
@@ -69,21 +70,31 @@ void LevelParser::readEntityBoxes(Level& level)
 		json::json& box = jsonFile["Boxes"][i];
 		Entity* entity;
 		glm::vec3 position;
+		glm::vec3 scale;
+		glm::vec3 rotation;
 		//Every object requires a name
 		if (!box["Name"].empty() && box["Name"].is_string()) {
 			std::string name = box["Name"];
 			entity = level.entityManager->addEntity();
+			entity->setName(name);
 
 			if (!box["Position"].empty()) {
 				readVec3(box["Position"], position);
+				entity->getTransform()->setPosition(position);
+			}
+			if (!box["Scale"].empty()) {
+				readVec3(box["Scale"], scale);
+				entity->getTransform()->setScale(scale);
+			}
+			if (!box["Rotation"].empty()) {
+				readVec3(box["Rotation"], rotation);
+				entity->getTransform()->setRotation(rotation);
 			}
 		} else {
 			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
-		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setScale(0.5f);
 		entity->setModel(model);
 		level.collisionHandler->addCollisionToEntity(entity, SHAPE::BOX);
 	}
@@ -121,6 +132,75 @@ void LevelParser::readPlayer(Level& level)
 	readCameraSetting(player["OversightCamera"], level.player.oversightCamera);
 	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
 	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
+}
+
+void LevelParser::writeEntityBoxes(Level & level)
+{
+	int nrOfBoxes = 0;
+	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
+		bool found = false; 
+		for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
+			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == level.entityManager->getEntity(i))
+				found = true;
+		}
+		for (int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
+			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == level.entityManager->getEntity(i))
+				found = true;
+		}
+		if (!found) {
+			jsonFile["Boxes"][nrOfBoxes]["Name"] = level.entityManager->getEntity(i)->getName();
+			jsonFile["Boxes"][nrOfBoxes]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
+			jsonFile["Boxes"][nrOfBoxes]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
+			jsonFile["Boxes"][nrOfBoxes]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+			nrOfBoxes++;
+		}
+	}
+}
+
+void LevelParser::writeEntityTargets(Level & level)
+{
+	int nrOfTargets = 0;
+	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
+		bool found = false;
+		for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
+			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == level.entityManager->getEntity(i)) {
+				jsonFile["Target"][nrOfTargets]["Name"] = level.entityManager->getEntity(i)->getName();
+				jsonFile["Target"][nrOfTargets]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
+				jsonFile["Target"][nrOfTargets]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
+				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+				for (int k = 0; k < level.targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++)
+					jsonFile["Target"][nrOfTargets]["Path"][k] = { level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.x, level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.y, level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.z };
+				nrOfTargets++;
+			}
+		}
+		for (int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
+			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == level.entityManager->getEntity(i)) {
+				jsonFile["Target"][nrOfTargets]["Name"] = level.entityManager->getEntity(i)->getName();
+				jsonFile["Target"][nrOfTargets]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
+				jsonFile["Target"][nrOfTargets]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
+				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+				nrOfTargets++;
+			}
+		}
+	}
+}
+
+void LevelParser::writePlayer(Level & level)
+{
+	jsonFile["Player"]["OversightCamera"]["Position"] = { level.player.oversightCamera.position.x, level.player.oversightCamera.position.y, level.player.oversightCamera.position.z };
+	jsonFile["Player"]["OversightCamera"]["Direction"] = { level.player.oversightCamera.direction.x, level.player.oversightCamera.direction.y, level.player.oversightCamera.direction.z };
+	jsonFile["Player"]["OversightCamera"]["Offset"] = { level.player.oversightCamera.offset.x, level.player.oversightCamera.offset.y, level.player.oversightCamera.offset.z };
+	jsonFile["Player"]["OversightCamera"]["FOV"] = level.player.oversightCamera.FOV;
+
+	jsonFile["Player"]["ArrowCamera"]["Position"] = { level.player.arrowCamera.position.x, level.player.arrowCamera.position.y, level.player.arrowCamera.position.z };
+	jsonFile["Player"]["ArrowCamera"]["Direction"] = { level.player.arrowCamera.direction.x, level.player.arrowCamera.direction.y, level.player.arrowCamera.direction.z };
+	jsonFile["Player"]["ArrowCamera"]["Offset"] = { level.player.arrowCamera.offset.x, level.player.arrowCamera.offset.y, level.player.arrowCamera.offset.z };
+	jsonFile["Player"]["ArrowCamera"]["FOV"] = level.player.arrowCamera.FOV;
+
+	jsonFile["Player"]["ReplayCamera"]["Position"] = { level.player.replayCamera.position.x, level.player.replayCamera.position.y, level.player.replayCamera.position.z };
+	jsonFile["Player"]["ReplayCamera"]["Direction"] = { level.player.replayCamera.direction.x, level.player.replayCamera.direction.y, level.player.replayCamera.direction.z };
+	jsonFile["Player"]["ReplayCamera"]["Offset"] = { level.player.replayCamera.offset.x, level.player.replayCamera.offset.y, level.player.replayCamera.offset.z };
+	jsonFile["Player"]["ReplayCamera"]["FOV"] = level.player.replayCamera.FOV;
 }
 
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)
@@ -226,4 +306,18 @@ void LevelParser::readLevel(std::string file, Level& level)
 		LOG_ERROR("Can not open file: %s", file.c_str());
 	}
 
+}
+
+void LevelParser::writeLevel(std::string file, Level & level)
+{
+	json::json j;
+	jsonFile = j;
+
+	writeEntityBoxes(level);
+	writeEntityTargets(level);
+	writePlayer(level);
+
+	std::ofstream oFile;
+	oFile.open(file);
+	oFile << std::setw(4) << jsonFile << std::endl;
 }
