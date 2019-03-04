@@ -15,6 +15,7 @@ class ReplayPhase : public Phase
 {
 public:
     ReplayPhase(GuidingPhase* guidingPhase);
+	~ReplayPhase();
 
     void update(const float& dt);
 

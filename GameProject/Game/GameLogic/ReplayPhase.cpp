@@ -72,6 +72,12 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
 }
 
+ReplayPhase::~ReplayPhase()
+{
+	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
+}
+
 void ReplayPhase::update(const float& dt)
 {
     level.replaySystem->update(dt);

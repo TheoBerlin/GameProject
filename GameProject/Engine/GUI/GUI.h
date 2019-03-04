@@ -56,11 +56,15 @@ public:
 
 		/*
 		This will center the panels position, in the x-axis, inside its parent or the display.
+		Value:
+			Margin in horizontal postive right and negative left.
 		*/
 		CENTER_X,
 
 		/*
 		This will center the panels position, in the y-axis, inside its parent or the display.
+		Value:
+			Margin in vertical postive right and negative left.
 		*/
 		CENTER_Y,
 
@@ -75,7 +79,7 @@ public:
 		FIT_Y,
 
 		// ---------------------------------- Text options ----------------------------------
-		
+
 		/*
 		This will center the text in the x-axis inside the panel.
 		*/
@@ -120,7 +124,7 @@ public:
 	// A strcut to hold the value of the option. 
 	struct OPTION_VALUE
 	{
-		unsigned int ui = 0u;
+		int i = 0;
 	};
 
 	GUI();
