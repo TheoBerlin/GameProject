@@ -117,12 +117,6 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
-        level.replaySystem->rewindLevel(level, pathTreader, flightTime / 2.0f);
-
-        replayTime = flightTime / 2.0f;
-    }
-
     if (event->key == GLFW_KEY_2) {
         EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 
@@ -165,7 +159,7 @@ void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
-    timeBarBack = new Panel();
+    timeBarBack = new Button();
     timeBarFront = new Panel();
 
     // Position the time bar panels
@@ -182,19 +176,26 @@ void ReplayPhase::setupGUI()
     glm::uvec2 timeBarSize = {screenWidth * (1 - timeBarSidePadding * 2), timeBarHeightFactor * screenHeight};
     timeBarBack->setSize(timeBarSize);
 
+    // Make the front time bar to be as small as possible
     timeBarSize.x = 1;
     timeBarFront->setSize(timeBarSize);
 
     // Set panel visuals
-    timeBarBack->setColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
+    timeBarBack->setNormalColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
+    timeBarBack->setHoverColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
+    timeBarBack->setPressedColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
+
     timeBarFront->setColor({0.6588f, 0.4784f, 0.0f, 1.0f});
+
+    // Handle mouse clicks on the time bar
+    timeBarBack->setCallback([this](void) {handleTimeBarClick();});
 
     // Add panels to GUI
     level.gui->addPanel(timeBarBack);
     level.gui->addPanel(timeBarFront);
 
     // Add slider to time bar
-    timeBarSlider = new Button();
+    timeBarSlider = new Panel();
 
     // Size the button
     this->sliderSize = {sliderSizeFactors.x * screenHeight, sliderSizeFactors.y * screenHeight};
@@ -209,4 +210,24 @@ void ReplayPhase::setupGUI()
 
     // Add button to GUI
     level.gui->addPanel(timeBarSlider);
+}
+
+void ReplayPhase::handleTimeBarClick()
+{
+    // Get horizontal mouse coordinate
+    double posX;
+
+    glfwGetCursorPos(Display::get().getWindowPtr(), &posX, nullptr);
+
+    // Calculate the desired time to rewind to
+    unsigned int timeBarBegin = (unsigned)(screenWidth * timeBarSidePadding);
+    unsigned int timeBarEnd = screenWidth - timeBarBegin;
+
+    float desiredFactor = ((float)posX - timeBarBegin) / (timeBarEnd - timeBarBegin);
+
+    float desiredTime = desiredFactor * flightTime;
+
+    level.replaySystem->rewindLevel(level, pathTreader, freeCam, desiredTime);
+
+    replayTime = desiredTime;
 }

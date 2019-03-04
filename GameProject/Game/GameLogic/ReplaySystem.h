@@ -33,7 +33,7 @@ public:
     void stopReplaying();
 
     // Rewind a level to its state at a given time
-    void rewindLevel(Level& level, PathTreader* replayArrow, const float time);
+    void rewindLevel(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time);
 
 private:
     void handlePlayerCollision(PlayerCollisionEvent* event);

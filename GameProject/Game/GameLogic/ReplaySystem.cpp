@@ -1,5 +1,6 @@
 #include "ReplaySystem.h"
 
+#include <Engine/Entity/Entity.h>
 #include <Engine/Events/EventBus.h>
 #include <Game/Level/Level.h>
 
@@ -87,7 +88,7 @@ void ReplaySystem::stopReplaying()
     isReplaying = false;
 }
 
-void ReplaySystem::rewindLevel(Level& level, PathTreader* replayArrow, const float time)
+void ReplaySystem::rewindLevel(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time)
 {
     /*
         Rewinding the level is done in two steps:
@@ -103,8 +104,14 @@ void ReplaySystem::rewindLevel(Level& level, PathTreader* replayArrow, const flo
     // Reset collision replays
     this->startReplaying();
 
-    // Fast forward level
-    level.entityManager->update(time);
+    // Fast forward level, update every entity except the player entity
+    std::vector<Entity*> entities = level.entityManager->getAll();
+
+    for (auto& entity : entities) {
+        if (entity != playerEntity) {
+            entity->update(time);
+        }
+    }
 
     this->update(time);
 }

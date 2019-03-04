@@ -31,6 +31,8 @@ private:
 
     void setupGUI();
 
+    void handleTimeBarClick();
+
     Entity* freeCam;
     FreeMove* freeMove;
 
@@ -47,7 +49,7 @@ private:
     // GUI data
     unsigned int screenWidth, screenHeight;
     // Background time bar
-    Panel* timeBarBack;
+    Button* timeBarBack;
     // Foreground time bar, displays played time
     Panel* timeBarFront;
 
@@ -57,7 +59,7 @@ private:
     const float timeBarHeightFactor = 1.0f/40.0f;
 
     // Time bar slider
-    Button* timeBarSlider;
+    Panel* timeBarSlider;
 
     // Size relative to screen height
     const glm::vec2 sliderSizeFactors = {timeBarHeightFactor, timeBarHeightFactor};
