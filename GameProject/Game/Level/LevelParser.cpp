@@ -114,7 +114,6 @@ void LevelParser::readEntityWalls(Level& level)
 
 	Model* model = createQuat();
 
-	// ADD NAME FOR LEVEL EDITOR LATER
 	std::vector<glm::mat4> mats;
 	for (int i = 0; i < points.size(); i++)
 	{
