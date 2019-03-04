@@ -23,8 +23,6 @@ private:
 
 	std::string selectedLevel;
 
-	Text test;
-	Font* font;
 	Panel* panel;
 	Button* button;
 };

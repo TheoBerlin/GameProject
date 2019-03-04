@@ -2,13 +2,13 @@
 
 
 
-ScrollPanel::ScrollPanel(unsigned width, unsigned height, int scrollSpeed) : Panel()
+ScrollPanel::ScrollPanel(unsigned width, unsigned height, const std::string& font, int scrollSpeed) : Panel()
 {
 	this->scrollSpeed = scrollSpeed;
 
 	this->setSize(glm::vec2(width, height));
 
-	this->list = new List("arial");
+	this->list = new List(font, 8, 0);
 	this->list->setSize(glm::vec2((unsigned)(width * 0.8f), (unsigned)(height * 0.9f)));
 	this->list->setOption(GUI::CENTER_X);
 	this->list->setOption(GUI::FLOAT_UP, (int)(height * 0.05));

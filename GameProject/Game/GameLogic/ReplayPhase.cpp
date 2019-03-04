@@ -95,6 +95,11 @@ void ReplayPhase::update(const float& dt)
         glm::uvec2 sliderPos = {timeBarSidePadding * screenWidth + timeBarSize.x - sliderSize.x / 2, screenHeight * timeBarBottomPadding};
         timeBarSlider->setPosition(sliderPos);
     }
+
+	if (replayTime > flightTime && !level.scoreManager->resultsVisible())
+	{
+		level.scoreManager->showResults(level);
+	}
 }
 
 Entity* ReplayPhase::getFreeCam() const

@@ -140,6 +140,14 @@ void LevelParser::readPlayer(Level& level)
 	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
 }
 
+void LevelParser::readMetadata(Level& level)
+{
+	json::json& metadata = jsonFile["Metadata"];
+
+	// Read optimal time for scoreManager
+	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
+}
+
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 {
 	// Iterate through position components
@@ -227,6 +235,9 @@ void LevelParser::readLevel(std::string file, Level& level)
 			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
 			return;
 		}
+
+		// Read metadata
+		readMetadata(level);
 
 		// Create collision bodies to collisionHandler
 		createCollisionBodies(level);
