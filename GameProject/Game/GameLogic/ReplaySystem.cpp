@@ -29,7 +29,9 @@ void ReplaySystem::update(const float& dt)
     while (collisionIndex < collisions.size() && collisions[collisionIndex].time < replayTime) {
 		
 		//Adds explosion on collision
-		dynamic_cast<Explosion*>(collisions[collisionIndex].event.entity2->getComponent("Explosion"))->explode();
+		Component * explosionComponent = collisions[collisionIndex].event.entity2->getComponent("Explosion");
+		if(explosionComponent)
+			dynamic_cast<Explosion*>(explosionComponent)->explode();
 
         EventBus::get().publish(&collisions[collisionIndex].event);
 
