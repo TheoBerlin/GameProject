@@ -32,7 +32,7 @@ public:
     void resetTargets();
 
 	// Returns the number of targets in target manager
-	unsigned getTotalTargets();
+	unsigned getTargetCount();
 
 private:
     // Common setup for targets

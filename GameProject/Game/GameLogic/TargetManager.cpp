@@ -68,7 +68,7 @@ void TargetManager::resetTargets()
     resetStaticTargets();
 }
 
-unsigned TargetManager::getTotalTargets()
+unsigned TargetManager::getTargetCount()
 {
 	return this->movingTargets.size() + this->staticTargets.size();
 }

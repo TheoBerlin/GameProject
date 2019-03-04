@@ -128,7 +128,7 @@ void ScoreManager::showResults(Level& level)
 	bigPanel->updateText(1, 20, panelSize.y - 140);
 
 	// Add text - Targets
-	std::string t = "Targets: " + std::to_string(level.scoreManager->getTargetsHit()) + "/" + std::to_string(level.targetManager->getTotalTargets());
+	std::string t = "Targets: " + std::to_string(level.scoreManager->getTargetsHit()) + "/" + std::to_string(level.targetManager->getTargetCount());
 	bigPanel->addText(t, "aldo", textColor);
 	bigPanel->updateText(2, 20, panelSize.y - 200);
 
