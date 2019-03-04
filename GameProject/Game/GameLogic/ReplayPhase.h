@@ -28,8 +28,7 @@ private:
 
     void transitionToAim(CameraTransitionEvent* event);
 
-	void showResults();
-	void guiCallback();
+	float timeLeft;
 
     Entity* freeCam;
     FreeMove* freeMove;
@@ -37,14 +36,6 @@ private:
     Entity* replayArrow;
     PathTreader* pathTreader;
     PathVisualizer* pathVisualizer;
-
-	// Results panel varibles
-	float timeLeft;
-	bool showGui;
-	bool minimized;
-	Panel* smallPanel;
-	Panel* bigPanel;
-
 
     // This should be read from the level struct in the future
     const glm::vec3 arrowPos = glm::vec3(1.0f, 1.0f, 16.0f);

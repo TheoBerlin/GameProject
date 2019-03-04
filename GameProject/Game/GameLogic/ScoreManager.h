@@ -1,6 +1,8 @@
 #pragma once
 
 class Timer;
+class Panel;
+struct Level;
 
 class ScoreManager
 {
@@ -25,6 +27,11 @@ public:
 	// Get targets hit
 	unsigned getTargetsHit() const;
 
+	// Show score GUI
+	void showResults(Level& level);
+	// Returns true if results are being shown
+	bool resultsVisible() const;
+
 private:
 	bool counting;
 	unsigned totalScore;
@@ -33,5 +40,15 @@ private:
 	float optimalTime;
 
 	Timer* timer;
+
+	// Results panel varibles
+	float timeLeft;
+	bool showGui;
+	bool minimized;
+	Panel* smallPanel;
+	Panel* bigPanel;
+
+	// Callback function for results gui
+	void guiCallback();
 };
 
