@@ -2,7 +2,6 @@
 
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
-#include <Utils/Timer.h>
 
 // Phases GuidingPhase can transition from
 class AimPhase;
@@ -12,6 +11,8 @@ class GuidingPhase : public Phase
 public:
     GuidingPhase(AimPhase* other);
 	~GuidingPhase();
+
+    void update(const float& dt);
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
@@ -28,5 +29,8 @@ private:
     ArrowGuider* arrowGuider;
     Camera* arrowCam;
 
-    Timer flightTimer;
+    // Updated each update
+    float flightTimer;
+    // Updated during collisions or when leaving guiding phase
+    float flightTime;
 };

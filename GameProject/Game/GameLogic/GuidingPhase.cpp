@@ -10,7 +10,9 @@
 #include <Game/GameLogic/ReplayPhase.h>
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
-    :Phase((Phase*)aimPhase)
+    :Phase((Phase*)aimPhase),
+    flightTimer(0.0f),
+    flightTime(0.0f)
 {
 	this->playerArrow = aimPhase->getPlayerArrow();
 
@@ -25,7 +27,6 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	/*
 	Do stuff when collision happens
 	*/
-
 	level.collisionHandler->addCollisionToEntity(this->playerArrow, CATEGORY::ARROW, true);
 
 	// Begin recording collisions
@@ -33,6 +34,11 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
+}
+
+void GuidingPhase::update(const float& dt)
+{
+    flightTimer += dt;
 }
 
 GuidingPhase::~GuidingPhase()
@@ -71,8 +77,7 @@ void GuidingPhase::beginReplayTransition()
     level.replaySystem->stopRecording();
 
     // Get flight time
-    flightTimer.stop();
-    float flightTime = flightTimer.getDeltaTime();
+    flightTime = flightTimer;
 
     arrowGuider->stopGuiding(flightTime);
 
@@ -106,9 +111,9 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
 	// Save keypoint for collision so that the collision is visible during replay
-    flightTimer.update();
+    flightTime = flightTimer;
 
-    arrowGuider->saveKeyPoint(flightTimer.getTime());
+    arrowGuider->saveKeyPoint(flightTime);
 	// Check if the arrow hit static geometry
     unsigned int category = ev->shape2->getCollisionCategoryBits();
 

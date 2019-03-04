@@ -37,6 +37,11 @@ GameLogic::~GameLogic()
 	delete phase;
 }
 
+void GameLogic::update(const float& dt)
+{
+	phase->update(dt);
+}
+
 void GameLogic::changePhaseCallback(PhaseChangeEvent * event)
 {
 	Phase* previousPhase = phase;

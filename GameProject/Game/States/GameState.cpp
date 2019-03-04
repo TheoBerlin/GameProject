@@ -83,8 +83,9 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
-	if (!this->hasSubscribedToPause) {
+	gameLogic.update(dt);
 
+	if (!this->hasSubscribedToPause) {
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
 		this->hasSubscribedToPause = true;
@@ -100,7 +101,6 @@ void GameState::update(const float dt)
 		entities[i]->update(dt);
 	}
 
-
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
 
@@ -110,7 +110,6 @@ void GameState::update(const float dt)
 	renderer.updateShaders(dt);
 
 	this->replaySystem.update(dt);
-
 }
 
 void GameState::updateLogic(const float dt)

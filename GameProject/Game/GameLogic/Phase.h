@@ -14,6 +14,8 @@ public:
     Phase(Phase* other);
 	virtual ~Phase();
 
+    virtual void update(const float& dt);
+
 protected:
     void changePhase(Phase* newPhase);
 
