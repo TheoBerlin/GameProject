@@ -82,7 +82,8 @@ void Renderer::initInstancing()
 	for (size_t i = 0; i < model->getRenderingGroup().size(); i++)
 		colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 
-	model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
+	if(colors.size() > 0)
+		model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
 }
 
 void Renderer::clearRenderingModels()
