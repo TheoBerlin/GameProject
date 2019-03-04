@@ -28,7 +28,7 @@ private:
 
     void transitionToAim(CameraTransitionEvent* event);
 
-	void activateGui();
+	void showResults();
 	void guiCallback();
 
     Entity* freeCam;
@@ -38,7 +38,7 @@ private:
     PathTreader* pathTreader;
     PathVisualizer* pathVisualizer;
 
-	// Gui stuff
+	// Results panel varibles
 	float timeLeft;
 	bool showGui;
 	bool minimized;

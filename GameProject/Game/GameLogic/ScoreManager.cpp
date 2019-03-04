@@ -31,6 +31,7 @@ void ScoreManager::stop()
 	this->timer->stop();
 	this->totalTime = this->timer->getTime();
 	this->counting = false;
+
 	// Calculate the new total score with time as a factor
 	float inv = (1.0f / this->totalTime) * 100;
 	LOG_INFO("Time: %f Inverse time: %f Optimal time: %f", this->totalTime, inv, this->optimalTime);

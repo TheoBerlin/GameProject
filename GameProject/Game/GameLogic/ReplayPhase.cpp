@@ -10,14 +10,10 @@
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/AimPhase.h>
-
-// Gui
 #include <Engine/GUI/FontManager.h>
 #include <Engine/GUI/Panel.h>
 #include <Engine/GUI/Button.h>
 
-// Remove later
-#include <Utils/Logger.h>
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase)
@@ -83,7 +79,7 @@ void ReplayPhase::update(const float & dt)
 	this->timeLeft -= dt;
 	if (this->timeLeft <= 0 && !this->showGui)
 	{
-		activateGui();
+		showResults();
 		this->showGui = true;
 	}
 }
@@ -149,7 +145,7 @@ void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
     changePhase(guidingPhase);
 }
 
-void ReplayPhase::activateGui()
+void ReplayPhase::showResults()
 {
 	glm::uvec2 panelSize(500, 700);
 	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
