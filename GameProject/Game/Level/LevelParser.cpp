@@ -91,22 +91,24 @@ void LevelParser::readEntityBoxes(Level& level)
 
 void LevelParser::readEntityWalls(Level& level)
 {
+	// Pre determined height
 	float height = 5.0f;
 
+	// Load points from level file
+	json::json& file = jsonFile["Walls"];
 	std::vector<glm::vec3> points;
-	points.push_back(glm::vec3(-5.0, 0.0, -5.0));
-	points.push_back(glm::vec3(5.0, 0.0, -5.0));
-	points.push_back(glm::vec3(5.0, 0.0, 5.0));
-	points.push_back(glm::vec3(3.0, 0.0, 5.0));
-	points.push_back(glm::vec3(3.0, 0.0, 20.0));
-	points.push_back(glm::vec3(5.0, 0.0, 20.0));
-	points.push_back(glm::vec3(5.0, 0.0, 25.0));
-	points.push_back(glm::vec3(-5.0, 0.0, 25.0));
-	points.push_back(glm::vec3(-5.0, 0.0, 20.0));
-	points.push_back(glm::vec3(-3.0, 0.0, 20.0));
-	points.push_back(glm::vec3(-3.0, 0.0, 5.0));
-	points.push_back(glm::vec3(-3.0, 0.0, 5.0));
-	points.push_back(glm::vec3(-5.0, 0.0, 5.0));
+	glm::vec2 point(0.0f);
+	if (!file.empty()) {
+		for (unsigned i = 0; i < file.size(); i++)
+		{
+			readVec2(file[i], point);
+			points.push_back({ point.x, 0.0f, point.y });
+		}
+	}
+	else {
+		LOG_ERROR("NO WALLS FOUND");
+		return;
+	}
 
 	std::vector<glm::vec2> scales;
 
@@ -116,7 +118,7 @@ void LevelParser::readEntityWalls(Level& level)
 	std::vector<glm::mat4> mats;
 	for (int i = 0; i < points.size(); i++)
 	{
-		Entity* entity = level.entityManager->addEntity();
+		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(i));
 		glm::vec3* p1 = &points[i];
 		glm::vec3* p2 = &points[(i + 1) % (points.size())];
 		
@@ -201,6 +203,28 @@ void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 			// Default component
 			vec[j] = 1.0f;
 			LOG_WARNING("Did not find Vec3 component %d (0=X, 1=Y, 2=Z), defaulting to 1", j);
+		}
+	}
+}
+
+void LevelParser::readVec2(json::json& file, glm::vec2& vec)
+{
+	// Iterate through position components
+	for (int j = 0; j < 2; j++) {
+		// If object exists go ahead otherwise write a default position
+		if (!file[j].empty()) {
+			try {
+				vec[j] = file[j];
+			}
+			catch (const std::exception& e) {
+				LOG_ERROR("Failed to read vector component: %s", e.what());
+				break;
+			}
+		}
+		else {
+			// Default component
+			vec[j] = 1.0f;
+			LOG_WARNING("Did not find Vec2 component %d (0=X, 1=Z), defaulting to 1", j);
 		}
 	}
 }
