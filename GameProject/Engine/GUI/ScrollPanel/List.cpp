@@ -25,16 +25,18 @@ void List::addItem(const std::string& text, std::function<void(void)> func)
 	button->setOption(GUI::FLOAT_UP, offset);
 	button->setOption(GUI::CENTER_X);
 
-	glm::vec4 buttonColor(0.6, 0.6, 0.6, 1.0);
-	button->setColor(buttonColor);
-	button->setHoverColor(buttonColor * 1.2f);
-	button->setNormalColor(buttonColor);
-	button->setPressedColor(buttonColor * 0.8f);
+	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
+	glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
+	glm::vec4 hoverColor = { 0.5f, 0.0f, 0.5f, 1.0f };
+	glm::vec4 pressColor = { 0.3f, 0.0f, 0.3f, 1.0f };
+	button->setHoverColor(hoverColor);
+	button->setNormalColor(backgroundColor);
+	button->setPressedColor(pressColor);
 
 	button->setOption(GUI::TEXT_CENTER_X);
 	button->setOption(GUI::TEXT_CENTER_Y);
 
-	button->addText(text, this->font, glm::vec4(1.0f));
+	button->addText(text, this->font, textColor);
 
 	button->setCallback(func);
 
@@ -45,13 +47,20 @@ void List::addItem(const std::string& text, std::function<void(void)> func)
 void List::scroll(int scrollOffset)
 {
 	this->scrollOffset += scrollOffset;
-	if (this->scrollOffset < 0)
-		this->scrollOffset = 0;
+	if (this->listButtons.size() != 0)
+	{
+		unsigned btnSize = (unsigned)(this->listButtons[0]->getSize().y + this->itemSpacing);
+		int lowLimit = -(int)((this->listButtons.size() * btnSize) - this->maxItemsVisible * btnSize);
+		if (this->scrollOffset > 0)
+			this->scrollOffset = 0;
+		if (this->scrollOffset < lowLimit)
+			this->scrollOffset = lowLimit;
 
-	for (size_t i = 0; i < this->listButtons.size(); i++) {
-		Button* button = this->listButtons[i];
-		int offset = i * (unsigned)(button->getSize().y + this->itemSpacing);
-		button->setOption(GUI::FLOAT_UP, offset + this->scrollOffset);
+		for (size_t i = 0; i < this->listButtons.size(); i++) {
+			Button* button = this->listButtons[i];
+			int offset = i * (unsigned)(button->getSize().y + this->itemSpacing);
+			button->setOption(GUI::FLOAT_UP, offset + this->scrollOffset);
+		}
 	}
 }
 
