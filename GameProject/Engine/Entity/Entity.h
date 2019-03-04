@@ -23,7 +23,11 @@ public:
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
 	void removeAllComponents();
-	// Used by components to get neighboring components
+	/*
+		Get component by name for the given entity
+		Returns:
+			Component pointer if found, nullptr if not.
+	*/
 	Component* getComponent(const std::string& componentName);
 
 	void setModel(Model* model);
