@@ -11,7 +11,10 @@
 #include <Engine/Components/Camera.h>
 #include <Engine/InputHandler.h>
 
+#include <Engine/Collision/CollisionConfig.h>
+
 #include <Game/GameLogic/TargetManager.h>
+#include "Game/components/ArrowGuider.h"
 
 #include "Game/States/PauseState.h"
 
@@ -41,6 +44,7 @@ GameState::GameState(const std::string& levelJSON)
 
 	//For pause event
 	this->hasSubscribedToPause = false;
+
 }
 
 GameState::~GameState()
@@ -80,8 +84,9 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
-	if (!this->hasSubscribedToPause) {
+	gameLogic.update(dt);
 
+	if (!this->hasSubscribedToPause) {
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
 		this->hasSubscribedToPause = true;
@@ -94,10 +99,11 @@ void GameState::update(const float dt)
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 
+	ParticleManager::get().update(dt);
+
 	for (unsigned int i = 0; i < entities.size(); i += 1) {
 		entities[i]->update(dt);
 	}
-
 
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
@@ -108,7 +114,6 @@ void GameState::update(const float dt)
 	renderer.updateShaders(dt);
 
 	this->replaySystem.update(dt);
-
 }
 
 void GameState::updateLogic(const float dt)
@@ -130,7 +135,7 @@ void GameState::render()
 	*/
 	renderer.drawAllInstanced();
 
-#ifdef ENABLE_COLLISION_BOXES
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
 	this->collisionHandler.updateDrawingData();
 	this->collisionHandler.drawCollisionBoxes();
 #endif

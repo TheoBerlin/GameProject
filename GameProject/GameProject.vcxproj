@@ -44,6 +44,8 @@
     <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Entity\Entity.cpp" />
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
+    <ClCompile Include="Engine\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="Engine\Particle\ParticleManager.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Texture.cpp" />
@@ -65,6 +67,7 @@
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.cpp" />
+    <ClCompile Include="Game\Components\Explosion.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\CameraTransition.cpp" />
     <ClCompile Include="Game\Components\Hover.cpp" />
@@ -98,10 +101,12 @@
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
+    <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
-
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
+    <ClInclude Include="Engine\Collision\VarientMap.h" />
+    <ClInclude Include="Engine\Collision\CollisionConfig.h" />
     <ClInclude Include="Engine\Collision\CollisionInfo.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.h" />
     <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
@@ -132,6 +137,8 @@
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Particle\ParticleEmitter.h" />
+    <ClInclude Include="Engine\Particle\ParticleManager.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
     <ClInclude Include="Engine\AssetManagement\Model.h" />
     <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
@@ -156,6 +163,7 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
+    <ClInclude Include="Game\Components\Explosion.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />
     <ClInclude Include="Game\Components\Hover.h" />
     <ClInclude Include="Game\Components\OversightController.h" />
@@ -191,8 +199,11 @@
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+    <ClInclude Include="Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Engine\Rendering\Shaders\CombineShader.frag" />
+    <None Include="Engine\Rendering\Shaders\CombineShader.vert" />
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
     <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
   </ItemGroup>

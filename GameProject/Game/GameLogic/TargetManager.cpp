@@ -2,6 +2,7 @@
 
 #include <Engine/Entity/Entity.h>
 #include <Game/Components/Hover.h>
+#include <Game/Components/Explosion.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/RollNullifier.h>
 #include <Engine/Components/MovingTargetCollision.h>
@@ -32,6 +33,7 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
     StaticTarget staticTarget;
 
     staticTarget.hoverAnimation = new Hover(host);
+	staticTarget.explosion = new Explosion(host);
 
 	new StaticTargetCollision(host);
 
@@ -87,6 +89,7 @@ void TargetManager::resetStaticTargets()
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
         staticTargets.at(i).hoverAnimation->reset();
+		staticTargets.at(i).explosion->reset();
 		
 		//Reset color on entity
 		Entity* host = staticTargets.at(i).hoverAnimation->getHost();
@@ -94,8 +97,6 @@ void TargetManager::resetStaticTargets()
 		if(attachmentIndex != -1)
 			host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
 				attachmentIndex *sizeof(glm::vec3), 0, 2);
-	
-		
     }
 }
 
