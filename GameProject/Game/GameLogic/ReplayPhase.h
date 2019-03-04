@@ -6,7 +6,6 @@
 #include <Game/GameLogic/Phase.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/PathVisualizer.h>
-#include <Utils/Settings.h>
 
 class GuidingPhase;
 class AimPhase;
@@ -58,7 +57,11 @@ private:
     const float timeBarBottomPadding = 1.0f/20.0f;
     const float timeBarHeightFactor = 1.0f/40.0f;
 
-    // Time bar slider
+    // Time bar visuals
+    const glm::vec4 timeBarBackColor = {0.9686f, 0.7725f, 0.2039f, 1.0f};
+    const glm::vec4 timeBarFrontColor = {0.6588f, 0.4784f, 0.0f, 1.0f};
+
+    // Time bar slider (purely cosmetic)
     Panel* timeBarSlider;
 
     // Size relative to screen height

@@ -10,6 +10,7 @@
 #include <Game/Components/PathVisualizer.h>
 #include <Game/GameLogic/GuidingPhase.h>
 #include <Game/GameLogic/AimPhase.h>
+#include <Utils/Settings.h>
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase),
@@ -181,11 +182,11 @@ void ReplayPhase::setupGUI()
     timeBarFront->setSize(timeBarSize);
 
     // Set panel visuals
-    timeBarBack->setNormalColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
-    timeBarBack->setHoverColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
-    timeBarBack->setPressedColor({0.9686f, 0.7725f, 0.2039f, 1.0f});
+    timeBarBack->setNormalColor(timeBarBackColor);
+    timeBarBack->setHoverColor(timeBarBackColor);
+    timeBarBack->setPressedColor(timeBarBackColor);
 
-    timeBarFront->setColor({0.6588f, 0.4784f, 0.0f, 1.0f});
+    timeBarFront->setColor(timeBarFrontColor);
 
     // Handle mouse clicks on the time bar
     timeBarBack->setCallback([this](void) {handleTimeBarClick();});
@@ -227,7 +228,7 @@ void ReplayPhase::handleTimeBarClick()
 
     float desiredTime = desiredFactor * flightTime;
 
-    level.replaySystem->rewindLevel(level, pathTreader, freeCam, desiredTime);
+    level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
     replayTime = desiredTime;
 }

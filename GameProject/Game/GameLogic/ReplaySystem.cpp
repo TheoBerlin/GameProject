@@ -88,7 +88,7 @@ void ReplaySystem::stopReplaying()
     isReplaying = false;
 }
 
-void ReplaySystem::rewindLevel(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time)
+void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time)
 {
     /*
         Rewinding the level is done in two steps:
