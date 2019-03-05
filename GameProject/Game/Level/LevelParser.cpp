@@ -124,67 +124,11 @@ void LevelParser::readEntityWalls(Level& level)
 		}
 	}
 	else {
-		LOG_ERROR("NO WALLS FOUND");
+		LOG_WARNING("No walls found, walls will not be created.");
 		return;
 	}
 
-	std::vector<glm::vec2> scales;
-
-	Model* model = createQuat();
-	Mesh* mesh = model->getMesh(0);
-
-	std::vector<glm::mat4> mats;
-	for (int i = 0; i < points.size(); i++)
-	{
-		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(i));
-		glm::vec3* p1 = &points[i];
-		glm::vec3* p2 = &points[(i + 1) % (points.size())];
-		
-		glm::vec3 width = *p2 - *p1;
-
-		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
-		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
-			angle = -angle;
-		entity->getTransform()->setRotation(glm::vec3(0.0f, angle, 0.0f));
-
-		float dist = glm::length(width);
-		glm::vec3 scale = glm::vec3(dist, height, 1.0f);
-		entity->getTransform()->setScale(scale);
-
-		entity->getTransform()->setPosition(*p1);
-
-		mats.push_back(entity->getTransform()->getMatrix());
-		entity->setModel(model);
-
-		scales.push_back(glm::vec2(glm::length(width), height));
-
-		std::vector<Vertex> vertex(mesh->getVerticies().size());
-		unsigned index = 0;
-		for (Vertex& v : mesh->getVerticies())
-		{
-			vertex[index++].Position = scale* v.Position;
-		}
-
-		level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
-		entity->getTransform()->setScale(glm::vec3(1.f, 1.f, 1.f));
-		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), i);
-		entity->getTransform()->setScale(scale);
-	}
-
-	AttributeLayout matLayout;
-	matLayout.push(4, 1);
-	matLayout.push(4, 1);
-	matLayout.push(4, 1);
-	matLayout.push(4, 1);
-	mesh->addBuffer(&mats[0][0], mats.size() * sizeof(glm::mat4), matLayout);
-
-	AttributeLayout scaleLayout;
-	scaleLayout.push(2, 1);
-	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
-
-
-
-	ModelLoader::addModel("wall", model);
+	level.levelStructure->createWalls(level, points);
 }
 
 void LevelParser::readEntityFloor(Level& level)
@@ -320,52 +264,6 @@ void LevelParser::createCollisionBodies(Level& level)
 	bodiesNeeded += jsonFile["Walls"].size();
 
 	level.collisionHandler->createCollisionBodies(bodiesNeeded);
-}
-
-Model * LevelParser::createQuat()
-{
-	Model* quad = new Model();
-
-	std::vector<Vertex>* vertices = new	std::vector<Vertex>();
-	std::vector<GLuint>* indicies = new std::vector<GLuint>();
-
-	Vertex vertex;
-	vertex.Normal = glm::vec3(0.0, 0.0, 1.0);
-
-	vertex.Position = glm::vec3(0.0, 0.0, 0.0);
-	vertex.TexCoords = glm::vec2(0.0, 0.0);
-	vertices->push_back(vertex);
-
-	vertex.Position = glm::vec3(1.0, 0.0, 0.0);
-	vertex.TexCoords = glm::vec2(1.0, 0.0);
-	vertices->push_back(vertex);
-
-	vertex.Position = glm::vec3(1.0, 1.0, 0.0);
-	vertex.TexCoords = glm::vec2(1.0, 1.0);
-	vertices->push_back(vertex);
-
-	vertex.Position = glm::vec3(0.0, 1.0, 0.0);
-	vertex.TexCoords = glm::vec2(0.0, 1.0);
-	vertices->push_back(vertex);
-
-	indicies->push_back(0);
-	indicies->push_back(1);
-	indicies->push_back(2);
-	indicies->push_back(2);
-	indicies->push_back(3);
-	indicies->push_back(0);
-
-	Mesh* quadMesh = new Mesh(vertices, indicies, 0, quad);
-	quad->addMesh(quadMesh);
-
-	Material mat;
-	float f = 0.5f;
-	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
-	mat.textures.push_back(tex);
-	mat.Ks_factor = glm::vec4(40.0f);
-	quad->addMaterial(mat);
-
-	return quad;
 }
 
 void LevelParser::readLevel(std::string file, Level& level)
