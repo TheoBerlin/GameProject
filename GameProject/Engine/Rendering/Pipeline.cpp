@@ -23,9 +23,9 @@ Pipeline::Pipeline()
 		Test shader will be swapped out with a option to choose between multiple shaders for rendering Entities
 	*/
 	this->entityShaders.push_back(new EntityShader("./Engine/Rendering/Shaders/EntityShaderInstanced.vert", "./Engine/Rendering/Shaders/EntityShaderInstanced.frag",
-											&this->shadowFbo, &this->camera, &this->lm.getLightMatrix()));
+											&this->shadowFbo, &this->camera, this->lm.getLightMatrixPointer()));
 
-	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, &this->lm.getLightMatrix()));
+	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, this->lm.getLightMatrixPointer()));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -43,10 +43,6 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
-
-	/*float shadowResScale = 2.0f;
-	shadowWidth = Display::get().getWidth() * shadowResScale;
-	shadowHeight = Display::get().getHeight() * shadowResScale;*/
 	this->shadowFbo.attachTexture((int)lm.getShadowWidthScaled(), (int)lm.getShadowHeightScaled(), AttachmentType::DEPTH);
 
 	//Particle init
@@ -67,18 +63,15 @@ Pipeline::Pipeline()
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
 		this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 		this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
-		//this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
+		this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
 	}
 	/*
 		Set up Directional Light
 	*/
-	lm.createDirectionalLight(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+	lm.createDirectionalLight(glm::vec4(0.0f, -1.0f, 0.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 	this->uniformBuffers[1]->setSubData((void*)lm.getDirectionalLight(), 32, 0); //no idea how to solve the size issue
 
-	lm.createPointLight(glm::vec4(0.0f, 1.0f, -10.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 7);
-	lm.createPointLight(glm::vec4(0.0f, 1.0f, 10.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 7);
-	lm.createPointLight(glm::vec4(5.0f, 1.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 7);
-	lm.createPointLight(glm::vec4(-5.0f, 1.0f, 0.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), 7);
+	lm.createPointLight(glm::vec4(0.0f, 1.0f, -1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), 29);
 
 	struct LightBuffer {
 		PointLight pointLights[25];
@@ -92,10 +85,7 @@ Pipeline::Pipeline()
 		lightBuffer.pointLights[i] = *lm.getPointLights()->at(i);
 	}
 
-	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
-
-	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer.nrOfPointLights), 4, 0);
-	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer.pointLights[0]), sizeof(lightBuffer)-4, 4);
+	this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 }
 
 

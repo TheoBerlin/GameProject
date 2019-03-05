@@ -23,12 +23,12 @@ int main() {
 
 	ran.seed(std::random_device()());
 
-	Sound sound;
+	/*Sound sound;
 	sound.loadSound("Game/assets/sound/dream_catcher.wav");
 	sound.setLoopState(true);
 	sound.setPitch(10.0f);
 	sound.setVolume(0.1f);
-	sound.playSound();
+	sound.playSound();*/
 
 	Game game;
 	game.start();

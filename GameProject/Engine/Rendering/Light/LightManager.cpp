@@ -80,6 +80,11 @@ glm::mat4 LightManager::getLightMatrix()
 	return this->lightMatrix;
 }
 
+glm::mat4 * LightManager::getLightMatrixPointer()
+{
+	return &this->lightMatrix;
+}
+
 void LightManager::calcLightMatrix()
 {
 	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float) orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);

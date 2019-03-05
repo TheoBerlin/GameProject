@@ -18,6 +18,7 @@ public:
 	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity);
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getLightMatrix();
+	glm::mat4 * getLightMatrixPointer();
 private:
 	std::vector<PointLight*> pointLights; 
 	
