@@ -2,6 +2,7 @@
 
 #include <Engine/Rendering/Display.h>
 #include <Engine/Events/EventBus.h>
+#include <Game/GameLogic/GameEvents.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
@@ -136,7 +137,11 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_1) {
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
