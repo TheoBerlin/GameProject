@@ -10,6 +10,7 @@ layout(std140) uniform WallPoints
 {
     vec4 points[100];
     int size;
+    vec3 padding;
 } wallPoints;
 
 layout(std140) uniform Material
@@ -103,8 +104,8 @@ void main()
     /*
 		Shadow
 	*/
-	float shadow = ShadowCalculation(fragLightPos);
+	float shadow = 0.000001*ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
 
-    finalColor = vec4(lighting, /*smoothstep(0.0, 200.0, length(fragPos))*/1.0);
+    finalColor = vec4(lighting, 1.0 - smoothstep(0.0, 200.0, length(fragPos)));
 }

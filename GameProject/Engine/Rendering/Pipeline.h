@@ -92,6 +92,8 @@ public:
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
 
+	void setWallPoints(const std::vector<glm::vec3>& wallPoints);
+
 	Framebuffer* getFbo();
 	Framebuffer* getShadowFbo();
 

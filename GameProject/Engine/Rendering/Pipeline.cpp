@@ -474,6 +474,33 @@ Camera * Pipeline::getActiveCamera()
 	return this->camera;
 }
 
+void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints)
+{
+	InfinityPlaneShader* infPlaneShader = nullptr;
+	for (size_t i = 0; i < this->entityShaders.size(); i++) {
+		if (dynamic_cast<InfinityPlaneShader*>(this->entityShaders[i]) != nullptr)
+		{
+			infPlaneShader = dynamic_cast<InfinityPlaneShader*>(this->entityShaders[i]);
+			this->addUniformBuffer(2, infPlaneShader->getID(), "WallPoints");
+		}
+	}
+
+	if (infPlaneShader != nullptr)
+	{
+		struct WallPointsData
+		{
+			glm::vec4 points[100];
+			int size;
+			glm::vec3 padding;
+		} data;
+		data.size = wallPoints.size();
+		for (unsigned int i = 0; i < data.size; i++) {
+			data.points[i] = glm::vec4(wallPoints[i], 0.f);
+		}
+		this->uniformBuffers[2]->setSubData((void*)&data, sizeof(WallPointsData), 0);
+	}
+}
+
 Framebuffer * Pipeline::getFbo()
 {
 	return &this->fbo;

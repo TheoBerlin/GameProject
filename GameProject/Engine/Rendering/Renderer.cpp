@@ -73,6 +73,9 @@ void Renderer::initInstancing()
 	if (wall)
 		this->renderingModels.push_back(std::make_pair(wall, SHADERS::WALL));
 
+	Model* infPlane = ModelLoader::loadModel("infinityPlane");
+	if (wall)
+		this->renderingModels.push_back(std::make_pair(infPlane, SHADERS::INFINITY_PLANE));
 
 	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
 	this->renderingModels.push_back(std::make_pair(model, SHADERS::DRONE_SHADER));
@@ -157,6 +160,11 @@ Texture* Renderer::drawTextureToFbo(Texture * texture, SHADERS_POST_PROCESS shad
 Pipeline * Renderer::getPipeline()
 {
 	return &this->pipeline;
+}
+
+void Renderer::setWallPoints(const std::vector<glm::vec3>& wallPoints)
+{
+	this->pipeline.setWallPoints(wallPoints);
 }
 
 

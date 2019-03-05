@@ -19,8 +19,10 @@ public:
 
 private:
 	Model* createQuad();
+	Model* createPlane();
 
 	Model* quad;
+	Model* plane;
 	std::vector<glm::vec3> wallPoints;
 };
 
