@@ -1,8 +1,6 @@
 #pragma once
 #include "Utils/Settings.h"
 
-
-
 class DirectionalLight
 {
 

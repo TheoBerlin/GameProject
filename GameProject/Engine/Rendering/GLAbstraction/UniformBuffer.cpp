@@ -49,6 +49,7 @@ void UniformBuffer::setData(const void* const data, size_t dataSize)
 	glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 
 	glBufferData(GL_UNIFORM_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, this->bindingPoint, this->id);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
@@ -59,6 +60,7 @@ bool UniformBuffer::setSubData(const void* const data, size_t dataSize, unsigned
 		glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 
 		glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, data);
+
 
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 

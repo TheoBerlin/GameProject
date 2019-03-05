@@ -43,8 +43,17 @@ PointLight::PointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 		this->linear = 0.027f;
 		this->quadratic = 0.0028f;
 		break;
-
 	}
+
+}
+
+PointLight::PointLight()
+{
+	this->position = glm::vec4(0.0f);
+	this->intensity = glm::vec4(1.0f);
+	this->constant = 1.0f;
+	this->linear = 0.027f;
+	this->quadratic = 0.0028f;
 }
 
 PointLight::~PointLight()

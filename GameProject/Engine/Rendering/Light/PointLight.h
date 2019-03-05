@@ -5,6 +5,7 @@ class PointLight
 {
 public:
 	PointLight(glm::vec4 position, glm::vec4 intensity, int distance);
+	PointLight();
 	~PointLight();
 	glm::vec4 getPosition();
 	glm::vec4 getIntensity();
@@ -14,5 +15,6 @@ private:
 	float constant;
 	float linear;
 	float quadratic;
+	float padding = 0.0f;
 };
 

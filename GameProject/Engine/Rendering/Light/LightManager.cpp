@@ -46,7 +46,7 @@ PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intens
 	return pointLight;
 }
 
-std::vector<PointLight*>* LightManager::getPointLights()
+std::vector<PointLight*> * LightManager::getPointLights()
 {
 	return &this->pointLights;
 }

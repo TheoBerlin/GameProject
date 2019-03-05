@@ -48,15 +48,35 @@ Pipeline::Pipeline()
 
 	this->addUniformBuffer(0, this->entityShaderInstanced->getID(), "Material");
 	this->addUniformBuffer(1, this->entityShaderInstanced->getID(), "DirectionalLight");
-	this->addUniformBuffer(2, this->entityShaderInstanced->getID(), "PointLight");
+	this->addUniformBuffer(2, this->entityShaderInstanced->getID(), "LightBuffer");
 
 	/*
 		Set up Directional Light
 	*/
 	lm.createDirectionalLight(glm::vec4(0.0f, -1.0f, 1.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
-	lm.createPointLight(glm::vec4(0.0f, 7.0f, 0.0f, 1.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 7);
 	this->uniformBuffers[1]->setSubData((void*)lm.getDirectionalLight(), 32, 0); //no idea how to solve the size issue
-	this->uniformBuffers[2]->setSubData((void*)lm.getPointLights(), 48, 0);
+
+	lm.createPointLight(glm::vec4(0.0f, 1.0f, -10.0f, 1.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f), 7);
+	lm.createPointLight(glm::vec4(0.0f, 1.0f, 10.0f, 1.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f), 7);
+	lm.createPointLight(glm::vec4(5.0f, 1.0f, 0.0f, 1.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f), 7);
+	lm.createPointLight(glm::vec4(-5.0f, 1.0f, 0.0f, 1.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f), 7);
+
+	struct LightBuffer {
+		PointLight pointLights[25];
+		int nrOfPointLights;
+		glm::vec3 padding;
+	} lightBuffer;
+
+	lightBuffer.nrOfPointLights = lm.getNrOfPointLights();
+
+	for (int i = 0; i < lm.getNrOfPointLights(); i++) {
+		lightBuffer.pointLights[i] = *lm.getPointLights()->at(i);
+	}
+
+	this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+
+	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer.nrOfPointLights), 4, 0);
+	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer.pointLights[0]), sizeof(lightBuffer)-4, 4);
 }
 
 
