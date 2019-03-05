@@ -63,7 +63,7 @@ ArrowGuider* GuidingPhase::getArrowGuider() const
 
 float GuidingPhase::getFlightTime()
 {
-    return flightTimer;
+    return flightTime;
 }
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)

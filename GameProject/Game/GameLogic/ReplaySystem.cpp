@@ -113,6 +113,8 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
     // Reset collision replays
     this->startReplaying();
 
+    this->update(time);
+
     // Fast forward level, update every entity except the player entity
     std::vector<Entity*> entities = level.entityManager->getAll();
 
@@ -121,8 +123,6 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
             entity->update(time);
         }
     }
-
-    this->update(time);
 }
 
 void ReplaySystem::handlePlayerCollision(PlayerCollisionEvent* event)
