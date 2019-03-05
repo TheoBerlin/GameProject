@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
@@ -106,6 +107,7 @@
     <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
     <ClInclude Include="Engine\Collision\CollisionConfig.h" />
