@@ -18,7 +18,7 @@ public:
 
 	void update(const float& dt);
 
-	void explode(float lifeTime = 3.0, unsigned explosionDebris = 3, float speed = 1.5, float gravity = -3.0);
+	void explode(float lifeTime = 3.0, float timeElapsed = 0.0, unsigned explosionDebris = 3, float speed = 1.5, float gravity = -3.0);
 
 	void reset();
 
