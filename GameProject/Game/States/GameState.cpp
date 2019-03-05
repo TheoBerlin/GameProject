@@ -33,6 +33,7 @@ GameState::GameState(const std::string& levelJSON)
 	level.gui = &this->getGUI();
 	level.replaySystem = &this->replaySystem;
 	level.scoreManager = &this->scoreManager;
+	level.levelStructure = &this->levelStructure;
 
 	levelParser.readLevel(levelJSON, level);
 
