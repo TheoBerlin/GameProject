@@ -57,20 +57,20 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		unsigned index = 0;
 		for (Vertex& v : mesh->getVerticies())
 		{
-			vertex[index].Position = scale * v.Position;
+			vertex[index++].Position = scale * v.Position;
 		}
 
 		// Save upper wall points
-		glm::vec4 u1(p1->x, 1.f, p1->z, 1.f);
+		glm::vec4 u1((*p1).x, 1.f, (*p1).z, 1.f);
 		u1 = trans->getMatrix() * u1;
 		this->wallPoints.push_back(glm::vec3(u1.x, height, u1.z));
 
 
 		// Add collision
 		level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
-		entity->getTransform()->setScale(glm::vec3(1.f, 1.f, 1.f));
+		trans->setScale(glm::vec3(1.f, 1.f, 1.f));
 		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), i);
-		entity->getTransform()->setScale(scale);
+		trans->setScale(scale);
 	}
 
 	AttributeLayout matLayout;
