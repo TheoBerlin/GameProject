@@ -2,10 +2,8 @@
 
 #include <Engine/Entity/Entity.h>
 #include <Engine/Events/EventBus.h>
+#include <Game/Components/Explosion.h>
 #include <Game/Level/Level.h>
-
-#include "Engine/Entity/Entity.h"
-#include "Game/Components/Explosion.h"
 
 ReplaySystem::ReplaySystem()
     :replayTime(0.0f),

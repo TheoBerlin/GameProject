@@ -177,6 +177,7 @@
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
     <ClInclude Include="Game\GameLogic.h" />
+    <ClInclude Include="Game\GameLogic\GameEvents.h" />
     <ClInclude Include="Game\GameLogic\Phases\AimPhase.h" />
     <ClInclude Include="Game\GameLogic\Phases\GuidingPhase.h" />
     <ClInclude Include="Game\GameLogic\Phases\OverviewPhase.h" />
