@@ -69,7 +69,9 @@ void Renderer::initInstancing()
 	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Cube.fbx"), SHADERS::DEFAULT));
 	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/floor.fbx"), SHADERS::DEFAULT));
 	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Arrow.fbx"), SHADERS::DEFAULT));
-	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("wall"), SHADERS::WALL));
+	Model* wall = ModelLoader::loadModel("wall");
+	if (wall)
+		this->renderingModels.push_back(std::make_pair(wall, SHADERS::WALL));
 
 
 	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
