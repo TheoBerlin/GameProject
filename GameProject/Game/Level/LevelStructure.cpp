@@ -22,6 +22,13 @@ LevelStructure::~LevelStructure()
 
 void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, float height)
 {
+	// Add an entity which has a model as a plane.
+	Entity* entity = level.entityManager->addTracedEntity("InfinityPlane");
+	entity->getTransform()->setScale(glm::vec3(100.f));
+	entity->getTransform()->setPosition(glm::vec3(0.f, height, 0.f));
+	entity->setModel(this->plane);
+	ModelLoader::addModel("infinityPlane", this->plane);
+
 	std::vector<glm::vec2> scales;
 
 	Model* model = this->quad;
@@ -61,9 +68,7 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		}
 
 		// Save upper wall points
-		glm::vec4 u1((*p1).x, 1.f, (*p1).z, 1.f);
-		u1 = trans->getMatrix() * u1;
-		this->wallPoints.push_back(glm::vec3(u1.x, height, u1.z));
+		this->wallPoints.push_back(glm::vec3((*p1).x, height, (*p1).z));
 
 
 		// Add collision
@@ -85,13 +90,6 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
 
 	ModelLoader::addModel("wall", model);
-
-	// Add an entity which has a model as a plane.
-	Entity* entity = level.entityManager->addTracedEntity("InfinityPlane");
-	entity->getTransform()->setScale(glm::vec3(100.f));
-	entity->getTransform()->setPosition(glm::vec3(0.f, height, 0.f));
-	entity->setModel(this->plane);
-	ModelLoader::addModel("infinityPlane", this->plane);
 }
 
 std::vector<glm::vec3>& LevelStructure::getWallPoints()

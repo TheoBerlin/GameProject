@@ -162,10 +162,5 @@ Pipeline * Renderer::getPipeline()
 	return &this->pipeline;
 }
 
-void Renderer::setWallPoints(const std::vector<glm::vec3>& wallPoints)
-{
-	this->pipeline.setWallPoints(wallPoints);
-}
-
 
 

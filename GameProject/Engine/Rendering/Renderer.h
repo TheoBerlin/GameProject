@@ -75,8 +75,6 @@ public:
 	*/
 	Pipeline* getPipeline();
 
-	void setWallPoints(const std::vector<glm::vec3>& wallPoints);
-
 private:
 	Pipeline pipeline;
 
