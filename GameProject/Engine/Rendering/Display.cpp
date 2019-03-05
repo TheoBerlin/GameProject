@@ -1,6 +1,6 @@
 #include "Display.h"
 
-#include "../../Utils/Logger.h"
+#include "Utils/Logger.h"
 #include "../Events/EventBus.h"
 #include "../Events/Events.h"
 #include "../Imgui/imgui.h"
@@ -25,7 +25,7 @@ void Display::updateView(int width, int height)
 
 bool Display::isOpen() const
 {
-	return glfwGetKey(this->window, GLFW_KEY_ESCAPE) != GLFW_PRESS && !glfwWindowShouldClose(this->window);
+	return !glfwWindowShouldClose(this->window);
 }
 
 void Display::startFrame()

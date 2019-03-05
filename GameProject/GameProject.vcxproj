@@ -19,7 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Engine\Rendering\Light\DirectionalLight.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
     <ClCompile Include="Engine\GUI\Button.cpp" />
     <ClCompile Include="Engine\GUI\Font.cpp" />
@@ -27,10 +28,9 @@
     <ClCompile Include="Engine\GUI\GUI.cpp" />
     <ClCompile Include="Engine\GUI\Panel.cpp" />
     <ClCompile Include="Engine\GUI\Text.cpp" />
-    <ClCompile Include="Engine\Components\CollisionComponent.cpp" />
     <ClCompile Include="Engine\Collision\Collision.cpp" />
     <ClCompile Include="Engine\Collision\CollisionHandler.cpp" />
-    <ClCompile Include="Engine\Components\TargetCollision.cpp" />
+    <ClCompile Include="Engine\Components\StaticTargetCollision.cpp" />
     <ClCompile Include="Engine\Imgui\imgui.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_demo.cpp" />
     <ClCompile Include="Engine\Imgui\imgui_draw.cpp" />
@@ -44,6 +44,8 @@
     <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Entity\Entity.cpp" />
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
+    <ClCompile Include="Engine\Particle\ParticleEmitter.cpp" />
+    <ClCompile Include="Engine\Particle\ParticleManager.cpp" />
     <ClCompile Include="Engine\Rendering\Display.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\IndexBuffer.cpp" />
     <ClCompile Include="Engine\Rendering\GLAbstraction\Texture.cpp" />
@@ -64,8 +66,11 @@
     <ClCompile Include="Engine\States\State.cpp" />
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.cpp" />
+    <ClCompile Include="Game\Components\Explosion.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\CameraTransition.cpp" />
+    <ClCompile Include="Game\Components\Hover.cpp" />
     <ClCompile Include="Game\Components\OversightController.cpp" />
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
@@ -75,29 +80,41 @@
     <ClCompile Include="Game\GameLogic\OverviewPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phase.cpp" />
     <ClCompile Include="Game\GameLogic\ReplayPhase.cpp" />
+    <ClCompile Include="Game\GameLogic\ReplaySystem.cpp" />
     <ClCompile Include="Game\GameLogic\TargetManager.cpp" />
     <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
-    <ClCompile Include="Game\States\TestState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Engine\Rendering\Light\LightManager.cpp" />
+    <ClCompile Include="Engine\GUI\ScrollPanel\List.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Engine\Rendering\Light\PointLight.cpp" />
+    <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
+    <ClCompile Include="Game\States\PauseState.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.cpp" />
+    <ClCompile Include="Engine\GUI\ScrollPanel\ScrollPanel.cpp" />
+    <ClCompile Include="Engine\GUI\ScrollPanel\ScrollBar.cpp" />
+    <ClCompile Include="Game\GameLogic\ScoreManager.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
+    <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
+    <ClInclude Include="Engine\Collision\VarientMap.h" />
+    <ClInclude Include="Engine\Collision\CollisionConfig.h" />
+    <ClInclude Include="Engine\Collision\CollisionInfo.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.h" />
     <ClInclude Include="Engine\Rendering\Light\DirectionalLight.h" />
     <ClInclude Include="Engine\Collision\CollisionRenderer.h" />
-    <ClInclude Include="Engine\Components\CollisionComponent.h" />
     <ClInclude Include="Engine\Collision\Collision.h" />
     <ClInclude Include="Engine\Collision\CollisionHandler.h" />
-    <ClInclude Include="Engine\Components\TargetCollision.h" />
+    <ClInclude Include="Engine\Components\StaticTargetCollision.h" />
     <ClInclude Include="Engine\Config.h" />
     <ClInclude Include="Engine\Events\Events.h" />
     <ClInclude Include="Engine\Events\memberFunctionHandler.h" />
@@ -122,6 +139,8 @@
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
+    <ClInclude Include="Engine\Particle\ParticleEmitter.h" />
+    <ClInclude Include="Engine\Particle\ParticleManager.h" />
     <ClInclude Include="Engine\AssetManagement\Mesh.h" />
     <ClInclude Include="Engine\AssetManagement\Model.h" />
     <ClInclude Include="Engine\AssetManagement\ModelLoader.h" />
@@ -145,7 +164,10 @@
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
+    <ClInclude Include="Game\Components\Explosion.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />
+    <ClInclude Include="Game\Components\Hover.h" />
     <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
@@ -154,6 +176,7 @@
     <ClInclude Include="Game\GameLogic\OverviewPhase.h" />
     <ClInclude Include="Game\GameLogic\Phase.h" />
     <ClInclude Include="Game\GameLogic\ReplayPhase.h" />
+    <ClInclude Include="Game\GameLogic\ReplaySystem.h" />
     <ClInclude Include="Game\GameLogic\TargetManager.h" />
     <ClInclude Include="Game\Level\Level.h" />
     <ClInclude Include="Game\Level\LevelParser.h" />
@@ -163,8 +186,15 @@
     <ClInclude Include="Game\Components\PathTreader.h" />
     <ClInclude Include="Game\Game.h" />
     <ClInclude Include="Game\States\GameState.h" />
-    <ClInclude Include="Game\States\TestState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
+    <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
+    <ClInclude Include="Game\States\PauseState.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\List.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollPanel.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollBar.h" />
+    <ClInclude Include="Game\GameLogic\ScoreManager.h" />
     <ClInclude Include="Engine\Rendering\Light\LightManager.h" />
     <ClInclude Include="Engine\Rendering\Light\PointLight.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
@@ -173,8 +203,11 @@
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+    <ClInclude Include="Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Engine\Rendering\Shaders\CombineShader.frag" />
+    <None Include="Engine\Rendering\Shaders\CombineShader.vert" />
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
     <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
   </ItemGroup>

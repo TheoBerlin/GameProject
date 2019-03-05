@@ -3,29 +3,25 @@
 #include <Engine/Entity/Entity.h>
 #include <Utils/Logger.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, float movementSpeed, float maxTurnSpeed)
-    :Component(parentEntity, "ArrowGuider")
+ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float minFOV, float movementSpeed, float maxTurnSpeed)
+    :Component(parentEntity, "ArrowGuider"),
+    minCamOffset(minCamOffset),
+    isGuiding(false),
+    isAiming(false),
+    movementSpeed(movementSpeed),
+    maxTurnSpeed(maxTurnSpeed),
+    turnFactors(glm::vec2(0.0f,0.0f)),
+    posStoreTimer(0.0f),
+    arrowCamera(nullptr),
+    flightTime(0.0f),
+    minFOV(minFOV)
 {
-    isGuiding = false, isAiming = false;
-
-    this->movementSpeed = movementSpeed;
-
-    this->maxTurnSpeed = maxTurnSpeed;
-
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution
     EventBus::get().subscribe(this, &ArrowGuider::handleWindowResize);
     windowHeight = Display::get().getHeight();
 
-    turnFactors = glm::vec2(0.0f, 0.0f);
-
-    posStoreTimer = 0.0f;
-
-    arrowCamera = nullptr;
-
     currentPitch = 0.0f;
-
-    flightTime = 0.0f;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -69,13 +65,15 @@ void ArrowGuider::update(const float& dt)
 
         if (posStoreTimer > 1.0f/posStoreFrequency) {
             // Store position and reset timer
-            posStoreTimer = std::fmod(posStoreTimer, posStoreFrequency);
+            posStoreTimer = 0.0f;
 
             KeyPoint newKeyPoint;
             newKeyPoint.Position = transform->getPosition();
             newKeyPoint.t = flightTime;
 
             path.push_back(newKeyPoint);
+
+            allowKeypointOverride = true;
         }
 
         // Update arrow position
@@ -166,6 +164,8 @@ void ArrowGuider::startGuiding()
     isGuiding = true;
     flightTime = 0.0f;
 
+    allowKeypointOverride = true;
+
     // Clear previous path and store starting position
     path.clear();
 
@@ -176,18 +176,33 @@ void ArrowGuider::startGuiding()
     path.push_back(startingKeyPoint);    
 }
 
-void ArrowGuider::stopGuiding()
+void ArrowGuider::stopGuiding(float flightTime)
 {
     isGuiding = false;
 
     stopAiming();
 
+    this->flightTime = flightTime;
+
     // Store end point
     KeyPoint newKeyPoint;
     newKeyPoint.Position = host->getTransform()->getPosition();
-    newKeyPoint.t = flightTime;
+    newKeyPoint.t = this->flightTime;
 
-    path.push_back(newKeyPoint);
+    path.back() = newKeyPoint;
+}
+
+void ArrowGuider::saveKeyPoint(float flightTime)
+{
+    // Do not save the key point if one was just saved during the same frame update
+    if (posStoreTimer < FLT_EPSILON * 10.0f || !allowKeypointOverride) {
+        return;
+    }
+
+    posStoreTimer = 0.0f;
+    path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+
+    allowKeypointOverride = false;
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)

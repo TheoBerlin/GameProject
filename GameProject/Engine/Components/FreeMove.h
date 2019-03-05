@@ -8,9 +8,8 @@ class FreeMove : public Component
 {
 public:
 	FreeMove(Entity * parentEntity, const std::string& tagName = "FreeMove");
-	virtual ~FreeMove();
+	~FreeMove();
 
-	void init();
 	void update(const float& dt);
 
 private:
@@ -27,4 +26,3 @@ private:
 	void moveMouse(MouseMoveEvent * evnt);
 	void clickMouse(MouseClickEvent * evnt);
 };
-

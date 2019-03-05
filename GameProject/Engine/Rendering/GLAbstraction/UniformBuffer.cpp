@@ -2,7 +2,7 @@
 
 #include "GL/glew.h"
 
-#include "../../../Utils/Logger.h"
+#include "Utils/Logger.h"
 
 UniformBuffer::UniformBuffer()
 {

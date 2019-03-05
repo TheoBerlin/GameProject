@@ -37,14 +37,21 @@ void Camera::init()
 	updateView();
 }
 
-glm::vec3 Camera::getUp() const
+glm::vec3 Camera::getUp()
 {
-	return this->u;
+	return this->getHost()->getTransform()->getUp();
 }
 
 glm::vec3 Camera::getForward() const
 {
 	return this->f;
+}
+
+void Camera::setForward(const glm::vec3 & forward)
+{
+	this->f = glm::normalize(forward);
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 }
 
 glm::vec3 Camera::getRight() const
@@ -72,6 +79,13 @@ glm::vec3 Camera::getPosition() const
 	return this->pos;
 }
 
+void Camera::setPosition(const glm::vec3& position)
+{
+	this->pos = position;
+
+	updateView();
+}
+
 float Camera::getFOV() const
 {
 	return fov;
@@ -92,6 +106,8 @@ glm::vec3 Camera::getOffset() const
 void Camera::setOffset(const glm::vec3& offset)
 {
 	this->offset = offset;
+
+	updatePosition();
 }
 
 void Camera::updateView()
@@ -104,12 +120,6 @@ void Camera::updateProj(WindowResizeEvent * evnt)
 	this->proj = glm::perspective(glm::radians(this->fov), Display::get().getRatio(), this->zNear, this->zFar);
 }
 
-void Camera::setForward(const glm::vec3 & forward)
-{
-	this->f = glm::normalize(forward);
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
-}
 
 void Camera::updatePosition()
 {

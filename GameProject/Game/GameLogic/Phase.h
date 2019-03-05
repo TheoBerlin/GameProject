@@ -12,9 +12,14 @@ class Phase
 public:
     Phase(const Level& level, Entity* transitionEntity);
     Phase(Phase* other);
+	virtual ~Phase();
+
+	virtual void update(const float& dt);
 
 protected:
     void changePhase(Phase* newPhase);
+
+    void setupTransition(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
 
     Level level;
 

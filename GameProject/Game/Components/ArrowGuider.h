@@ -15,7 +15,7 @@ class Entity;
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, float movementSpeed = 3.0f, float maxTurnSpeed = glm::half_pi<float>());
+    ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float minFOV, float movementSpeed = 3.0f, float maxTurnSpeed = glm::half_pi<float>());
     ~ArrowGuider();
 
     void update(const float& dt);
@@ -28,7 +28,10 @@ public:
     // Enables both aim and movement
     void startGuiding();
     // Disables both aim and movement
-    void stopGuiding();
+    void stopGuiding(float flightTime);
+
+    // Overwrites the last keypoint with the current time and position
+    void saveKeyPoint(float flightTime);
 
     // Event handlers
     void handleMouseMove(MouseMoveEvent* event);
@@ -69,7 +72,7 @@ private:
 
     // Frequency at which the position is stored
     float posStoreFrequency;
-    const float minStoreFrequency = 0.5f, maxStoreFrequency = 1.0f;
+    const float minStoreFrequency = 0.7f, maxStoreFrequency = 1.2f;
     const float maxStoreFrequencyDelta = 0.15f;
 
     // Time since position was stored
@@ -77,15 +80,22 @@ private:
     float flightTime;
     std::vector<KeyPoint> path;
 
+    // Allow copying over the last key point in the path
+    // Used to avoid collision keypoints being written over each other
+    bool allowKeypointOverride;
+
     // The pointer is retrieved when startGuiding() is called
     Camera* arrowCamera;
 
     // Camera settings
-    const glm::vec3 minCamOffset = glm::vec3(0.0f, 0.3f, -1.0f), maxCamOffset = glm::vec3(0.0f, 0.3f, -1.6f);
+    glm::vec3 minCamOffset;
+    const glm::vec3 maxCamOffset = glm::vec3(0.0f, 0.3f, -1.6f);
+    // Max offset change in forward direction per second
     const float offsetChangeMax = 0.35f;
 
-    const float minFOV = 75.0f, maxFOV = 90.0f;
-    const float FOVChangeMax = 15.0f;
+    float minFOV;
+    // Max FOV and max FOV change per second
+    const float maxFOV = 90.0f, FOVChangeMax = 15.0f;
 
     float currentPitch;
     const float maxPitch = glm::half_pi<float>() - 0.01f;

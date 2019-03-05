@@ -1,26 +1,49 @@
 #include "MenuState.h"
 
-#include "../../Engine/States/StateManager.h"
+#include "Engine/States/StateManager.h"
 #include "GameState.h"
-#include "TestState.h"
-#include "../../Engine/Rendering/Display.h"
-#include "../../Engine/Rendering/GUIRenderer.h"
-#include "../../Engine/GUI/FontManager.h"
+#include "Engine/Rendering/Display.h"
+#include "Engine/Rendering/GUIRenderer.h"
 #include "glm/vec4.hpp"
-#include "../../Engine/InputHandler.h"
+#include "Engine/InputHandler.h"
 #include "Utils/Logger.h"
-#include "../../Engine/GUI/Button.h"
+
+#include "Engine/GUI/FontManager.h"
+#include "Engine/GUI/Button.h"
+#include "Engine/GUI/ScrollPanel/ScrollPanel.h"
+
 
 MenuState::MenuState() : State()
 {
-	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 16);
-	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 16);
-	FontManager::addFont("arialBig", "./Game/assets/fonts/arial/arialbd.ttf", 36);
-	this->font = FontManager::getFont("arial");
-	test.setText("------", this->font);
-	test.setColor({1.0f, 1.0f, 1.0f, 1.0f});
+	// Default level
+	this->selectedLevel = "./Game/Level/level.json";
 
+	// Add fonts for later
+	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 16);
+	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 22);
+	FontManager::addFont("arialBig", "./Game/assets/fonts/arial/arialbd.ttf", 36);
+	FontManager::addFont("aldo", "./Game/assets/fonts/aldo/aldo.ttf", 40);
+	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
+
+	// Colors for creation
+	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
+	glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
+	glm::vec4 hoverColor = { 0.5f, 0.0f, 0.5f, 1.0f };
+	glm::vec4 pressColor = { 0.3f, 0.0f, 0.3f, 1.0f };
+
+	// Get GUI
 	GUI& gui = this->getGUI();
+
+	// Create title
+	Panel* titlePnl = new Panel();
+	titlePnl->addText("gameNname", "aldoBig", textColor);
+	titlePnl->setOption(GUI::FLOAT_UP, 40);
+	titlePnl->setOption(GUI::CENTER_X);
+	titlePnl->setOption(GUI::SCALE_TO_TEXT_X);
+	titlePnl->setColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+	gui.addPanel(titlePnl);
+
+	// Create play button
 	this->button = new Button();
 	this->button->setOption(GUI::SCALE_TO_TEXT_X, 5);
 	this->button->setOption(GUI::SCALE_TO_TEXT_Y, 5);
@@ -28,15 +51,17 @@ MenuState::MenuState() : State()
 	this->button->setOption(GUI::CENTER_Y);
 	this->button->setOption(GUI::TEXT_CENTER_X);
 	this->button->setOption(GUI::TEXT_CENTER_Y);
-	this->button->setHoverColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-	this->button->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
-	this->button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
-	this->button->addText("Play", "arialBig");
+	glm::vec4 buttonColor(0.4, 0.4, 0.4, 1.0);
+	this->button->setHoverColor(buttonColor * 1.2f);
+	this->button->setNormalColor(buttonColor);
+	this->button->setPressedColor(buttonColor * 0.8f);
+	this->button->addText("Play", "aldo", glm::vec4(1.0f));
 	this->button->setCallback([this](void) {
-		//this->getGUI().removePanel(this->button);
-		this->pushState(new GameState());
+		this->pushState(new GameState(this->selectedLevel));
 	});
 	gui.addPanel(this->button);
+
+	this->initPanelLayout();
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
@@ -47,26 +72,9 @@ MenuState::~MenuState()
 
 void MenuState::start()
 {
-	Display& display = Display::get();
-	GUIRenderer& guiRenderer = display.getGUIRenderer();
+	// Unlock cursor
+	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	this->panel = new Panel();
-	this->panel->setSize({ 100, 100 });
-	this->panel->setOption(GUI::FLOAT_UP);
-	this->panel->setOption(GUI::FLOAT_RIGHT);
-	this->panel->setOption(GUI::TEXT_CENTER_X);
-	this->panel->setOption(GUI::TEXT_FLOAT_DOWN);
-	this->panel->setColor({ 0.2f, 0.2f, 0.2f, 1.0f });
-	this->panel->addText("Play", "arial", { 0.0f, 1.0f, 0.0f, 1.0f });
-	this->getGUI().addPanel(this->panel);
-
-	Panel* p = new Panel();
-	p->setSize({ 50, 50 });
-	p->setOption(GUI::FLOAT_LEFT, 5);
-	p->setOption(GUI::FLOAT_UP, 10);
-	p->setBackgroundTexture(TextureManager::loadTexture("./Game/assets/heaven.png", TextureType::TXTYPE_DIFFUSE));
-	p->addText("Inner", "arial");
-	this->panel->addChild(p);
 }
 
 void MenuState::end()
@@ -99,4 +107,42 @@ void MenuState::render()
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.draw(this->getGUI());
+}
+
+void MenuState::initPanelLayout()
+{
+	Display& display = Display::get();
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+
+	unsigned width = 200;
+	unsigned height = 300;
+	ScrollPanel* scrollPanel = new ScrollPanel(width, height);
+	scrollPanel->setOption(GUI::FLOAT_DOWN, 10);
+	scrollPanel->setOption(GUI::CENTER_X);
+	scrollPanel->setColor(glm::vec4(0.2, 0.2, 0.2, 1.0));
+
+	scrollPanel->addItem([this](void) {
+		this->selectedLevel = "./Game/Level/level.json";
+	}, "Level 1");
+
+	scrollPanel->addItem([this](void) {
+		this->selectedLevel = "./Game/Level/newLevel.json";
+	}, "Level 2");
+
+	scrollPanel->addItem([this](void) {
+		this->selectedLevel = "./Game/Level/newLevel2.json";
+	}, "Level 3");
+
+	scrollPanel->addItem([this](void) {}, "ADRIAN");
+	scrollPanel->addItem([this](void) {}, "JONATHAN");
+	scrollPanel->addItem([this](void) {}, "SIMON");
+	scrollPanel->addItem([this](void) {}, "THEO");
+	scrollPanel->addItem([this](void) {}, "JACOB");
+	scrollPanel->addItem([this](void) {}, "ANTON");
+
+	this->getGUI().addPanel(scrollPanel);
+}
+
+void MenuState::initLevelSelectLayout()
+{
 }

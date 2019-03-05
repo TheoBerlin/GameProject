@@ -1,14 +1,19 @@
 #pragma once
 
+#include <Engine/Collision/CollisionHandler.h>
 #include <Engine/Entity/EntityManager.h>
+#include <Engine/Particle/ParticleManager.h>
 #include <Engine/GUI/GUI.h>
 #include <Game/GameLogic/TargetManager.h>
+#include <Game/GameLogic/ReplaySystem.h>
+#include <Game/GameLogic/ScoreManager.h>
 #include <glm/glm.hpp>
-#include <Engine/Collision/CollisionHandler.h>
 
 struct CameraSetting {
 	glm::vec3 position;
 	glm::vec3 direction;
+	glm::vec3 offset;
+	float FOV;
 };
 
 struct Player {
@@ -23,4 +28,6 @@ struct Level {
 	Player player;
 	GUI* gui;
 	CollisionHandler* collisionHandler;
+	ReplaySystem* replaySystem;
+	ScoreManager* scoreManager;
 };

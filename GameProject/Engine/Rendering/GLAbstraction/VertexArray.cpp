@@ -25,7 +25,6 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 		AttributeSettings attrib = attributes.attribs[i];
 
 		glEnableVertexAttribArray(this->nextLocation);
-		//vbo->setLocation(attrib.location, i);
 		glVertexAttribPointer(this->nextLocation, attrib.size, GL_FLOAT, GL_FALSE, attributes.stride * sizeof(float), (void*)attrib.offset);
 		glVertexAttribDivisor(this->nextLocation, attrib.divisor);
 		this->nextLocation++;
@@ -35,7 +34,7 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 	vbo->setAttribCount(attributes.attribs.size());
 }
 
-void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset)
+void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset, const unsigned& usage)
 {
 	this->bind();
 	if (vboIndex < this->buffers.size()) {
@@ -46,18 +45,22 @@ void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t
 			vbo->updateData(data, dataSize, offset);
 		}
 		else {
-			vbo->bind();
-
-			glBufferData(GL_ARRAY_BUFFER, dataSize + offset, data, GL_DYNAMIC_DRAW);	
-			vbo->setDataSize(dataSize + offset);
+			vbo->make(data, dataSize + offset, usage);
 		}
 
 	}
-	else {
-		LOG_ERROR("Index out of range, no vbo is attached to that index!");
 
+}
+
+void VertexArray::setBuffer(unsigned vboIndex, const void * data, const size_t dataSize, const unsigned& usage)
+{
+	this->bind();
+	if (vboIndex < this->buffers.size()) {
+
+		VertexBuffer* vbo = this->buffers[vboIndex];
+		
+		vbo->make(data, dataSize, usage);
 	}
-
 }
 
 
