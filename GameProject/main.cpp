@@ -28,7 +28,7 @@ int main() {
 	sound.setLoopState(true);
 	sound.setPitch(10.0f);
 	sound.setVolume(0.1f);
-	sound.playSound();
+	//sound.playSound();
 
 	Game game;
 	game.start();

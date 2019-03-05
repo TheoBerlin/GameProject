@@ -27,7 +27,7 @@ public:
     ~TargetManager();
 
     // Add target entity
-    void addStaticTarget(Entity* host, const glm::vec3& position);
+    void addStaticTarget(Entity* host);
     void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
 
 	//Remove an entity as target

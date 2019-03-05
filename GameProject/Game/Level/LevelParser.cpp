@@ -16,15 +16,16 @@ void LevelParser::readEntityTargets(Level& level)
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model->setName("droneTarget");
 		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
+		model->setName("droneTarget");
 	}
 
 	for (int i = 0; i < targetSize; i++)
 	{
 		json::json& target = jsonFile["Target"][i];
 		Entity* entity;
-		glm::vec3 position;
+		glm::vec3 position = glm::vec3(0.0f);
+		glm::vec3 rotation = glm::vec3(0.0f);
 		std::vector<KeyPoint> path;
 
 		//Every object requires a name
@@ -34,7 +35,11 @@ void LevelParser::readEntityTargets(Level& level)
 
 			if (!target["Position"].empty()) {
 				readVec3(target["Position"], position);
-			} else if (!target["Path"].empty()) {
+			}
+			if (!target["Rotation"].empty()) {
+				readVec3(target["Rotation"], rotation);
+			}
+			if (!target["Path"].empty()) {
 				readPath(target, entity, path);
 			}
 		} else {
@@ -47,9 +52,11 @@ void LevelParser::readEntityTargets(Level& level)
 			level.targetManager->addMovingTarget(entity, path);
 		} else {
 			// The target is static
-			level.targetManager->addStaticTarget(entity, position);
+			level.targetManager->addStaticTarget(entity);
 		}
 
+		entity->getTransform()->setPosition(position);
+		entity->getTransform()->setRotation(rotation);
 		entity->setModel(model);
 		std::vector<CollisionHandler::ShapeData> shapeData;
 
@@ -79,8 +86,8 @@ void LevelParser::readEntityBoxes(Level& level)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model->setName("Cube");
 		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
+		model->setName("Cube");
 	}
 
 	for (int i = 0; i < targetSize; i++)

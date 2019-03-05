@@ -71,12 +71,11 @@ MenuState::MenuState() : State()
 	button2->setOption(GUI::TEXT_CENTER_X);
 	button2->setOption(GUI::TEXT_CENTER_Y);
 	//button2->setPosition(glm::uvec2(0, 100));
-	button2->setHoverColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-	button2->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
-	button2->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
-	button2->addText("Editor", "arialBig");
+	this->button->setHoverColor(buttonColor * 1.2f);
+	this->button->setNormalColor(buttonColor);
+	this->button->setPressedColor(buttonColor * 0.8f);
+	button2->addText("Editor", "aldo");
 	button2->setCallback([this](void) {
-		//this->getGUI().removePanel(this->button);
 		this->pushState(new EditorState());
 	});
 	gui.addPanel(button2);
@@ -142,7 +141,7 @@ void MenuState::initPanelLayout()
 	scrollPanel->setColor(glm::vec4(0.2, 0.2, 0.2, 1.0));
 
 	scrollPanel->addItem([this](void) {
-		this->selectedLevel = "./Game/Level/level.json";
+		this->selectedLevel = "./Game/Level/level1.json";
 	}, "Level 1");
 
 	scrollPanel->addItem([this](void) {

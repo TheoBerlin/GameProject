@@ -9,11 +9,6 @@
 class EditorState : public State
 {
 private:
-	struct EditorPathing {
-		int index;
-		std::vector<glm::vec3> path;
-	};
-
 	//ImGui windows
 	void mainWindow(EntityManager& entityManager);
 	void entityWindow(EntityManager& entityManager);
@@ -26,7 +21,6 @@ private:
 	std::string currentModel;
 	int currentEntity = -1;
 	bool currentIsTarget;
-	std::vector<EditorPathing> pathing;
 	bool activeWindow[4];
 	Entity camera;
 	float camSpeed;
@@ -35,6 +29,7 @@ private:
 	Level level;
 	LevelParser levelParser;
 	TargetManager* targetManager;
+	ScoreManager scoreManager;
 	GameLogic gameLogic;
 	CollisionHandler collisionHandler;
 
@@ -47,6 +42,5 @@ public:
 	void start() override;
 	void end() override;
 	void update(const float dt) override;
-	void updateLogic(const float dt) override;
 	void render() override;
 };

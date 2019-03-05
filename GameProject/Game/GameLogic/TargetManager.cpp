@@ -18,13 +18,10 @@ TargetManager::~TargetManager()
 {
 }
 
-void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
+void TargetManager::addStaticTarget(Entity* host)
 {
     // Set position and forward
     Transform* transform = host->getTransform();
-
-    transform->setPosition(position);
-    transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
     // Generic setup for all targets
     setupTargetGeneric(host);
@@ -63,7 +60,22 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
 
 void TargetManager::removeTarget(std::string name)
 {
-	for (int i = 0; i < movingTargets.size(); i++) {
+	bool found = false;
+	for (int i = 0; i < movingTargets.size() && !found; i++) {
+		if (movingTargets[i].pathTreader->getHost()->getName() == name) {
+			movingTargets[i].pathTreader->getHost()->removeComponent("RollNullifier");
+			movingTargets[i].pathTreader->getHost()->removeComponent("PathThreader");
+			movingTargets.erase(movingTargets.begin() + i);
+			found = true;
+		}
+	}
+	for (int i = 0; i < staticTargets.size() && !found; i++) {
+		if (staticTargets[i].hoverAnimation->getHost()->getName() == name) {
+			staticTargets[i].hoverAnimation->getHost()->removeComponent("StaticTargetCollision");
+			staticTargets[i].hoverAnimation->getHost()->removeComponent("Hover");
+			staticTargets.erase(staticTargets.begin() + i);
+			found = true;
+		}
 	}
 }
 

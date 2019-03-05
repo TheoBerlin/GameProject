@@ -40,11 +40,14 @@ EditorState::EditorState()
 
 	level.entityManager = entityManager;
 	level.targetManager = targetManager;
+	level.scoreManager = &this->scoreManager;
 	level.collisionHandler = &this->collisionHandler;
 	level.gui = &this->getGUI();
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
 	InputHandler ih(Display::get().getWindowPtr());
+
+	ImGui::GetIO().KeyMap[ImGuiKey_Backspace] = ImGuiKey_Backspace;
 }
 
 EditorState::~EditorState()
@@ -89,16 +92,11 @@ void EditorState::update(const float dt)
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 
-	for (unsigned int i = 0; i < entities.size(); i += 1) {
+	for (unsigned int i = 0; i < entities.size(); i++) {
 		entities[i]->update(dt);
 	}
 
 	mainWindow(entityManager);
-}
-
-void EditorState::updateLogic(const float dt)
-{
-	this->collisionHandler.checkCollision();
 }
 
 void EditorState::render()
@@ -140,6 +138,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 #ifdef IMGUI
 	ImGui::Begin("Main Window");
 	ImGui::SetWindowPos({0, 0});
+	ImGui::SetWindowSize({ 110, 150 });
 
 	if (ImGui::Button("Level"))
 		activeWindow[0] = !activeWindow[0];
@@ -180,18 +179,13 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				for (int j = 0; j < targetManager->getMovingTargets().size(); j++) {
 					if (entityManager.getEntity(i) == targetManager->getMovingTargets()[j].pathTreader->getHost()) {
 						currentIsTarget = true;
-						EditorPathing path;
-						path.index = i;
-						for(int k = 0; k < targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++)
-							path.path.push_back(targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position);
-						pathing.push_back(path);
 						break;
 					}
 				}
 				for (int j = 0; j < targetManager->getStaticTargets().size(); j++) {
 					if (entityManager.getEntity(i) == targetManager->getStaticTargets()[j].hoverAnimation->getHost()) {
-					currentIsTarget = true;
-					break;
+						currentIsTarget = true;
+						break;
 					}
 				}
 			}
@@ -212,7 +206,20 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		currentIsTarget = false;
 	}
 	if (ImGui::Button("Remove Entity")) {
+		if (currentIsTarget) {
+			for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
+				if (level.targetManager->getMovingTargets()[i].pathTreader->getName() == entityManager.getEntity(currentEntity)->getName()) {
+					level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
+				}
+			}
+			for (int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
+				if (level.targetManager->getStaticTargets()[i].hoverAnimation->getName() == entityManager.getEntity(currentEntity)->getName()) {
+					level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
+				}
+			}
+		}
 		entityManager.removedEntity(currentEntity);
+		currentEntity = -1;
 	}
 	if (currentEntity != -1) {
 		Entity* curEntity = entityManager.getEntity(currentEntity);
@@ -238,30 +245,44 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			ImGui::SameLine();
 			if (ImGui::Button("Add Path")) {
 				bool found = false;
-				for (int i = 0; i < pathing.size(); i++) {
-					if (pathing[i].index = currentEntity) {
-						pathing[i].path.push_back(glm::vec3(0.0f));
+				for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
+					if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+						level.targetManager->getMovingTargets()[i].pathTreader->getPath().push_back(KeyPoint(glm::vec3(0.0f), 1.0f));
 						found = true;
 					}
 				}
 				if (!found) {
-					EditorPathing path;
-					path.index = currentEntity;
-					path.path.push_back(curEntity->getTransform()->getPosition());
-					pathing.push_back(path);
+					for (int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
+						if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+							std::vector<KeyPoint> path;
+							path.push_back(KeyPoint(glm::vec3(0.0f), 1.0f));
+							path.push_back(KeyPoint(glm::vec3(1.0f), 1.0f));
+							level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
+							level.targetManager->addMovingTarget(entityManager.getEntity(currentEntity), path);
+						}
+					}
 				}
 			}
 
-			if (pathing.size() > 0) {
+			if (level.targetManager->getMovingTargets().size() > 0) {
 				ImGui::SameLine();
 				if (ImGui::Button("Remove Path")) {
-					pathing.erase(pathing.end() - 1);
+					for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
+						if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+							level.targetManager->getMovingTargets()[i].pathTreader->getPath().pop_back();
+							if (level.targetManager->getMovingTargets()[i].pathTreader->getPath().size() == 0) {
+								level.targetManager->addStaticTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost());
+								level.targetManager->removeTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName());
+							}
+						}
+					}
 				}
 			}
-			for (int i = 0; i < pathing.size(); i++) {
-				if (pathing[i].index == currentEntity) {
-					for (int j = 0; j < pathing[i].path.size(); j++) {
-						ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &pathing[i].path[j][0], 2);
+			for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
+				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+					for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
+						ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &level.targetManager->getMovingTargets()[i].pathTreader->getPath()[j].Position[0], 2);
+						ImGui::InputFloat(std::string("Path Time " + std::to_string(j)).c_str(), &level.targetManager->getMovingTargets()[i].pathTreader->getPath()[j].t);
 					}
 				}
 			}
@@ -294,6 +315,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 	ImGui::SameLine();
 	if (ImGui::Button("Load")) {
 		entityManager.removeEntities();
+
 		levelParser.readLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
 		Display::get().getRenderer().initInstancing();
 	}
@@ -329,7 +351,6 @@ void EditorState::editorWindow()
 {
 #ifdef IMGUI
 	ImGui::Begin("Level Window");
-	
 	if (ImGui::SliderFloat("Camera Speed", &camSpeed, 1.0f, 10.0f))
 		freeMove->setSpeed(camSpeed);
 	ImGui::End();
@@ -341,5 +362,29 @@ void EditorState::pauseGame(KeyEvent * ev)
 	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
 
 		this->pushState(new PauseState());
+	}
+	if (ev->key == GLFW_KEY_BACKSPACE) {
+		if (ev->action == 1) {
+			ImGui::GetIO().KeysDown[ImGuiKey_Backspace] = ImGuiKey_Backspace;
+		}
+		else {
+			ImGui::GetIO().KeysDown[ImGuiKey_Backspace] = 0;
+		}
+	}
+	if (ev->key == GLFW_KEY_LEFT) {
+		if (ev->action == 1) {
+			ImGui::GetIO().KeysDown[ImGuiKey_LeftArrow] = ImGuiKey_LeftArrow;
+		}
+		else {
+			ImGui::GetIO().KeysDown[ImGuiKey_LeftArrow] = 0;
+		}
+	}
+	if (ev->key == GLFW_KEY_RIGHT) {
+		if (ev->action == 1) {
+			ImGui::GetIO().KeysDown[ImGuiKey_RightArrow] = ImGuiKey_RightArrow;
+		}
+		else {
+			ImGui::GetIO().KeysDown[ImGuiKey_RightArrow] = 0;
+		}
 	}
 }
