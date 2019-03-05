@@ -10,7 +10,7 @@
 class ScrollPanel : public Panel
 {
 public:
-	ScrollPanel(unsigned width = 200, unsigned height = 400, int scrollSpeed = 15);
+	ScrollPanel(unsigned width = 200, unsigned height = 400, const std::string& font = "aldo", int scrollSpeed = 15);
 	~ScrollPanel();
 
 	void init();

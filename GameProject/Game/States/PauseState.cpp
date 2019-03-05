@@ -79,37 +79,40 @@ void PauseState::initPanelLayout()
 
 	GUI& gui = this->getGUI();
 
+	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
+	glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
+	glm::vec4 hoverColor = { 0.5f, 0.0f, 0.5f, 1.0f };
+	glm::vec4 pressColor = { 0.3f, 0.0f, 0.3f, 1.0f };
+
 	Button* button = new Button();
-	button->setOption(GUI::SCALE_TO_TEXT_X, 5);
-	button->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	button->setOption(GUI::SCALE_TO_TEXT_X, 25);
+	button->setOption(GUI::SCALE_TO_TEXT_Y, 25);
 	button->setOption(GUI::CENTER_X);
 	button->setOption(GUI::CENTER_Y);
 	button->setOption(GUI::TEXT_CENTER_X);
 	button->setOption(GUI::TEXT_CENTER_Y);
-	button->setHoverColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-	button->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
-	button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
-	button->addText("Return", "arialBig");
+	button->setHoverColor(hoverColor);
+	button->setNormalColor(backgroundColor);
+	button->setPressedColor(pressColor);
+	button->addText("RETURN", "aldo", textColor);
 	button->setCallback([this](void) {
-		//this->getGUI().removePanel(this->button);
 		this->popState();
 
 	});
 	gui.addPanel(button);
 
 	button = new Button();
-	button->setOption(GUI::SCALE_TO_TEXT_X, 5);
-	button->setOption(GUI::SCALE_TO_TEXT_Y, 5);
-	button->setOption(GUI::FLOAT_RIGHT);
-	button->setOption(GUI::CENTER_Y);
+	button->setOption(GUI::SCALE_TO_TEXT_X, 25);
+	button->setOption(GUI::SCALE_TO_TEXT_Y, 25);
+	button->setOption(GUI::CENTER_X);
+	button->setOption(GUI::CENTER_Y, -(int)(button->getSize().y + 25));
 	button->setOption(GUI::TEXT_CENTER_X);
 	button->setOption(GUI::TEXT_CENTER_Y);
-	button->setHoverColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-	button->setNormalColor({ 0.0f, 1.0f, 0.0f, 1.0f });
-	button->setPressedColor({ 0.0f, 0.0f, 1.0f, 1.0f });
-	button->addText("Exit", "arialBig");
+	button->setHoverColor(hoverColor);
+	button->setNormalColor(backgroundColor);
+	button->setPressedColor(pressColor);
+	button->addText("EXIT", "aldo", textColor);
 	button->setCallback([this](void) {
-		//this->getGUI().removePanel(this->button);
 		this->popState(2);
 	});
 

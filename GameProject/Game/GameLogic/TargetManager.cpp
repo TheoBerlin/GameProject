@@ -2,6 +2,7 @@
 
 #include <Engine/Entity/Entity.h>
 #include <Game/Components/Hover.h>
+#include <Game/Components/Explosion.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/RollNullifier.h>
 #include <Engine/Components/MovingTargetCollision.h>
@@ -32,6 +33,7 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
     StaticTarget staticTarget;
 
     staticTarget.hoverAnimation = new Hover(host);
+	staticTarget.explosion = new Explosion(host);
 
 	new StaticTargetCollision(host);
 
@@ -84,6 +86,11 @@ void TargetManager::resetTargets()
     resetStaticTargets();
 }
 
+unsigned TargetManager::getTargetCount()
+{
+	return this->movingTargets.size() + this->staticTargets.size();
+}
+
 void TargetManager::setupTargetGeneric(Entity* host)
 {
     host->getTransform()->setScale(0.25f);
@@ -91,13 +98,29 @@ void TargetManager::setupTargetGeneric(Entity* host)
 
 void TargetManager::resetStaticTargets()
 {
-	// Reset collision
-	resetStaticCollision();
+	// Reset collisions
+	resetStaticCollisions();
 
+	// Reset animations
+	resetStaticAnimations();
+}
+
+void TargetManager::resetMovingTargets()
+{
+	// Reset collisions
+	resetMovingCollisions();
+
+	// Reset animations
+	resetMovingAnimations();
+}
+
+void TargetManager::resetStaticAnimations()
+{
 	unsigned int staticTargetCount = staticTargets.size();
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
         staticTargets.at(i).hoverAnimation->reset();
+		staticTargets.at(i).explosion->reset();
 		
 		//Reset color on entity
 		Entity* host = staticTargets.at(i).hoverAnimation->getHost();
@@ -105,16 +128,11 @@ void TargetManager::resetStaticTargets()
 		if(attachmentIndex != -1)
 			host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
 				attachmentIndex *sizeof(glm::vec3), 0, 2);
-	
-		
     }
 }
 
-void TargetManager::resetMovingTargets()
+void TargetManager::resetMovingAnimations()
 {
-	// Reset collision
-	resetMovingCollision();
-
 	unsigned int movingTargetCount = movingTargets.size();
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
@@ -122,7 +140,7 @@ void TargetManager::resetMovingTargets()
     }
 }
 
-void TargetManager::resetStaticCollision()
+void TargetManager::resetStaticCollisions()
 {
 	rp3d::CollisionBody* body;
 	Entity* host;
@@ -146,7 +164,7 @@ void TargetManager::resetStaticCollision()
 	}
 }
 
-void TargetManager::resetMovingCollision()
+void TargetManager::resetMovingCollisions()
 {
 	rp3d::CollisionBody* body;
 	Entity* host;

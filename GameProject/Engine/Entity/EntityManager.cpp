@@ -18,7 +18,6 @@ EntityManager::~EntityManager()
 	this->removeEntities();
 }
 
-
 void EntityManager::update(const float dt)
 {
 	for (unsigned int i = 0; i < this->entities.size(); i++) {
