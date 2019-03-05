@@ -5,7 +5,7 @@
 #include "Engine/Events/Events.h"
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Level/Level.h>
-#include <Game/GameLogic/Phase.h>
+#include <Game/GameLogic/Phases/Phase.h>
 #include "glm/glm.hpp"
 
 class CollisionHandler;

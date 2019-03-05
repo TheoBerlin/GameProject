@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Game/GameLogic/Phase.h>
+#include <Game/GameLogic/Phases/Phase.h>
 #include <Game/Components/ArrowGuider.h>
 
 // Phases GuidingPhase can transition from

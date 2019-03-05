@@ -3,7 +3,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
-#include <Game/GameLogic/AimPhase.h>
+#include <Game/GameLogic/Phases/AimPhase.h>
 #include <Engine/Components/PlayerCollision.h>
 #include <Game/Components/OversightController.h>
 

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine/Entity/Entity.h>
-#include <Game/GameLogic/Phase.h>
+#include <Game/GameLogic/Phases/Phase.h>
 #include <Game/Components/OversightController.h>
 
 class AimPhase;
