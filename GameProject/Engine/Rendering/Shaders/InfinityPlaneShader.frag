@@ -106,5 +106,5 @@ void main()
 	float shadow = ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
 
-    finalColor = vec4(lighting, /*smoothstep(0.0, 200.0, length(fragPos))*/, 1.0);
+    finalColor = vec4(lighting, /*smoothstep(0.0, 200.0, length(fragPos))*/1.0);
 }
