@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Engine/Events/Events.h>
+#include <Game/Components/PathTreader.h>
 #include <Utils/Timer.h>
 #include <vector>
+
+struct Level;
 
 struct CollisionReplay {
     CollisionReplay(PlayerCollisionEvent event, float time) : event(event), time(time) {};
@@ -28,6 +31,9 @@ public:
     // Start replaying a playthrough
     void startReplaying();
     void stopReplaying();
+
+    // Rewind or fast forward a level to its state at a given time
+    void setReplayTime(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time);
 
 private:
     void handlePlayerCollision(PlayerCollisionEvent* event);

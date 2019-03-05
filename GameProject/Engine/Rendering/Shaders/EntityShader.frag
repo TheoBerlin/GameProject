@@ -17,7 +17,7 @@ layout(std140) uniform DirectionalLight
     vec4 color_intensity;
 } dirLight;
 
-out vec4 finalColor;
+layout (location = 0) out vec4 finalColor;
 
 uniform sampler2D tex;
 uniform sampler2D shadowTex;

@@ -10,7 +10,9 @@
 #include <Game/GameLogic/ReplayPhase.h>
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
-    :Phase((Phase*)aimPhase)
+    :Phase((Phase*)aimPhase),
+    flightTimer(0.0f),
+    flightTime(0.0f)
 {
 	this->playerArrow = aimPhase->getPlayerArrow();
 
@@ -25,14 +27,21 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	/*
 	Do stuff when collision happens
 	*/
-
-	level.collisionHandler->addCollisionToEntity(this->playerArrow, SHAPE::ARROW);
+	level.collisionHandler->addCollisionToEntity(this->playerArrow, CATEGORY::ARROW, true);
 
 	// Begin recording collisions
 	level.replaySystem->startRecording();
 
+	// Start scoreManager timer
+	level.scoreManager->start();
+
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
+}
+
+void GuidingPhase::update(const float& dt)
+{
+    flightTimer += dt;
 }
 
 GuidingPhase::~GuidingPhase()
@@ -50,6 +59,11 @@ Entity* GuidingPhase::getPlayerArrow() const
 ArrowGuider* GuidingPhase::getArrowGuider() const
 {
     return arrowGuider;
+}
+
+float GuidingPhase::getFlightTime()
+{
+    return flightTimer;
 }
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)
@@ -70,9 +84,10 @@ void GuidingPhase::beginReplayTransition()
 
     level.replaySystem->stopRecording();
 
+	level.scoreManager->stop();
+
     // Get flight time
-    flightTimer.stop();
-    float flightTime = flightTimer.getDeltaTime();
+    flightTime = flightTimer;
 
     arrowGuider->stopGuiding(flightTime);
 
@@ -106,13 +121,28 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
 	// Save keypoint for collision so that the collision is visible during replay
-    flightTimer.update();
+    flightTime = flightTimer;
 
-    arrowGuider->saveKeyPoint(flightTimer.getTime());
+    arrowGuider->saveKeyPoint(flightTime);
 	// Check if the arrow hit static geometry
     unsigned int category = ev->shape2->getCollisionCategoryBits();
 
-    if (category == CATEGORY::STATIC) {
-        beginReplayTransition();
-    }
+	switch (category)
+	{
+		case CATEGORY::STATIC:
+		{
+			beginReplayTransition();
+			break;
+		}
+		case CATEGORY::DRONE_BODY:
+		{
+			level.scoreManager->score();
+			break;
+		}
+		case CATEGORY::DRONE_EYE:
+		{
+			level.scoreManager->scoreBonus();
+			break;
+		}
+	}
 }

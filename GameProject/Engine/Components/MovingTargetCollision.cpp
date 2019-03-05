@@ -5,7 +5,6 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include <Engine/Collision/CollisionInfo.h>
 
-
 MovingTargetCollision::MovingTargetCollision(Entity * parentEntity, const std::string & tagName) : Component(parentEntity, tagName)
 {
 	this->hit = false;

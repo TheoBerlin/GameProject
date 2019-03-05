@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../../Engine/States/State.h"
-#include "../../Engine/GUI/Text.h"
-#include "../../Engine/GUI/Panel.h"
-#include "../../Engine/GUI/Button.h"
+#include <Engine/States/State.h>
+#include <Engine/GUI/Text.h>
+#include <Engine/GUI/Panel.h>
+#include <Engine/GUI/Button.h>
 
 class MenuState : public State
 {
@@ -23,8 +23,6 @@ private:
 
 	std::string selectedLevel;
 
-	Text test;
-	Font* font;
 	Panel* panel;
 	Button* button;
 };
