@@ -131,6 +131,7 @@ void LevelParser::readEntityWalls(Level& level)
 	std::vector<glm::vec2> scales;
 
 	Model* model = createQuat();
+	Mesh* mesh = model->getMesh(0);
 
 	std::vector<glm::mat4> mats;
 	for (int i = 0; i < points.size(); i++)
@@ -147,7 +148,8 @@ void LevelParser::readEntityWalls(Level& level)
 		entity->getTransform()->setRotation(glm::vec3(0.0f, angle, 0.0f));
 
 		float dist = glm::length(width);
-		entity->getTransform()->setScale(glm::vec3(dist, height, 1.0f));
+		glm::vec3 scale = glm::vec3(dist, height, 1.0f);
+		entity->getTransform()->setScale(scale);
 
 		entity->getTransform()->setPosition(*p1);
 
@@ -155,9 +157,19 @@ void LevelParser::readEntityWalls(Level& level)
 		entity->setModel(model);
 
 		scales.push_back(glm::vec2(glm::length(width), height));
-	}
 
-	Mesh* mesh = model->getMesh(0);
+		std::vector<Vertex> vertex(mesh->getVerticies().size());
+		unsigned index = 0;
+		for (Vertex& v : mesh->getVerticies())
+		{
+			vertex[index++].Position = scale* v.Position;
+		}
+
+		level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
+		entity->getTransform()->setScale(glm::vec3(1.f, 1.f, 1.f));
+		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), i);
+		entity->getTransform()->setScale(scale);
+	}
 
 	AttributeLayout matLayout;
 	matLayout.push(4, 1);
@@ -169,6 +181,7 @@ void LevelParser::readEntityWalls(Level& level)
 	AttributeLayout scaleLayout;
 	scaleLayout.push(2, 1);
 	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
+
 
 
 	ModelLoader::addModel("wall", model);
@@ -300,10 +313,11 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 
 void LevelParser::createCollisionBodies(Level& level)
 {
-	// Start at 1 to give space for a player later on.
+	// Start at 2 to give space for a player and floor later on.
 	int bodiesNeeded = 2;
 	bodiesNeeded += jsonFile["Target"].size();
 	bodiesNeeded += jsonFile["Boxes"].size();
+	bodiesNeeded += jsonFile["Walls"].size();
 
 	level.collisionHandler->createCollisionBodies(bodiesNeeded);
 }
