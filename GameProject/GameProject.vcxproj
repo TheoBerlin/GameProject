@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Rendering\Light\DirectionalLight.cpp" />
+    <ClCompile Include="Engine\Rendering\Light\PointLight.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />

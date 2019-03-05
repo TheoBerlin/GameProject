@@ -23,9 +23,9 @@ Pipeline::Pipeline()
 		Test shader will be swapped out with a option to choose between multiple shaders for rendering Entities
 	*/
 	this->entityShaders.push_back(new EntityShader("./Engine/Rendering/Shaders/EntityShaderInstanced.vert", "./Engine/Rendering/Shaders/EntityShaderInstanced.frag",
-											&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+											&this->shadowFbo, &this->camera, &this->lm.getLightMatrix()));
 
-	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, &this->lm.getLightMatrix()));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -64,16 +64,10 @@ Pipeline::Pipeline()
 	/*
 		Set up uniform buffers for shaders
 	*/
-	this->addUniformBuffer(0, this->testShader->getID(), "Material");
-	this->addUniformBuffer(1, this->testShader->getID(), "DirectionalLight");
-
-	this->addUniformBuffer(0, this->entityShaderInstanced->getID(), "Material");
-	this->addUniformBuffer(1, this->entityShaderInstanced->getID(), "DirectionalLight");
-	this->addUniformBuffer(2, this->entityShaderInstanced->getID(), "LightBuffer");
-
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
 		this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 		this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+		//this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
 	}
 	/*
 		Set up Directional Light
@@ -98,7 +92,7 @@ Pipeline::Pipeline()
 		lightBuffer.pointLights[i] = *lm.getPointLights()->at(i);
 	}
 
-	this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 
 	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer.nrOfPointLights), 4, 0);
 	//this->uniformBuffers[2]->setSubData((void*)(&lightBuffer.pointLights[0]), sizeof(lightBuffer)-4, 4);
@@ -334,13 +328,9 @@ Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<Model*, SHADE
 	this->fbo.bind();
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
-
 	for (auto pair : renderingModels) {
 
 		this->entityShaders[pair.second]->bind();
-	this->entityShaderInstanced->setUniformMatrix4fv("lightMatrix", 1, false, &(lm.getLightMatrix()[0][0]));
-	this->entityShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	this->entityShaderInstanced->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
 		drawInstanced(pair.first, pair.second);
 	
@@ -464,8 +454,8 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SH
 
 	//Draw renderingList
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lm.getLightMatrix()[0][0]);
-	for (Model* model : renderingModels) {
-		drawModelPrePassInstanced(model);
+	for (auto pair : renderingModels) {
+		drawModelPrePassInstanced(pair.first);
 	}
 
 	this->ZprePassShaderInstanced->unbind();
