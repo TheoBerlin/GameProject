@@ -97,9 +97,6 @@ void GameState::update(const float dt)
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
 
-	for (Entity* entity : entities)
-		entity->update(dt);
-
 	ParticleManager::get().update(dt);
 
 	for (unsigned int i = 0; i < entities.size(); i += 1) {

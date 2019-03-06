@@ -12,7 +12,7 @@ bool Sound::errorCheck()
 
 	e = alGetError();
 	if (e != AL_NO_ERROR) {
-		std::cout << "OpenAL error with error code: " << e << std::endl;
+		std::cout << "OpenAL error with error code: " << alGetString(e) << std::endl;
 		error = false;
 	}
 
