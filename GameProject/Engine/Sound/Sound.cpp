@@ -3,6 +3,7 @@
 #include <Windows.h>
 
 #include "Utils/Logger.h"
+#include "Engine/Sound/SoundManager.h"
 
 bool Sound::errorCheck()
 {
@@ -122,7 +123,16 @@ float Sound::getPitch() const
 
 void Sound::setVolume(const float volume)
 {
-	alSourcef(source, AL_GAIN, volume);
+	this->volume = volume;
+	if (type == SOUND_AMBIENT)
+		updateSound(SoundManager::get().getAmbientVolume() * SoundManager::get().getMasterVolume());
+	if (type == SOUND_EFFECT)
+		updateSound(SoundManager::get().getEffectVolume() * SoundManager::get().getMasterVolume());
+	if (type == SOUND_MISC)
+		updateSound(SoundManager::get().getMiscVolume() * SoundManager::get().getMasterVolume());
+	if (type == SOUND_MUSIC)
+		updateSound(SoundManager::get().getMusicVolume() * SoundManager::get().getMasterVolume());
+
 	errorCheck();
 }
 

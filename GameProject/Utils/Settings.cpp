@@ -1,6 +1,7 @@
 #include "Settings.h"
 
 #include "Utils/Logger.h"
+#include "Engine/Sound/SoundManager.h"
 
 bool Settings::readFile(std::string fileName)
 {
@@ -20,7 +21,7 @@ bool Settings::readFile(std::string fileName)
 		return false;
 	}
 
-	readVolume();
+	readVolumes();
 	readScreenWidth();
 	readScreenHeight();
 	readMouseSensitivity();
@@ -34,22 +35,41 @@ bool Settings::readFile(std::string fileName)
 
 void Settings::writeFile(std::string fileName)
 {
-	jsonFile["Volume"] = volume;
+	jsonFile["MasterVolume"] = SoundManager::get().getMasterVolume();
+	jsonFile["MusicVolume"] = SoundManager::get().getMusicVolume();
+	jsonFile["EffectVolume"] = SoundManager::get().getEffectVolume();
+	jsonFile["MiscVolume"] = SoundManager::get().getMiscVolume();
 	jsonFile["ScreenWidth"] = screenWidth;
 	jsonFile["ScreenHeight"] = screenHeight;
 	std::ofstream oStream(fileName);
 	oStream << std::setw(4) << jsonFile << std::endl;
 }
 
-void Settings::readVolume()
+void Settings::readVolumes()
 {
-
-	json::json& jsonVolume = jsonFile["Volume"];
-	if (!jsonVolume.empty()) {
-		volume = jsonVolume;
+	if (!jsonFile["MasterVolume"].empty()) {
+		SoundManager::get().setMasterVolume(jsonFile["MasterVolume"]);
 	}
 	else {
-		LOG_ERROR("%s: Volume has no value");
+		LOG_ERROR("Master Volume has no value");
+	}
+	if (!jsonFile["MusicVolume"].empty()) {
+		SoundManager::get().setMusicVolume(jsonFile["MusicVolume"]);
+	}
+	else {
+		LOG_ERROR("Music Volume has no value");
+	}
+	if (!jsonFile["EffectVolume"].empty()) {
+		SoundManager::get().setEffectVolume(jsonFile["EffectVolume"]);
+	}
+	else {
+		LOG_ERROR("Effect Volume has no value");
+	}
+	if (!jsonFile["MiscVolume"].empty()) {
+		SoundManager::get().setMiscVolume(jsonFile["MiscVolume"]);
+	}
+	else {
+		LOG_ERROR("Misc Volume has no value");
 	}
 }
 
@@ -102,17 +122,6 @@ Settings::~Settings()
 		writeFile();
 	}
 	changed = false;
-}
-
-float Settings::getVolume()
-{
-	return this->volume;
-}
-
-void Settings::setVolume(float volume)
-{
-	this->volume = volume;
-	changed = true;
 }
 
 int Settings::getScreenWidth()

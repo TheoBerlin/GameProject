@@ -1,5 +1,6 @@
 #include "SoundManager.h"
 
+
 bool SoundManager::errorCheck()
 {
 	bool error = true;
@@ -7,7 +8,7 @@ bool SoundManager::errorCheck()
 
 	e = alGetError();
 	if (e != AL_NO_ERROR) {
-		std::cout << "OpenAL error with error code: " << e << std::endl;
+		LOG_ERROR("OpenAL error with error code: %s", e);
 		error = false;
 	}
 
@@ -130,6 +131,5 @@ void SoundManager::setMiscVolume(float volume)
 
 float SoundManager::getMiscVolume() const
 {
-	return musicVolume;
-
+	return miscVolume;
 }

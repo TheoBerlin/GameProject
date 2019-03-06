@@ -5,9 +5,10 @@
 #include "glm/glm.hpp"
 #include "../../../include/OpenAL/al.h"
 #include "../../../include/OpenAL/alc.h"
+#include <Utils/Logger.h>
 
 #pragma warning(disable:4996)
-enum SoundType {SOUND_MUSIC = 0, SOUND_EFFECT = 1, SOUND_AMBIENT = 2, SOUND_VOICE = 3, SOUND_MISC = 4};
+enum SoundType {SOUND_MUSIC = 0, SOUND_EFFECT = 1, SOUND_AMBIENT = 2, SOUND_MISC = 4};
 
 class Sound {
 private:

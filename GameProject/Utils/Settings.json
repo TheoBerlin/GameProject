@@ -1,6 +1,9 @@
 {
+    "EffectVolume": 1.0,
+    "MasterVolume": 0.5,
+    "MiscVolume": 1.0,
     "MouseSensitivity": 0.5,
+    "MusicVolume": 0.5,
     "ScreenHeight": 757,
-    "ScreenWidth": 1280,
-    "Volume": 0.5
+    "ScreenWidth": 1280
 }

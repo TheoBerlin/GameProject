@@ -14,15 +14,12 @@ class Settings
 {
 private:
 	bool changed = false;
-	float volume;
 	int screenWidth;
 	int screenHeight;
 	float mouseSensitivity;
 
 	bool readFile(std::string fileName = "./Utils/Settings.json");
-	void writeFile(std::string fileName = "./Utils/Settings.json");
 
-	void readVolume();
 	void readScreenWidth();
 	void readScreenHeight();
 	void readMouseSensitivity();
@@ -34,8 +31,9 @@ public:
 	Settings();
 	~Settings();
 
-	float getVolume();
-	void setVolume(float volume = 0.5f);
+	void writeFile(std::string fileName = "./Utils/Settings.json");
+
+	void readVolumes();
 	int getScreenWidth();
 	int getScreenHeight();
 	void setResolution(int width, int height);
