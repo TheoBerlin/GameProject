@@ -4,9 +4,9 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
-#include <Game/GameLogic/GuidingPhase.h>
-#include <Game/GameLogic/OverviewPhase.h>
-#include <Game/GameLogic/ReplayPhase.h>
+#include <Game/GameLogic/Phases/GuidingPhase.h>
+#include <Game/GameLogic/Phases/OverviewPhase.h>
+#include <Game/GameLogic/Phases/ReplayPhase.h>
 #include <Engine/Components/PlayerCollision.h>
 #include <GLFW/glfw3.h>
 
