@@ -12,6 +12,7 @@
 LevelStructure::LevelStructure()
 {
 	this->quad = createQuad();
+	this->plane = createPlane();
 }
 
 
@@ -21,6 +22,13 @@ LevelStructure::~LevelStructure()
 
 void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, float height)
 {
+	// Add an entity which has a model as a plane.
+	Entity* entity = level.entityManager->addTracedEntity("InfinityPlane");
+	entity->getTransform()->setScale(glm::vec3(100.f));
+	entity->getTransform()->setPosition(glm::vec3(0.f, height, 0.f));
+	entity->setModel(this->plane);
+	ModelLoader::addModel("infinityPlane", this->plane);
+
 	Model* model = this->quad;
 	Mesh* mesh = model->getMesh(0);
 
@@ -143,4 +151,50 @@ Model * LevelStructure::createQuad()
 	quad->addMaterial(mat);
 
 	return quad;
+}
+
+Model * LevelStructure::createPlane()
+{
+	Model* plane = new Model();
+
+	std::vector<Vertex>* vertices = new	std::vector<Vertex>();
+	std::vector<GLuint>* indicies = new std::vector<GLuint>();
+
+	Vertex vertex;
+	vertex.Normal = glm::vec3(0.0, 1.0, 0.0);
+
+	vertex.Position = glm::vec3(-1.0, 0.0, -1.0);
+	vertex.TexCoords = glm::vec2(0.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 0.0, -1.0);
+	vertex.TexCoords = glm::vec2(1.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 0.0, 1.0);
+	vertex.TexCoords = glm::vec2(1.0, 1.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(-1.0, 0.0, 1.0);
+	vertex.TexCoords = glm::vec2(0.0, 1.0);
+	vertices->push_back(vertex);
+
+	indicies->push_back(0);
+	indicies->push_back(3);
+	indicies->push_back(1);
+	indicies->push_back(1);
+	indicies->push_back(3);
+	indicies->push_back(2);
+
+	Mesh* planeMesh = new Mesh(vertices, indicies, 0, plane);
+	plane->addMesh(planeMesh);
+
+	Material mat;
+	float f = 0.5f;
+	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
+	mat.textures.push_back(tex);
+	mat.Ks_factor = glm::vec4(40.0f);
+	plane->addMaterial(mat);
+
+	return plane;
 }

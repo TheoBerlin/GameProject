@@ -23,10 +23,12 @@ public:
 
 private:
 	Model* createQuad();
+	Model* createPlane();
 
 	std::vector<Entity*> wallEntites;
 	std::vector<glm::vec2> scales;
 	Model* quad;
+	Model* plane;
 	std::vector<glm::vec3> wallPoints;
 };
 

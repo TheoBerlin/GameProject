@@ -32,6 +32,25 @@ uniform vec3 camPos;
 
 bool IsFloor(vec3 p)
 {
+    /*
+    vec3 mi = vec3(100.0, 100.0, 100.0);
+    vec3 ma = vec3(-100.0, -100.0, -100.0);
+    for(int k = 0; k < wallPoints.size; k++) {
+        vec3 w = wallPoints.points[k].xyz;
+        mi.x = min(w.x, mi.x);
+        mi.y = min(w.y, mi.y);
+        mi.z = min(w.z, mi.z);
+        ma.x = max(w.x, ma.x);
+        ma.y = max(w.y, ma.y);
+        ma.z = max(w.z, ma.z);
+    }
+
+    if(p.x > mi.x && p.x < ma.x &&
+        p.z > mi.z && p.z < ma.z)
+        return true;
+    return false;
+    */
+    
     int i;
     int j = wallPoints.size-1;
     bool isOdd = false;
@@ -42,9 +61,13 @@ bool IsFloor(vec3 p)
         if((w2.z < p.z && w1.z >= p.z) || (w1.z < p.z && w2.z >= p.z)) {
             // Check if the point is not the left or the right side of the line.
             if(w2.x + (w1.x-w2.x)*(p.z + w2.z)/(w1.z-w2.z) < p.x) {
-                isOdd = !isOdd;
+                if(isOdd)
+                    isOdd = false;
+                else
+                    isOdd = true;
             }
         }
+        j = i;
     }
     return isOdd;
 }
@@ -71,7 +94,7 @@ float ShadowCalculation(vec4 fragLightSpace)
 
 void main()
 {
-    if(IsFloor(fragPos) == false)
+    if(IsFloor(fragPos))
         discard;
 
     vec2 limit = vec2(fragUv.x * fragScale.x, fragUv.y * fragScale.y);
@@ -103,8 +126,8 @@ void main()
     /*
 		Shadow
 	*/
-	float shadow = ShadowCalculation(fragLightPos);
+	float shadow = 0.000001*ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
 
-    finalColor = vec4(lighting, /*smoothstep(0.0, 200.0, length(fragPos))*/1.0);
+    finalColor = vec4(lighting, 1.0 - smoothstep(0.0, 100.0, length(fragPos)));
 }

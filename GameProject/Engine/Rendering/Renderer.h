@@ -75,7 +75,6 @@ public:
 	*/
 	Pipeline* getPipeline();
 
-
 private:
 	Pipeline pipeline;
 

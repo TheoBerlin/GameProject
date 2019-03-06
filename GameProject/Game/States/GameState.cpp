@@ -40,6 +40,7 @@ GameState::GameState(const std::string& levelJSON)
 	gameLogic.init(level);
 
 	Display::get().getRenderer().initInstancing();
+	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints());
 
 	InputHandler ih(Display::get().getWindowPtr());
 

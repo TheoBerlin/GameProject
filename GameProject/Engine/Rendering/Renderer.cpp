@@ -73,6 +73,9 @@ void Renderer::initInstancing()
 	if (wall)
 		this->renderingModels.push_back(std::make_pair(wall, SHADERS::WALL));
 
+	Model* infPlane = ModelLoader::loadModel("infinityPlane");
+	if (wall)
+		this->renderingModels.push_back(std::make_pair(infPlane, SHADERS::INFINITY_PLANE));
 
 	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
 	this->renderingModels.push_back(std::make_pair(model, SHADERS::DRONE_SHADER));
