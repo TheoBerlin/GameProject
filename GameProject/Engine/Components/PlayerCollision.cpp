@@ -1,7 +1,7 @@
 #include "PlayerCollision.h"
 
 #include <reactphysics3d/reactphysics3d.h>
-#include "Engine/Events/EventBus.h"
+#include <Engine/Events/EventBus.h>
 
 // Remove logger when collide does more than log
 #include "Utils/Logger.h"
@@ -10,7 +10,6 @@ PlayerCollision::PlayerCollision(Entity* parentEntity, const std::string& tagNam
 {
 	EventBus::get().subscribe(this, &PlayerCollision::collide);
 }
-
 
 PlayerCollision::~PlayerCollision()
 {
