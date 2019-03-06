@@ -10,6 +10,8 @@
 #include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlaneShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/InfinityPlanePrePassShader.h"
+
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
 
@@ -31,6 +33,7 @@ Pipeline::Pipeline()
 
 	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
 	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -73,8 +76,10 @@ Pipeline::Pipeline()
 	this->addUniformBuffer(1, this->testShader->getID(), "DirectionalLight");
 
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
-		this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
-		this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+		if (i != SHADERS::INFINITY_PLANE_PREPASS) {
+			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
+			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+		}
 	}
 	/*
 		Set up Directional Light
@@ -160,17 +165,31 @@ void Pipeline::prePassDepthModel(const std::vector<std::pair<RenderingTarget, SH
 	if (!toScreen)
 		this->fbo.bind();
 	this->prePassDepthOn();
+	
 	this->ZprePassShaderInstanced->bind();
 
-	//Draw renderingList
-	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	
 	for (auto pair : renderingTargets) {
-		if(pair.first.prePass)
-			drawModelPrePassInstanced(pair.first.model);
+		if (pair.first.prePass) {
+			if (pair.second == SHADERS::INFINITY_PLANE) {
+				this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->bind();
+
+				drawModelPrePassInstanced(pair.first.model);
+
+				this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->unbind();
+				this->ZprePassShaderInstanced->bind();
+			}
+			else {
+
+				//Draw renderingList
+				this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+				drawModelPrePassInstanced(pair.first.model);	
+			}
+		}
+			
 	}
 
 	this->ZprePassShaderInstanced->unbind();
+
 	this->prePassDepthOff();
 	if (!toScreen)
 		this->fbo.unbind();
@@ -184,7 +203,7 @@ void Pipeline::prePassDepthOn()
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glDepthFunc(GL_LESS);
-	glColorMask(0, 0, 0, 0);
+	//glColorMask(0, 0, 0, 0);
 
 }
 
@@ -484,14 +503,16 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 	if (wallPoints.empty())
 		return;
 
-	InfinityPlaneShader* infPlaneShader = nullptr;
-	for (size_t i = 0; i < this->entityShaders.size(); i++) {
-		if (dynamic_cast<InfinityPlaneShader*>(this->entityShaders[i]) != nullptr)
-		{
-			infPlaneShader = dynamic_cast<InfinityPlaneShader*>(this->entityShaders[i]);
-			this->addUniformBuffer(2, infPlaneShader->getID(), "WallPoints");
-		}
-	}
+	EntityShader* eShader = this->entityShaders[SHADERS::INFINITY_PLANE];
+	InfinityPlaneShader* infPlaneShader = dynamic_cast<InfinityPlaneShader*>(eShader);
+	if (infPlaneShader)
+		this->addUniformBuffer(2, infPlaneShader->getID(), "WallPoints");
+
+	eShader = this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS];
+	InfinityPlanePrePassShader* infPlanePrePassShader = dynamic_cast<InfinityPlanePrePassShader*>(eShader);
+	if (infPlanePrePassShader)
+		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
+
 
 	if (infPlaneShader != nullptr)
 	{

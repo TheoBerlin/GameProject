@@ -83,10 +83,8 @@ void main()
     if (counter == wallPoints.groupSize)
         discard;
 
-    vec2 limit = vec2(fragUv.x * fragScale.x, fragUv.y * fragScale.y);
-    limit = vec2(limit.x / 10.0, limit.y / 5.0);
-
-    vec3 texColor = texture2D(tex, vec2(mod(limit.x, 1.0), mod(limit.y, 1.0))).rgb;
+    vec2 uv = fragUv * 10.0;
+    vec3 texColor = texture2D(tex, vec2(mod(uv.x, 1.0), mod(uv.y, 1.0))).rgb;
     //vec3 texColor = texture2D(tex, fragUv).rgb;
      /*
         Ambient
@@ -112,8 +110,8 @@ void main()
     /*
 		Shadow
 	*/
-	float shadow = 0.000001*ShadowCalculation(fragLightPos);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
+	float shadow = ShadowCalculation(fragLightPos);
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * vec3(0.784, 0.784, 0.784) + 0.00001*texColor;
 
-    finalColor = vec4(lighting, 1.0 - smoothstep(0.0, 100.0, length(fragPos)));
+    finalColor = vec4(texColor * 0.6, 1.0 - smoothstep(0.0, 75.0, length(fragPos)));
 }
