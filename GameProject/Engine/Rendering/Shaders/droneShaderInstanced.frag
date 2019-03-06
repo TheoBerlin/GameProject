@@ -95,7 +95,7 @@ void main()
         result += CalcPointLight(lightBuffer.pointLights[i], fragNormal, fragPos, viewDir);
     }
 
-    vec3 texColor = texture2D(tex, fragUv).rgb + result;
+    vec3 texColor = texture2D(tex, fragUv).rgb;
      /*
         Ambient
     */
@@ -127,7 +127,7 @@ void main()
 		Shadow
 	*/
 	float shadow = ShadowCalculation(fragLightPos);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor + result;
     lighting += noise * droneColor;
     finalColor = vec4(lighting, 1.0);
 }

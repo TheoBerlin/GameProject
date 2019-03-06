@@ -52,13 +52,21 @@ float ShadowCalculation(vec4 fragLightSpace)
     float closestDepth = texture(shadowTex, projCoords.xy).r; 
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
-    // check whether current frag pos is in shadow
-    float shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+    // check whether current frag pos is in shadow and add PCF
+	float shadow = 0.0;
+	vec2 texelSize = 1.0 / textureSize(shadowTex, 0);
+    for(int x = -1; x <= 1; ++x) {
+        for(int y = -1; y <= 1; ++y) {
+            float pcfDepth = texture(shadowTex, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+    //shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
     if(projCoords.z > 1.0)
         shadow = 0.0;
 
-    return shadow;
+    return shadow / 15.0;
 }  
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
@@ -95,7 +103,7 @@ void main()
     }
     
 
-    vec3 texColor = texture2D(tex, fragUv).rgb + result;
+    vec3 texColor = texture2D(tex, fragUv).rgb;
      /*
         Ambient
     */
@@ -123,7 +131,7 @@ void main()
 		Shadow
 	*/
 	float shadow = ShadowCalculation(fragLightPos);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor;
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor + result;
 
-    finalColor = vec4(lighting, 1.0);
+    finalColor = vec4(lighting , 1.0);
 }
