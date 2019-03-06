@@ -30,6 +30,7 @@ public:
     // Disables both aim and movement
     void stopGuiding(float flightTime);
 
+    // Overwrites the last keypoint with the current time and position
     void saveKeyPoint(float flightTime);
 
     // Event handlers
@@ -78,6 +79,10 @@ private:
     float posStoreTimer;
     float flightTime;
     std::vector<KeyPoint> path;
+
+    // Allow copying over the last key point in the path
+    // Used to avoid collision keypoints being written over each other
+    bool allowKeypointOverride;
 
     // The pointer is retrieved when startGuiding() is called
     Camera* arrowCamera;
