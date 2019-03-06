@@ -1,6 +1,9 @@
 #include "LevelStructure.h"
 
 #include "Engine/AssetManagement/Model.h"
+#include "Engine/Rendering/Display.h"
+#include "Engine/Rendering/Renderer.h"
+
 #include <Engine/AssetManagement/Mesh.h>
 #include <Engine/Rendering/GLAbstraction/RenderingResources.h>
 #include <Engine/AssetManagement/TextureManager.h>
@@ -28,6 +31,7 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 	entity->getTransform()->setPosition(glm::vec3(0.f, height, 0.f));
 	entity->setModel(this->plane);
 	ModelLoader::addModel("infinityPlane", this->plane);
+	Display::get().getRenderer().addRenderingTarget(this->plane, SHADERS::INFINITY_PLANE, false, false);
 
 	std::vector<glm::vec2> scales;
 
@@ -90,6 +94,7 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
 
 	ModelLoader::addModel("wall", model);
+	Display::get().getRenderer().addRenderingTarget(model, SHADERS::DEFAULT, false);
 }
 
 std::vector<glm::vec3>& LevelStructure::getWallPoints()

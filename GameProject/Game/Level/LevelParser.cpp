@@ -18,6 +18,7 @@ void LevelParser::readEntityTargets(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(model, SHADERS::DRONE_SHADER);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -80,6 +81,7 @@ void LevelParser::readEntityBoxes(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(model);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -122,19 +124,28 @@ void LevelParser::readEntityWalls(Level& level)
 			readVec2(file[i], point);
 			points.push_back({ point.x, 0.0f, point.y });
 		}
+
+		level.levelStructure->createWalls(level, points);
 	}
 	else {
 		LOG_WARNING("No walls found, walls will not be created.");
 		return;
 	}
 
-	level.levelStructure->createWalls(level, points);
+	
 }
 
 void LevelParser::readEntityFloor(Level& level)
 {
 	Model *model = nullptr;
-	model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
+
+	//Get the size of the target entities
+	int targetSize = jsonFile["Floor"].size();
+
+	if (targetSize != 0) {
+		model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(model);
+	}
 
 	Entity* entity;
 	glm::vec3 position;
