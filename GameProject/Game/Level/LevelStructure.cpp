@@ -14,8 +14,6 @@
 
 LevelStructure::LevelStructure()
 {
-	this->quad = createQuad();
-	this->plane = createPlane();
 	this->height = 5.f;
 }
 
@@ -26,6 +24,8 @@ LevelStructure::~LevelStructure()
 
 void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3>>& points)
 {
+	this->quad = createQuad();
+	this->plane = createPlane();
 	// Create a wall group for each set
 	for (unsigned i = 0; i < points.size(); i++)
 	{
@@ -145,6 +145,7 @@ Model * LevelStructure::createQuad()
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
+	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::DEFAULT, false);
 
 	return quad;
 }
@@ -193,6 +194,7 @@ Model * LevelStructure::createPlane()
 	plane->addMaterial(mat);
 
 	ModelLoader::addModel("infinityPlane", plane);
+	Display::get().getRenderer().addRenderingTarget(plane, SHADERS::INFINITY_PLANE, false);
 
 	return plane;
 }
