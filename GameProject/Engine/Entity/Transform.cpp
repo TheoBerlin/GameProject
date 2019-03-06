@@ -39,7 +39,15 @@ glm::vec3 Transform::getPosition() const
 
 glm::vec3 Transform::getRotation() const
 {
-	return glm::eulerAngles(rotationQuat);
+	// glm::eulerAngles returns pitch, yaw, roll
+	// Change the order of pitch and yaw
+	glm::vec3 rotation = glm::eulerAngles(rotationQuat);
+
+	float temp = rotation.x;
+	rotation.x = rotation.y;
+	rotation.y = temp;
+
+	return rotation;
 }
 
 glm::quat Transform::getRotationQuat() const
@@ -162,7 +170,8 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 
 void Transform::setRotation(const glm::vec3 &rotation)
 {
-	rotationQuat = glm::quat(rotation);
+	// The quat constructor accepts
+	rotationQuat = glm::quat(glm::vec3(rotation.y, rotation.x, rotation.z));
 
 	this->f = rotationQuat * defaultForward;
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);

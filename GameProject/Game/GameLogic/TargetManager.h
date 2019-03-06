@@ -29,6 +29,7 @@ public:
     // Add target entity
     void addStaticTarget(Entity* host);
     void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
+	void addKeyPoint(Entity* host, const KeyPoint path);
 
 	//Remove an entity as target
 	void removeTarget(std::string name);

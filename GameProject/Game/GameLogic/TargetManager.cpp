@@ -58,6 +58,17 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
     movingTargets.push_back(movingTarget);
 }
 
+void TargetManager::addKeyPoint(Entity * host, const KeyPoint point)
+{
+	for (int i = 0; i < movingTargets.size(); i++) {
+		if (movingTargets[i].pathTreader->getHost()->getName() == host->getName()) {
+			std::vector<KeyPoint> path = movingTargets[i].pathTreader->getPath();
+			path.push_back(point);
+			movingTargets[i].pathTreader->setPath(path);
+		}
+	}
+}
+
 void TargetManager::removeTarget(std::string name)
 {
 	bool found = false;

@@ -227,7 +227,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		std::string name = curEntity->getName();
 		glm::vec3 position = curEntity->getTransform()->getPosition();
 		glm::vec3 scale = curEntity->getTransform()->getScale();
-		glm::vec3 rotation = curEntity->getTransform()->getRotation();
+		glm::vec3 rotation = curEntity->getTransform()->getYawPitchRoll();
 
 		ImGui::Text("Entity Info");
 		if (ImGui::InputText("Name", &name[0], 64))
@@ -247,7 +247,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				bool found = false;
 				for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 					if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-						level.targetManager->getMovingTargets()[i].pathTreader->getPath().push_back(KeyPoint(glm::vec3(0.0f), 1.0f));
+						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(glm::vec3(0.0f), 1.0f));
 						found = true;
 					}
 				}
@@ -269,7 +269,9 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				if (ImGui::Button("Remove Path")) {
 					for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 						if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-							level.targetManager->getMovingTargets()[i].pathTreader->getPath().pop_back();
+							std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
+							path.pop_back();
+							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 							if (level.targetManager->getMovingTargets()[i].pathTreader->getPath().size() == 0) {
 								level.targetManager->addStaticTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost());
 								level.targetManager->removeTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName());
@@ -280,9 +282,13 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			}
 			for (int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-					for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
-						ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &level.targetManager->getMovingTargets()[i].pathTreader->getPath()[j].Position[0], 2);
-						ImGui::InputFloat(std::string("Path Time " + std::to_string(j)).c_str(), &level.targetManager->getMovingTargets()[i].pathTreader->getPath()[j].t);
+					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
+					for (int j = 0; j < level.targetManager->getMovingTargets()[i].pathTreader->getPath().size(); j++) {
+						if (ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 2))
+							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
+						ImGui::SameLine();
+						if(ImGui::InputFloat(std::string("Path Time " + std::to_string(j)).c_str(), &path[j].t))
+							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 					}
 				}
 			}
@@ -364,27 +370,27 @@ void EditorState::pauseGame(KeyEvent * ev)
 		this->pushState(new PauseState());
 	}
 	if (ev->key == GLFW_KEY_BACKSPACE) {
-		if (ev->action == 1) {
-			ImGui::GetIO().KeysDown[ImGuiKey_Backspace] = ImGuiKey_Backspace;
+		if (ev->action) {
+			ImGui::GetIO().KeysDown[ImGuiKey_Backspace] = true;
 		}
 		else {
-			ImGui::GetIO().KeysDown[ImGuiKey_Backspace] = 0;
+			ImGui::GetIO().KeysDown[ImGuiKey_Backspace] = false;
 		}
 	}
 	if (ev->key == GLFW_KEY_LEFT) {
-		if (ev->action == 1) {
-			ImGui::GetIO().KeysDown[ImGuiKey_LeftArrow] = ImGuiKey_LeftArrow;
+		if (ev->action) {
+			ImGui::GetIO().KeysDown[ImGuiKey_LeftArrow] = true;
 		}
 		else {
-			ImGui::GetIO().KeysDown[ImGuiKey_LeftArrow] = 0;
+			ImGui::GetIO().KeysDown[ImGuiKey_LeftArrow] = false;
 		}
 	}
 	if (ev->key == GLFW_KEY_RIGHT) {
-		if (ev->action == 1) {
-			ImGui::GetIO().KeysDown[ImGuiKey_RightArrow] = ImGuiKey_RightArrow;
+		if (ev->action) {
+			ImGui::GetIO().KeysDown[ImGuiKey_RightArrow] = true;
 		}
 		else {
-			ImGui::GetIO().KeysDown[ImGuiKey_RightArrow] = 0;
+			ImGui::GetIO().KeysDown[ImGuiKey_RightArrow] = false;
 		}
 	}
 }
