@@ -19,8 +19,10 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float min
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution
     EventBus::get().subscribe(this, &ArrowGuider::handleWindowResize);
-    windowHeight = Display::get().getHeight();
 
+	//EventBus::get().subscribe(this, &ArrowGuider::handleMouseScroll);
+
+    windowHeight = Display::get().getHeight();
     currentPitch = 0.0f;
 }
 
@@ -41,13 +43,13 @@ void ArrowGuider::update(const float& dt)
 
     Transform* transform = host->getTransform();
 
-    applyTurn(dt);
+	applyTurn(dt);
 
     float turnFactorsLength = glm::length(turnFactors);
 
     if (isGuiding) {
         // Update position storage
-        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength * this->movementSpeed;
 
         // Gradually increase storing frequency
         float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
@@ -82,6 +84,7 @@ void ArrowGuider::update(const float& dt)
 
         transform->setPosition(newPos);
     }
+
 
 	if (arrowCamera) {
 		// Update camera settings using turn factors
@@ -195,14 +198,18 @@ void ArrowGuider::stopGuiding(float flightTime)
 void ArrowGuider::saveKeyPoint(float flightTime)
 {
     // Do not save the key point if one was just saved during the same frame update
-    if (posStoreTimer < FLT_EPSILON * 10.0f || !allowKeypointOverride) {
+    if (posStoreTimer < FLT_EPSILON * 10.0f) {
         return;
     }
 
     posStoreTimer = 0.0f;
-    path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+	if (this->allowKeypointOverride)
+		path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+	else
+		path.push_back(KeyPoint(host->getTransform()->getPosition(), flightTime));
 
-    allowKeypointOverride = false;
+	allowKeypointOverride = false;
+
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
@@ -230,6 +237,16 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 void ArrowGuider::handleWindowResize(WindowResizeEvent* event)
 {
     this->windowHeight = event->height;
+}
+
+void ArrowGuider::handleKeyEvent(KeyEvent * event)
+{
+	if (event->action == GLFW_PRESS && event->key == GLFW_KEY_LEFT_SHIFT) {
+		
+	}
+	else if (event->action == GLFW_RELEASE && event->key == GLFW_KEY_LEFT_SHIFT) {
+
+	}
 }
 
 float ArrowGuider::getMaxTurnSpeed()

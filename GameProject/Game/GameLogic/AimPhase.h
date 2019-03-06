@@ -14,6 +14,8 @@ public:
     AimPhase(ReplayPhase* replayPhase);
 	~AimPhase();
 
+	void update(const float& dt);
+
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
     Camera* getArrowCam() const;
@@ -29,4 +31,12 @@ private:
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
     Camera* arrowCam;
+
+#ifdef IMGUI
+	float arrowSpeed;
+	float maxTurnSpeed;
+
+	bool configureData;
+
+#endif
 };

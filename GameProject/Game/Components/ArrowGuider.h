@@ -36,6 +36,7 @@ public:
     // Event handlers
     void handleMouseMove(MouseMoveEvent* event);
     void handleWindowResize(WindowResizeEvent* event);
+	void handleKeyEvent(KeyEvent* event);
 
     float getMaxTurnSpeed();
     void setMaxTurnSpeed(const float maxTurnSpeed);
@@ -53,8 +54,12 @@ private:
     // Use turn factors to update direction
     void applyTurn(const float& dt);
 
-    float movementSpeed;
-    int windowHeight;
+	float movementSpeed;
+	float maxSpeedIncrease;
+	float minSpeedDecrease;
+	float acceleration;
+	
+	int windowHeight;
     // Max turn speed measured in radians
     float maxTurnSpeed;
     // Mouse movement, relative to window height, required to reach max turn speed
