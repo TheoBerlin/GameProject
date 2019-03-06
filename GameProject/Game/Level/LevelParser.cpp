@@ -259,16 +259,20 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 
 void LevelParser::createCollisionBodies(Level& level)
 {
-	// Start at 2 to give space for a player and floor later on.
-	int bodiesNeeded = 2;
+	int bodiesNeeded = 0;
+	// Player
+	bodiesNeeded += 1;
+	// Floor (expected only one in this version)
+	bodiesNeeded += 1;
+	// Targets
 	bodiesNeeded += jsonFile["Target"].size();
 	bodiesNeeded += jsonFile["Boxes"].size();
+	// Walls
+	json::json& walls = jsonFile["Walls"];
+	for (unsigned group = 0; group < walls.size(); group++)
+		bodiesNeeded += walls[group].size();
 
-	if (jsonFile.find("Walls") != jsonFile.end())
-	{
-		bodiesNeeded += jsonFile["Walls"][0].size();
-		bodiesNeeded += jsonFile["Walls"][1].size();
-	}
+	// Create bodies in collision handler
 	level.collisionHandler->createCollisionBodies(bodiesNeeded);
 }
 
