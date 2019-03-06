@@ -74,7 +74,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     float attenuation = 1.0 / (light.constant + light.linear * distanc + light.quadratic * (distanc * distanc));    
     // combine results
     vec3 ambient  = vec3(0.1) * mat.kd.xyz;
-    vec3 diffuse  = light.intensity.xyz * diff * mat.kd.xyz;
+    vec3 diffuse  = light.intensity.xyz * diff * mat.kd.xyz * light.intensity.w;
     vec3 specular = vec3(1.0) * spec * mat.ks_f.xyz;
     ambient  *= attenuation;
     diffuse  *= attenuation;
@@ -99,7 +99,7 @@ void main()
      /*
         Ambient
     */
-    vec3 ambient = dirLight.color_intensity.rgb * 0.2;
+    vec3 ambient = dirLight.color_intensity.rgb * 0.2; //Should add intensity based here instead of fixed value
     /*
         Diffuse
     */

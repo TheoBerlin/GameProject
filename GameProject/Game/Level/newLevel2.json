@@ -1,4 +1,16 @@
 {
+  "PointLights": [
+    {
+      "Position": [ 5.0, 2.0, 0.0 ],
+      "Color": [ 0.0, 0.0, 1.0 ],
+      "Distance": 32
+    },
+    {
+      "Position": [ -5.0, 2.0, 0.0 ],
+      "Color": [ 1.0, 0.0, 0.0 ],
+      "Distance": 32
+    }
+  ],
   "Boxes": [
     {
       "Name": "Box1",

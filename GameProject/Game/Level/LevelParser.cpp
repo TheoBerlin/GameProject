@@ -168,7 +168,7 @@ void LevelParser::readLights(Level & level)
 	readVec3(dLight["Direction"], direction);
 	readVec3(dLight["Intensity"], intensity);
 
-	level.lightManager->createDirectionalLight(glm::vec4(direction, 1.0f), glm::vec4(intensity, 1.0f));
+	level.lightManager->createDirectionalLight(glm::vec4(direction, 1.0f), glm::vec4(intensity, 1.0f)); //add a read vec4 instead of adding w as a fixed value
 }
 
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)

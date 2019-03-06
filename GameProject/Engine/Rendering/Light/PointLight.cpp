@@ -3,9 +3,9 @@
 PointLight::PointLight(glm::vec4 position, glm::vec4 intensity, int distance) 
 {
 	/*The distance is predefined to certain values, 
-	values to choose are 7, 13, 20, 32, 50, 65, 100.
+	values to choose are 7, 13, 20, 32, 50, 65, 100, 200 and 325.
 	Anything that does not match these values will get a default vaule 
-	(the distances will be considered as aboce 100).*/
+	(the distances will be considered as 600).*/
 
 	this->position = position;
 	this->intensity = intensity;
@@ -19,7 +19,7 @@ PointLight::PointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 		this->linear = 0.35f;
 		this->quadratic = 0.44f;
 		break;
-	case 29:
+	case 20:
 		this->linear = 0.22f;
 		this->quadratic = 0.20f;
 		break;
@@ -39,9 +39,21 @@ PointLight::PointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 		this->linear = 0.045f;
 		this->quadratic = 0.0075f;
 		break;
-	default:
+	case 160:
 		this->linear = 0.027f;
 		this->quadratic = 0.0028f;
+		break;
+	case 200:
+		this->linear = 0.022f;
+		this->quadratic = 0.0019f;
+		break;
+	case 325:
+		this->linear = 0.014f;
+		this->quadratic = 0.0007f;
+		break;
+	default:
+		this->linear = 0.007f;
+		this->quadratic = 0.0002f;
 		break;
 	}
 

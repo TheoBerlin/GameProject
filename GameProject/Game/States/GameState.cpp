@@ -37,10 +37,9 @@ GameState::GameState(const std::string& levelJSON)
 
 	levelParser.readLevel(levelJSON, level);
 
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
-
 	gameLogic.init(level);
 
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().initInstancing();
 
 	InputHandler ih(Display::get().getWindowPtr());
