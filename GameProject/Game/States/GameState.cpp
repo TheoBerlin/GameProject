@@ -53,7 +53,7 @@ GameState::~GameState()
 {
 	delete targetManager;
 
-	Display::get().getRenderer().clearRenderingModels();
+	Display::get().getRenderer().clearRenderingTargets();
 
 	// Delete all loaded models
 	ModelLoader::unloadAllModels();
