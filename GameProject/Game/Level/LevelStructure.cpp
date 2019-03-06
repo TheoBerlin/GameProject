@@ -21,15 +21,13 @@ LevelStructure::~LevelStructure()
 
 void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, float height)
 {
-	std::vector<glm::vec2> scales;
-
 	Model* model = this->quad;
 	Mesh* mesh = model->getMesh(0);
 
 	std::vector<glm::mat4> mats;
-	for (int i = 0; i < points.size(); i++)
+	for (unsigned i = 0; i < points.size(); i++)
 	{
-		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(i));
+		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(this->wallEntites.size()));
 		Transform* trans = entity->getTransform();
 		glm::vec3* p1 = &points[i];
 		glm::vec3* p2 = &points[(i + 1) % (points.size())];
@@ -50,7 +48,7 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		mats.push_back(trans->getMatrix());
 		entity->setModel(model);
 
-		scales.push_back(glm::vec2(glm::length(width), height));
+		this->scales.push_back(glm::vec2(glm::length(width), height));
 
 		std::vector<Vertex> vertex(mesh->getVerticies().size());
 		unsigned index = 0;
@@ -60,17 +58,27 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		}
 
 		// Save upper wall points
-		glm::vec4 u1((*p1).x, 1.f, (*p1).z, 1.f);
-		u1 = trans->getMatrix() * u1;
-		this->wallPoints.push_back(glm::vec3(u1.x, height, u1.z));
-
+		this->wallPoints.push_back({p1->x, height, p1->y});
 
 		// Add collision
 		level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
 		trans->setScale(glm::vec3(1.f, 1.f, 1.f));
-		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), i);
+		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), this->wallEntites.size());
 		trans->setScale(scale);
+
+		// Save entity pointer
+		this->wallEntites.push_back(entity);
 	}
+}
+
+void LevelStructure::createWallBuffers()
+{
+	// Get all entites matrix in one vector
+	std::vector<glm::mat4> mats;
+	for (unsigned i = 0; i < this->wallEntites.size(); i++)
+		mats.push_back(this->wallEntites[i]->getTransform()->getMatrix());
+
+	Mesh* mesh = this->quad->getMesh(0);
 
 	AttributeLayout matLayout;
 	matLayout.push(4, 1);
@@ -81,9 +89,9 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 
 	AttributeLayout scaleLayout;
 	scaleLayout.push(2, 1);
-	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
+	mesh->addBuffer(&this->scales[0], this->scales.size() * sizeof(glm::vec2), scaleLayout);
 
-	ModelLoader::addModel("wall", model);
+	ModelLoader::addModel("wall", this->quad);
 }
 
 std::vector<glm::vec3>& LevelStructure::getWallPoints()
