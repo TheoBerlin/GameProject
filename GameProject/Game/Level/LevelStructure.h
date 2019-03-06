@@ -16,7 +16,7 @@ public:
 	// Create walls
 	void createWalls(Level& level, std::vector<std::vector<glm::vec3>>& points);
 	// Create wall group
-	void createWallGroup(Level& level, std::vector<glm::vec3>& points);
+	void createWallGroup(Level& level, std::vector<glm::vec3>& points, bool invertNormals = false);
 
 	// Get all wall points of the current level
 	std::vector<glm::vec3>& getWallPoints();
@@ -32,6 +32,8 @@ private:
 	void createWallBuffers();
 	// Create infinity plane
 	void createInfinityPlane(Level& level);
+	// Check if the points are expressed in clockwise or anticlockwise order
+	bool isClockwise(std::vector<glm::vec3>& points); 
 
 	std::vector<Entity*> wallEntites;
 	std::vector<glm::vec2> scales;

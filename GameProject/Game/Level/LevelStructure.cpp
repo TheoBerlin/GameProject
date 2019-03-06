@@ -36,7 +36,7 @@ void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3
 	createInfinityPlane(level);
 }
 
-void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& points)
+void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& points, bool invertNormal)
 {
 	Model* model = this->quad;
 	Mesh* mesh = model->getMesh(0);
@@ -48,6 +48,12 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 		Transform* trans = entity->getTransform();
 		glm::vec3* p1 = &points[i];
 		glm::vec3* p2 = &points[(i + 1) % (points.size())];
+		if (invertNormal)
+		{
+			glm::vec3* temp = p1;
+			p1 = p2;
+			p2 = temp;
+		}
 
 		glm::vec3 width = *p2 - *p1;
 
@@ -222,4 +228,20 @@ void LevelStructure::createInfinityPlane(Level& level)
 	entity->getTransform()->setScale(glm::vec3(100.f));
 	entity->getTransform()->setPosition(glm::vec3(0.f, this->height, 0.f));
 	entity->setModel(this->plane);
+}
+
+bool LevelStructure::isClockwise(std::vector<glm::vec3>& points)
+{
+	glm::vec3* p0 = &points[0];
+	glm::vec3* p1 = &points[(1) % (points.size())];
+	glm::vec3* p2 = &points[(2) % (points.size())];
+
+	glm::vec3 l1 = *p1 - *p0;
+	glm::vec3 l2 = *p2 - *p0;
+
+	glm::vec3 cross = glm::cross(l1, l2);
+
+	if (cross.y > 0)
+		return true;
+	return true;
 }
