@@ -29,6 +29,11 @@ void EntityShader::updateMeshData(unsigned texId)
 	Shader::setTexture2D("tex", 0, texId);
 }
 
+void EntityShader::updateLightMatrixData(glm::mat4 * lightSpaceMatrix)
+{
+	this->lightSpaceMatrix = lightSpaceMatrix;
+}
+
 void EntityShader::update(const float & dt)
 {
 	this->time += dt;

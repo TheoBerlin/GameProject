@@ -87,6 +87,7 @@ public:
 		Updates shaders
 	*/
 	void updateShaders(const float& dt);
+	void addCurrentLightManager(LightManager * lm);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
@@ -130,8 +131,7 @@ private:
 
 	DirectionLight mainLight;
 
-	LightManager lm;
-
+	LightManager * lightManager;
 	std::vector<UniformBuffer*> uniformBuffers;
 };
 

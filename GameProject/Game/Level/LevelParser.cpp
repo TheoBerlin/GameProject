@@ -148,6 +148,29 @@ void LevelParser::readMetadata(Level& level)
 	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
 }
 
+void LevelParser::readLights(Level & level)
+{
+	int lightSize = jsonFile["PointLights"].size();
+	glm::vec3 position;
+	glm::vec3 color;
+	glm::vec3 direction;
+	glm::vec3 intensity;
+	int distance;
+	for (int i = 0; i < lightSize; i++) {
+		json::json& light = jsonFile["PointLights"][i];
+		readVec3(light["Position"], position);
+		readVec3(light["Color"], color);
+		distance = light["Distance"];
+
+		level.lightManager->createPointLight(glm::vec4(position, 1.0f), glm::vec4(color, 1.0f), distance);
+	}
+	json::json& dLight = jsonFile["DirectionalLight"];
+	readVec3(dLight["Direction"], direction);
+	readVec3(dLight["Intensity"], intensity);
+
+	level.lightManager->createDirectionalLight(glm::vec4(direction, 1.0f), glm::vec4(intensity, 1.0f));
+}
+
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 {
 	// Iterate through position components
@@ -248,6 +271,7 @@ void LevelParser::readLevel(std::string file, Level& level)
 		readEntityWalls(level);
 		readEntityFloor(level);
 		readPlayer(level);
+		readLights(level);
 	}
 	else
 	{

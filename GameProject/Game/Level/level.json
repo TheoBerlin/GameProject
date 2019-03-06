@@ -1,4 +1,20 @@
 {
+  "DirectionalLight": {
+    "Direction": [ 0.0, -1.0, 0.0 ],
+    "Intensity": [ 1.0, 1.0, 1.0 ]
+  },
+  "PointLights": [
+    {
+      "Position": [ 0.0, 1.0, -10.0 ],
+      "Color": [ 1.0, 0.0, 0.0 ],
+      "Distance": 29
+    },
+    {
+      "Position": [ -2.0, 1.0, -1.0],
+      "Color": [ 1.0, 1.0, 0.0 ],
+      "Distance": 29
+    }
+  ],
   "Target": [
     {
       "Name": "Target1",
@@ -24,19 +40,19 @@
       "Name": "Target6",
       "Path": [
         {
-          "Position": [0, 3, -5],
+          "Position": [ 0, 3, -5 ],
           "Time": 0
         },
         {
-          "Position": [5, 5, 0],
+          "Position": [ 5, 5, 0 ],
           "Time": 3
         },
         {
-          "Position": [0, 2, 5],
+          "Position": [ 0, 2, 5 ],
           "Time": 6
         },
         {
-          "Position": [-5, 4, 0],
+          "Position": [ -5, 4, 0 ],
           "Time": 9
         }
       ]

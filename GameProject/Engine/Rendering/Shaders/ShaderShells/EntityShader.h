@@ -18,6 +18,7 @@ public:
 
 	void bind();
 	void updateMeshData(unsigned texId);
+	void updateLightMatrixData(glm::mat4 * lightSpaceMatrix);
 
 	virtual void update(const float& dt);
 

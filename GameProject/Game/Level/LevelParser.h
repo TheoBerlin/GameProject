@@ -27,6 +27,7 @@ private:
 	void readEntityFloor(Level& level);
 	void readPlayer(Level& level);
 	void readMetadata(Level& level);
+	void readLights(Level& level);
 
 	void readVec3(json::json& file, glm::vec3& vec);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
