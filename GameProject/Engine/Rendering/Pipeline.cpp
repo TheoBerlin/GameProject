@@ -479,8 +479,11 @@ Camera * Pipeline::getActiveCamera()
 	return this->camera;
 }
 
-void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints)
+void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std::vector<int>& wallGroupsIndex)
 {
+	if (wallPoints.empty())
+		return;
+
 	InfinityPlaneShader* infPlaneShader = nullptr;
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
 		if (dynamic_cast<InfinityPlaneShader*>(this->entityShaders[i]) != nullptr)
@@ -494,13 +497,20 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints)
 	{
 		struct WallPointsData
 		{
-			glm::vec4 points[100];
+			glm::vec4 points[96];
 			int size;
-			glm::vec3 padding;
+			int groupSize;
+			int a;
+			int b;
 		} data;
 		data.size = wallPoints.size();
+		data.groupSize = wallGroupsIndex.size();
+		int value = wallGroupsIndex[0];
+		int index = 0;
 		for (int i = 0; i < data.size; i++) {
-			data.points[i] = glm::vec4(wallPoints[i], 0.f);
+			if (value - i == 0)
+				value += wallGroupsIndex[++index];
+			data.points[i] = glm::vec4(wallPoints[i], (float)(wallGroupsIndex[index]));
 		}
 		this->uniformBuffers[2]->setSubData((void*)&data, sizeof(WallPointsData), 0);
 	}

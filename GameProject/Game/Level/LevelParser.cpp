@@ -111,28 +111,28 @@ void LevelParser::readEntityBoxes(Level& level)
 
 void LevelParser::readEntityWalls(Level& level)
 {
-	// Pre determined height
-	float height = 5.0f;
-
 	// Load points from level file
+	if (jsonFile.find("Walls") == jsonFile.end())
+		return;
 	json::json& file = jsonFile["Walls"];
-	std::vector<glm::vec3> points;
+	std::vector<std::vector<glm::vec3>> points;
 	glm::vec2 point(0.0f);
 	if (!file.empty()) {
-		for (unsigned i = 0; i < file.size(); i++)
+		for (unsigned group = 0; group < file.size(); group++)
 		{
-			readVec2(file[i], point);
-			points.push_back({ point.x, 0.0f, point.y });
+			points.push_back(std::vector<glm::vec3>());
+			for (unsigned i = 0; i < file[group].size(); i++)
+			{
+				readVec2(file[group][i], point);
+				points[group].push_back({ point.x, 0.0f, point.y });
+			}
 		}
-
 		level.levelStructure->createWalls(level, points);
 	}
 	else {
 		LOG_WARNING("No walls found, walls will not be created.");
 		return;
 	}
-
-	
 }
 
 void LevelParser::readEntityFloor(Level& level)
@@ -272,8 +272,12 @@ void LevelParser::createCollisionBodies(Level& level)
 	int bodiesNeeded = 2;
 	bodiesNeeded += jsonFile["Target"].size();
 	bodiesNeeded += jsonFile["Boxes"].size();
-	bodiesNeeded += jsonFile["Walls"].size();
 
+	if (jsonFile.find("Walls") != jsonFile.end())
+	{
+		bodiesNeeded += jsonFile["Walls"][0].size();
+		bodiesNeeded += jsonFile["Walls"][1].size();
+	}
 	level.collisionHandler->createCollisionBodies(bodiesNeeded);
 }
 

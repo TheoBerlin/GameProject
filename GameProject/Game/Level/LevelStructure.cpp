@@ -16,6 +16,7 @@ LevelStructure::LevelStructure()
 {
 	this->quad = createQuad();
 	this->plane = createPlane();
+	this->height = 5.f;
 }
 
 
@@ -23,25 +24,30 @@ LevelStructure::~LevelStructure()
 {
 }
 
-void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, float height)
+void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3>>& points)
 {
-	// Add an entity which has a model as a plane.
-	Entity* entity = level.entityManager->addTracedEntity("InfinityPlane");
-	entity->getTransform()->setScale(glm::vec3(100.f));
-	entity->getTransform()->setPosition(glm::vec3(0.f, height, 0.f));
-	entity->setModel(this->plane);
-	ModelLoader::addModel("infinityPlane", this->plane);
-	Display::get().getRenderer().addRenderingTarget(this->plane, SHADERS::INFINITY_PLANE, false, false);
+	// Create a wall group for each set
+	for (unsigned i = 0; i < points.size(); i++)
+	{
+		this->wallGroupsIndex.push_back((int)(points[i].size()));
+		createWallGroup(level, points[i]);
+	}
+	// Create wall buffer
+	createWallBuffers();
+	
+	// Create infinity plane
+	createInfinityPlane(level);
+}
 
-	std::vector<glm::vec2> scales;
-
+void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& points)
+{
 	Model* model = this->quad;
 	Mesh* mesh = model->getMesh(0);
 
 	std::vector<glm::mat4> mats;
-	for (int i = 0; i < points.size(); i++)
+	for (unsigned i = 0; i < points.size(); i++)
 	{
-		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(i));
+		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(this->wallEntites.size()));
 		Transform* trans = entity->getTransform();
 		glm::vec3* p1 = &points[i];
 		glm::vec3* p2 = &points[(i + 1) % (points.size())];
@@ -54,7 +60,7 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		trans->setRotation(glm::vec3(0.0f, angle, 0.0f));
 
 		float dist = glm::length(width);
-		glm::vec3 scale = glm::vec3(dist, height, 1.0f);
+		glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
 		trans->setScale(scale);
 
 		trans->setPosition(*p1);
@@ -62,7 +68,7 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		mats.push_back(trans->getMatrix());
 		entity->setModel(model);
 
-		scales.push_back(glm::vec2(glm::length(width), height));
+		this->scales.push_back(glm::vec2(glm::length(width), this->height));
 
 		std::vector<Vertex> vertex(mesh->getVerticies().size());
 		unsigned index = 0;
@@ -72,35 +78,28 @@ void LevelStructure::createWalls(Level & level, std::vector<glm::vec3>& points, 
 		}
 
 		// Save upper wall points
-		this->wallPoints.push_back(glm::vec3((*p1).x, height, (*p1).z));
-
+		this->wallPoints.push_back({p1->x, this->height, p1->z});
 
 		// Add collision
 		level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
 		trans->setScale(glm::vec3(1.f, 1.f, 1.f));
-		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), i);
+		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), this->wallEntites.size());
 		trans->setScale(scale);
+
+		// Save entity pointer
+		this->wallEntites.push_back(entity);
 	}
-
-	AttributeLayout matLayout;
-	matLayout.push(4, 1);
-	matLayout.push(4, 1);
-	matLayout.push(4, 1);
-	matLayout.push(4, 1);
-	mesh->addBuffer(&mats[0][0], mats.size() * sizeof(glm::mat4), matLayout);
-
-	AttributeLayout scaleLayout;
-	scaleLayout.push(2, 1);
-	mesh->addBuffer(&scales[0], scales.size() * sizeof(glm::vec2), scaleLayout);
-
-	ModelLoader::addModel("wall", model);
-	Display::get().getRenderer().addRenderingTarget(model, SHADERS::DEFAULT, false);
 }
 
 std::vector<glm::vec3>& LevelStructure::getWallPoints()
 {
 	return this->wallPoints;
 }
+std::vector<int>& LevelStructure::getWallGroupsIndex()
+{
+	return this->wallGroupsIndex;
+}
+
 
 Model * LevelStructure::createQuad()
 {
@@ -144,6 +143,8 @@ Model * LevelStructure::createQuad()
 	mat.textures.push_back(tex);
 	mat.Ks_factor = glm::vec4(40.0f);
 	quad->addMaterial(mat);
+
+	ModelLoader::addModel("wall", quad);
 
 	return quad;
 }
@@ -191,5 +192,37 @@ Model * LevelStructure::createPlane()
 	mat.Ks_factor = glm::vec4(40.0f);
 	plane->addMaterial(mat);
 
+	ModelLoader::addModel("infinityPlane", plane);
+
 	return plane;
+}
+
+void LevelStructure::createWallBuffers()
+{
+	// Get all entites matrix in one vector
+	std::vector<glm::mat4> mats;
+	for (unsigned i = 0; i < this->wallEntites.size(); i++)
+		mats.push_back(this->wallEntites[i]->getTransform()->getMatrix());
+
+	Mesh* mesh = this->quad->getMesh(0);
+
+	AttributeLayout matLayout;
+	matLayout.push(4, 1);
+	matLayout.push(4, 1);
+	matLayout.push(4, 1);
+	matLayout.push(4, 1);
+	mesh->addBuffer(&mats[0][0], mats.size() * sizeof(glm::mat4), matLayout);
+
+	AttributeLayout scaleLayout;
+	scaleLayout.push(2, 1);
+	mesh->addBuffer(&this->scales[0], this->scales.size() * sizeof(glm::vec2), scaleLayout);
+}
+
+void LevelStructure::createInfinityPlane(Level& level)
+{
+	// Add an entity which has a model as a plane.
+	Entity* entity = level.entityManager->addTracedEntity("InfinityPlane");
+	entity->getTransform()->setScale(glm::vec3(100.f));
+	entity->getTransform()->setPosition(glm::vec3(0.f, this->height, 0.f));
+	entity->setModel(this->plane);
 }
