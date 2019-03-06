@@ -143,7 +143,9 @@ void TargetManager::resetMovingAnimations()
 	unsigned int movingTargetCount = movingTargets.size();
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
+		Entity* targetHost = movingTargets.at(i).pathTreader->getHost();
         movingTargets.at(i).pathTreader->startTreading();
+		targetHost->getTransform()->resetRoll();
     }
 }
 
