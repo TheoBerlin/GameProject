@@ -4,6 +4,7 @@
 #include "Utils/Settings.h"
 #include "Game/Game.h"
 #include "Engine/AssetManagement/ModelLoader.h"
+#include "Engine/Config.h"
 
 #include "ft2build.h" //DO NOT MOVE HEADER FILE FROM ROOT DIRECTORY OF INCLUDE
 #include FT_FREETYPE_H
@@ -20,7 +21,9 @@ int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	Logger::init();
 	SoundContext::initSoundContext();
-	
+
+	ran.seed(std::random_device()());
+
 	Sound sound;
 	sound.loadSound("Game/assets/sound/dream_catcherMono.wav");
 	sound.setLoopState(true);
@@ -28,15 +31,10 @@ int main() {
 	sound.playSound();
 	sound.setPosition(glm::vec3(0, 0, -10));
 	SoundManager::get().addSound(sound, SOUND_MUSIC);
-	SoundManager::get().setMasterVolume(0.25f);
-	SoundManager::get().setEffectVolume(0.25f);
 
 	Game game;
 	game.start();
-	
-	Logger::destroy();
 
-	ModelLoader::unloadAllModels();
 	TextureManager::unloadAllTextures();
 
 	return 0;

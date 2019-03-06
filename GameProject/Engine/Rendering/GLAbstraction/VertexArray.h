@@ -19,7 +19,12 @@ public:
 	/*
 		Update existing buffer, with new layout, if size don't use default parameter the whole buffer will be reallocated and new memory has to be sent in
 	*/
-	void updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset = 0);
+	void updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset = 0, const unsigned& usage = GL_DYNAMIC_DRAW);
+
+	/*
+		Set buffer usage, data and data size
+	*/
+	void setBuffer(unsigned vboIndex, const void* data, const size_t dataSize, const unsigned& usage = GL_DYNAMIC_DRAW);
 
 
 	/*

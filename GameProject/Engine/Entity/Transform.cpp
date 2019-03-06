@@ -42,6 +42,11 @@ glm::vec3 Transform::getRotation() const
 	return glm::eulerAngles(rotationQuat);
 }
 
+glm::quat Transform::getRotationQuat() const
+{
+	return this->rotationQuat;
+}
+
 glm::vec3 Transform::getScale() const
 {
 	return this->scaleFactor;
@@ -60,6 +65,54 @@ glm::vec3 Transform::getRight() const
 glm::vec3 Transform::getUp() const
 {
 	return this->u;
+}
+
+glm::vec3 Transform::getYawPitchRoll() const
+{
+	glm::vec3 yawPitchRoll;
+
+	// Calculate yaw
+	glm::vec3 temp = glm::normalize(glm::vec3(this->f.x, defaultForward.y, this->f.z));
+
+	yawPitchRoll.x = std::acosf(glm::dot(defaultForward, temp));
+
+	// Determine yaw sign
+	temp = glm::cross(defaultForward, this->f);
+
+	yawPitchRoll.x = (temp.y > 0.0f) ? yawPitchRoll.x : -yawPitchRoll.x;
+
+	// Calculate pitch
+	temp = glm::normalize(glm::vec3(defaultForward.x, this->f.y, defaultForward.z));
+
+	yawPitchRoll.y = std::acosf(glm::dot(defaultForward, temp));
+
+	// Determine pitch sign
+	yawPitchRoll.y = (this->f.y > defaultForward.y) ? yawPitchRoll.y : -yawPitchRoll.y;
+
+	// Calculate roll
+	temp = glm::normalize(glm::vec3(this->r.x, 0.0f, this->r.z));
+
+	yawPitchRoll.z = std::acosf(glm::dot(this->r, temp));
+
+	// Determine roll sign
+	yawPitchRoll.z = (this->r.y < 0.0f) ? yawPitchRoll.z : -yawPitchRoll.z;
+
+	return yawPitchRoll;
+}
+
+glm::vec3 Transform::getDefaultForward() const
+{
+	return this->defaultForward;
+}
+
+void Transform::setRotationQuat(const glm::quat& newQuat)
+{
+	this->rotationQuat = newQuat;
+
+	// Apply rotation
+	this->f = newQuat * defaultForward;
+	this->u = newQuat * GLOBAL_UP_VECTOR;
+	this->r = glm::normalize(glm::cross(this->f, this->u));
 }
 
 bool Transform::getStatus()
@@ -86,24 +139,13 @@ void Transform::rotate(const glm::vec3& rotation)
 void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
 	if(rotation != glm::vec3(0.0f)) {
-		glm::mat4 rotMat = glm::mat4(1);
+		position -= rotationCenter;
 
-		//Might be different amount of rotation for different axis and therefore need to check and rotate each individual axis
-		rotMat = glm::translate(rotMat, rotationCenter - position);
+		position = glm::quat(rotation) * position;
 
-		if (glm::abs(rotation.x) > 0) {
-			rotMat = glm::rotate(rotMat, rotation.x, glm::vec3(1, 0, 0));
-		}
-		if (glm::abs(rotation.y) > 0) {
-			rotMat = glm::rotate(rotMat, rotation.y, glm::vec3(0, 1, 0));
-		}
-		if (glm::abs(rotation.z) > 0) {
-			rotMat = glm::rotate(rotMat, rotation.z, glm::vec3(0, 0, 1));
-		}
+		position += rotationCenter;
 
-		rotMat = glm::translate(rotMat, position - rotationCenter);
-		position = (rotMat * glm::vec4(position, 1.0f)).xyz();
-		this->isUpdated = true;
+		isUpdated = true;
 	}
 }
 
@@ -183,10 +225,10 @@ void Transform::setForward(const glm::vec3 & forward)
 	float cosAngle = glm::dot(normForward, this->f);
 	glm::quat rotQuat = glm::quat_cast(glm::mat4(1));
 
-	if (cosAngle >= 1.0f - FLT_EPSILON) {
+	if (cosAngle >= 1.0f - FLT_EPSILON * 10.0f) {
 		// The new forward is identical to the old one, do nothing
 		return;
-	} else if (cosAngle <= -1.0f + FLT_EPSILON) {
+	} else if (cosAngle <= -1.0f + FLT_EPSILON * 10.0f) {
 		// The new forward is parallell to the old one, create a 180 degree rotation quarternion
 		// around any axis
 		rotQuat = glm::angleAxis(glm::pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
@@ -226,4 +268,10 @@ void Transform::rotate(const float yaw, const float pitch, const float roll)
 	rotationQuat = rollQuat * pitchQuat * yawQuat * rotationQuat;
 
 	this->isUpdated = true;
+}
+
+void Transform::resetRoll()
+{
+	this->r = glm::normalize(glm::vec3(r.x, 0.0f, r.z));
+	this->u = glm::cross(this->r, this->f);
 }

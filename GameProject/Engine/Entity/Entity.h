@@ -8,6 +8,10 @@
 
 #include "../AssetManagement/Model.h"
 
+namespace reactphysics3d {
+	class CollisionBody;
+}
+
 class Entity
 {
 public:
@@ -18,7 +22,12 @@ public:
 
 	bool addComponent(Component* component);
 	bool removeComponent(const std::string& componentName);
-	// Used by components to get neighboring components
+	void removeAllComponents();
+	/*
+		Get component by name for the given entity
+		Returns:
+			Component pointer if found, nullptr if not.
+	*/
 	Component* getComponent(const std::string& componentName);
 
 	void setModel(Model* model);
@@ -41,6 +50,9 @@ public:
 	const std::string getName();
 	Transform* getTransform();
 
+	void setCollisionBody(reactphysics3d::CollisionBody* body);
+	reactphysics3d::CollisionBody* getCollisionBody() const;
+
 private:
 	std::unordered_map<std::string, Component*> components;
 
@@ -52,4 +64,5 @@ private:
 	*/
 	int renderingGroupIndex;
 	Model* model;
+	reactphysics3d::CollisionBody* body;
 };

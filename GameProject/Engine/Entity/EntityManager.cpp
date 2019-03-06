@@ -1,5 +1,8 @@
 #include "EntityManager.h"
 
+#include "Utils/Logger.h"
+#include "Entity.h"
+
 
 
 EntityManager::EntityManager()
@@ -14,7 +17,6 @@ EntityManager::~EntityManager()
 {
 	this->removeEntities();
 }
-
 
 void EntityManager::update(const float dt)
 {

@@ -5,7 +5,6 @@
 #include <Engine/Entity/Entity.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Game/Components/ComponentResources.h>
-#include <Utils/Logger.h>
 #include <vector>
 
 class PathVisualizer : public Component

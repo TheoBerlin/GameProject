@@ -1,9 +1,14 @@
 #pragma once
 
-#include <Engine/Entity/Entity.h>
-#include <Game/Components/PathTreader.h>
-#include <Game/Components/RollNullifier.h>
 #include <vector>
+#include "glm/glm.hpp"
+
+class Entity;
+class PathTreader;
+class RollNullifier;
+class Hover;
+class Explosion;
+struct KeyPoint;
 
 struct MovingTarget {
     PathTreader* pathTreader;
@@ -11,6 +16,8 @@ struct MovingTarget {
 };
 
 struct StaticTarget {
+    Hover* hoverAnimation;
+	Explosion* explosion;
 };
 
 class TargetManager
@@ -26,12 +33,22 @@ public:
     // Reset target components such as the path treader
     void resetTargets();
 
+	// Returns the number of targets in target manager
+	unsigned getTargetCount();
+
 private:
     // Common setup for targets
     void setupTargetGeneric(Entity* host);
 
+    // Resets animations and collision states
     void resetStaticTargets();
     void resetMovingTargets();
+
+    void resetStaticAnimations();
+    void resetMovingAnimations();
+
+	void resetStaticCollisions();
+	void resetMovingCollisions();
 
     std::vector<MovingTarget> movingTargets;
     std::vector<StaticTarget> staticTargets;

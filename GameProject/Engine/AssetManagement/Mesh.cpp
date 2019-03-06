@@ -1,8 +1,7 @@
 #include "Mesh.h"
-
 #include "Model.h"
 
-Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent)
+Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndices, unsigned short materialIndex, Model* parent, GLenum usage)
     : vertices(vertices),
     vertexIndices(vertexIndices),
     materialIndex(materialIndex),
@@ -11,7 +10,7 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 	// Load mesh to GPU.
     this->vao = new VertexArray();
 	this->vao->bind();
-	VertexBuffer* vbo = new VertexBuffer((void*)&((*vertices)[0].Position.x), vertices->size() * sizeof(Vertex));
+	VertexBuffer* vbo = new VertexBuffer((void*)&((*vertices)[0].Position.x), vertices->size() * sizeof(Vertex), usage);
 	AttributeLayout layout;
 	layout.push(3); // vec3 Position
 	layout.push(3); // vec3 Normal
@@ -20,6 +19,19 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 
 	this->vao->bind();
 	this->ib = new IndexBuffer((void*)&((*vertexIndices)[0]), vertexIndices->size());
+}
+
+Mesh::Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout, GLenum usage)
+{
+	// Load mesh to GPU.
+	this->vao = new VertexArray();
+	this->vao->bind();
+
+	VertexBuffer* vbo = new VertexBuffer(data, dataSize, usage);
+	this->vao->addBuffer(vbo, layout);
+
+	this->vao->bind();
+	this->ib = new IndexBuffer(indices, indicesSize, usage);
 }
 
 void Mesh::bindVertexArray()
@@ -41,7 +53,8 @@ void Mesh::bindMaterial(UniformBuffer* uniformBuffer)
 Mesh::~Mesh()
 {
     // Delete vertices and indices
-    delete this->vertices;
+    if(this->vertices)
+		delete this->vertices;
     delete this->vertexIndices;
 
     delete this->vao;
@@ -51,6 +64,14 @@ Mesh::~Mesh()
 unsigned short Mesh::getMaterialIndex()
 {
     return this->materialIndex;
+}
+
+void Mesh::addBuffer(const void * data, size_t dataSize, const AttributeLayout & layout)
+{
+
+	VertexBuffer* vbo = new VertexBuffer(data, dataSize);
+
+	this->vao->addBuffer(vbo, layout);
 }
 
 void Mesh::initInstancing(const void * data, size_t dataSize)
@@ -69,14 +90,20 @@ void Mesh::initInstancing(const void * data, size_t dataSize)
 
 }
 
-void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned offset)
+void Mesh::initInstancing(const void * data, size_t dataSize, const AttributeLayout & attributeLayout)
+{
+	/*
+	Creating vbo for model/transform matrices
+	*/
+	this->vao->bind();
+	VertexBuffer* vbo = new VertexBuffer(data, dataSize, GL_DYNAMIC_DRAW);
+	this->vao->addBuffer(vbo, attributeLayout);
+}
+
+void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned offset, unsigned buffer)
 {
 	/*
 		Update second vbo contaning the matrices
 	*/
-	this->vao->updateBuffer(1, data, dataSize, offset);
-}
-
-void Mesh::createBuffers()
-{
+	this->vao->updateBuffer(buffer, data, dataSize, offset);
 }

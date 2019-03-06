@@ -1,5 +1,7 @@
 #include "Entity.h"
 
+#include "reactphysics3d/reactphysics3d.h"
+
 Entity::Entity(const glm::vec3& forward) : model(nullptr)
 {
 	transform.setForward(forward);
@@ -10,16 +12,12 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 
 Entity::~Entity()
 {
-	for (auto& it : this->components) {
-		delete it.second;
-		it.second = nullptr;
-	}
+	removeAllComponents();
 
-	this->components.clear();
 	/*
 		Remove entity from models rendering group
 	*/
-	if (this->model != nullptr) {
+	if (this->model != nullptr && this->renderingGroupIndex != -1) {
 		this->model->removeEntity(this->renderingGroupIndex);
 	}
 }
@@ -32,8 +30,21 @@ void Entity::update(const float dt)
 	/*
 		Updates vertex buffer of model, if it exists and a component has moved the entity
 	*/
-	if (this->model && this->getTransform()->getStatus() && this->renderingGroupIndex != -1)
+	if (this->model && this->getTransform()->getStatus() && this->renderingGroupIndex != -1) {
 		this->model->updateInstancingSpecificData(this->renderingGroupIndex);
+
+		if (this->body != nullptr) {
+			glm::vec3 pos = this->transform.getPosition();
+			rp3d::Vector3 newPos({ pos.x, pos.y, pos.z });
+			rp3d::Quaternion newRot;
+			glm::quat q = this->transform.getRotationQuat();
+			newRot.setAllValues(q.x, q.y, q.z, q.w);
+			rp3d::Transform transform(newPos, newRot);
+			this->body->setTransform(transform);
+		}
+	}
+
+
 }
 
 bool Entity::addComponent(Component * component)
@@ -62,6 +73,16 @@ bool Entity::removeComponent(const std::string& componentName)
 	return false;
 }
 
+void Entity::removeAllComponents()
+{
+	for (auto& it : this->components) {
+		delete it.second;
+		it.second = nullptr;
+	}
+
+	this->components.clear();
+}
+
 Component* Entity::getComponent(const std::string& componentName)
 {
 	// Returns nullptr if component is not found
@@ -76,20 +97,25 @@ Component* Entity::getComponent(const std::string& componentName)
 
 void Entity::setModel(Model * model)
 {
-	/*
-		Remove itself from old model, Complexity: Linear on the entities after the entity deleted 
-	*/
-	if (this->renderingGroupIndex != -1)
-		this->model->removeEntity(this->renderingGroupIndex);
+	if (model != nullptr) {
+		/*
+			Remove itself from old model, Complexity: Linear on the entities after the entity deleted
+		*/
+		if (this->renderingGroupIndex != -1)
+			this->model->removeEntity(this->renderingGroupIndex);
 
-	this->renderingGroupIndex = model->addEntity(this);
-	this->model = model;
-	this->model->updateInstancingData();
+		this->renderingGroupIndex = model->addEntity(this);
+		this->model = model;
+		this->model->updateInstancingData();
+	}
+	else {
+		this->model = nullptr;
+	}
 }
 
 void Entity::detachFromModel()
 {
-	if (this->model != nullptr)
+	if (this->model != nullptr && this->renderingGroupIndex != -1)
 		this->model->removeEntity(this->renderingGroupIndex);
 
 	this->renderingGroupIndex = -1;
@@ -129,4 +155,14 @@ const std::string Entity::getName()
 Transform * Entity::getTransform()
 {
 	return &transform;
+}
+
+void Entity::setCollisionBody(rp3d::CollisionBody * body)
+{
+	this->body = body;
+}
+
+rp3d::CollisionBody * Entity::getCollisionBody() const
+{
+	return this->body;
 }

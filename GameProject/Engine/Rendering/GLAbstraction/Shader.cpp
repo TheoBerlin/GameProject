@@ -1,6 +1,6 @@
 #include "Shader.h"
 
-#include "../../../Utils/Logger.h"
+#include "Utils/Logger.h"
 #include "Texture.h"
 
 Shader::Shader()

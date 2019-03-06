@@ -2,10 +2,11 @@
 
 #include <chrono>
 #include <ctime>
+#include <Windows.h>
 
 HANDLE Logger::hstdin = (void*)0;
 HANDLE Logger::hstdout = (void*)0;
-CONSOLE_SCREEN_BUFFER_INFO Logger::csbi = {};
+WORD Logger::wAttributes = {};
 unsigned int Logger::filter = 0;
 std::ofstream Logger::file;
 bool Logger::writeToFile = true;
@@ -15,15 +16,12 @@ void Logger::init()
 	hstdin = GetStdHandle(STD_INPUT_HANDLE);
 	hstdout = GetStdHandle(STD_OUTPUT_HANDLE);
 
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
 	// Remember how things were when we started
 	GetConsoleScreenBufferInfo(hstdout, &csbi);
+	wAttributes = csbi.wAttributes;
 
 	file.open(PATH_TO_LOG_FILE);
-}
-
-void Logger::destroy()
-{
-	file.close();
 }
 
 void Logger::setFilter(unsigned int filterTypes)
@@ -34,6 +32,24 @@ void Logger::setFilter(unsigned int filterTypes)
 void Logger::logToFile(bool toFile)
 {
 	writeToFile = toFile;
+}
+
+void Logger::startColorPass(CONSOLE_COLOR color)
+{
+	// Set current console color.
+	SetConsoleTextAttribute(hstdout, color);
+}
+
+void Logger::endColorPass()
+{	
+	// Reset console color.
+	FlushConsoleInputBuffer(hstdin);
+	SetConsoleTextAttribute(hstdout, wAttributes);
+}
+
+Logger::~Logger()
+{
+	file.close();
 }
 
 bool Logger::shouldPrint(TYPE type)

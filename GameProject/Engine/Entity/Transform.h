@@ -28,6 +28,8 @@ public:
 	glm::vec3 getPosition() const;
 	//Get radians of rotation around itself
 	glm::vec3 getRotation() const;
+	//Get rotation quaternion
+	glm::quat getRotationQuat() const;
 	//Get scaling factor
 	glm::vec3 getScale() const;
 	//Get forward vector
@@ -36,7 +38,13 @@ public:
 	glm::vec3 getRight() const;
 	//Get up vector
 	glm::vec3 getUp() const;
-	
+
+	glm::vec3 getYawPitchRoll() const;
+
+	glm::vec3 getDefaultForward() const;
+
+	void setRotationQuat(const glm::quat& newQuat);
+
 	/*
 		get status if transform has been changed, reset status if it has.
 	*/
@@ -47,14 +55,16 @@ public:
 	Any function without the 'set' prefix applies a relative transformation
 	*/
 
-	//Rotate model matrix (x,y,z) radians around its position.
+	// Orients transform around itself
 	void rotate(const glm::vec3& rotation);
-	//Rotate world matrix (x,y,z) radians around given (x,y,z) position.
+	// Rotate position by (x,y,z) radians around given (x,y,z) center
 	void rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter);
 	//Rotate around given axis
 	void rotateAxis(const float& radians, const glm::vec3& axis);
 	//Set the rotation by (x,y,z)
 	void setRotation(const glm::vec3& rotation);
+	//Set the rotation quat
+	void setRotation(const glm::quat& rotation);
 	//Translate from current position plus given vector
 	void translate(const glm::vec3& vector);
 	//Set world position
@@ -71,4 +81,7 @@ public:
 	void setForward(const glm::vec3& forward);
 
 	void rotate(const float yaw, const float pitch, const float roll = 0.0f);
+
+	// Remove roll
+	void resetRoll();
 };

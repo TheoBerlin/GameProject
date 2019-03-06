@@ -7,7 +7,6 @@
 #include <Game/Level/Level.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/AssetManagement/ModelLoader.h>
-#include <Utils/Logger.h>
 
 #include <fstream>
 #include <iostream>
@@ -26,12 +25,32 @@ private:
 	void readEntityBoxes(Level& level);
 	void readEntityWalls(Level& level);
 	void readEntityFloor(Level& level);
+	void readPlayer(Level& level);
+	void readMetadata(Level& level);
 
-	void readPosition(json::json& file, Entity* entity, glm::vec3& position);
+	void readVec3(json::json& file, glm::vec3& vec);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
+	void readCameraSetting(json::json& file, CameraSetting& camera);
+
+	template <class T>
+	T readValue(json::json& file, std::string value);
+
+	void createCollisionBodies(Level& level);
 
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
 	void readLevel(std::string file, Level& level);
 
 };
+
+template<class T>
+inline T LevelParser::readValue(json::json & file, std::string value)
+{
+	if (!file[value].empty()) {
+		return file[value];
+	}
+	else {
+		printf("Value of %s not found in level!", value.c_str());
+		return T();
+	}
+}

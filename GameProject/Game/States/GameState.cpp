@@ -4,34 +4,57 @@
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/GUI/GUI.h>
+#include <Engine/Rendering/GUIRenderer.h>
 
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Engine/InputHandler.h>
 
-#include <Game/GameLogic/TargetManager.h>
+#include <Engine/Collision/CollisionConfig.h>
 
-GameState::GameState()
+#include <Game/GameLogic/TargetManager.h>
+#include "Game/components/ArrowGuider.h"
+
+#include "Game/States/PauseState.h"
+
+#include "Engine/Config.h"
+
+GameState::GameState(const std::string& levelJSON)
 {
 	Level level;
 
 	targetManager = new TargetManager();
 
-	level.entityManager = &this->getEntityManager();
+	EntityManager* entityManager = &this->getEntityManager();
+	level.entityManager = entityManager;
 	level.targetManager = targetManager;
+	level.collisionHandler = &this->collisionHandler;
+	level.gui = &this->getGUI();
+	level.replaySystem = &this->replaySystem;
+	level.scoreManager = &this->scoreManager;
 
-	levelParser.readLevel("./Game/Level/level.json", level);
+	levelParser.readLevel(levelJSON, level);
 
 	gameLogic.init(level);
 
 	Display::get().getRenderer().initInstancing();
 
 	InputHandler ih(Display::get().getWindowPtr());
+
+	//For pause event
+	this->hasSubscribedToPause = false;
+
 }
 
 GameState::~GameState()
 {
 	delete targetManager;
+
+	Display::get().getRenderer().clearRenderingModels();
+
+	// Delete all loaded models
+	ModelLoader::unloadAllModels();
 }
 
 void GameState::start()
@@ -54,12 +77,26 @@ void GameState::end()
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->detachFromModel();
+
+	EventBus::get().unsubscribe(this, &GameState::pauseGame);
+	this->hasSubscribedToPause = false;
 }
 
 void GameState::update(const float dt)
 {
+	if (!this->hasSubscribedToPause) {
+		//Pause game event
+		EventBus::get().subscribe(this, &GameState::pauseGame);
+		this->hasSubscribedToPause = true;
+	}
+
+	// Update gamelogic
+	this->gameLogic.update(dt);
+
+	// Update entities.
 	EntityManager& entityManager = this->getEntityManager();
 	std::vector<Entity*>& entities = entityManager.getAll();
+
 	for (Entity* entity : entities)
 		entity->update(dt);
 	if (entityManager.getTracedEntity("Player") != nullptr) {
@@ -67,32 +104,56 @@ void GameState::update(const float dt)
 		SoundManager::get().setListenerOrientation(entityManager.getTracedEntity("Player")->getTransform()->getForward(), entityManager.getTracedEntity("Player")->getTransform()->getUp());
 		std::cout << SoundManager::get().getListenerPosition().x << ":" << SoundManager::get().getListenerPosition().y << ":" << SoundManager::get().getListenerPosition().z << std::endl;
 	}
+
+	ParticleManager::get().update(dt);
+
+	for (unsigned int i = 0; i < entities.size(); i += 1) {
+		entities[i]->update(dt);
+	}
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(dt);
 }
 
 void GameState::updateLogic(const float dt)
 {
-	
+	this->collisionHandler.checkCollision();
 }
 
 void GameState::render()
 {
-	//EntityManager& entityManager = this->getEntityManager();
-	//std::vector<Entity*>& entities = entityManager.getAll();
-
+	/*
+	EntityManager& entityManager = this->getEntityManager();
+	std::vector<Entity*>& entities = entityManager.getAll();
+	*/
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
-	
-	/*
-		Old rendering
-	*/
-
-	/*for (Entity* entity : entities)
-		renderer.push(entity);
-	renderer.drawAll();*/
-
 
 	/*
 		New rendering
 	*/
 	renderer.drawAllInstanced();
+
+#ifdef ENABLE_COLLISION_DEBUG_DRAW
+	this->collisionHandler.updateDrawingData();
+	this->collisionHandler.drawCollisionBoxes();
+#endif
+
+	// Draw gui elements.
+	GUIRenderer& guiRenderer = display.getGUIRenderer();
+	GUI& gui = this->getGUI();
+	guiRenderer.draw(gui);
+}
+
+void GameState::pauseGame(KeyEvent * ev)
+{
+	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
+
+		this->pushState(new PauseState());
+	}
 }

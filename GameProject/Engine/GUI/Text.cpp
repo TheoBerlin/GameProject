@@ -3,12 +3,12 @@
 #include "Utils/Logger.h"
 #include "../Rendering/GUIRenderer.h"
 
-Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), scale(2.0f)
+Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 {
 	this->font = nullptr;
 }
 
-Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), scale(2.0f)
+Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 {
 	setText(str, font);
 }
@@ -20,6 +20,7 @@ Text::~Text()
 void Text::setColor(const glm::vec4 & color)
 {
 	this->color = color;
+	this->shouldUpdate = true;
 }
 
 bool Text::setText(const std::string & str, Font * font)
@@ -42,27 +43,29 @@ bool Text::setText(const std::string & str, Font * font)
 	// Only update text if the string or the font is different.
 	if (this->str != str || isFontDifferent)
 	{
+		this->shouldUpdate = true;
+
 		// Clear character set.
 		this->charactersDrawData.clear();
 		this->str = str;
 
-		this->width = 0.0f;
-		this->height = 0.0f;
+		this->width = 0;
+		this->height = 0;
 
-		float min = 0.0f;
-		this->bearingY = 0.0f;
+		unsigned int min = 0;
+		this->bearingY = 0;
 
 		// Loop through all characters and calculate their position and scale.
-		float x = 0.0f;
+		int x = 0;
 		const char* c;
 		for (c = str.c_str(); *c; c++)
 		{
 			Font::Character character = this->font->getCharacter(*c);
 
-			float x2 = x + character.bearingX;
-			float y2 = -character.height + character.bearingY;
-			float w = character.width;
-			float h = character.height;
+			int x2 = x + (int)character.bearingX;
+			int y2 = -(int)character.height + (int)character.bearingY;
+			unsigned int w = character.width;
+			unsigned int h = character.height;
 			this->width = w;
 
 			// Save the highest and the lowest distances to the line.
@@ -73,48 +76,36 @@ bool Text::setText(const std::string & str, Font * font)
 
 			CharacterDrawData characterData;
 			characterData.pos = { x2, y2 };
-			characterData.scale = { w, h };
+			characterData.size = { w, h };
 			characterData.textureID = character.textureID;
 			this->charactersDrawData.push_back(characterData);
 
-			x += (character.advance >> 6);
+			if(*(c+1))
+				x += (int)(character.advance >> 6);
 		}
-		this->width += x;
+		this->width += (unsigned int)x;
 		this->height = min + this->bearingY;
 		return true;
 	}
 	return false;
 }
 
-void Text::updateText(const std::string & str, float scale, Font * font)
+void Text::updateText(const std::string & str, Font * font)
 {
-	if (setText(str, font))
+	setText(str, font);
+}
+
+void Text::rebake()
+{
+	if (this->shouldUpdate)
 	{
 		Display& display = Display::get();
 		GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 		guiRenderer.prepareTextRendering();
-		guiRenderer.bakeText(*this, scale);
+		guiRenderer.bakeText(*this);
+		this->shouldUpdate = false;
 	}
-}
-
-void Text::update()
-{
-	Display& display = Display::get();
-	GUIRenderer& guiRenderer = display.getGUIRenderer();
-
-	guiRenderer.prepareTextRendering();
-	guiRenderer.bakeText(*this, this->scale);
-}
-
-void Text::setScale(float scale)
-{
-	this->scale = scale;
-}
-
-float Text::getScale() const
-{
-	return this->scale;
 }
 
 glm::vec4 Text::getColor() const
@@ -122,17 +113,17 @@ glm::vec4 Text::getColor() const
 	return this->color;
 }
 
-float Text::getWidth() const
+unsigned int Text::getWidth() const
 {
 	return this->width;
 }
 
-float Text::getHeight() const
+unsigned int Text::getHeight() const
 {
 	return this->height;
 }
 
-float Text::getBearingY() const
+unsigned int Text::getBearingY() const
 {
 	return this->bearingY;
 }
@@ -160,4 +151,9 @@ void Text::setFont(Font * font)
 std::vector<Text::CharacterDrawData>& Text::getCharactersDrawData()
 {
 	return this->charactersDrawData;
+}
+
+bool Text::hasUpdated() const
+{
+	return this->shouldUpdate;
 }

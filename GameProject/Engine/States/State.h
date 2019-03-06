@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Entity/EntityManager.h"
+#include "../GUI/GUI.h"
 
 class StateManager;
 class State
@@ -32,12 +33,14 @@ public:
 	/*
 	Pop state from stack. Can not pop in destructor.
 	*/
-	void popState();
+	void popState(unsigned popAmount = 1);
 
 	StateManager& getStateManager();
 	EntityManager& getEntityManager();
+	GUI& getGUI();
 
 private:
 	StateManager* stateManager;
 	EntityManager entityManager;
+	GUI gui;
 };

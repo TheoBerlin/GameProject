@@ -1,5 +1,7 @@
 #include "PathVisualizer.h"
 
+#include <Utils/Logger.h>
+
 PathVisualizer::PathVisualizer(Entity* host, EntityManager* em)
     :Component(host, "PathVisualizer")
 {
@@ -47,4 +49,6 @@ void PathVisualizer::removeVisualizers()
             }
         }
     }
+
+    pathCount = 0;
 }

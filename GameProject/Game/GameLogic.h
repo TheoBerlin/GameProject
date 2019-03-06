@@ -5,7 +5,10 @@
 #include "Engine/Events/Events.h"
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Level/Level.h>
+#include <Game/GameLogic/Phases/Phase.h>
 #include "glm/glm.hpp"
+
+class CollisionHandler;
 
 class GameLogic
 {
@@ -14,26 +17,15 @@ public:
 	void init(Level& level);
 	~GameLogic();
 
-	enum Phases { PHASE_OVERVIEW, PHASE_GUIDING, PHASE_REPLAY };
-	void changePhase(Phases phase);
-
-	void enterOverviewPhase(const glm::vec3 & cameraPos, const glm::vec3 & cameraDir);
-	void enterGuidingPhase(const glm::vec3 & playerPos);
-	void enterReplayPhase(const glm::vec3 & arrowPos);
-
-	void leaveOverviewPhase();
-	void leaveGuidingPhase();
-	void leaveReplayPhase();
+	virtual void update(const float& dt);
 
 private:
-	void changePhaseCallback(KeyEvent * ev);
+	void changePhaseCallback(PhaseChangeEvent * event);
 
-	Phases currentPhase;
+	// Used for camera transitions
+	Entity* phaseTransitionEntity;
 
-	Entity* camera;
-	Entity* player;
+	Level level;
 
-	EntityManager* em;
-	TargetManager* targetManager;
+	Phase* phase;
 };
-

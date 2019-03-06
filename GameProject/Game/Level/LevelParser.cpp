@@ -5,6 +5,8 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
+#include <Utils/Logger.h>
+#include <Utils/Utils.h>
 
 void LevelParser::readEntityTargets(Level& level)
 {
@@ -13,7 +15,7 @@ void LevelParser::readEntityTargets(Level& level)
 	int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -29,7 +31,7 @@ void LevelParser::readEntityTargets(Level& level)
 			entity = level.entityManager->addTracedEntity(name);
 
 			if (!target["Position"].empty()) {
-				readPosition(target, entity, position);
+				readVec3(target["Position"], position);
 			} else if (!target["Path"].empty()) {
 				readPath(target, entity, path);
 			}
@@ -47,6 +49,24 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 
 		entity->setModel(model);
+		std::vector<CollisionHandler::ShapeData> shapeData;
+
+		// If no spcific data than this will be used.
+		CollisionHandler::ShapeData droneData;
+		droneData.category = CATEGORY::DRONE_BODY;
+		droneData.scale = entity->getTransform()->getScale();
+		droneData.localScale = glm::vec3(0.8f);
+		shapeData.push_back(droneData);
+
+		// Eye of the drone.
+		CollisionHandler::ShapeData droneEyeData;
+		droneEyeData.category = CATEGORY::DRONE_EYE;
+		droneEyeData.scale = entity->getTransform()->getScale();
+		droneEyeData.localScale = glm::vec3(0.8f);
+		droneEyeData.name = "Eye";
+		shapeData.push_back(droneEyeData);
+		
+		level.collisionHandler->addCollisionToEntity(entity, shapeData, false);
 	}
 }
 
@@ -57,7 +77,7 @@ void LevelParser::readEntityBoxes(Level& level)
 	int targetSize = jsonFile["Boxes"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/Cube.fbx");
+		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -71,7 +91,7 @@ void LevelParser::readEntityBoxes(Level& level)
 			entity = level.entityManager->addEntity();
 
 			if (!box["Position"].empty()) {
-				readPosition(box, entity, position);
+				readVec3(box["Position"], position);
 			}
 		} else {
 			LOG_ERROR("An object is missing a name or name is not a string");
@@ -79,8 +99,9 @@ void LevelParser::readEntityBoxes(Level& level)
 		}
 
 		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setScale(0.25f);
+		entity->getTransform()->setScale(0.5f);
 		entity->setModel(model);
+		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 	}
 }
 
@@ -92,7 +113,7 @@ void LevelParser::readEntityWalls(Level& level)
 void LevelParser::readEntityFloor(Level& level)
 {
 	Model *model = nullptr;
-	model = ModelLoader::loadModel("./Game/assets/floor.fbx");
+	model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
 
 	Entity* entity;
 	glm::vec3 position;
@@ -102,30 +123,48 @@ void LevelParser::readEntityFloor(Level& level)
 	entity = level.entityManager->addEntity();
 
 	if (!floor["Position"].empty()) {
-		readPosition(floor, entity, position);
+		readVec3(floor["Position"], position);
 	}
 
 	entity->getTransform()->setPosition(position);
 	entity->setModel(model);
+	level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 }
 
-void LevelParser::readPosition(json::json& file, Entity* entity, glm::vec3& position)
+void LevelParser::readPlayer(Level& level)
+{
+	json::json& player = jsonFile["Player"];
+
+	readCameraSetting(player["OversightCamera"], level.player.oversightCamera);
+	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
+	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
+}
+
+void LevelParser::readMetadata(Level& level)
+{
+	json::json& metadata = jsonFile["Metadata"];
+
+	// Read optimal time for scoreManager
+	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
+}
+
+void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 {
 	// Iterate through position components
 	for (int j = 0; j < 3; j++) {
 		// If object exists go ahead otherwise write a default position
-		if (!file["Position"][j].empty()) {
+		if (!file[j].empty()) {
 			try {
-				position[j] = file["Position"][j];
+				vec[j] = file[j];
 			}
 			catch (const std::exception& e) {
-				LOG_ERROR("'%s' : %s", entity->getName().c_str(), e.what());
+				LOG_ERROR("Failed to read vector component: %s", e.what());
 				break;
 			}
 		} else {
-			// Default position
-			position[j] = 0.0;
-			LOG_WARNING("Did not find Position component %d (0=X, 1=Y, 2=Z) value at '%s', defaulting to 0", j, entity->getName().c_str());
+			// Default component
+			vec[j] = 1.0f;
+			LOG_WARNING("Did not find Vec3 component %d (0=X, 1=Y, 2=Z), defaulting to 1", j);
 		}
 	}
 }
@@ -139,7 +178,7 @@ void LevelParser::readPath(json::json& file, Entity* entity, std::vector<KeyPoin
 	for (unsigned int pointIndex = 0; pointIndex < pathSize; pointIndex += 1) {
 		// Read position
 		if (!file["Path"][pointIndex]["Position"].empty()) {
-			readPosition(file["Path"][pointIndex], entity, keyPoint.Position);
+			readVec3(file["Path"][pointIndex]["Position"], keyPoint.Position);
 		}
 
 		// Read time
@@ -153,6 +192,34 @@ void LevelParser::readPath(json::json& file, Entity* entity, std::vector<KeyPoin
 
 		path.push_back(keyPoint);
 	}
+}
+
+void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
+{
+	readVec3(file["Position"], camera.position);
+	readVec3(file["Direction"], camera.direction);
+	readVec3(file["Offset"], camera.offset);
+
+	// Read FOV
+	try {
+		camera.FOV = file["FOV"];
+	}
+	catch (const std::exception& e) {
+		LOG_ERROR("Failed to FOV: %s", e.what());
+		camera.FOV = 75.0f;
+	}
+
+	camera.direction = glm::normalize(camera.direction);
+}
+
+void LevelParser::createCollisionBodies(Level& level)
+{
+	// Start at 1 to give space for a player later on.
+	int bodiesNeeded = 2;
+	bodiesNeeded += jsonFile["Target"].size();
+	bodiesNeeded += jsonFile["Boxes"].size();
+
+	level.collisionHandler->createCollisionBodies(bodiesNeeded);
 }
 
 void LevelParser::readLevel(std::string file, Level& level)
@@ -169,10 +236,18 @@ void LevelParser::readLevel(std::string file, Level& level)
 			return;
 		}
 
+		// Read metadata
+		readMetadata(level);
+
+		// Create collision bodies to collisionHandler
+		createCollisionBodies(level);
+
+		// Add entites to entityManager
 		readEntityTargets(level);
 		readEntityBoxes(level);
 		readEntityWalls(level);
 		readEntityFloor(level);
+		readPlayer(level);
 	}
 	else
 	{
