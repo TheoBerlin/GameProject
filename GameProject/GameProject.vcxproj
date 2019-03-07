@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
     <ClCompile Include="Engine\Collision\CollisionRenderer.cpp" />
@@ -45,7 +46,6 @@
     <ClCompile Include="Engine\Components\Component.cpp" />
     <ClCompile Include="Engine\Components\FreeMove.cpp" />
     <ClCompile Include="Engine\Components\PlayerCollision.cpp" />
-    <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
     <ClCompile Include="Engine\Entity\Transform.cpp" />
     <ClCompile Include="Engine\Entity\Entity.cpp" />
     <ClCompile Include="Engine\Entity\EntityManager.cpp" />
@@ -95,15 +95,21 @@
     <ClCompile Include="Game\Game.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
-    <ClCompile Include="Game\States\PauseState.cpp" />
+    <ClCompile Include="Game\Level\LevelStructure.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlanePrePassShader.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
+    <ClCompile Include="Game\States\PauseState.cpp" />
+
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
     <ClCompile Include="Utils\Timer.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\WallShader.cpp" />
     <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
     <ClInclude Include="Engine\Collision\CollisionConfig.h" />
@@ -123,9 +129,6 @@
     <ClInclude Include="Engine\GUI\GUI.h" />
     <ClInclude Include="Engine\GUI\Panel.h" />
     <ClInclude Include="Engine\GUI\Text.h" />
-    <ClInclude Include="Engine\GUI\ScrollPanel\List.h" />
-    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollPanel.h" />
-    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollBar.h" />
     <ClInclude Include="Engine\Imgui\imconfig.h" />
     <ClInclude Include="Engine\Imgui\imgui.h" />
     <ClInclude Include="Engine\Imgui\imgui_impl_glfw.h" />
@@ -139,7 +142,6 @@
     <ClInclude Include="Engine\Components\Component.h" />
     <ClInclude Include="Engine\Components\FreeMove.h" />
     <ClInclude Include="Engine\Components\PlayerCollision.h" />
-    <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
     <ClInclude Include="Engine\Entity\Transform.h" />
     <ClInclude Include="Engine\IGame.h" />
     <ClInclude Include="Engine\Particle\ParticleEmitter.h" />
@@ -161,8 +163,6 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
     <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
-    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.h" />
-    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
     <ClInclude Include="Engine\States\State.h" />
@@ -195,11 +195,19 @@
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Game\States\PauseState.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\List.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollPanel.h" />
+    <ClInclude Include="Engine\GUI\ScrollPanel\ScrollBar.h" />
+    <ClInclude Include="Game\Level\LevelStructure.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlanePrePassShader.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Utils\Logger.h" />
     <ClInclude Include="Utils\stb_image.h" />
     <ClInclude Include="Utils\Timer.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\WallShader.h" />
     <ClInclude Include="Utils\Utils.h" />
   </ItemGroup>
   <ItemGroup>

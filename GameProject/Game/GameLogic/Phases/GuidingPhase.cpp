@@ -23,6 +23,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     arrowGuider->startGuiding();
 
     level.targetManager->resetTargets();
+	level.targetManager->pauseMovingTargets();
 
 	/*
 	Do stuff when collision happens
@@ -63,7 +64,7 @@ ArrowGuider* GuidingPhase::getArrowGuider() const
 
 float GuidingPhase::getFlightTime()
 {
-    return flightTimer;
+    return flightTime;
 }
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)
@@ -117,6 +118,7 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
     EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
 
 	level.collisionHandler->removeCollisionBody(this->playerArrow);
+	level.targetManager->unpauseMovingTargets();
 
     Phase* guidingPhase = new ReplayPhase(this);
     changePhase(guidingPhase);

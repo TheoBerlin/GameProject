@@ -18,6 +18,7 @@ public:
     void update(const float& dt);
 
     void setPath(const std::vector<KeyPoint>& path);
+	KeyPoint& getKeyPoint(unsigned int index);
 
     // Start or restart path treading from the beginning
     void startTreading();
@@ -26,7 +27,6 @@ public:
 private:
     bool isTreading;
 
-    void linearTread();
     void catmullRomTread();
 
     std::vector<KeyPoint> path;
