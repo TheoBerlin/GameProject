@@ -35,6 +35,7 @@ void ReplaySystem::update(const float& dt)
 			dynamic_cast<Explosion*>(explosionComponent)->explode(2.0, elapsedTime);
 		}
 
+		collisions[collisionIndex].event.phase = PlayerCollisionEvent::REPLAY_PHASE;
         EventBus::get().publish(&collisions[collisionIndex].event);
 
         collisionIndex += 1;
