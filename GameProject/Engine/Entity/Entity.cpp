@@ -7,7 +7,6 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 	transform.setForward(forward);
 
 	this->renderingGroupIndex = -1;
-	this->hasSeparatedTransforms = false;
 	this->model = nullptr;
 }
 
@@ -28,10 +27,6 @@ void Entity::update(const float dt)
 	for (auto& it : this->components)
 		it.second->update(dt);
 
-	// Save the current transform if not separated.
-	if (!this->hasSeparatedTransforms)
-		this->pausedTransform = this->transform;
-
 	/*
 		Updates vertex buffer of model, if it exists and a component has moved the entity
 	*/
@@ -44,11 +39,12 @@ void Entity::update(const float dt)
 			rp3d::Quaternion newRot;
 			glm::quat q = this->transform.getRotationQuat();
 			newRot.setAllValues(q.x, q.y, q.z, q.w);
-
 			rp3d::Transform transform(newPos, newRot);
 			this->body->setTransform(transform);
 		}
 	}
+
+
 }
 
 bool Entity::addComponent(Component * component)
@@ -158,28 +154,7 @@ const std::string Entity::getName()
 
 Transform * Entity::getTransform()
 {
-	return &this->transform;
-}
-
-Transform * Entity::getPausedTransform()
-{
-	return &this->pausedTransform;
-}
-
-void Entity::pauseModelTransform()
-{
-	this->hasSeparatedTransforms = true;
-	this->pausedTransform = this->transform;
-}
-
-void Entity::unpauseModelTransform()
-{
-	this->hasSeparatedTransforms = false;
-}
-
-bool Entity::isTransformSeparated() const
-{
-	return this->hasSeparatedTransforms;
+	return &transform;
 }
 
 void Entity::setCollisionBody(rp3d::CollisionBody * body)

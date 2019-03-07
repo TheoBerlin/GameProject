@@ -30,10 +30,6 @@ public:
     void addStaticTarget(Entity* host, const glm::vec3& position);
     void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
 
-	// Separate the transform from the model. (Pause the model)
-	void pauseMovingTargets();
-	void unpauseMovingTargets();
-
     // Reset target components such as the path treader
     void resetTargets();
 

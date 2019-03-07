@@ -96,11 +96,7 @@ void Model::updateInstancingSpecificData(unsigned renderingGroupIndex)
 	size_t amount = this->renderingGroup.size();
 	glm::mat4* matrix = new glm::mat4;
 
-	// If entity is separated, use the saved transformation, else use the current transform from the entity.
-	if (this->renderingGroup[renderingGroupIndex]->isTransformSeparated())
-		this->renderingGroup[renderingGroupIndex]->getPausedTransform()->getMatrix(matrix);
-	else
-		this->renderingGroup[renderingGroupIndex]->getTransform()->getMatrix(matrix);
+	this->renderingGroup[renderingGroupIndex]->getTransform()->getMatrix(matrix);
 
 	for (size_t i = 0; i < this->meshCount(); i++)
 	{

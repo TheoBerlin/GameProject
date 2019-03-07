@@ -42,19 +42,13 @@ public:
 		Detaches entity from model, entity keeps models but stops being drawn
 	*/
 	void detachFromModel();
-	
+		
 	void setRenderingGroupIndex(unsigned index);
 	unsigned getRenderingGroupIndex();
 
 	void setName(const std::string& name);
 	const std::string getName();
 	Transform* getTransform();
-	Transform* getPausedTransform();
-	
-	void pauseModelTransform();
-	void unpauseModelTransform();
-
-	bool isTransformSeparated() const;
 
 	void setCollisionBody(reactphysics3d::CollisionBody* body);
 	reactphysics3d::CollisionBody* getCollisionBody() const;
@@ -64,9 +58,6 @@ private:
 
 	std::string name;
 	Transform transform;
-	Transform pausedTransform;
-
-	bool hasSeparatedTransforms;
 
 	/*
 		Used to identify position in models renderingGroup, so entites can remove themselves from being rendered. -1 indicates not model attached

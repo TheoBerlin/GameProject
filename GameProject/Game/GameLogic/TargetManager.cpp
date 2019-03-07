@@ -61,29 +61,6 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
     movingTargets.push_back(movingTarget);
 }
 
-void TargetManager::pauseMovingTargets()
-{
-	for (MovingTarget& t : this->movingTargets) {
-		Entity* targetHost = t.rollNullifier->getHost();
-
-		Transform* transform = targetHost->getTransform();
-
-		glm::vec3 p1 = t.pathTreader->getKeyPoint(0).Position;
-		glm::vec3 p2 = t.pathTreader->getKeyPoint(1).Position;
-		
-		transform->setForward(glm::normalize(p2 - p1));
-		transform->setPosition(p1);
-		transform->resetRoll();
-		targetHost->pauseModelTransform();
-	}
-}
-
-void TargetManager::unpauseMovingTargets()
-{
-	for (MovingTarget& t : this->movingTargets)
-		t.rollNullifier->getHost()->unpauseModelTransform();
-}
-
 void TargetManager::resetTargets()
 {
 	// Moving targets
@@ -143,9 +120,7 @@ void TargetManager::resetMovingAnimations()
 	unsigned int movingTargetCount = movingTargets.size();
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
-		Entity* targetHost = movingTargets.at(i).pathTreader->getHost();
         movingTargets.at(i).pathTreader->startTreading();
-		targetHost->getTransform()->resetRoll();
     }
 }
 
