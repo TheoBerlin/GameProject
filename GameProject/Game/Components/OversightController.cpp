@@ -16,6 +16,9 @@ OversightController::OversightController(Entity* host)
 
     windowHeight = Display::get().getHeight();
 
+    // Lock mouse and get mouse position
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     double cursorPos;
     glfwGetCursorPos(Display::get().getWindowPtr(), &cursorPos, nullptr);
 

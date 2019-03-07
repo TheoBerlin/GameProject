@@ -1,5 +1,5 @@
+#define GLM_FORCE_SWIZZLE
 #include "Transform.h"
-#include <glm/gtx/vector_angle.hpp>
 
 Transform::Transform()
 {
@@ -37,6 +37,11 @@ glm::vec3 Transform::getPosition() const
 	return position;
 }
 
+glm::vec3 Transform::getRotation() const
+{
+	return glm::eulerAngles(rotationQuat);
+}
+
 glm::quat Transform::getRotationQuat() const
 {
 	return this->rotationQuat;
@@ -69,19 +74,28 @@ glm::vec3 Transform::getYawPitchRoll() const
 	// Calculate yaw
 	glm::vec3 temp = glm::normalize(glm::vec3(this->f.x, defaultForward.y, this->f.z));
 
-	yawPitchRoll.x = glm::orientedAngle(defaultForward, temp, GLOBAL_UP_VECTOR);
+	yawPitchRoll.x = std::acosf(glm::dot(defaultForward, temp));
+
+	// Determine yaw sign
+	temp = glm::cross(defaultForward, this->f);
+
+	yawPitchRoll.x = (temp.y > 0.0f) ? yawPitchRoll.x : -yawPitchRoll.x;
 
 	// Calculate pitch
-	temp = glm::normalize(glm::vec3(this->f.x, 0.0f, this->f.z));
+	temp = glm::normalize(glm::vec3(defaultForward.x, this->f.y, defaultForward.z));
 
-	yawPitchRoll.y = glm::orientedAngle(temp, this->f, this->r);
+	yawPitchRoll.y = std::acosf(glm::dot(defaultForward, temp));
+
+	// Determine pitch sign
+	yawPitchRoll.y = (this->f.y > defaultForward.y) ? yawPitchRoll.y : -yawPitchRoll.y;
 
 	// Calculate roll
-	glm::vec3 horizontalRight = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
-	temp = glm::normalize(glm::cross(horizontalRight, this->f));
+	temp = glm::normalize(glm::vec3(this->r.x, 0.0f, this->r.z));
+
+	yawPitchRoll.z = std::acosf(glm::dot(this->r, temp));
 
 	// Determine roll sign
-	yawPitchRoll.z = glm::orientedAngle(temp, this->u, this->f);
+	yawPitchRoll.z = (this->r.y < 0.0f) ? yawPitchRoll.z : -yawPitchRoll.z;
 
 	return yawPitchRoll;
 }
@@ -148,13 +162,13 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 
 void Transform::setRotation(const glm::vec3 &rotation)
 {
-	this->rotationQuat = glm::quat_cast(glm::mat4(1.0f));
+	rotationQuat = glm::quat(rotation);
 
 	this->f = rotationQuat * defaultForward;
-	this->r = rotationQuat * glm::cross(defaultForward, GLOBAL_UP_VECTOR);
-	this->u = rotationQuat * GLOBAL_UP_VECTOR;
+	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->u = glm::cross(this->r, this->f);
 
-	this->rotate(rotation.x, rotation.y, rotation.z);
+	this->isUpdated = true;
 }
 
 void Transform::translate(const glm::vec3& vector)

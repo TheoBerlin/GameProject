@@ -43,6 +43,8 @@ public:
 
 	glm::vec3 getDefaultForward() const;
 
+	void setRotationQuat(const glm::quat& newQuat);
+
 	/*
 		get status if transform has been changed, reset status if it has.
 	*/
@@ -59,10 +61,10 @@ public:
 	void rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter);
 	//Rotate around given axis
 	void rotateAxis(const float& radians, const glm::vec3& axis);
-	//Set the rotation by (yaw, pitch, roll)
-	void setRotation(const glm::vec3& yawPitchRoll);
+	//Set the rotation by (x,y,z)
+	void setRotation(const glm::vec3& rotation);
 	//Set the rotation quat
-	void setRotationQuat(const glm::quat& newQuat);
+	void setRotation(const glm::quat& rotation);
 	//Translate from current position plus given vector
 	void translate(const glm::vec3& vector);
 	//Set world position
