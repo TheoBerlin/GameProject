@@ -89,11 +89,11 @@ void ReplayPhase::update(const float& dt)
 
         float replayProgress = replayTime/flightTime;
 
+		// Set timeBarFront and timeBarSlider new position
         glm::uvec2 timeBarSize = {1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight};
-        timeBarFront->setSize(timeBarSize);
+		timeBarFront->setOption(GUI::FLOAT_RIGHT, (int)timeBarFront->getSize().y - (int)timeBarSize.x);
 
-        glm::uvec2 sliderPos = {timeBarSidePadding * screenWidth + timeBarSize.x - sliderSize.x / 2, screenHeight * timeBarBottomPadding};
-        timeBarSlider->setPosition(sliderPos);
+		timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
     }
 
 	if (replayTime > flightTime && !level.scoreManager->resultsVisible())
@@ -133,9 +133,7 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
         level.replaySystem->stopReplaying();
 
         // Remove GUI elements
-        level.gui->removePanel(timeBarSlider);
-        level.gui->removePanel(timeBarFront);
-        level.gui->removePanel(timeBarBack);
+		level.gui->removePanel(backPanel);
 
         // Begin camera transition to the arrow
         CameraSetting currentCamSettings;
@@ -165,6 +163,7 @@ void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
+	backPanel = new Panel();
     timeBarBack = new Button();
     timeBarFront = new Panel();
 
@@ -174,22 +173,26 @@ void ReplayPhase::setupGUI()
 
     glm::uvec2 timeBarPos = {screenWidth * timeBarSidePadding, screenHeight * timeBarBottomPadding};
 
-    timeBarBack->setPosition(timeBarPos);
-    timeBarFront->setPosition(timeBarPos);
+	timeBarBack->setOption(GUI::FIT_X);
+	timeBarBack->setOption(GUI::FIT_Y);
+	backPanel->setPosition(timeBarPos);
 
     // Size the time bars so that the back panel covers nearly the entire width
     // and the front panel is invisible
     glm::uvec2 timeBarSize = {screenWidth * (1 - timeBarSidePadding * 2), timeBarHeightFactor * screenHeight};
     timeBarBack->setSize(timeBarSize);
+	backPanel->setSize(timeBarSize);
 
     // Make the front time bar to be as small as possible
-    timeBarSize.x = 1;
     timeBarFront->setSize(timeBarSize);
+	timeBarFront->setOption(GUI::FLOAT_LEFT);
 
     // Set panel visuals
     timeBarBack->setNormalColor(timeBarBackColor);
     timeBarBack->setHoverColor(timeBarBackColor);
     timeBarBack->setPressedColor(timeBarBackColor);
+
+	backPanel->setColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
     timeBarFront->setColor(timeBarFrontColor);
 
@@ -197,8 +200,8 @@ void ReplayPhase::setupGUI()
     timeBarBack->setCallback([this](void) {handleTimeBarClick();});
 
     // Add panels to GUI
-    level.gui->addPanel(timeBarBack);
-    level.gui->addPanel(timeBarFront);
+	backPanel->addChild(timeBarBack);
+	backPanel->addChild(timeBarFront);
 
     // Add slider to time bar
     timeBarSlider = new Panel();
@@ -209,13 +212,16 @@ void ReplayPhase::setupGUI()
     timeBarSlider->setSize(sliderSize);
 
     // Position the slider
-    timeBarSlider->setPosition({timeBarPos.x - sliderSize.x / 2, timeBarPos.y + 20});
+	timeBarSlider->setOption(GUI::FLOAT_LEFT);
 
     // Set button visuals
     timeBarSlider->setColor({1.0f, 1.0f, 1.0f, 1.0f});
 
     // Add button to GUI
-    level.gui->addPanel(timeBarSlider);
+	backPanel->addChild(timeBarSlider);
+
+	// Add the parent panel to level GUI
+	level.gui->addPanel(backPanel);
 }
 
 void ReplayPhase::handleTimeBarClick()
