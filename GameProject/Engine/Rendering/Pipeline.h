@@ -23,6 +23,12 @@ struct RenderingTarget {
 
 	Model* model;
 };
+
+struct DirectionalLight {
+	glm::vec4 direction;
+	glm::vec4 color_intensity;
+};
+
 enum SHADERS {
 	DEFAULT = 0,
 	DRONE_SHADER = 1,	// Requires a third vbo with colors bound to location 7.
