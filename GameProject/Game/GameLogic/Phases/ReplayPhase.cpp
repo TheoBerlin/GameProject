@@ -101,19 +101,18 @@ void ReplayPhase::update(const float& dt)
     }
 
 
-        // Display results when the replay finishes
-        if (replayTime > flightTime && !level.scoreManager->resultsVisible())
-        {
-            // Disable freemove and unlock cursor
-            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    // Display results when the replay finishes
+    if (replayTime > flightTime && !level.scoreManager->resultsVisible())
+    {
+        // Disable freemove and unlock cursor
+        glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-            freeMove->disableMouse();
+        freeMove->disableMouse();
 
-            // Lambda function which executes when retry is pressed
-            std::function<void()> retry = [this](){beginAimTransition();};
+        // Lambda function which executes when retry is pressed
+        std::function<void()> retry = [this](){beginAimTransition();};
 
-            level.scoreManager->showResults(level, retry);
-        }
+        level.scoreManager->showResults(level, retry);
     }
 }
 
@@ -161,8 +160,8 @@ void ReplayPhase::beginAimTransition()
     // Stop replaying playthrough
     level.replaySystem->stopReplaying();
 
-        // Remove GUI elements
-		level.gui->removePanel(backPanel);
+	// Remove GUI elements
+	level.gui->removePanel(backPanel);
 
     // Begin camera transition to the arrow
     CameraSetting currentCamSettings;
