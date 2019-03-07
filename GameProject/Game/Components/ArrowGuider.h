@@ -104,7 +104,7 @@ private:
 
     // Drift camera settings
     // Maximum angle between entity's forward and drift camera's forward
-    const float maxAngleDiff = glm::quarter_pi<float>() / 3.0f;
-    // Maximum forward angle correction per second
-    const float maxAngleCorrection = glm::pi<float>() * 2.5f;//glm::half_pi<float>() / 3.0f;
+    const float maxForwardAngle = glm::quarter_pi<float>() / 3.0f;
+    // Percentage of forward angle being nullified per second
+    const float angleCorrectionFactor = 3.5f;
 };

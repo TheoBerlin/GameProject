@@ -326,20 +326,27 @@ void ArrowGuider::updateCamera(const float& dt, const float& turnFactorsLength)
 
     if (forwardAngle > FLT_EPSILON * 10.0f) {
         // Calculate the angle to rotate the forward by
-        float rotationAngle = glm::min(maxAngleCorrection, forwardAngle) * dt;
+        float rotationAngle;
 
-        if (forwardAngle > maxAngleDiff) {
+        if (forwardAngle > maxForwardAngle) {
             // The angle differential is too large, snap the forward to the maximum allowed forward differential
-            rotationAngle = glm::max(maxAngleCorrection * dt, forwardAngle - maxAngleDiff);
+            rotationAngle = glm::max(angleCorrectionFactor * dt * forwardAngle, forwardAngle - maxForwardAngle);
         } else {
             // Smoothly rotate the forward
-            rotationAngle = glm::min(maxAngleCorrection * dt, forwardAngle);
+            rotationAngle = glm::min(angleCorrectionFactor * dt * forwardAngle, forwardAngle);
         }
 
-        // Rotate camera forward
-        glm::vec3 rotationAxis = glm::cross(camForward, arrowForward);
+        // Limit rotation angle in case of a large dt
+        rotationAngle = glm::min(rotationAngle, forwardAngle);
 
-        camForward = glm::quat(rotationAxis * rotationAngle) * camForward;
+        // Rotate camera forward
+        glm::vec3 rotationAxis = glm::normalize(glm::cross(camForward, arrowForward));
+
+        glm::quat rotation = {1.0f, 0.0f, 0.0f, 0.0f};
+
+        rotation = glm::rotate(rotation, rotationAngle, rotationAxis);
+
+        camForward = rotation * camForward;
     }
 
     // Reposition camera
