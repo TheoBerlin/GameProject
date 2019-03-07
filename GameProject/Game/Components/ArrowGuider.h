@@ -54,10 +54,12 @@ private:
     // Use turn factors to update direction
     void applyTurn(const float& dt);
 
+	float maxSpeedOffset;
 	float movementSpeed;
 	float maxSpeedIncrease;
 	float minSpeedDecrease;
 	float acceleration;
+	bool isAccelerating;
 	
 	int windowHeight;
     // Max turn speed measured in radians
@@ -94,7 +96,7 @@ private:
 
     // Camera settings
     glm::vec3 minCamOffset;
-    const glm::vec3 maxCamOffset = glm::vec3(0.0f, 0.3f, -1.6f);
+    glm::vec3 maxCamOffset;
     // Max offset change in forward direction per second
     const float offsetChangeMax = 0.35f;
 

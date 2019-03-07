@@ -20,10 +20,16 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float min
     // from the window resolution
     EventBus::get().subscribe(this, &ArrowGuider::handleWindowResize);
 
-	//EventBus::get().subscribe(this, &ArrowGuider::handleMouseScroll);
-
     windowHeight = Display::get().getHeight();
     currentPitch = 0.0f;
+
+	// Set up for acceleration variables
+	this->maxCamOffset = glm::vec3(0.0f, 0.3f, -1.0f);
+	this->acceleration = 3.0;
+	this->maxSpeedIncrease = 10.0;
+	this->minSpeedDecrease = movementSpeed;
+	this->maxSpeedOffset = 1.0f;
+	this->isAccelerating = false;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -31,6 +37,7 @@ ArrowGuider::~ArrowGuider()
     EventBus::get().unsubscribe(this, &ArrowGuider::handleWindowResize);
     if (isGuiding) {
         EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+		EventBus::get().unsubscribe(this, &ArrowGuider::handleKeyEvent);
     }
 }
 
@@ -78,6 +85,23 @@ void ArrowGuider::update(const float& dt)
             allowKeypointOverride = true;
         }
 
+		if (this->isAccelerating) {
+			if (this->movementSpeed < this->maxSpeedIncrease) {
+				this->movementSpeed += acceleration * dt;
+				this->maxTurnSpeed += acceleration * dt * 0.2;
+			}
+			else
+				this->movementSpeed = this->maxSpeedIncrease;
+		}
+		else {
+			if (this->movementSpeed > this->minSpeedDecrease) {
+				this->movementSpeed -= acceleration * dt;
+				this->maxTurnSpeed -= acceleration * dt * 0.2;
+			}
+			else
+				this->movementSpeed = this->minSpeedDecrease;
+		}
+
         // Update arrow position
         glm::vec3 currentPos = transform->getPosition();
         glm::vec3 newPos = currentPos + transform->getForward() * movementSpeed * dt;
@@ -108,17 +132,21 @@ void ArrowGuider::update(const float& dt)
 		glm::vec3 currentOffset = arrowCamera->getOffset();
 
 		// Linearly interpolate between min and max offset
-		glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
+		glm::vec3 desiredOffset = glm::normalize(minCamOffset) * turnFactorsLength;
+		float speedOffsetFactor = (this->movementSpeed - this->minSpeedDecrease) / (this->maxSpeedIncrease - this->minSpeedDecrease);
+		
+		glm::vec3 offset = this->maxCamOffset * speedOffsetFactor + this->minCamOffset * (1.0f - speedOffsetFactor);
 
 		// Gradually increase offset
-		glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
+		glm::vec3 deltaOffset = desiredOffset * dt;
 
 		// Limit offset change per second
 		if (glm::length(deltaOffset) > offsetChangeMax) {
 			deltaOffset *= deltaOffset / offsetChangeMax;
 		}
 
-		arrowCamera->setOffset(currentOffset + deltaOffset);
+		//arrowCamera->setOffset(currentOffset + deltaOffset * (1.0f - offsetFactor) + maxCamOffset * offsetFactor * dt);
+		arrowCamera->setOffset(offset + deltaOffset);
 	}
 }
 
@@ -143,6 +171,7 @@ void ArrowGuider::startAiming()
 
     // Subscribe to mouse movement for guiding
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
+
 }
 
 void ArrowGuider::stopAiming()
@@ -177,6 +206,9 @@ void ArrowGuider::startGuiding()
     startingKeyPoint.t = 0.0f;
 
     path.push_back(startingKeyPoint);    
+
+	// Subscribe to key events
+	EventBus::get().subscribe(this, &ArrowGuider::handleKeyEvent);
 }
 
 void ArrowGuider::stopGuiding(float flightTime)
@@ -241,12 +273,10 @@ void ArrowGuider::handleWindowResize(WindowResizeEvent* event)
 
 void ArrowGuider::handleKeyEvent(KeyEvent * event)
 {
-	if (event->action == GLFW_PRESS && event->key == GLFW_KEY_LEFT_SHIFT) {
-		
-	}
-	else if (event->action == GLFW_RELEASE && event->key == GLFW_KEY_LEFT_SHIFT) {
-
-	}
+	if (event->action == GLFW_PRESS && event->key == GLFW_KEY_LEFT_SHIFT) 
+		this->isAccelerating = true;
+	else if (event->action == GLFW_RELEASE && event->key == GLFW_KEY_LEFT_SHIFT) 
+		this->isAccelerating = false;
 }
 
 float ArrowGuider::getMaxTurnSpeed()
