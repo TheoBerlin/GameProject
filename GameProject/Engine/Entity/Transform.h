@@ -18,8 +18,14 @@ private:
 
 	glm::quat rotationQuat;
 
+	void copy(const Transform& other);
+
 public:
 	Transform();
+	Transform(const Transform& other);
+
+	Transform& operator=(const Transform& other);
+
 	//Get combined matrix of world and model by passing pointer
 	void getMatrix(glm::mat4 * mat) const;
 	//Get combined matrix of world and model

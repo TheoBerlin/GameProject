@@ -19,6 +19,11 @@ public:
 	void bind();
 	void updateMeshData(unsigned texId);
 
+	void setCameraUniform(const std::string& uniformName = "vp");
+	void setShadowBufferUniform(const std::string& uniformName = "shadowTex");
+	void setLightSpaceMatrixUniform(const std::string& uniformName = "lightMatrix");
+	void setCamPosUniform(const std::string& uniformName = "camPos");
+
 	virtual void update(const float& dt);
 
 	float getTime();

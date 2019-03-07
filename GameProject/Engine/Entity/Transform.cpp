@@ -1,6 +1,17 @@
 #define GLM_FORCE_SWIZZLE
 #include "Transform.h"
 
+void Transform::copy(const Transform & other)
+{
+	this->position = other.position;
+	this->scaleFactor = other.scaleFactor;
+	this->f = other.f;
+	this->r = other.r;
+	this->u = other.u;
+	this->isUpdated = other.isUpdated;
+	this->rotationQuat = other.rotationQuat;
+}
+
 Transform::Transform()
 {
 	rotationQuat = glm::quat_cast(glm::mat4(1.0f));
@@ -13,6 +24,18 @@ Transform::Transform()
 	this->position = glm::vec3(0, 0, 0);
 
 	this->isUpdated = false;
+}
+
+Transform::Transform(const Transform& other)
+{
+	copy(other);
+}
+
+Transform& Transform::operator=(const Transform& other)
+{
+	if (this != &other)
+		copy(other);
+	return *this;
 }
 
 void Transform::getMatrix(glm::mat4 * mat) const
