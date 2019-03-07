@@ -55,7 +55,7 @@ EditorState::~EditorState()
 	delete targetManager;
 	EventBus::get().unsubscribe(this, &EditorState::pauseGame);
 
-	Display::get().getRenderer().clearRenderingModels();
+	Display::get().getRenderer().clearRenderingTargets();
 
 	// Delete all loaded models
 	ModelLoader::unloadAllModels();
