@@ -198,7 +198,7 @@ void LevelParser::writeEntityBoxes(Level & level)
 {
 	int nrOfBoxes = 0;
 	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
-		bool found = false; 
+		bool found = false;
 		for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
 			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == level.entityManager->getEntity(i))
 				found = true;
@@ -208,10 +208,20 @@ void LevelParser::writeEntityBoxes(Level & level)
 				found = true;
 		}
 		if (!found) {
-			jsonFile["Boxes"][nrOfBoxes]["Name"] = level.entityManager->getEntity(i)->getName();
-			jsonFile["Boxes"][nrOfBoxes]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
-			jsonFile["Boxes"][nrOfBoxes]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
-			jsonFile["Boxes"][nrOfBoxes]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+			Entity* entity = level.entityManager->getEntity(i);
+			Transform* transform = entity->getTransform();
+
+			jsonFile["Boxes"][nrOfBoxes]["Name"] = entity->getName();
+
+			glm::vec3 position = transform->getPosition();
+			jsonFile["Boxes"][nrOfBoxes]["Position"] = { position.x, position.y, position.z };
+
+			glm::vec3 scale = transform->getScale();
+			jsonFile["Boxes"][nrOfBoxes]["Scale"] = { scale.x, scale.y, scale.z };
+
+			glm::vec3 orientation = transform->getYawPitchRoll();
+			jsonFile["Boxes"][nrOfBoxes]["Rotation"] = { orientation.x, orientation.y, orientation.z };
+
 			nrOfBoxes++;
 		}
 	}
@@ -221,26 +231,50 @@ void LevelParser::writeEntityTargets(Level & level)
 {
 	int nrOfTargets = 0;
 	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
+		Entity* entity = level.entityManager->getEntity(i);
 		bool found = false;
 		for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
-			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == level.entityManager->getEntity(i)) {
-				jsonFile["Target"][nrOfTargets]["Name"] = level.entityManager->getEntity(i)->getName();
-				jsonFile["Target"][nrOfTargets]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
-				jsonFile["Target"][nrOfTargets]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
-				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == entity) {
+				// Write moving target
+				Transform* transform = entity->getTransform();
+
+				jsonFile["Target"][nrOfTargets]["Name"] = entity->getName();
+
+				glm::vec3 position = transform->getPosition();
+				jsonFile["Target"][nrOfTargets]["Position"] = { position.x, position.y, position.z };
+
+				glm::vec3 scale = transform->getScale();
+				jsonFile["Target"][nrOfTargets]["Scale"] = { scale.x, scale.y, scale.z };
+
+				glm::vec3 orientation = transform->getYawPitchRoll();
+				jsonFile["Target"][nrOfTargets]["Rotation"] = { orientation.x, orientation.y, orientation.z };
+
+				// Write moving target's path
 				for (int k = 0; k < level.targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++) {
-					jsonFile["Target"][nrOfTargets]["Path"][k]["Position"] = { level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.x, level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.y, level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.z };
-					jsonFile["Target"][nrOfTargets]["Path"][k]["Time"] = level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].t;
+					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[j].pathTreader->getPath();
+
+					jsonFile["Target"][nrOfTargets]["Path"][k]["Position"] = { path[k].Position.x, path[k].Position.y, path[k].Position.z };
+					jsonFile["Target"][nrOfTargets]["Path"][k]["Time"] = path[k].t;
 				}
 				nrOfTargets++;
 			}
 		}
 		for (int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
-			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == level.entityManager->getEntity(i)) {
-				jsonFile["Target"][nrOfTargets]["Name"] = level.entityManager->getEntity(i)->getName();
-				jsonFile["Target"][nrOfTargets]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
-				jsonFile["Target"][nrOfTargets]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
-				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == entity) {
+				// Write static target
+				Transform* transform = entity->getTransform();
+
+				jsonFile["Target"][nrOfTargets]["Name"] = entity->getName();
+
+				glm::vec3 position = transform->getPosition();
+				jsonFile["Target"][nrOfTargets]["Position"] = { position.x, position.y, position.z };
+
+				glm::vec3 scale = transform->getScale();
+				jsonFile["Target"][nrOfTargets]["Scale"] = { scale.x, scale.y, scale.z };
+
+				glm::vec3 orientation = transform->getYawPitchRoll();
+				jsonFile["Target"][nrOfTargets]["Rotation"] = { orientation.x, orientation.y, orientation.z };
+
 				nrOfTargets++;
 			}
 		}
