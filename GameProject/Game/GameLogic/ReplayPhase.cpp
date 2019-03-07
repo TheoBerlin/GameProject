@@ -8,8 +8,8 @@
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
-#include <Game/GameLogic/Phases/GuidingPhase.h>
-#include <Game/GameLogic/Phases/AimPhase.h>
+#include <Game/GameLogic/GuidingPhase.h>
+#include <Game/GameLogic/AimPhase.h>
 #include <Utils/Settings.h>
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)

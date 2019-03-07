@@ -6,8 +6,8 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/PathVisualizer.h>
-#include <Game/GameLogic/Phases/AimPhase.h>
-#include <Game/GameLogic/Phases/ReplayPhase.h>
+#include <Game/GameLogic/AimPhase.h>
+#include <Game/GameLogic/ReplayPhase.h>
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase),

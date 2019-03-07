@@ -10,6 +10,10 @@
 
 // THE SYNTAX FOR UNSUBSCRIBE IS THE SAME AS FOR SUBSCRIBE
 
+/// Forward declerations
+class Entity;
+namespace reactphysics3d { class ProxyShape; }
+
 /// Class to inherit from
 class Event
 {
@@ -50,4 +54,35 @@ struct MouseScrollEvent : public Event
 	MouseScrollEvent(int xoffset, int yoffset) : xoffset{ xoffset }, yoffset{ yoffset } {};
 	int xoffset;
 	int yoffset;
+};
+
+struct PlayerCollisionEvent : public Event
+{
+	PlayerCollisionEvent(Entity* entity1, Entity* entity2, const reactphysics3d::ProxyShape * shape1, const reactphysics3d::ProxyShape * shape2) : entity1{ entity1 }, entity2{ entity2 }, shape1{ shape1 }, shape2{ shape2 } {};
+	Entity* entity1;
+	Entity* entity2;
+	const reactphysics3d::ProxyShape* shape1;
+	const reactphysics3d::ProxyShape* shape2;
+};
+
+struct ResetEvent : public Event
+{
+	ResetEvent() {};
+};
+
+
+class Phase;
+
+struct PhaseChangeEvent : public Event
+{
+	PhaseChangeEvent(Phase* newPhase) : newPhase{ newPhase } {};
+	Phase* newPhase;
+};
+
+class Entity;
+
+struct CameraTransitionEvent : public Event
+{
+	CameraTransitionEvent(Entity* host) : host{ host } {};
+	Entity* host;
 };

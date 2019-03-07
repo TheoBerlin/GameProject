@@ -4,7 +4,6 @@
 #include <typeindex>
 #include "memberFunctionHandler.h"
 #include "Events.h"
-#include <Game/GameLogic/GameEvents.h>
 
 // TO SUBSCRIBE TO THE EVENTBUS
 // EventBus::get().subscribe(this, &ClassName::functionName);

@@ -28,11 +28,6 @@ public:
 
 	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0, unsigned buffer = 1);
 
-	// Get verticies
-	std::vector<Vertex>& getVerticies() const;
-	// Get indicies
-	std::vector<unsigned>& getIndicies() const;
-
 private:
     Model* parentModel;
     VertexArray* vao;

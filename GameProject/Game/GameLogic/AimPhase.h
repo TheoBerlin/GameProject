@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Engine/Components/Camera.h>
-#include <Game/GameLogic/Phases/Phase.h>
+#include <Game/GameLogic/Phase.h>
 #include <Game/Components/ArrowGuider.h>
 
 class OverviewPhase;

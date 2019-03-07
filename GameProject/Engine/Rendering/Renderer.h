@@ -36,14 +36,14 @@ public:
 	void drawAll();
 
 	/*
-		inits vertex buffer for meshes rendering groups transforms and create renderingTargets list
+		inits vertex buffer for meshes rendering groups transforms and create renderingModels list
 	*/
 	void initInstancing();
 
 	/*
-		clears renderingTargets list
+		clears renderingModels list
 	*/
-	void clearRenderingTargets();
+	void clearRenderingModels();
 
 	/*
 		Updates vertex buffer for models meshes rendering groups transforms
@@ -75,10 +75,6 @@ public:
 	*/
 	Pipeline* getPipeline();
 
-	/*
-		Adds rendering target, tells renderer to draw a model with a specfic shader
-	*/
-	void addRenderingTarget(Model* model, SHADERS shader = SHADERS::DEFAULT, bool castShadow = true, bool prePass = true, bool visible = true);
 
 private:
 	Pipeline pipeline;
@@ -88,6 +84,6 @@ private:
 	Texture* tex;
 
 	std::vector<Entity*> renderingList;
-	std::vector<std::pair<RenderingTarget, SHADERS>> renderingTargets;
+	std::vector<std::pair<Model*, SHADERS>> renderingModels;
 
 };

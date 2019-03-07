@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Game/GameLogic/GameEvents.h>
+#include <Engine/Events/Events.h>
 #include <Game/Components/PathTreader.h>
 #include <Utils/Timer.h>
 #include <vector>

@@ -18,7 +18,7 @@ Explosion::~Explosion()
 void Explosion::update(const float & dt)
 {
 	for (auto* debri : this->debris) {
-		debri->position += debri->velocity * dt + 0.5f * debri->acceleration * dt * dt;
+		debri->position += debri->velocity * dt;
 		debri->velocity += debri->acceleration * dt;
 		debri->emitter->setPosition(debri->position);
 	}
@@ -32,32 +32,27 @@ void Explosion::update(const float & dt)
 		
 }
 
-void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDebris, float speed, float grav)
+void Explosion::explode(float lifeTime, unsigned explosionDebris, float speed, float grav)
 {
 	this->lifeTime = lifeTime;
-	if (timeElapsed < this->lifeTime) {
-		glm::vec3 entityPos = this->host->getTransform()->getPosition();
+	glm::vec3 entityPos = this->host->getTransform()->getPosition();
 
-		srand(static_cast <unsigned> (time(0)));
-		float LO = -1.0f;
-		float HI = 1.0f;
+	srand(static_cast <unsigned> (time(0)));
+	float LO = -1.0f;
+	float HI = 1.0f;
 
-		glm::vec3 gravity(0.0f, grav, 0.0f);
+	glm::vec3 gravity(0.0f, grav, 0.0f);
 
-		for (size_t i = 0; i < explosionDebris; i++) {
-			float rx = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
-			float rz = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
-			float rSpeed = 1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (2.0f - 1.0f)));
-			createDebri(entityPos, glm::vec3(rx, 1.0f, rz) * rSpeed, gravity, glm::vec3(0.8f), 0.15f, 0.5f);
-		}
-
-		createDebri(entityPos, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.1f), 0.35f, 2.0f, 0.25f);
-
-		//If explosion is triggered with rewind the time elapsed has to be accounted for
-		this->update(timeElapsed);
-
-		this->timer = timeElapsed;
+	for (size_t i = 0; i < explosionDebris; i++) {
+		float rx = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
+		float rz = LO + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (HI - LO)));
+		float rSpeed = 1.0f + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (2.0f - 1.0f)));
+		createDebri(entityPos, glm::vec3(rx, 1.0f, rz) * rSpeed, gravity, glm::vec3(0.8f), 0.15f, 0.5f);
 	}
+
+	createDebri(entityPos, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.1f), 0.35f, 2.0f, 0.25f);
+
+	this->timer = 0.0f;
 
 }
 

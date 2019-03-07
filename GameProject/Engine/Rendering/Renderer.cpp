@@ -66,13 +66,16 @@ void Renderer::initInstancing()
 		model->initInstancing();
 	}
 
-	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
-	this->addRenderingTarget(model, SHADERS::DEFAULT);
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Cube.fbx"), SHADERS::DEFAULT));
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/floor.fbx"), SHADERS::DEFAULT));
+	this->renderingModels.push_back(std::make_pair(ModelLoader::loadModel("./Game/assets/Arrow.fbx"), SHADERS::DEFAULT));
 
+
+	Model * model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+	this->renderingModels.push_back(std::make_pair(model, SHADERS::DRONE_SHADER));
 	/*
 		Initilize colors vertexBuffer for collision color changing
 	*/
-	model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
 	AttributeLayout layout;
 	layout.push(3, 1); // vec3 color which can be changed seperately for each entity;
 	std::vector<glm::vec3> colors;
@@ -83,9 +86,9 @@ void Renderer::initInstancing()
 		model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
 }
 
-void Renderer::clearRenderingTargets()
+void Renderer::clearRenderingModels()
 {
-	this->renderingTargets.clear();
+	this->renderingModels.clear();
 }
 
 void Renderer::updateInstancingData(Model * model)
@@ -100,17 +103,17 @@ void Renderer::drawAllInstanced()
 	/*
 	Calulate shadow depth
 	*/
-	this->pipeline.calcDirLightDepthInstanced(this->renderingTargets);
+	this->pipeline.calcDirLightDepthInstanced(this->renderingModels);
 
 	/*
 		Z-prepass stage
 	*/
-	this->pipeline.prePassDepthModel(this->renderingTargets);
+	this->pipeline.prePassDepthModel(this->renderingModels);
 
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	Texture* postProcess = this->pipeline.drawModelToTexture(this->renderingTargets);
+	Texture* postProcess = this->pipeline.drawModelToTexture(this->renderingModels);
 
 	pipeline.drawParticle();
 	
@@ -151,21 +154,6 @@ Texture* Renderer::drawTextureToFbo(Texture * texture, SHADERS_POST_PROCESS shad
 Pipeline * Renderer::getPipeline()
 {
 	return &this->pipeline;
-}
-
-void Renderer::addRenderingTarget(Model * model, SHADERS shader, bool castShadow, bool prePass, bool visible)
-{
-	RenderingTarget rt;
-
-	rt.prePass = prePass;
-	rt.castShadow = castShadow;
-	rt.visible = visible;
-
-	if (model) {
-		rt.model = model;
-
-		this->renderingTargets.push_back(std::make_pair(rt, shader));
-	}
 }
 
 

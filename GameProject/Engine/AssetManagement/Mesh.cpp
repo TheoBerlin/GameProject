@@ -107,13 +107,3 @@ void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned off
 	*/
 	this->vao->updateBuffer(buffer, data, dataSize, offset);
 }
-
-std::vector<Vertex>& Mesh::getVerticies() const
-{
-	return *this->vertices;
-}
-
-std::vector<unsigned>& Mesh::getIndicies() const
-{
-	return *this->vertexIndices;
-}
