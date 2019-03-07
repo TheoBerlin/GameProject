@@ -136,7 +136,11 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_1) {
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 

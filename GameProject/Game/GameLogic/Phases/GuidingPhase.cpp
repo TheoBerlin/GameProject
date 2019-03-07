@@ -73,7 +73,11 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_3) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_3) {
         beginReplayTransition();
     }
 }
