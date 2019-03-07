@@ -74,7 +74,7 @@ unsigned ScoreManager::getTargetsHit() const
 	return this->targetsHit;
 }
 
-void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
+void ScoreManager::showResults(Level& level)
 {
 	glm::uvec2 panelSize(500, 700);
 	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
@@ -145,18 +145,19 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	exitBtn->setCallback([](void) { printf("add exit\n"); });
 	bigPanel->addChild(exitBtn);
 
-	// Add retry button
-	Button* retryBtn = new Button();
-	retryBtn->setSize({ panelSize.x - 40, 50 });
-	retryBtn->addText("RETRY", "aldo", textColor);
-	retryBtn->setOption(GUI::FLOAT_DOWN, 80);
-	retryBtn->setOption(GUI::CENTER_X);
-	retryBtn->setOption(GUI::TEXT_CENTER_X);
-	retryBtn->setOption(GUI::TEXT_CENTER_Y);
-	retryBtn->setHoverColor(hoverColor);
-	retryBtn->setPressedColor(pressColor);
-	retryBtn->setCallback(retry);
-	bigPanel->addChild(retryBtn);
+	// Add restart button
+	Button* resBtn = new Button();
+	resBtn->setSize({ panelSize.x - 40, 50 });
+	resBtn->addText("RESTART", "aldo", textColor);
+	resBtn->setOption(GUI::FLOAT_DOWN, 80);
+	resBtn->setOption(GUI::CENTER_X);
+	resBtn->setOption(GUI::TEXT_CENTER_X);
+	resBtn->setOption(GUI::TEXT_CENTER_Y);
+	resBtn->setHoverColor(hoverColor);
+	resBtn->setPressedColor(pressColor);
+	resBtn->setCallback([](void) { printf("add restart\n"); });
+	bigPanel->addChild(resBtn);
+
 
 	// Set initial state
 	this->minimized = true;
@@ -167,17 +168,6 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 bool ScoreManager::resultsVisible() const
 {
 	return this->showGui;
-}
-
-void ScoreManager::removeResultsGUI(Level& level)
-{
-	level.gui->removePanel(this->bigPanel);
-	level.gui->removePanel(this->smallPanel);
-
-	this->bigPanel = nullptr;
-	this->smallPanel = nullptr;
-
-	this->showGui = false;
 }
 
 void ScoreManager::guiCallback()

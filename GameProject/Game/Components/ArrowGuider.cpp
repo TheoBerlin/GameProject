@@ -135,6 +135,9 @@ void ArrowGuider::startAiming()
 		arrowCamera->setOffset(minCamOffset);
 	}
 
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     // Subscribe to mouse movement for guiding
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
 }
@@ -147,6 +150,9 @@ void ArrowGuider::stopAiming()
 
     turnFactors.x = 0.0f;
     turnFactors.y = 0.0f;
+
+    // Unlock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void ArrowGuider::startGuiding()
@@ -158,8 +164,7 @@ void ArrowGuider::startGuiding()
     isGuiding = true;
     flightTime = 0.0f;
 
-    // Do not allow the starting point to be overwritten
-    allowKeypointOverride = false;
+    allowKeypointOverride = true;
 
     // Clear previous path and store starting position
     path.clear();

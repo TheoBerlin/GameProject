@@ -60,11 +60,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     camera->setFOV(level.player.replayCamera.FOV);
 	camera->init();
 
-    // Create freemove and lock cursor
 	freeMove = new FreeMove(freeCam);
-    freeMove->enableMouse();
-
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Reset targets
 	level.targetManager->resetTargets();
@@ -80,7 +76,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 ReplayPhase::~ReplayPhase()
 {
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
-	EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
+	EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
 }
 
 void ReplayPhase::update(const float& dt)
@@ -98,22 +94,12 @@ void ReplayPhase::update(const float& dt)
 
         glm::uvec2 sliderPos = {timeBarSidePadding * screenWidth + timeBarSize.x - sliderSize.x / 2, screenHeight * timeBarBottomPadding};
         timeBarSlider->setPosition(sliderPos);
-
-
-        // Display results when the replay finishes
-        if (replayTime > flightTime && !level.scoreManager->resultsVisible())
-        {
-            // Disable freemove and unlock cursor
-            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-            freeMove->disableMouse();
-
-            // Lambda function which executes when retry is pressed
-            std::function<void()> retry = [this](){beginAimTransition();};
-
-            level.scoreManager->showResults(level, retry);
-        }
     }
+
+	if (replayTime > flightTime && !level.scoreManager->resultsVisible())
+	{
+		level.scoreManager->showResults(level);
+	}
 }
 
 Entity* ReplayPhase::getFreeCam() const
@@ -138,53 +124,40 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     }
 
     if (event->key == GLFW_KEY_2) {
-        beginAimTransition();
+        EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+
+        // Teardown
+        freeCam->removeComponent(freeMove->getName());
+
+        // Stop replaying playthrough
+        level.replaySystem->stopReplaying();
+
+        // Remove GUI elements
+        level.gui->removePanel(timeBarSlider);
+        level.gui->removePanel(timeBarFront);
+        level.gui->removePanel(timeBarBack);
+
+        // Begin camera transition to the arrow
+        CameraSetting currentCamSettings;
+
+        Transform* camTransform = freeCam->getTransform();
+
+        currentCamSettings.position = camTransform->getPosition();
+        currentCamSettings.direction = camTransform->getForward();
+        currentCamSettings.offset = level.player.replayCamera.offset;
+        currentCamSettings.FOV = level.player.replayCamera.FOV;
+
+        CameraSetting newCamSettings = level.player.arrowCamera;
+
+        this->setupTransition(currentCamSettings, newCamSettings);
+
+        EventBus::get().subscribe(this, &ReplayPhase::transitionToAim);
     }
 }
 
-void ReplayPhase::beginAimTransition()
+void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
 {
-    EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
-
-    // Remove freecam
-    freeCam->removeComponent(freeMove->getName());
-
-    // Lock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Remove results GUI if visible
-    if (level.scoreManager->resultsVisible()) {
-        level.scoreManager->removeResultsGUI(level);
-    }
-
-    // Stop replaying playthrough
-    level.replaySystem->stopReplaying();
-
-    // Remove time bar GUI elements
-    level.gui->removePanel(timeBarSlider);
-    level.gui->removePanel(timeBarFront);
-    level.gui->removePanel(timeBarBack);
-
-    // Begin camera transition to the arrow
-    CameraSetting currentCamSettings;
-
-    Transform* camTransform = freeCam->getTransform();
-
-    currentCamSettings.position = camTransform->getPosition();
-    currentCamSettings.direction = camTransform->getForward();
-    currentCamSettings.offset = level.player.replayCamera.offset;
-    currentCamSettings.FOV = level.player.replayCamera.FOV;
-
-    CameraSetting newCamSettings = level.player.arrowCamera;
-
-    this->setupTransition(currentCamSettings, newCamSettings);
-
-    EventBus::get().subscribe(this, &ReplayPhase::finishAimTransition);
-}
-
-void ReplayPhase::finishAimTransition(CameraTransitionEvent* event)
-{
-    EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
+    EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
 
     Phase* guidingPhase = new AimPhase(this);
     changePhase(guidingPhase);
