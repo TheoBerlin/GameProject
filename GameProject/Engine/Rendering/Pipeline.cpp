@@ -34,9 +34,9 @@ Pipeline::Pipeline()
 
 	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, myIdentityMatrix));
 
-	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
-	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
-	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, myIdentityMatrix));
+	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, myIdentityMatrix));
+	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, myIdentityMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -75,19 +75,9 @@ Pipeline::Pipeline()
 		if (i != SHADERS::INFINITY_PLANE_PREPASS) {
 			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+			this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
 		}
 	}
-	/*
-		Set up Directional Light
-	*/
-	this->mainLight.direction = glm::normalize(glm::vec4(0.5f, -1.0f, -0.5f, 1.0f));
-	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);
-		this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
-		this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
-		this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
-	}
-	
 }
 
 
@@ -316,7 +306,6 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	this->testShader->bind();
 
 	this->testShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	//this->testShader->setUniformMatrix4fv("lightMatrix", 1, false, &(lm.getLightMatrix()[0][0]));
 	this->testShader->setUniform3fv("camPos", 1, &this->camera->getPosition()[0]);
 
 	Texture * shadowTex = getShadowFbo()->getDepthTexture();
@@ -403,16 +392,6 @@ void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList)
 {
 }
 
-	ImGui::Begin("Shadow buffer");
-
-	drawTexture(this->shadowFbo.getDepthTexture());
-
-	ImGui::End();
-#endif
-
-	Display::get().updateView(displayWidth, displayHeight);
-}
-
 void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 	int displayWidth = Display::get().getWidth();
@@ -424,14 +403,12 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->prePassDepthOn();
 	this->ZprePassShaderInstanced->bind();
 
-	//Draw renderingList
-	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
-	for (auto pair : renderingTargets) {
-		if(pair.first.castShadow)
-			drawModelPrePassInstanced(pair.first.model);
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
-	for (auto pair : renderingModels) {
-		drawModelPrePassInstanced(pair.first);
+
+	//Draw renderingList
+	for (auto pair : renderingTargets) {
+		if (pair.first.castShadow)
+			drawModelPrePassInstanced(pair.first.model);
 	}
 
 	this->ZprePassShaderInstanced->unbind();
@@ -454,8 +431,6 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 		Set up Directional Light
 	*/
 	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
-
-
 	/*
 		Set up Point Light
 	*/
@@ -474,6 +449,9 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
@@ -494,12 +472,12 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 	EntityShader* eShader = this->entityShaders[SHADERS::INFINITY_PLANE];
 	InfinityPlaneShader* infPlaneShader = dynamic_cast<InfinityPlaneShader*>(eShader);
 	if (infPlaneShader)
-		this->addUniformBuffer(2, infPlaneShader->getID(), "WallPoints");
+		this->addUniformBuffer(3, infPlaneShader->getID(), "WallPoints");
 
 	eShader = this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS];
 	InfinityPlanePrePassShader* infPlanePrePassShader = dynamic_cast<InfinityPlanePrePassShader*>(eShader);
 	if (infPlanePrePassShader)
-		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
+		this->addUniformBuffer(3, infPlanePrePassShader->getID(), "WallPoints");
 
 
 	if (infPlaneShader != nullptr)
@@ -521,7 +499,7 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 				value += wallGroupsIndex[++index];
 			data.points[i] = glm::vec4(wallPoints[i], (float)(wallGroupsIndex[index]));
 		}
-		this->uniformBuffers[2]->setSubData((void*)&data, sizeof(WallPointsData), 0);
+		this->uniformBuffers[3]->setSubData((void*)&data, sizeof(WallPointsData), 0);
 	}
 }
 
