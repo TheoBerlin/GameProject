@@ -2,7 +2,7 @@
 
 #include <Engine/Components/Camera.h>
 #include <Engine/Events/EventBus.h>
-#include <Game/GameLogic/OverviewPhase.h>
+#include <Game/GameLogic/Phases/OverviewPhase.h>
 #include <Game/Components/CameraTransition.h>
 
 GameLogic::GameLogic()

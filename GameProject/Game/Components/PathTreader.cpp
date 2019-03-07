@@ -2,6 +2,7 @@
 
 #include <Engine/Entity/Entity.h>
 #include "Utils/Logger.h"
+#include "Utils/Utils.h"
 
 PathTreader::PathTreader(Entity* host)
     :Component(host, "PathTreader")
@@ -46,6 +47,11 @@ void PathTreader::setPath(const std::vector<KeyPoint>& path)
     currentPointIndex = 0;
 }
 
+KeyPoint & PathTreader::getKeyPoint(unsigned int index)
+{
+	return path.at(index);
+}
+
 void PathTreader::startTreading()
 {
     if (path.size() < 2) {
@@ -53,38 +59,15 @@ void PathTreader::startTreading()
         return;
     }
 
-    pathTime = 0.0f;
-
     isTreading = true;
 
-    currentPointIndex = 0;
+	pathTime = 0.0f;
+	currentPointIndex = 0;
 }
 
 void PathTreader::stopTreading()
 {
     isTreading = false;
-}
-
-void PathTreader::linearTread()
-{
-    // Update point index
-    while (pathTime > path.at(currentPointIndex + 1).t) {
-        currentPointIndex += 1;
-    }
-
-    // Update position and direction
-    KeyPoint& P0 = path.at(currentPointIndex);
-    KeyPoint& P1 = path.at(currentPointIndex + 1);
-
-    float timeDiff = P0.t - P1.t;
-    glm::vec3 newPosition = P0.Position + (pathTime / timeDiff) * P1.Position;
-
-    Transform* transform = host->getTransform();
-
-    glm::vec3 newDirection = glm::normalize(newPosition - transform->getPosition());
-
-    transform->setPosition(newPosition);
-    transform->setForward(newDirection);
 }
 
 void PathTreader::catmullRomTread()
