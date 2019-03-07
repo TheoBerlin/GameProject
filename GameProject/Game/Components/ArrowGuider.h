@@ -62,6 +62,9 @@ private:
 	bool isAccelerating;
 	
 	int windowHeight;
+    void updateCamera(const float& dt, const float& turnFactorsLength);
+
+    int windowHeight;
     // Max turn speed measured in radians
     float maxTurnSpeed;
     // Mouse movement, relative to window height, required to reach max turn speed
@@ -106,4 +109,10 @@ private:
 
     float currentPitch;
     const float maxPitch = glm::half_pi<float>() - 0.01f;
+
+    // Drift camera settings
+    // Maximum angle between entity's forward and drift camera's forward
+    const float maxForwardAngle = glm::quarter_pi<float>() / 3.0f;
+    // Percentage of forward angle being nullified per second
+    const float angleCorrectionFactor = 3.5f;
 };

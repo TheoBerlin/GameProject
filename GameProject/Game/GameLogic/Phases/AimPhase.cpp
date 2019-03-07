@@ -107,23 +107,19 @@ Camera* AimPhase::getArrowCam() const
 
 void AimPhase::commonSetup()
 {
-	/*
-		Add camera to arrow entity
-	*/
     CameraSetting arrowCamSettings = level.player.arrowCamera;
-
-    glm::vec3 camOffset = arrowCamSettings.offset;
-
-
 
 	/*
 		Add arrowguider to entity
 	*/
 	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
-	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
-	arrowCam->setFOV(arrowCamSettings.FOV);
-	arrowCam->init();
+	/*
+		Add camera to arrow entity
+	*/
+    glm::vec3 camOffset = arrowCamSettings.offset;
+
+
 
 	arrowGuider->startAiming();
 
@@ -135,94 +131,34 @@ void AimPhase::commonSetup()
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
 
-#ifdef IMGUI
-	/*
-	Set up for configuring arrow data
-	*/
-	this->configureData = false;
-	this->arrowSpeed = this->arrowGuider->getMovementSpeed();
-	this->maxTurnSpeed = this->arrowGuider->getMaxTurnSpeed();
-
-#endif
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void AimPhase::handleMouseClick(MouseClickEvent* event)
 {
-#ifdef IMGUI
     // Change phase to guiding phase when the left mouse button has been released
-    if (event->action == GLFW_RELEASE && event->button == GLFW_MOUSE_BUTTON_LEFT && !this->configureData) {
+    if (event->action == GLFW_RELEASE && event->button == GLFW_MOUSE_BUTTON_LEFT) {
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
-
-		// Apply configured values
-		this->arrowGuider->setMovementSpeed(this->arrowSpeed);
-		this->arrowGuider->setMaxTurnSpeed(this->maxTurnSpeed);
-
-        Phase* newPhase = new GuidingPhase(this);
-
-        changePhase(newPhase);
-    }
-#else
-	// Change phase to guiding phase when the left mouse button has been released
-	if (event->action == GLFW_RELEASE && event->button == GLFW_MOUSE_BUTTON_LEFT) {
-		EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
-		EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
 		Phase* newPhase = new GuidingPhase(this);
 
 		changePhase(newPhase);
 	}
-#endif
 }
 
 void AimPhase::handleKeyInput(KeyEvent* event)
 {
-#ifdef IMGUI
-	if (event->key == GLFW_KEY_C && event->action == GLFW_PRESS) {
-		if (this->configureData) {
-			// Lock cursor
-			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-			this->getArrowGuider()->startAiming();
-		}
-		else {
-
-			// Unlock cursor
-			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-			this->getArrowGuider()->stopAiming();
-		}
-
-		this->configureData = !this->configureData;
-	}
-
-	if (event->key == GLFW_KEY_1 && !this->configureData) {
-		EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
-		EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
-
-		arrowGuider->stopAiming();
-
-		// Begin camera transition to the oversight camera
-		CameraSetting currentCamSettings = level.player.arrowCamera;
-
-		Transform* arrowTransform = playerArrow->getTransform();
-
-		currentCamSettings.position = arrowTransform->getPosition();
-		currentCamSettings.direction = arrowTransform->getForward();
-
-		CameraSetting newCamSettings = level.player.oversightCamera;
-
-		this->setupTransition(currentCamSettings, newCamSettings);
-
-		EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
-	}
-#else
-
     if (event->action != GLFW_PRESS) {
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_1) {
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
@@ -242,7 +178,6 @@ void AimPhase::handleKeyInput(KeyEvent* event)
 
         EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
     }
-#endif
 }
 
 void AimPhase::transitionToOverview(CameraTransitionEvent* event)
