@@ -1,5 +1,5 @@
-#define GLM_FORCE_SWIZZLE
 #include "Transform.h"
+#include <glm/gtx/vector_angle.hpp>
 
 Transform::Transform()
 {
@@ -37,19 +37,6 @@ glm::vec3 Transform::getPosition() const
 	return position;
 }
 
-glm::vec3 Transform::getRotation() const
-{
-	// glm::eulerAngles returns pitch, yaw, roll
-	// Change the order of pitch and yaw
-	glm::vec3 rotation = glm::eulerAngles(rotationQuat);
-
-	float temp = rotation.x;
-	rotation.x = rotation.y;
-	rotation.y = temp;
-
-	return rotation;
-}
-
 glm::quat Transform::getRotationQuat() const
 {
 	return this->rotationQuat;
@@ -82,28 +69,19 @@ glm::vec3 Transform::getYawPitchRoll() const
 	// Calculate yaw
 	glm::vec3 temp = glm::normalize(glm::vec3(this->f.x, defaultForward.y, this->f.z));
 
-	yawPitchRoll.x = std::acosf(glm::dot(defaultForward, temp));
-
-	// Determine yaw sign
-	temp = glm::cross(defaultForward, this->f);
-
-	yawPitchRoll.x = (temp.y > 0.0f) ? yawPitchRoll.x : -yawPitchRoll.x;
+	yawPitchRoll.x = glm::orientedAngle(defaultForward, temp, GLOBAL_UP_VECTOR);
 
 	// Calculate pitch
-	temp = glm::normalize(glm::vec3(defaultForward.x, this->f.y, defaultForward.z));
+	temp = glm::normalize(glm::vec3(this->f.x, 0.0f, this->f.z));
 
-	yawPitchRoll.y = std::acosf(glm::dot(defaultForward, temp));
-
-	// Determine pitch sign
-	yawPitchRoll.y = (this->f.y > defaultForward.y) ? yawPitchRoll.y : -yawPitchRoll.y;
+	yawPitchRoll.y = glm::orientedAngle(temp, this->f, this->r);
 
 	// Calculate roll
-	temp = glm::normalize(glm::vec3(this->r.x, 0.0f, this->r.z));
-
-	yawPitchRoll.z = std::acosf(glm::dot(this->r, temp));
+	glm::vec3 horizontalRight = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
+	temp = glm::normalize(glm::cross(horizontalRight, this->f));
 
 	// Determine roll sign
-	yawPitchRoll.z = (this->r.y < 0.0f) ? yawPitchRoll.z : -yawPitchRoll.z;
+	yawPitchRoll.z = glm::orientedAngle(temp, this->u, this->f);
 
 	return yawPitchRoll;
 }
@@ -146,7 +124,7 @@ void Transform::rotate(const glm::vec3& rotation)
 
 void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
-	if(rotation != glm::vec3(0.0f)) {
+	if (rotation != glm::vec3(0.0f)) {
 		position -= rotationCenter;
 
 		position = glm::quat(rotation) * position;
@@ -170,14 +148,13 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 
 void Transform::setRotation(const glm::vec3 &rotation)
 {
-	// The quat constructor accepts
-	rotationQuat = glm::quat(glm::vec3(rotation.y, rotation.x, rotation.z));
+	this->rotationQuat = glm::quat_cast(glm::mat4(1.0f));
 
 	this->f = rotationQuat * defaultForward;
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
+	this->r = rotationQuat * glm::cross(defaultForward, GLOBAL_UP_VECTOR);
+	this->u = rotationQuat * GLOBAL_UP_VECTOR;
 
-	this->isUpdated = true;
+	this->rotate(rotation.x, rotation.y, rotation.z);
 }
 
 void Transform::translate(const glm::vec3& vector)
@@ -237,11 +214,13 @@ void Transform::setForward(const glm::vec3 & forward)
 	if (cosAngle >= 1.0f - FLT_EPSILON * 10.0f) {
 		// The new forward is identical to the old one, do nothing
 		return;
-	} else if (cosAngle <= -1.0f + FLT_EPSILON * 10.0f) {
+	}
+	else if (cosAngle <= -1.0f + FLT_EPSILON * 10.0f) {
 		// The new forward is parallell to the old one, create a 180 degree rotation quarternion
 		// around any axis
 		rotQuat = glm::angleAxis(glm::pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
-	} else {
+	}
+	else {
 		// Calculate rotation quaternion
 		glm::vec3 axis = glm::normalize(glm::cross(this->f, normForward));
 		float angle = std::acosf(cosAngle);

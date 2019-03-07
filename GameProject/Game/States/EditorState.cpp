@@ -42,6 +42,7 @@ EditorState::EditorState()
 	level.targetManager = targetManager;
 	level.scoreManager = &this->scoreManager;
 	level.collisionHandler = &this->collisionHandler;
+	level.levelStructure = &this->levelStructure;
 	level.gui = &this->getGUI();
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
@@ -55,7 +56,7 @@ EditorState::~EditorState()
 	delete targetManager;
 	EventBus::get().unsubscribe(this, &EditorState::pauseGame);
 
-	Display::get().getRenderer().clearRenderingModels();
+	Display::get().getRenderer().clearRenderingTargets();
 
 	// Delete all loaded models
 	ModelLoader::unloadAllModels();
@@ -144,10 +145,12 @@ void EditorState::mainWindow(EntityManager & entityManager)
 		activeWindow[0] = !activeWindow[0];
 	if (ImGui::Button("Entities"))
 		activeWindow[1] = !activeWindow[1];
-	if (ImGui::Button("Player"))
+	if (ImGui::Button("Walls"))
 		activeWindow[2] = !activeWindow[2];
-	if (ImGui::Button("Editor"))
+	if (ImGui::Button("Player"))
 		activeWindow[3] = !activeWindow[3];
+	if (ImGui::Button("Editor"))
+		activeWindow[4] = !activeWindow[4];
 	ImGui::NewLine();
 
 	ImGui::End();
@@ -158,9 +161,12 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (activeWindow[1])
 		entityWindow(entityManager);
 	if (activeWindow[2])
-		playerWindow(entityManager);
+		wallWindow(entityManager);
 	if (activeWindow[3])
+		playerWindow(entityManager);
+	if (activeWindow[4])
 		editorWindow();
+
 }
 
 void EditorState::entityWindow(EntityManager& entityManager)
@@ -171,26 +177,28 @@ void EditorState::entityWindow(EntityManager& entityManager)
 	if (ImGui::BeginCombo("Entities", currentItem.c_str())) {
 		for (int i = 0; i < entityManager.getEntitySize(); i++) {
 			bool is_selected = (currentItem == entityManager.getEntity(i)->getName()); // You can store your selection however you want, outside or inside your objects
-			if (ImGui::Selectable(entityManager.getEntity(i)->getName().c_str(), is_selected)) {
-				currentItem = entityManager.getEntity(i)->getName();
-				currentModel = entityManager.getEntity(i)->getModel()->getName();
-				currentEntity = i;
-				currentIsTarget = false;
-				for (int j = 0; j < targetManager->getMovingTargets().size(); j++) {
-					if (entityManager.getEntity(i) == targetManager->getMovingTargets()[j].pathTreader->getHost()) {
-						currentIsTarget = true;
-						break;
+			if (entityManager.getEntity(i)->getName().substr(0, 9) != "WallPoint") {
+				if (ImGui::Selectable(entityManager.getEntity(i)->getName().c_str(), is_selected)) {
+					currentItem = entityManager.getEntity(i)->getName();
+					currentModel = entityManager.getEntity(i)->getModel()->getName();
+					currentEntity = i;
+					currentIsTarget = false;
+					for (int j = 0; j < targetManager->getMovingTargets().size(); j++) {
+						if (entityManager.getEntity(i) == targetManager->getMovingTargets()[j].pathTreader->getHost()) {
+							currentIsTarget = true;
+							break;
+						}
+					}
+					for (int j = 0; j < targetManager->getStaticTargets().size(); j++) {
+						if (entityManager.getEntity(i) == targetManager->getStaticTargets()[j].hoverAnimation->getHost()) {
+							currentIsTarget = true;
+							break;
+						}
 					}
 				}
-				for (int j = 0; j < targetManager->getStaticTargets().size(); j++) {
-					if (entityManager.getEntity(i) == targetManager->getStaticTargets()[j].hoverAnimation->getHost()) {
-						currentIsTarget = true;
-						break;
-					}
-				}
+				if (is_selected)
+					ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
 			}
-			if (is_selected)
-				ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
 		}
 		ImGui::EndCombo();
 	}
@@ -349,6 +357,36 @@ void EditorState::playerWindow(EntityManager & entityManager)
 	ImGui::InputFloat3("Replay Offset", &level.player.replayCamera.offset[0], 2);
 	ImGui::InputFloat("Replay FOV", &level.player.replayCamera.FOV, 1);
 
+	ImGui::End();
+#endif
+}
+
+void EditorState::wallWindow(EntityManager & entityManager)
+{
+#ifdef IMGUI
+	ImGui::Begin("Wall Window");
+	if (ImGui::BeginCombo("Wall Group", currentWall.c_str())) {
+		for (int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
+			bool is_selected = (currentWall == std::to_string(i)); // You can store your selection however you want, outside or inside your objects
+			if (ImGui::Selectable(std::to_string(i).c_str(), is_selected)) {
+				currentWall = std::to_string(i);
+			}
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+		}
+		ImGui::EndCombo();
+	}
+	if (std::stoi(currentWall) != -1) {
+		if (ImGui::Button("Add Point")) {
+			level.levelStructure->addPoint(level, std::stoi(currentWall), glm::vec3(0.0f));
+		}
+		for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[std::stoi(currentWall)]; i++) {
+			glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i].x, level.levelStructure->getWallPoints()[i].z);
+			if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
+				level.levelStructure->editPoint(level, std::stoi(currentWall), i, glm::vec3(position.x, 0, position.y));
+			}
+		}
+	}
 	ImGui::End();
 #endif
 }

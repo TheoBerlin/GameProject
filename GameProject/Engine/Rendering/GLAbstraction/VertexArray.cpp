@@ -15,7 +15,7 @@ VertexArray::~VertexArray()
 	glDeleteVertexArrays(1, &this->id);
 }
 
-void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes)
+unsigned int VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes)
 {
 	this->buffers.push_back(vbo);
 
@@ -32,6 +32,8 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 	vbo->unbind();
 
 	vbo->setAttribCount(attributes.attribs.size());
+
+	return vbo->getID();
 }
 
 void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset, const unsigned& usage)

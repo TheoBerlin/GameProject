@@ -66,12 +66,17 @@ unsigned short Mesh::getMaterialIndex()
     return this->materialIndex;
 }
 
+GLuint Mesh::getBufferID()
+{
+	return bufferID;
+}
+
 void Mesh::addBuffer(const void * data, size_t dataSize, const AttributeLayout & layout)
 {
 
 	VertexBuffer* vbo = new VertexBuffer(data, dataSize);
 
-	this->vao->addBuffer(vbo, layout);
+	bufferID = this->vao->addBuffer(vbo, layout);
 }
 
 void Mesh::initInstancing(const void * data, size_t dataSize)

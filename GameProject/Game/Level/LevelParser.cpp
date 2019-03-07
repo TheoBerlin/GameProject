@@ -211,7 +211,7 @@ void LevelParser::writeEntityBoxes(Level & level)
 			jsonFile["Boxes"][nrOfBoxes]["Name"] = level.entityManager->getEntity(i)->getName();
 			jsonFile["Boxes"][nrOfBoxes]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
 			jsonFile["Boxes"][nrOfBoxes]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
-			jsonFile["Boxes"][nrOfBoxes]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+			jsonFile["Boxes"][nrOfBoxes]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotationQuat().x, level.entityManager->getEntity(i)->getTransform()->getRotationQuat().y, level.entityManager->getEntity(i)->getTransform()->getRotationQuat().z };
 			nrOfBoxes++;
 		}
 	}
@@ -227,7 +227,7 @@ void LevelParser::writeEntityTargets(Level & level)
 				jsonFile["Target"][nrOfTargets]["Name"] = level.entityManager->getEntity(i)->getName();
 				jsonFile["Target"][nrOfTargets]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
 				jsonFile["Target"][nrOfTargets]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
-				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotationQuat().x, level.entityManager->getEntity(i)->getTransform()->getRotationQuat().y, level.entityManager->getEntity(i)->getTransform()->getRotationQuat().z };
 				for (int k = 0; k < level.targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++) {
 					jsonFile["Target"][nrOfTargets]["Path"][k]["Position"] = { level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.x, level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.y, level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].Position.z };
 					jsonFile["Target"][nrOfTargets]["Path"][k]["Time"] = level.targetManager->getMovingTargets()[j].pathTreader->getPath()[k].t;
@@ -240,7 +240,7 @@ void LevelParser::writeEntityTargets(Level & level)
 				jsonFile["Target"][nrOfTargets]["Name"] = level.entityManager->getEntity(i)->getName();
 				jsonFile["Target"][nrOfTargets]["Position"] = { level.entityManager->getEntity(i)->getTransform()->getPosition().x, level.entityManager->getEntity(i)->getTransform()->getPosition().y, level.entityManager->getEntity(i)->getTransform()->getPosition().z };
 				jsonFile["Target"][nrOfTargets]["Scale"] = { level.entityManager->getEntity(i)->getTransform()->getScale().x, level.entityManager->getEntity(i)->getTransform()->getScale().y, level.entityManager->getEntity(i)->getTransform()->getScale().z };
-				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotation().x, level.entityManager->getEntity(i)->getTransform()->getRotation().y, level.entityManager->getEntity(i)->getTransform()->getRotation().z };
+				jsonFile["Target"][nrOfTargets]["Rotation"] = { level.entityManager->getEntity(i)->getTransform()->getRotationQuat().x, level.entityManager->getEntity(i)->getTransform()->getRotationQuat().y, level.entityManager->getEntity(i)->getTransform()->getRotationQuat().z };
 				nrOfTargets++;
 			}
 		}

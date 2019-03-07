@@ -34,7 +34,7 @@ void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3
 	}
 	// Create wall buffer
 	createWallBuffers();
-	
+
 	// Create infinity plane
 	createInfinityPlane(level);
 }
@@ -63,7 +63,7 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
 		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
 			angle = -angle;
-		trans->setRotation(glm::vec3(0.0f, angle, 0.0f));
+		trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
 
 		float dist = glm::length(width);
 		glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
@@ -84,7 +84,7 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 		}
 
 		// Save upper wall points
-		this->wallPoints.push_back({p1->x, this->height, p1->z});
+		this->wallPoints.push_back({ p1->x, this->height, p1->z });
 
 		// Add collision
 		level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
@@ -95,6 +95,148 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 		// Save entity pointer
 		this->wallEntites.push_back(entity);
 	}
+}
+
+void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point)
+{
+	int first = 0;
+	int last = wallGroupsIndex[wallGroupIndex];
+	for (int i = 0; i < wallGroupIndex; i++) {
+		first += wallGroupsIndex[i];
+		last += wallGroupsIndex[i];
+	}
+
+	Model* model = this->quad;
+	Mesh* mesh = model->getMesh(0);
+
+	Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(this->wallEntites.size()));
+	Transform* trans = entity->getTransform();
+
+	glm::vec3 p1 = point;
+	glm::vec3* p2 = &wallPoints[first];
+
+	glm::vec3 width = *p2 - p1;
+
+	float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+		angle = -angle;
+	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+
+	float dist = glm::length(width);
+	glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
+	trans->setScale(scale);
+
+	trans->setPosition(p1);
+
+	entity->setModel(model);
+
+	this->scales.insert(scales.begin() + last, glm::vec2(glm::length(width), this->height));
+
+	std::vector<Vertex> vertex(mesh->getVerticies().size());
+	unsigned index = 0;
+	for (Vertex& v : mesh->getVerticies())
+	{
+		vertex[index++].Position = scale * v.Position;
+	}
+
+	// Save upper wall points
+	this->wallPoints.insert(wallPoints.begin() + last, { p1.x, this->height, p1.z });
+
+	// Add collision
+	level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
+	trans->setScale(glm::vec3(1.f, 1.f, 1.f));
+	level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), this->wallEntites.size());
+	trans->setScale(scale);
+
+	// Save entity pointer
+	this->wallEntites.insert(wallEntites.begin() + last, entity);
+
+	//Update the point before our new one
+	entity = wallEntites[last - 1];
+	trans = entity->getTransform();
+
+	p2 = &wallPoints[last - 1];
+
+	width = *p2 - p1;
+
+	angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+		angle = -angle;
+	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+
+	dist = glm::length(width);
+	scale = glm::vec3(dist, this->height, 1.0f);
+	trans->setScale(scale);
+
+	trans->setPosition(*p2);
+	trans->setScale(width);
+
+	wallGroupsIndex[wallGroupIndex]++;
+
+	updateBuffers();
+}
+
+void LevelStructure::editPoint(Level & level, int wallGroupIndex, int point, glm::vec3 newPoint)
+{
+	int prev = (point - 1) % wallGroupsIndex[wallGroupIndex];
+	int next = (point + 1) % wallGroupsIndex[wallGroupIndex];
+	for (int i = 0; i < wallGroupIndex; i++) {
+		prev += wallGroupsIndex[i];
+		next += wallGroupsIndex[i];
+	}
+
+	Model* model = this->quad;
+	Mesh* mesh = model->getMesh(0);
+
+	Entity* entity = wallEntites[point];
+	Transform* trans = entity->getTransform();
+
+	glm::vec3 p1 = newPoint;
+	glm::vec3* p2 = &wallPoints[prev];
+
+	glm::vec3 width = *p2 - p1;
+
+	float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+		angle = -angle;
+	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+
+	float dist = glm::length(width);
+	glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
+	trans->setScale(scale);
+
+	trans->setPosition(p1);
+
+	this->scales.push_back(glm::vec2(glm::length(width), this->height));
+
+	std::vector<Vertex> vertex(mesh->getVerticies().size());
+	unsigned index = 0;
+	for (Vertex& v : mesh->getVerticies())
+	{
+		vertex[index++].Position = scale * v.Position;
+	}
+
+	//Update the point after our new one
+	entity = wallEntites[next];
+	trans = entity->getTransform();
+
+	p2 = &wallPoints[next];
+
+	width = *p2 - p1;
+
+	angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+		angle = -angle;
+	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+
+	dist = glm::length(width);
+	scale = glm::vec3(dist, this->height, 1.0f);
+	trans->setScale(scale);
+
+	trans->setPosition(*p2);
+	trans->setScale(width);
+
+	updateBuffers();
 }
 
 std::vector<glm::vec3>& LevelStructure::getWallPoints()
@@ -224,6 +366,18 @@ void LevelStructure::createWallBuffers()
 	AttributeLayout scaleLayout;
 	scaleLayout.push(2, 1);
 	mesh->addBuffer(&this->scales[0], this->scales.size() * sizeof(glm::vec2), scaleLayout);
+}
+
+void LevelStructure::updateBuffers()
+{
+	std::vector<glm::mat4> mats;
+	for (unsigned i = 0; i < this->wallEntites.size(); i++) {
+		mats.push_back(this->wallEntites[i]->getTransform()->getMatrix());
+	}
+
+	Mesh* mesh = this->quad->getMesh(0);
+
+	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, mesh->getBufferID());
 }
 
 void LevelStructure::createInfinityPlane(Level& level)
