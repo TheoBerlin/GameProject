@@ -117,16 +117,19 @@ void AimPhase::commonSetup()
 	/*
 		Add camera to arrow entity
 	*/
-    glm::vec3 camOffset = arrowCamSettings.offset;
+	glm::vec3 camOffset = arrowCamSettings.offset;
+	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
+	arrowCam->setFOV(arrowCamSettings.FOV);
+	arrowCam->init();
 
+	Display::get().getRenderer().setActiveCamera(arrowCam);
 
 	arrowGuider->startAiming();
 
 	// Reset targets
 	level.targetManager->resetTargets();
 
-	Display::get().getRenderer().setActiveCamera(arrowCam);
 
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);

@@ -64,7 +64,6 @@ private:
 	int windowHeight;
     void updateCamera(const float& dt, const float& turnFactorsLength);
 
-    int windowHeight;
     // Max turn speed measured in radians
     float maxTurnSpeed;
     // Mouse movement, relative to window height, required to reach max turn speed

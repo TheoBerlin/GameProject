@@ -88,7 +88,7 @@ void ArrowGuider::update(const float& dt)
 		if (this->isAccelerating) {
 			if (this->movementSpeed < this->maxSpeedIncrease) {
 				this->movementSpeed += acceleration * dt;
-				this->maxTurnSpeed += acceleration * dt * 0.2;
+				this->maxTurnSpeed += acceleration * dt * 0.2f;
 			}
 			else
 				this->movementSpeed = this->maxSpeedIncrease;
@@ -96,7 +96,7 @@ void ArrowGuider::update(const float& dt)
 		else {
 			if (this->movementSpeed > this->minSpeedDecrease) {
 				this->movementSpeed -= acceleration * dt;
-				this->maxTurnSpeed -= acceleration * dt * 0.2;
+				this->maxTurnSpeed -= acceleration * dt * 0.2f;
 			}
 			else
 				this->movementSpeed = this->minSpeedDecrease;
@@ -112,10 +112,7 @@ void ArrowGuider::update(const float& dt)
 
 	if (arrowCamera) {
 		float speedOffsetFactor = (this->movementSpeed - this->minSpeedDecrease) / (this->maxSpeedIncrease - this->minSpeedDecrease);
-
-		glm::vec3 offset = this->maxCamOffset * speedOffsetFactor + this->minCamOffset * (1.0f - speedOffsetFactor);
-
-		this->updateCamera(dt, turnFactorsLength);
+		this->updateCamera(dt, turnFactorsLength + speedOffsetFactor);
 	}
 }
 
