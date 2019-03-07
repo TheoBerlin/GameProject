@@ -75,7 +75,7 @@ Pipeline::Pipeline()
 		if (i != SHADERS::INFINITY_PLANE_PREPASS) {
 			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
-			this->addUniformBuffer(3, this->entityShaders[i]->getID(), "LightBuffer");
+			this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
 		}
 	}
 }
@@ -446,7 +446,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
 	}
 
-	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+	this->uniformBuffers[2]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
@@ -472,12 +472,12 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 	EntityShader* eShader = this->entityShaders[SHADERS::INFINITY_PLANE];
 	InfinityPlaneShader* infPlaneShader = dynamic_cast<InfinityPlaneShader*>(eShader);
 	if (infPlaneShader)
-		this->addUniformBuffer(2, infPlaneShader->getID(), "WallPoints");
+		this->addUniformBuffer(3, infPlaneShader->getID(), "WallPoints");
 
 	eShader = this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS];
 	InfinityPlanePrePassShader* infPlanePrePassShader = dynamic_cast<InfinityPlanePrePassShader*>(eShader);
 	if (infPlanePrePassShader)
-		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
+		this->addUniformBuffer(3, infPlanePrePassShader->getID(), "WallPoints");
 
 
 	if (infPlaneShader != nullptr)
@@ -499,7 +499,7 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 				value += wallGroupsIndex[++index];
 			data.points[i] = glm::vec4(wallPoints[i], (float)(wallGroupsIndex[index]));
 		}
-		this->uniformBuffers[2]->setSubData((void*)&data, sizeof(WallPointsData), 0);
+		this->uniformBuffers[3]->setSubData((void*)&data, sizeof(WallPointsData), 0);
 	}
 }
 
