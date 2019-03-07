@@ -1,4 +1,3 @@
-#define GLM_FORCE_SWIZZLE
 #include "Transform.h"
 #include <glm/gtx/vector_angle.hpp>
 
