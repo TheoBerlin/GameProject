@@ -88,21 +88,22 @@ Camera* AimPhase::getArrowCam() const
 
 void AimPhase::commonSetup()
 {
+    CameraSetting arrowCamSettings = level.player.arrowCamera;
+
+	/*
+		Add arrowguider to entity
+	*/
+	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
+
 	/*
 		Add camera to arrow entity
 	*/
-    CameraSetting arrowCamSettings = level.player.arrowCamera;
-
     glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
     arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
 
-	/*
-		Add arrowguider to entity
-	*/
-	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
 	arrowGuider->startAiming();
 
 	// Reset targets
@@ -136,7 +137,11 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_1) {
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 

@@ -10,11 +10,11 @@ Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec
 	this->zNear = ZNEAR;
 	this->zFar = ZFAR;
 	this->offset = offset;
+    this->decoupled = false;
 
 	// Set subscribe to resize event to update camera
 	EventBus::get().subscribe(this, &Camera::updateProj);
 }
-
 
 Camera::~Camera()
 {
@@ -23,7 +23,10 @@ Camera::~Camera()
 
 void Camera::update(const float & dt)
 {
-	updatePosition();
+    if (!decoupled) {
+	    updateTransform();
+    }
+
 	updateView();
 }
 
@@ -31,15 +34,10 @@ void Camera::init()
 {
 	// Init camera
 	setForward(getHost()->getTransform()->getForward());
-	updatePosition();
+	updateTransform();
 
 	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 	updateView();
-}
-
-glm::vec3 Camera::getUp()
-{
-	return this->getHost()->getTransform()->getUp();
 }
 
 glm::vec3 Camera::getForward() const
@@ -50,7 +48,7 @@ glm::vec3 Camera::getForward() const
 void Camera::setForward(const glm::vec3 & forward)
 {
 	this->f = glm::normalize(forward);
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
+	this->r = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
 	this->u = glm::cross(this->r, this->f);
 }
 
@@ -106,13 +104,21 @@ glm::vec3 Camera::getOffset() const
 void Camera::setOffset(const glm::vec3& offset)
 {
 	this->offset = offset;
+}
 
-	updatePosition();
+void Camera::decouple()
+{
+    this->decoupled = true;
+}
+
+bool Camera::isDecoupled() const
+{
+	return this->decoupled;
 }
 
 void Camera::updateView()
 {
-	this->view = glm::lookAt(this->pos, this->pos + this->getHost()->getTransform()->getForward(), GLOBAL_UP_VECTOR);
+	this->view = glm::lookAt(this->pos, this->pos + this->f, GLOBAL_UP_VECTOR);
 }
 
 void Camera::updateProj(WindowResizeEvent * evnt)
@@ -120,14 +126,15 @@ void Camera::updateProj(WindowResizeEvent * evnt)
 	this->proj = glm::perspective(glm::radians(this->fov), Display::get().getRatio(), this->zNear, this->zFar);
 }
 
-
-void Camera::updatePosition()
+void Camera::updateTransform()
 {
-	glm::vec3 hostPos = getHost()->getTransform()->getPosition();
 	Transform* transform = host->getTransform();
 
-	// Calculate a horizontal right vector
-	glm::vec3 rightVec = glm::normalize(glm::cross(transform->getForward(), GLOBAL_UP_VECTOR));
+	glm::vec3 hostPos = transform->getPosition();
 
-	this->pos = hostPos + (rightVec * this->offset.x + transform->getUp() * this->offset.y + transform->getForward() * this->offset.z);
+    this->f = transform->getForward();
+    this->r = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
+	this->u = glm::cross(this->r, this->f);
+
+	this->pos = hostPos + (this->r * this->offset.x + transform->getUp() * this->offset.y + this->f * this->offset.z);
 }

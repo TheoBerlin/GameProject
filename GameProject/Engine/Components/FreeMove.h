@@ -12,8 +12,11 @@ public:
 
 	void update(const float& dt);
 
+	void toggleMouse();
 	void enableMouse();
 	void disableMouse();
+
+	bool mouseIsEnabled() const;
 
 private:
 	float dt;

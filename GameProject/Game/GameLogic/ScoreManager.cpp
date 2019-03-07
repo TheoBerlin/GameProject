@@ -1,11 +1,11 @@
 #include "ScoreManager.h"
 
-#include "Utils/Timer.h"
+#include <Engine/Events/EventBus.h>
 #include "Engine/GUI/Panel.h"
 #include "Engine/GUI/Button.h"
 #include "Engine/GUI/GUI.h"
 #include "Game/Level/Level.h"
-
+#include "Utils/Timer.h"
 #include "Utils/Logger.h"
 
 ScoreManager::ScoreManager()
@@ -113,7 +113,7 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	miniBtn->addText("MINIMIZE", "aldo", textColor);
 
 	// assign callback function
-	std::function<void(void)> callback = std::bind(&ScoreManager::guiCallback, this);
+	std::function<void(void)> callback = std::bind(&ScoreManager::toggleGuiMinimize, this);
 	miniBtn->setCallback(callback);
 	smallPanel->setCallback(callback);
 	bigPanel->addChild(miniBtn);
@@ -142,7 +142,9 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	exitBtn->setOption(GUI::TEXT_CENTER_Y);
 	exitBtn->setHoverColor(hoverColor);
 	exitBtn->setPressedColor(pressColor);
-	exitBtn->setCallback([](void) { printf("add exit\n"); });
+	exitBtn->setCallback([](void) {
+		EventBus::get().publish(&ExitEvent());
+	});
 	bigPanel->addChild(exitBtn);
 
 	// Add retry button
@@ -160,7 +162,7 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 
 	// Set initial state
 	this->minimized = true;
-	guiCallback();
+	toggleGuiMinimize();
 	this->showGui = true;
 }
 
@@ -180,7 +182,7 @@ void ScoreManager::removeResultsGUI(Level& level)
 	this->showGui = false;
 }
 
-void ScoreManager::guiCallback()
+void ScoreManager::toggleGuiMinimize()
 {
 	int width = Display::get().getWidth();
 	if (this->minimized)
