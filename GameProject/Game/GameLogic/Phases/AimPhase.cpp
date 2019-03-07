@@ -112,6 +112,9 @@ void AimPhase::commonSetup()
 
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void AimPhase::handleMouseClick(MouseClickEvent* event)
