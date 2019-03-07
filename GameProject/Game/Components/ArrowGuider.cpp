@@ -84,38 +84,7 @@ void ArrowGuider::update(const float& dt)
     }
 
 	if (arrowCamera) {
-		// Update camera settings using turn factors
-		// Camera FOV
-		float currentFOV = arrowCamera->getFOV();
-
-		// Linearly interpolate between min and max FOV
-		float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
-
-		// Gradually increase FOV
-		float deltaFOV = (desiredFOV - currentFOV) * dt;
-
-		// Limit FOV change per second
-		if (std::abs(deltaFOV) > FOVChangeMax) {
-			deltaFOV *= deltaFOV / FOVChangeMax;
-		}
-
-		arrowCamera->setFOV(currentFOV + deltaFOV);
-
-		// Camera offset
-		glm::vec3 currentOffset = arrowCamera->getOffset();
-
-		// Linearly interpolate between min and max offset
-		glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
-
-		// Gradually increase offset
-		glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
-
-		// Limit offset change per second
-		if (glm::length(deltaOffset) > offsetChangeMax) {
-			deltaOffset *= deltaOffset / offsetChangeMax;
-		}
-
-		arrowCamera->setOffset(currentOffset + deltaOffset);
+        this->updateCamera(dt, turnFactorsLength);
 	}
 }
 
@@ -133,6 +102,9 @@ void ArrowGuider::startAiming()
 		// Set camera settings
 		arrowCamera->setFOV(minFOV);
 		arrowCamera->setOffset(minCamOffset);
+
+        // Decouple the camera to allow for drifting
+        arrowCamera->decouple();
 	}
 
     // Subscribe to mouse movement for guiding
@@ -269,6 +241,7 @@ void ArrowGuider::applyTurn(const float& dt)
     turnFactors.y /= 1.0f + turnFactorFalloff * dt;
 
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
+    //glm::vec2 yawPitch;
     float yaw = -turnFactors.x * maxTurnSpeed * dt;
     float pitch = -turnFactors.y * maxTurnSpeed * dt;
 
@@ -284,4 +257,96 @@ void ArrowGuider::applyTurn(const float& dt)
     currentPitch += pitch;
 
     host->getTransform()->rotate(yaw, pitch);
+}
+
+void ArrowGuider::updateCamera(const float& dt, const float& turnFactorsLength)
+{
+    // Update camera settings using turn factors
+    // Camera FOV
+    float currentFOV = arrowCamera->getFOV();
+
+    // Linearly interpolate between min and max FOV
+    float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
+
+    // Gradually increase FOV
+    float deltaFOV = (desiredFOV - currentFOV) * dt;
+
+    // Limit FOV change per second
+    if (std::abs(deltaFOV) > FOVChangeMax) {
+        deltaFOV *= deltaFOV / FOVChangeMax;
+    }
+
+    arrowCamera->setFOV(currentFOV + deltaFOV);
+
+    // Camera offset
+    glm::vec3 currentOffset = arrowCamera->getOffset();
+
+    // Linearly interpolate between min and max offset
+    glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
+
+    // Gradually increase offset
+    glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
+
+    // Limit offset change per second
+    if (glm::length(deltaOffset) > offsetChangeMax) {
+        deltaOffset *= deltaOffset / offsetChangeMax;
+    }
+
+    glm::vec3 newOffset = currentOffset + deltaOffset;
+
+    arrowCamera->setOffset(newOffset);
+
+    /*
+        Drift camera logic: the camera is slowly dragged directly behind the arrow (with an offset)
+        The camera is always facing the arrow
+    */
+    Transform* transform = host->getTransform();
+
+    glm::vec3 arrowPos = transform->getPosition();
+    glm::vec3 arrowForward = transform->getForward();
+
+    glm::vec3 camPos = arrowCamera->getPosition();
+
+    // Desired position is arrow position + offset
+    glm::vec3 desiredPosition = arrowPos + (transform->getRight() * newOffset.x + transform->getUp() * newOffset.y + arrowForward * newOffset.z);
+
+    // Point the camera wants to look at and is rotated around when drifting
+    float offsetDistance = glm::length(arrowPos - desiredPosition);
+    glm::vec3 lookAt = desiredPosition + arrowForward * offsetDistance;
+
+    glm::vec3 camForward = glm::normalize(lookAt - camPos);
+
+    // Angle between forward vectors
+    float forwardAngle = std::acosf(glm::dot(camForward, arrowForward));
+
+    if (forwardAngle > FLT_EPSILON * 10.0f) {
+        // Calculate the angle to rotate the forward by
+        float rotationAngle;
+
+        if (forwardAngle > maxForwardAngle) {
+            // The angle differential is too large, snap the forward to the maximum allowed forward differential
+            rotationAngle = glm::max(angleCorrectionFactor * dt * forwardAngle, forwardAngle - maxForwardAngle);
+        } else {
+            // Smoothly rotate the forward
+            rotationAngle = glm::min(angleCorrectionFactor * dt * forwardAngle, forwardAngle);
+        }
+
+        // Limit rotation angle in case of a large dt
+        rotationAngle = glm::min(rotationAngle, forwardAngle);
+
+        // Rotate camera forward
+        glm::vec3 rotationAxis = glm::normalize(glm::cross(camForward, arrowForward));
+
+        glm::quat rotation = {1.0f, 0.0f, 0.0f, 0.0f};
+
+        rotation = glm::rotate(rotation, rotationAngle, rotationAxis);
+
+        camForward = rotation * camForward;
+    }
+
+    // Reposition camera
+    camPos = lookAt - camForward * offsetDistance;
+
+    arrowCamera->setForward(camForward);
+    arrowCamera->setPosition(camPos);
 }

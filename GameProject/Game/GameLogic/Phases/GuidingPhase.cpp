@@ -101,9 +101,9 @@ void GuidingPhase::beginReplayTransition()
 
     Transform* arrowTransform = playerArrow->getTransform();
 
-    currentCamSettings.position = arrowTransform->getPosition();
-    currentCamSettings.direction = arrowTransform->getForward();
-    currentCamSettings.offset = arrowCam->getOffset();
+    currentCamSettings.position = arrowCam->getPosition();
+    currentCamSettings.direction = arrowCam->getForward();
+    currentCamSettings.offset = {0.0f, 0.0f, 0.0f};
     currentCamSettings.FOV = arrowCam->getFOV();
 
     CameraSetting newCamSettings = level.player.replayCamera;

@@ -17,8 +17,6 @@ public:
 	// Update called by entity
 	void update(const float& dt);
 
-	// Returns the cameras up-vector
-	glm::vec3 getUp();
 	// Returns the cameras forward-vector
 	glm::vec3 getForward() const;
 
@@ -44,16 +42,21 @@ public:
 	glm::vec3 getOffset() const;
 	void setOffset(const glm::vec3& offset);
 
+	void decouple();
+	bool isDecoupled() const;
+
 private:
 	glm::vec3 f, u, r, offset, pos;
 	glm::mat4 view, proj;
 	float fov, zNear, zFar;
+
+	// A decoupled camera does not copy its entity's transform every update and has to be updated through set-functions
+	bool decoupled;
 
 	void updateView();
 	void updateProj(WindowResizeEvent * evnt);
 
 	// Set the forward-vector and in the process the right and up vector aswell
 	// Update camera's position relative to the parent entity
-	void updatePosition();
+	void updateTransform();
 };
-
