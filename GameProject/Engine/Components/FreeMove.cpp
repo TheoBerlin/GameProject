@@ -9,11 +9,10 @@
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
 	EventBus::get().subscribe(this, &FreeMove::moveKeyboard);
-	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
 	this->speed = 5.0f;
 	this->sensitivity = Settings::get().getMouseSensitivity();
-	this->mouseLock = false;
+	this->enableMouse();
 	this->xPos = 0;
 	this->yPos = 0;
 
@@ -31,7 +30,6 @@ FreeMove::~FreeMove()
 {
 	EventBus::get().unsubscribe(this, &FreeMove::moveKeyboard);
 	EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
-	EventBus::get().unsubscribe(this, &FreeMove::clickMouse);
 }
 
 void FreeMove::update(const float & dt)
@@ -81,35 +79,34 @@ void FreeMove::update(const float & dt)
 	}
 }
 
+void FreeMove::enableMouse()
+{
+	if (!this->mouseEnabled) {
+		EventBus::get().subscribe(this, &FreeMove::moveMouse);
+
+		this->mouseEnabled = true;
+	}
+}
+
+void FreeMove::disableMouse()
+{
+	if (this->mouseEnabled) {
+		EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
+
+		this->mouseEnabled = false;
+	}
+}
+
 void FreeMove::moveKeyboard(KeyEvent * evnt)
 {
 	if (evnt->action == GLFW_PRESS)
 		this->pressedKeys[evnt->key] = true;
 	else if (evnt->action == GLFW_RELEASE)
 		this->pressedKeys[evnt->key] = false;
-
-	// Toggle keys
-	if (evnt->key == GLFW_KEY_C && evnt->action == GLFW_PRESS)
-	{
-		this->mouseLock = !this->mouseLock;
-
-		if (this->mouseLock) {
-			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-			EventBus::get().subscribe(this, &FreeMove::moveMouse);
-		} else {
-			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
-		}
-	}
 }
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
 	this->xPos = evnt->deltaX;
 	this->yPos = evnt->deltaY;
-}
-
-void FreeMove::clickMouse(MouseClickEvent * evnt)
-{
 }

@@ -12,17 +12,19 @@ public:
 
 	void update(const float& dt);
 
+	void enableMouse();
+	void disableMouse();
+
 private:
 	float dt;
 	float speed;
 	float sensitivity;
 	float currentPitch;
 	float maxPitch = glm::half_pi<float>() - 0.01f;
-	bool mouseLock;
+	bool mouseEnabled;
 	int xPos, yPos;
 	std::unordered_map<unsigned, bool> pressedKeys;
 
 	void moveKeyboard(KeyEvent * evnt);
 	void moveMouse(MouseMoveEvent * evnt);
-	void clickMouse(MouseClickEvent * evnt);
 };
