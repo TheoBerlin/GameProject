@@ -2,7 +2,6 @@
 
 #include <Engine/Rendering/Display.h>
 #include <Engine/Events/EventBus.h>
-#include <Game/GameLogic/GameEvents.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
