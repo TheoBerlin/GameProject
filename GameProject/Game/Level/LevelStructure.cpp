@@ -151,7 +151,7 @@ Model * LevelStructure::createQuad()
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
-	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::DEFAULT, false);
+	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::WALL, false);
 
 	return quad;
 }
