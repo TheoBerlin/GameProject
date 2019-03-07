@@ -20,6 +20,11 @@ public:
 	void updateMeshData(unsigned texId);
 	void updateLightMatrixData(glm::mat4 * lightSpaceMatrix);
 
+	void setCameraUniform(const std::string& uniformName = "vp");
+	void setShadowBufferUniform(const std::string& uniformName = "shadowTex");
+	void setLightSpaceMatrixUniform(const std::string& uniformName = "lightMatrix");
+	void setCamPosUniform(const std::string& uniformName = "camPos");
+
 	virtual void update(const float& dt);
 
 	float getTime();

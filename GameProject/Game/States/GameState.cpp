@@ -33,6 +33,7 @@ GameState::GameState(const std::string& levelJSON)
 	level.gui = &this->getGUI();
 	level.replaySystem = &this->replaySystem;
 	level.scoreManager = &this->scoreManager;
+	level.levelStructure = &this->levelStructure;
 	level.lightManager = &this->lightManager;
 
 	levelParser.readLevel(levelJSON, level);
@@ -41,6 +42,7 @@ GameState::GameState(const std::string& levelJSON)
 
 	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().initInstancing();
+	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
 	InputHandler ih(Display::get().getWindowPtr());
 
@@ -53,7 +55,7 @@ GameState::~GameState()
 {
 	delete targetManager;
 
-	Display::get().getRenderer().clearRenderingModels();
+	Display::get().getRenderer().clearRenderingTargets();
 
 	// Delete all loaded models
 	ModelLoader::unloadAllModels();
