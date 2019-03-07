@@ -1,12 +1,13 @@
 #include "PauseState.h"
 
-#include <Engine/Events/EventBus.h>
-#include <Engine/GUI/Text.h>
-#include <Engine/GUI/Panel.h>
-#include <Engine/GUI/Button.h>
 #include "Engine/Rendering/Display.h"
 #include "Engine/Rendering/GUIRenderer.h"
 #include "Engine/Rendering/Renderer.h"
+#include "Engine/Events/EventBus.h"
+
+#include "../../Engine/GUI/Text.h"
+#include "../../Engine/GUI/Panel.h"
+#include "../../Engine/GUI/Button.h"
 
 PauseState::PauseState()
 {
@@ -28,6 +29,8 @@ void PauseState::start()
 {
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+
 }
 
 void PauseState::end()
@@ -73,6 +76,7 @@ void PauseState::render()
 
 void PauseState::initPanelLayout()
 {
+
 	GUI& gui = this->getGUI();
 
 	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };

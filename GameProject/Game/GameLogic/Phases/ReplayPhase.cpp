@@ -99,6 +99,7 @@ void ReplayPhase::update(const float& dt)
         glm::uvec2 sliderPos = {timeBarSidePadding * screenWidth + timeBarSize.x - sliderSize.x / 2, screenHeight * timeBarBottomPadding};
         timeBarSlider->setPosition(sliderPos);
 
+
         // Display results when the replay finishes
         if (replayTime > flightTime && !level.scoreManager->resultsVisible())
         {
@@ -136,22 +137,8 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    // Minimize / enlarge results GUI
-    if (event->key == GLFW_KEY_ESCAPE && level.scoreManager->resultsVisible()) {
-        level.scoreManager->toggleGuiMinimize();
-    }
-
-    else if (event->key == GLFW_KEY_2) {
+    if (event->key == GLFW_KEY_2) {
         beginAimTransition();
-    } else if (event->key == GLFW_KEY_C) {
-        // Toggle mouse lock
-        if (freeMove->mouseIsEnabled()) {
-            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        } else {
-            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
-
-        freeMove->toggleMouse();
     }
 }
 

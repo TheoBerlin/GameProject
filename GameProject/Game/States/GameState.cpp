@@ -1,19 +1,24 @@
 #include "GameState.h"
 
-#include <Engine/Collision/CollisionConfig.h>
-#include <Engine/Components/FreeMove.h>
-#include <Engine/Components/Camera.h>
-#include "Engine/Config.h"
 #include <Engine/States/StateManager.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/Rendering/Display.h>
-#include <Engine/Rendering/GUIRenderer.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Engine/GUI/GUI.h>
+#include <Engine/Rendering/GUIRenderer.h>
+
+#include <Engine/Components/FreeMove.h>
+#include <Engine/Components/Camera.h>
 #include <Engine/InputHandler.h>
+
+#include <Engine/Collision/CollisionConfig.h>
+
 #include <Game/GameLogic/TargetManager.h>
-#include <Game/Components/ArrowGuider.h>
-#include <Game/States/PauseState.h>
+#include "Game/components/ArrowGuider.h"
+
+#include "Game/States/PauseState.h"
+
+#include "Engine/Config.h"
 
 GameState::GameState(const std::string& levelJSON)
 {
@@ -42,10 +47,9 @@ GameState::GameState(const std::string& levelJSON)
 
 	InputHandler ih(Display::get().getWindowPtr());
 
-	EventBus::get().subscribe(this, &GameState::exitGame);
-
 	//For pause event
 	this->hasSubscribedToPause = false;
+
 }
 
 GameState::~GameState()
@@ -80,7 +84,6 @@ void GameState::end()
 		entity->detachFromModel();
 
 	EventBus::get().unsubscribe(this, &GameState::pauseGame);
-	EventBus::get().unsubscribe(this, &GameState::exitGame);
 	this->hasSubscribedToPause = false;
 }
 
@@ -144,12 +147,10 @@ void GameState::render()
 	guiRenderer.draw(gui);
 }
 
-void GameState::pauseGame(PauseEvent* ev)
+void GameState::pauseGame(KeyEvent * ev)
 {
-	this->pushState(new PauseState());
-}
+	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
 
-void GameState::exitGame(ExitEvent* ev)
-{
-	this->popState();
+		this->pushState(new PauseState());
+	}
 }

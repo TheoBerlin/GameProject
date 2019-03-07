@@ -30,12 +30,3 @@ struct CameraTransitionEvent : public Event
 	CameraTransitionEvent(Entity* host) : host{ host } {};
 	Entity* host;
 };
-
-struct PauseEvent : public Event
-{
-};
-
-// Signals to exit game state
-struct ExitEvent : public Event
-{
-};

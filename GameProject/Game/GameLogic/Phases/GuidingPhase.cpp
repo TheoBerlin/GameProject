@@ -73,11 +73,7 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_ESCAPE) {
-        EventBus::get().publish(&PauseEvent());
-    }
-
-    else if (event->key == GLFW_KEY_3) {
+    if (event->key == GLFW_KEY_3) {
         beginReplayTransition();
     }
 }
@@ -101,9 +97,9 @@ void GuidingPhase::beginReplayTransition()
 
     Transform* arrowTransform = playerArrow->getTransform();
 
-    currentCamSettings.position = arrowCam->getPosition();
-    currentCamSettings.direction = arrowCam->getForward();
-    currentCamSettings.offset = {0.0f, 0.0f, 0.0f};
+    currentCamSettings.position = arrowTransform->getPosition();
+    currentCamSettings.direction = arrowTransform->getForward();
+    currentCamSettings.offset = arrowCam->getOffset();
     currentCamSettings.FOV = arrowCam->getFOV();
 
     CameraSetting newCamSettings = level.player.replayCamera;

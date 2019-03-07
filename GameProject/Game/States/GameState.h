@@ -2,6 +2,7 @@
 
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Events/EventBus.h"
+#include "Engine/Events/Events.h"
 #include <Engine/States/State.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
@@ -22,8 +23,7 @@ public:
 	void updateLogic(const float dt) override;
 	void render() override;
 private:
-	void pauseGame(PauseEvent * ev);
-	void exitGame(ExitEvent* ev);
+	void pauseGame(KeyEvent * ev);
 
 	bool hasSubscribedToPause;
 

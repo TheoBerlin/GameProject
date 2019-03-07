@@ -36,9 +36,6 @@ public:
 
 	void removeResultsGUI(Level& level);
 
-	// Callback function for results gui
-	void toggleGuiMinimize();
-
 private:
 	bool counting;
 	unsigned totalScore;
@@ -55,5 +52,7 @@ private:
 	Panel* smallPanel;
 	Panel* bigPanel;
 
+	// Callback function for results gui
+	void guiCallback();
 };
 

@@ -92,11 +92,7 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_ESCAPE) {
-        EventBus::get().publish(&PauseEvent());
-    }
-
-    else if (event->key == GLFW_KEY_2) {
+    if (event->key == GLFW_KEY_2) {
         EventBus::get().unsubscribe(this, &OverviewPhase::handleKeyInput);
 
         // Remove oversight control

@@ -79,15 +79,6 @@ void FreeMove::update(const float & dt)
 	}
 }
 
-void FreeMove::toggleMouse()
-{
-	if (this->mouseEnabled) {
-		disableMouse();
-	} else {
-		enableMouse();
-	}
-}
-
 void FreeMove::enableMouse()
 {
 	if (!this->mouseEnabled) {
@@ -104,11 +95,6 @@ void FreeMove::disableMouse()
 
 		this->mouseEnabled = false;
 	}
-}
-
-bool FreeMove::mouseIsEnabled() const
-{
-	return this->mouseEnabled;
 }
 
 void FreeMove::moveKeyboard(KeyEvent * evnt)
