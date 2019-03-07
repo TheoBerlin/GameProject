@@ -3,7 +3,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
-#include <Game/GameLogic/AimPhase.h>
+#include <Game/GameLogic/Phases/AimPhase.h>
 #include <Engine/Components/PlayerCollision.h>
 #include <Game/Components/OversightController.h>
 
@@ -81,6 +81,9 @@ void OverviewPhase::commonSetup()
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &OverviewPhase::handleKeyInput);
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void OverviewPhase::handleKeyInput(KeyEvent* event)

@@ -72,6 +72,8 @@ void ArrowGuider::update(const float& dt)
             newKeyPoint.t = flightTime;
 
             path.push_back(newKeyPoint);
+
+            allowKeypointOverride = true;
         }
 
         // Update arrow position
@@ -133,9 +135,6 @@ void ArrowGuider::startAiming()
 		arrowCamera->setOffset(minCamOffset);
 	}
 
-    // Lock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     // Subscribe to mouse movement for guiding
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
 }
@@ -148,9 +147,6 @@ void ArrowGuider::stopAiming()
 
     turnFactors.x = 0.0f;
     turnFactors.y = 0.0f;
-
-    // Unlock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void ArrowGuider::startGuiding()
@@ -161,6 +157,9 @@ void ArrowGuider::startGuiding()
 
     isGuiding = true;
     flightTime = 0.0f;
+
+    // Do not allow the starting point to be overwritten
+    allowKeypointOverride = false;
 
     // Clear previous path and store starting position
     path.clear();
@@ -191,12 +190,14 @@ void ArrowGuider::stopGuiding(float flightTime)
 void ArrowGuider::saveKeyPoint(float flightTime)
 {
     // Do not save the key point if one was just saved during the same frame update
-    if (posStoreTimer < FLT_EPSILON * 10.0f) {
+    if (posStoreTimer < FLT_EPSILON * 10.0f || !allowKeypointOverride) {
         return;
     }
 
     posStoreTimer = 0.0f;
     path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+
+    allowKeypointOverride = false;
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)

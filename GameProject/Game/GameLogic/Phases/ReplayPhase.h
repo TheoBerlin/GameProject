@@ -3,7 +3,7 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/GUI/Button.h>
 #include <Engine/GUI/Panel.h>
-#include <Game/GameLogic/Phase.h>
+#include <Game/GameLogic/Phases/Phase.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/PathVisualizer.h>
 
@@ -26,7 +26,8 @@ public:
 private:
     void handleKeyInput(KeyEvent* event);
 
-    void transitionToAim(CameraTransitionEvent* event);
+    void beginAimTransition();
+    void finishAimTransition(CameraTransitionEvent* event);
 
     void setupGUI();
 

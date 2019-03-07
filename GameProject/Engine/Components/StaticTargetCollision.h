@@ -1,5 +1,5 @@
 #pragma once
-#include "../Events/EventBus.h"
+#include <Game/GameLogic/GameEvents.h>
 #include "Component.h"
 
 /*
