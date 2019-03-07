@@ -16,11 +16,6 @@
 class Entity;
 class PostProcessShader;
 
-struct DirectionLight {
-	glm::vec4 direction;
-	glm::vec4 color_intensity;
-};
-
 enum SHADERS {
 	DEFAULT = 0,
 	DRONE_SHADER = 1, // Requires a third vbo with colors bound to location 7.
@@ -98,10 +93,8 @@ public:
 private:
 	Camera * camera;
 	unsigned int width, height;
-	//unsigned int shadowWidth, shadowHeight;
 	Framebuffer fbo;
 	Framebuffer shadowFbo;
-	//glm::mat4 lightSpaceMatrix;
 
 	// Old rendering draw functions
 	void draw(const std::vector<Entity*>& renderingList);					// Old rendering
@@ -128,8 +121,6 @@ private:
 
 	void createQuad();
 	Model* quad;
-
-	DirectionLight mainLight;
 
 	LightManager * lightManager;
 	std::vector<UniformBuffer*> uniformBuffers;

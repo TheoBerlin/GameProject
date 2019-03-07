@@ -151,24 +151,24 @@ void LevelParser::readMetadata(Level& level)
 void LevelParser::readLights(Level & level)
 {
 	int lightSize = jsonFile["PointLights"].size();
-	glm::vec3 position;
-	glm::vec3 color;
-	glm::vec3 direction;
-	glm::vec3 intensity;
+	glm::vec4 position;
+	glm::vec4 color;
+	glm::vec4 direction;
+	glm::vec4 intensity;
 	int distance;
 	for (int i = 0; i < lightSize; i++) {
 		json::json& light = jsonFile["PointLights"][i];
-		readVec3(light["Position"], position);
-		readVec3(light["Color"], color);
+		readVec4(light["Position"], position);
+		readVec4(light["Color"], color);
 		distance = light["Distance"];
 
-		level.lightManager->createPointLight(glm::vec4(position, 1.0f), glm::vec4(color, 1.0f), distance);
+		level.lightManager->createPointLight(position, color, distance);
 	}
 	json::json& dLight = jsonFile["DirectionalLight"];
-	readVec3(dLight["Direction"], direction);
-	readVec3(dLight["Intensity"], intensity);
+	readVec4(dLight["Direction"], direction);
+	readVec4(dLight["Intensity"], intensity);
 
-	level.lightManager->createDirectionalLight(glm::vec4(direction, 1.0f), glm::vec4(intensity, 1.0f)); //add a read vec4 instead of adding w as a fixed value
+	level.lightManager->createDirectionalLight(direction, intensity); 
 }
 
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)
@@ -188,6 +188,28 @@ void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 			// Default component
 			vec[j] = 1.0f;
 			LOG_WARNING("Did not find Vec3 component %d (0=X, 1=Y, 2=Z), defaulting to 1", j);
+		}
+	}
+}
+
+void LevelParser::readVec4(json::json & file, glm::vec4 & vec)
+{
+	// Iterate through position components
+	for (int j = 0; j < 4; j++) {
+		// If object exists go ahead otherwise write a default position
+		if (!file[j].empty()) {
+			try {
+				vec[j] = file[j];
+			}
+			catch (const std::exception& e) {
+				LOG_ERROR("Failed to read vector component: %s", e.what());
+				break;
+			}
+		}
+		else {
+			// Default component
+			vec[j] = 1.0f;
+			LOG_WARNING("Did not find Vec4 component %d (0=X, 1=Y, 2=Z, 3 = W), defaulting to 1", j);
 		}
 	}
 }

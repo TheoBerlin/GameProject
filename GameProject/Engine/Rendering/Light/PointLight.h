@@ -1,5 +1,5 @@
 #pragma once
-#include "Utils/Settings.h"
+#include "glm/glm.hpp"
 
 class PointLight
 {

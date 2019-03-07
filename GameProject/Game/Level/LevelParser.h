@@ -30,6 +30,7 @@ private:
 	void readLights(Level& level);
 
 	void readVec3(json::json& file, glm::vec3& vec);
+	void readVec4(json::json& file, glm::vec4& vec);
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 	void readCameraSetting(json::json& file, CameraSetting& camera);
 

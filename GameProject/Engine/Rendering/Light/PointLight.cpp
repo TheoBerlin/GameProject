@@ -56,7 +56,6 @@ PointLight::PointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 		this->quadratic = 0.0002f;
 		break;
 	}
-
 }
 
 PointLight::PointLight()

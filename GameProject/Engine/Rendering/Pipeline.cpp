@@ -363,49 +363,6 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 
 void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
 {
-	
-	//int displayWidth = Display::get().getWidth();
-	//int displayHeight = Display::get().getHeight();
-
-	//Display::get().updateView(int(lm.getShadowWidthScaled()), int(lm.getShadowHeightScaled()));
-
-	//this->shadowFbo.bind();;
-	//this->prePassDepthOn();
-	//this->ZprePassShader->bind();
-
-	////Draw renderingList
-	//this->ZprePassShader->setUniformMatrix4fv("vp", 1, false, &lm.getLightMatrix()[0][0]);
-	//glCullFace(GL_FRONT);
-	//draw(renderingList);
-	//glCullFace(GL_BACK);
-
-	//this->ZprePassShader->unbind();
-	//this->prePassDepthOff();
-	//this->shadowFbo.unbind();
-
-#/*ifdef IMGUI
-	auto drawTexture = [](Texture* texture, bool nextLine = false) {
-		ImTextureID texID = (ImTextureID)texture->getID();
-		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
-		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
-		if (nextLine)
-			ImGui::SameLine();
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::Image(texID, ImVec2(370 * ratio, 370), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
-			ImGui::EndTooltip();
-		}
-	};
-
-	ImGui::Begin("Shadow buffer");
-
-	drawTexture(this->shadowFbo.getDepthTexture());
-
-	ImGui::End();
-#endif
-
-	Display::get().updateView(displayWidth, displayHeight);*/
 }
 
 void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
@@ -428,28 +385,6 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SH
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
-
-#ifdef IMGUI
-	auto drawTexture = [](Texture* texture, bool nextLine = false) {
-		ImTextureID texID = (ImTextureID)texture->getID();
-		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
-		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
-		if (nextLine)
-			ImGui::SameLine();
-		if (ImGui::IsItemHovered())
-		{
-			ImGui::BeginTooltip();
-			ImGui::Image(texID, ImVec2(370 * ratio, 370), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
-			ImGui::EndTooltip();
-		}
-	};
-
-	ImGui::Begin("Shadow buffer");
-
-	drawTexture(this->shadowFbo.getDepthTexture());
-
-	ImGui::End();
-#endif
 
 	Display::get().updateView(displayWidth, displayHeight);
 }
