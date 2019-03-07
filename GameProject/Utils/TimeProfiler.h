@@ -40,6 +40,8 @@ private:
 	unsigned currentInterval;
 	unsigned intervalCount;
 
+	unsigned queryID;
+
 	float * statistics;
 	void resetIntervalCount();
 

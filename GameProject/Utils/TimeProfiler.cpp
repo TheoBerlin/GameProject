@@ -3,6 +3,9 @@
 #include <string>
 #include "../Engine/Imgui/imgui.h"
 #include "../Engine/Config.h"
+#include "GL/glew.h"
+
+#define BUFFER_OFFSET(i)    ((void*)NULL + (i))
 
 TimeProfiler::TimeProfiler(const std::string & title, bool displayGUI)
 {
@@ -12,6 +15,7 @@ TimeProfiler::TimeProfiler(const std::string & title, bool displayGUI)
 	this->intervalCount = 0;
 	this->statistics = nullptr;
 	dtTimer.start();
+	glGenQueries(1, &this->queryID);
 }
 
 
@@ -19,6 +23,7 @@ TimeProfiler::~TimeProfiler()
 {
 	if(this->statistics != nullptr)
 		delete[] this->statistics;
+	glDeleteQueries(1, &this->queryID);
 }
 
 void TimeProfiler::startInterval(const char* name)
@@ -27,6 +32,7 @@ void TimeProfiler::startInterval(const char* name)
 	if (this->currentInterval == this->times.size()) {
 		this->times.push_back(std::make_pair(0.0f, name));
 		this->intervalCount++;
+		glBeginQuery(GL_TIME_ELAPSED, this->queryID);
 	}
 
 	if (!this->inInterval) {
@@ -43,6 +49,7 @@ void TimeProfiler::endInterval()
 		this->times[this->currentInterval].first /= 2.0;
 		this->inInterval = false;
 		this->currentInterval++;
+		glEndQuery(GL_TIME_ELAPSED);
 	}
 }
 
@@ -75,6 +82,12 @@ void TimeProfiler::endFrame()
 	ImGui::Text("Total Time: ");
 	ImGui::SameLine(300.0f);
 	ImGui::Text((std::to_string(totalTime) + " ms").c_str());
+
+	ImGui::Text("GPU time: ");
+	ImGui::SameLine(300.0f);
+	GLint value;
+	glGetQueryObjectiv(this->queryID, GL_QUERY_RESULT, &value);
+	ImGui::Text((std::to_string(value / 1000000) + " ms").c_str());
 
 	ImGui::End();
 

@@ -3,6 +3,7 @@
 #include "../Entity/Entity.h"
 #include "../AssetManagement/Mesh.h"
 #include "GLAbstraction/Texture.h"
+#include "Utils/TimeProfiler.h"
 
 Renderer::Renderer()
 {
@@ -95,6 +96,9 @@ void Renderer::updateInstancingData(Model * model)
 
 void Renderer::drawAllInstanced()
 {
+	//TimeProfiler tp("test", true);
+	//tp.startInterval("draw");
+
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/*
@@ -123,6 +127,9 @@ void Renderer::drawAllInstanced()
 		Draw texture of scene to quad for postprocessing
 	*/
 	this->pipeline.drawTextureToQuad(combinedTex);
+
+	//tp.endInterval();
+	//tp.endFrame();
 }
 
 void Renderer::updateShaders(const float & dt)
