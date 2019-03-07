@@ -63,7 +63,7 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
 		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
 			angle = -angle;
-		trans->setRotation(glm::vec3(0.0f, angle, 0.0f));
+		trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
 
 		float dist = glm::length(width);
 		glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
