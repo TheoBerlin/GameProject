@@ -8,6 +8,10 @@
 #include "../Config.h"
 #include <Engine/Imgui/imgui.h>
 #include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/InfinityPlaneShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/InfinityPlanePrePassShader.h"
+
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
 #include "Game/States/GameState.h"
@@ -29,6 +33,10 @@ Pipeline::Pipeline()
 											&this->shadowFbo, &this->camera, myIdentityMatrix));
 
 	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, myIdentityMatrix));
+
+	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -64,6 +72,17 @@ Pipeline::Pipeline()
 		Set up uniform buffers for shaders
 	*/
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
+		if (i != SHADERS::INFINITY_PLANE_PREPASS) {
+			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
+			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+		}
+	}
+	/*
+		Set up Directional Light
+	*/
+	this->mainLight.direction = glm::normalize(glm::vec4(0.5f, -1.0f, -0.5f, 1.0f));
+	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);
 		this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 		this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
 		this->addUniformBuffer(2, this->entityShaders[i]->getID(), "LightBuffer");
@@ -142,21 +161,36 @@ void Pipeline::prePassDepth(const std::vector<Entity*>& renderingList, bool toSc
 		this->fbo.unbind();
 }
 
-void Pipeline::prePassDepthModel(const std::vector<std::pair<Model*, SHADERS>>& renderingModels, bool toScreen)
+void Pipeline::prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen)
 {
 	if (!toScreen)
 		this->fbo.bind();
 	this->prePassDepthOn();
+	
 	this->ZprePassShaderInstanced->bind();
 
-	//Draw renderingList
-	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-	
-	for (auto pair : renderingModels) {
-		drawModelPrePassInstanced(pair.first);
+	for (auto pair : renderingTargets) {
+		if (pair.first.prePass) {
+			if (pair.second == SHADERS::INFINITY_PLANE) {
+				this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->bind();
+
+				drawModelPrePassInstanced(pair.first.model);
+
+				this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->unbind();
+				this->ZprePassShaderInstanced->bind();
+			}
+			else {
+
+				//Draw renderingList
+				this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+				drawModelPrePassInstanced(pair.first.model);	
+			}
+		}
+			
 	}
 
 	this->ZprePassShaderInstanced->unbind();
+
 	this->prePassDepthOff();
 	if (!toScreen)
 		this->fbo.unbind();
@@ -170,7 +204,7 @@ void Pipeline::prePassDepthOn()
 	glClear(GL_DEPTH_BUFFER_BIT);
 
 	glDepthFunc(GL_LESS);
-	glColorMask(0, 0, 0, 0);
+	//glColorMask(0, 0, 0, 0);
 
 }
 
@@ -257,14 +291,15 @@ void Pipeline::drawToScreen(const std::vector<Entity*>& renderingList)
 	this->testShader->unbind();
 }
 
-void Pipeline::drawModelToScreen(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
+void Pipeline::drawModelToScreen(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 	glEnable(GL_DEPTH_TEST);
 
 	this->entityShaders[SHADERS::DEFAULT]->bind();
 
-	for (auto pair : renderingModels) {
-		drawInstanced(pair.first);
+	for (auto pair : renderingTargets) {
+		if(pair.first.visible)
+			drawInstanced(pair.first.model);
 	}
 	this->entityShaders[SHADERS::DEFAULT]->unbind();
 }
@@ -295,19 +330,22 @@ Texture * Pipeline::drawToTexture(const std::vector<Entity*>& renderingList)
 	return this->fbo.getColorTexture(0);
 }
 
-Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
+Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 
 	this->fbo.bind();
 	glEnable(GL_DEPTH_TEST);
 	glClear(GL_COLOR_BUFFER_BIT);
-	for (auto pair : renderingModels) {
 
-		this->entityShaders[pair.second]->bind();
+	for (auto pair : renderingTargets) {
 
-		drawInstanced(pair.first, pair.second);
-	
-		this->entityShaders[pair.second]->unbind();
+		if (pair.first.visible) {
+			this->entityShaders[pair.second]->bind();
+
+			drawInstanced(pair.first.model, pair.second);
+
+			this->entityShaders[pair.second]->unbind();
+		}
 	}
 
 	this->fbo.unbind();
@@ -361,11 +399,21 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 	}
 }
 
-void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList/*, const glm::vec3 & lightDir*/)
+void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList)
 {
 }
 
-void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SHADERS>>& renderingModels)
+	ImGui::Begin("Shadow buffer");
+
+	drawTexture(this->shadowFbo.getDepthTexture());
+
+	ImGui::End();
+#endif
+
+	Display::get().updateView(displayWidth, displayHeight);
+}
+
+void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
@@ -377,6 +425,10 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SH
 	this->ZprePassShaderInstanced->bind();
 
 	//Draw renderingList
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
+	for (auto pair : renderingTargets) {
+		if(pair.first.castShadow)
+			drawModelPrePassInstanced(pair.first.model);
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 	for (auto pair : renderingModels) {
 		drawModelPrePassInstanced(pair.first);
@@ -432,6 +484,45 @@ void Pipeline::setActiveCamera(Camera * camera)
 Camera * Pipeline::getActiveCamera()
 {
 	return this->camera;
+}
+
+void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std::vector<int>& wallGroupsIndex)
+{
+	if (wallPoints.empty())
+		return;
+
+	EntityShader* eShader = this->entityShaders[SHADERS::INFINITY_PLANE];
+	InfinityPlaneShader* infPlaneShader = dynamic_cast<InfinityPlaneShader*>(eShader);
+	if (infPlaneShader)
+		this->addUniformBuffer(2, infPlaneShader->getID(), "WallPoints");
+
+	eShader = this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS];
+	InfinityPlanePrePassShader* infPlanePrePassShader = dynamic_cast<InfinityPlanePrePassShader*>(eShader);
+	if (infPlanePrePassShader)
+		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
+
+
+	if (infPlaneShader != nullptr)
+	{
+		struct WallPointsData
+		{
+			glm::vec4 points[96];
+			int size;
+			int groupSize;
+			int a;
+			int b;
+		} data;
+		data.size = wallPoints.size();
+		data.groupSize = wallGroupsIndex.size();
+		int value = wallGroupsIndex[0];
+		int index = 0;
+		for (int i = 0; i < data.size; i++) {
+			if (value - i == 0)
+				value += wallGroupsIndex[++index];
+			data.points[i] = glm::vec4(wallPoints[i], (float)(wallGroupsIndex[index]));
+		}
+		this->uniformBuffers[2]->setSubData((void*)&data, sizeof(WallPointsData), 0);
+	}
 }
 
 Framebuffer * Pipeline::getFbo()
@@ -515,6 +606,7 @@ void Pipeline::drawInstanced(Model * model, SHADERS shader)
 void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 {
 	this->fbo.updateDimensions(0, event->width, event->height);
+	this->fbo.updateDimensions(1, event->width, event->height);
 }
 
 Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)

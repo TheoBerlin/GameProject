@@ -8,6 +8,7 @@
 #include <Game/GameLogic.h>
 #include "Engine/Collision/CollisionHandler.h"
 #include <Game/GameLogic/ScoreManager.h>
+#include <Game/Level/LevelStructure.h>
 #include <Engine/Rendering/Light/LightManager.h>
 
 class GameState : public State
@@ -32,5 +33,6 @@ private:
 	CollisionHandler collisionHandler;
 	ReplaySystem replaySystem;
 	ScoreManager scoreManager;
+	LevelStructure levelStructure;
 	LightManager lightManager;
 };

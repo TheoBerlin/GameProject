@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Component.h"
-#include "Engine/Events/Events.h"
+#include <Game/GameLogic/GameEvents.h>
 
 namespace reactphysics3d { class ProxyShape; }
 
