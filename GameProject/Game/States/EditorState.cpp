@@ -146,7 +146,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 		activeWindow[1] = !activeWindow[1];
 	if (ImGui::Button("Player"))
 		activeWindow[2] = !activeWindow[2];
-	if (ImGui::Button("Camera"))
+	if (ImGui::Button("Editor"))
 		activeWindow[3] = !activeWindow[3];
 	ImGui::NewLine();
 
@@ -356,7 +356,7 @@ void EditorState::playerWindow(EntityManager & entityManager)
 void EditorState::editorWindow()
 {
 #ifdef IMGUI
-	ImGui::Begin("Level Window");
+	ImGui::Begin("Editor Window");
 	if (ImGui::SliderFloat("Camera Speed", &camSpeed, 1.0f, 10.0f))
 		freeMove->setSpeed(camSpeed);
 	ImGui::End();

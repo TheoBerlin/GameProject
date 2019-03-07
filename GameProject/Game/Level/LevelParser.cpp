@@ -140,15 +140,17 @@ void LevelParser::readEntityFloor(Level& level)
 
 	json::json& floor = jsonFile["Floor"];
 
-	entity = level.entityManager->addEntity();
+	if (!floor.empty()) {
+		entity = level.entityManager->addEntity();
 
-	if (!floor["Position"].empty()) {
-		readVec3(floor["Position"], position);
+		if (!floor["Position"].empty()) {
+			readVec3(floor["Position"], position);
+		}
+
+		entity->getTransform()->setPosition(position);
+		entity->setModel(model);
+		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 	}
-
-	entity->getTransform()->setPosition(position);
-	entity->setModel(model);
-	level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 }
 
 void LevelParser::readPlayer(Level& level)
