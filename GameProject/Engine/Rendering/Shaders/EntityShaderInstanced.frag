@@ -30,7 +30,7 @@ struct PointLight
 
 layout(std140) uniform LightBuffer
 {
-    PointLight pointLights[25];
+    PointLight pointLights[10];
     int nrOfPointLights;
     vec3 padding;
 } lightBuffer;
@@ -105,7 +105,7 @@ void main()
      /*
         Ambient
     */
-    vec3 ambient = dirLight.color_intensity.rgb * 0.2; //Should add intensity based here instead of fixed value
+    vec3 ambient = dirLight.color_intensity.rgb * 0.2;
     /*
         Diffuse
     */
@@ -115,7 +115,7 @@ void main()
     /*
         Specular
     */
-    float specular;
+    float specular = 0.0;
     vec3 lightReflect = normalize(reflect(dirLight.direction.xyz, fragNormal));
     vec3 VertexToEye = normalize(camPos - fragPos);
     float specularFactor = dot(VertexToEye, lightReflect);
@@ -129,7 +129,7 @@ void main()
 		Shadow
 	*/
 	float shadow = ShadowCalculation(fragLightPos);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)) * texColor + result;
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular) + result) * texColor;
 
     finalColor = vec4(lighting , 1.0);
 }

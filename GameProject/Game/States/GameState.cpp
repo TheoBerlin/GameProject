@@ -38,9 +38,10 @@ GameState::GameState(const std::string& levelJSON)
 
 	levelParser.readLevel(levelJSON, level);
 
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+
 	gameLogic.init(level);
 
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().initInstancing();
 	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 

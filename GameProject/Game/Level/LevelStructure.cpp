@@ -147,11 +147,12 @@ Model * LevelStructure::createQuad()
 	float f = 0.5f;
 	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
 	mat.textures.push_back(tex);
-	mat.Ks_factor = glm::vec4(40.0f);
+	mat.Kd = glm::vec4(0.7f, 0.7f, 0.6f, 1.0f);
+	mat.Ks_factor = glm::vec4(1.0f);
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
-	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::WALL, false);
+	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::WALL, true);
 
 	return quad;
 }
@@ -196,11 +197,12 @@ Model * LevelStructure::createPlane()
 	float f = 0.5f;
 	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
 	mat.textures.push_back(tex);
-	mat.Ks_factor = glm::vec4(40.0f);
+	mat.Kd = glm::vec4(0.7f, 0.7f, 0.6f, 1.0f);
+	mat.Ks_factor = glm::vec4(1.0f);
 	plane->addMaterial(mat);
 
 	ModelLoader::addModel("infinityPlane", plane);
-	Display::get().getRenderer().addRenderingTarget(plane, SHADERS::INFINITY_PLANE, false);
+	Display::get().getRenderer().addRenderingTarget(plane, SHADERS::INFINITY_PLANE, true);
 
 	return plane;
 }

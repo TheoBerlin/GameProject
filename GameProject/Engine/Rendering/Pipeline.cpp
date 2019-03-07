@@ -405,11 +405,35 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 
+	glCullFace(GL_FRONT);
 	//Draw renderingList
 	for (auto pair : renderingTargets) {
 		if (pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
+	glCullFace(GL_BACK);
+
+#ifdef IMGUI
+	auto drawTexture = [](Texture* texture, bool nextLine = false) {
+		ImTextureID texID = (ImTextureID)texture->getID();
+		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
+		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
+		if (nextLine)
+			ImGui::SameLine();
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Image(texID, ImVec2(370 * ratio, 370), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+			ImGui::EndTooltip();
+		}
+	};
+
+	ImGui::Begin("Shadow buffer");
+
+	drawTexture(this->shadowFbo.getDepthTexture());
+
+	ImGui::End();
+#endif
 
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
@@ -435,7 +459,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 		Set up Point Light
 	*/
 	struct LightBuffer {
-		PointLight pointLights[25];
+		PointLight pointLights[10];
 		int nrOfPointLights;
 		glm::vec3 padding;
 	} lightBuffer;

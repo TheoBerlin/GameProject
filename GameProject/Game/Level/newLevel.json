@@ -1,17 +1,17 @@
 {
     "DirectionalLight": {
-      "Direction": [ 0.0, -1.0, 0.0 ],
-      "Intensity": [ 1.0, 1.0, 1.0 ]
+      "Direction": [ 0.0, -1.0, 0.0, 1.0],
+      "Intensity": [ 1.0, 1.0, 1.0, 1.0 ]
     },
     "PointLights": [
       {
-        "Position": [ 0.0, 1.0, -10.0 ],
-        "Color": [ 0.0, 1.0, 0.0 ],
+        "Position": [ 0.0, 1.0, -10.0, 1.0 ],
+        "Color": [ 0.0, 1.0, 0.0, 1.0 ],
         "Distance": 29
       },
       {
-        "Position": [ 0.0, 1.0, 10.0 ],
-        "Color": [ 0.0, 0.0, 1.0 ],
+        "Position": [ 0.0, 1.0, 10.0, 1.0 ],
+        "Color": [ 0.0, 0.0, 1.0, 1.0 ],
         "Distance": 29
       }
     ],

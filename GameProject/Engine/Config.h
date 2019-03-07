@@ -7,7 +7,7 @@
 #define GL_DEBUG_LAYER
 
 // Define IMGUI
-//#define IMGUI
+#define IMGUI
 
 //Debug defines
 #define ENABLE_PATH_VISUALIZERS false
