@@ -26,7 +26,8 @@ public:
 private:
     void handleKeyInput(KeyEvent* event);
 
-    void transitionToAim(CameraTransitionEvent* event);
+    void beginAimTransition();
+    void finishAimTransition(CameraTransitionEvent* event);
 
     void setupGUI();
 
