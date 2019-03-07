@@ -3,7 +3,7 @@
 #include "../Entity/Entity.h"
 #include <reactphysics3d/reactphysics3d.h>
 #include <Engine/Collision/CollisionInfo.h>
-
+#include <Engine/Events/EventBus.h>
 
 StaticTargetCollision::StaticTargetCollision(Entity * parentEntity, const std::string & tagName) : Component(parentEntity, tagName)
 {
