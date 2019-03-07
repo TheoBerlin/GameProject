@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 class Timer;
 class Panel;
 struct Level;
@@ -28,9 +30,11 @@ public:
 	unsigned getTargetsHit() const;
 
 	// Show score GUI
-	void showResults(Level& level);
+	void showResults(Level& level, const std::function<void()>& retry);
 	// Returns true if results are being shown
 	bool resultsVisible() const;
+
+	void removeResultsGUI(Level& level);
 
 private:
 	bool counting;
