@@ -113,9 +113,9 @@ void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point
 	Transform* trans = entity->getTransform();
 
 	glm::vec3 p1 = point;
-	glm::vec3* p2 = &wallPoints[first];
+	glm::vec3 p2(wallPoints[first].x, 0.0, wallPoints[first].z);
 
-	glm::vec3 width = *p2 - p1;
+	glm::vec3 width = p2 - p1;
 
 	float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
 	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
@@ -155,9 +155,9 @@ void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point
 	entity = wallEntites[last - 1];
 	trans = entity->getTransform();
 
-	p2 = &wallPoints[last - 1];
+	p2 = glm::vec3(wallPoints[last - 1].x, 0, wallPoints[last - 1].z);
 
-	width = *p2 - p1;
+	width = p1 - p2;
 
 	angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
 	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
@@ -168,10 +168,7 @@ void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point
 	scale = glm::vec3(dist, this->height, 1.0f);
 	trans->setScale(scale);
 
-	trans->setPosition(*p2);
-	trans->setScale(width);
-
-	wallGroupsIndex[wallGroupIndex]++;
+	wallGroupsIndex[wallGroupIndex] += 1;
 
 	updateBuffers();
 }
@@ -293,7 +290,7 @@ Model * LevelStructure::createQuad()
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
-	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::DEFAULT, false);
+	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::WALL, false);
 
 	return quad;
 }
@@ -377,7 +374,7 @@ void LevelStructure::updateBuffers()
 
 	Mesh* mesh = this->quad->getMesh(0);
 
-	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, mesh->getBufferID());
+	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, 3);
 }
 
 void LevelStructure::createInfinityPlane(Level& level)
