@@ -92,7 +92,7 @@ void ReplayPhase::update(const float& dt)
 
         float replayProgress = replayTime/flightTime;
 
-		if (this->guiExist)
+		if (this->timebarExists)
 		{
 			// Set timeBarFront and timeBarSlider new position
 			glm::uvec2 timeBarSize = { 1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight };
@@ -104,17 +104,9 @@ void ReplayPhase::update(const float& dt)
 
 
     // Display results when the replay finishes
-    if (replayTime > flightTime && !level.scoreManager->resultsVisible() && this->guiExist)
+    if (replayTime > flightTime && !level.scoreManager->resultsVisible() && this->timebarExists)
     {
-        // Disable freemove and unlock cursor
-        glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-        freeMove->disableMouse();
-
-        // Lambda function which executes when retry is pressed
-        std::function<void()> retry = [this](){beginAimTransition();};
-
-        level.scoreManager->showResults(level, retry);
+        this->createScoreMenu();
     }
 }
 
@@ -140,8 +132,12 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     }
 
     // Minimize / enlarge results GUI
-    if (event->key == GLFW_KEY_ESCAPE && level.scoreManager->resultsVisible()) {
-        level.scoreManager->toggleGuiMinimize();
+    if (event->key == GLFW_KEY_ESCAPE) {
+        if (level.scoreManager->resultsVisible()) {
+            level.scoreManager->toggleGuiMinimize();
+        } else {
+            this->createScoreMenu();
+        }
     }
 
     else if (event->key == GLFW_KEY_2) {
@@ -161,7 +157,7 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
 void ReplayPhase::beginAimTransition()
 {
-	this->guiExist = false;
+	this->timebarExists = false;
 
     EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 
@@ -212,7 +208,7 @@ void ReplayPhase::finishAimTransition(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
-	this->guiExist = true;
+	this->timebarExists = true;
 
 	backPanel = new Panel();
     timeBarBack = new Button();
@@ -293,4 +289,17 @@ void ReplayPhase::handleTimeBarClick()
     level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
     replayTime = desiredTime;
+}
+
+void ReplayPhase::createScoreMenu()
+{
+    // Disable freemove and unlock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+    freeMove->disableMouse();
+
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
+
+    level.scoreManager->showResults(level, retry);
 }
