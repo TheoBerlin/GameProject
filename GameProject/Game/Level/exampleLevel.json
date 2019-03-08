@@ -1,0 +1,63 @@
+{
+    "Target": [
+      {
+        "Name": "Target1",
+        "Position": [ 0, 1, -3 ]
+      },
+      {
+        "Name": "Target2",
+        "Position": [ 2, 1, -10 ]
+      },
+      {
+        "Name": "Target3",
+        "Position": [ -2, 1, -17 ]
+      },
+      {
+        "Name": "Target4",
+        "Position": [ -1, 1, -20 ]
+      },
+      {
+        "Name": "Target5",
+        "Position": [ 4, 1, -27 ]
+      }
+    ],
+    "Boxes": [
+        {
+          "Name": "Box1",
+          "Position": [ 0, 0, 0 ],
+          "Scale": [10, 0.1, 35]
+        }
+    ],
+    "Player": {
+      "OversightCamera": {
+        "Position": [ -10.0, 20.0, 10.0 ],
+        "Direction": [ 0.442396, -0.715689, -0.540440 ],
+        "Offset": [ 0.0, 0.0, 0.0 ],
+        "FOV": 75.0
+      },
+      "ArrowCamera": {
+        "Position": [ 1.0, 1.0, 0.0 ],
+        "Direction": [ 0.0, 0.0, -1.0 ],
+        "Offset": [ 0.0, 0.3, -1.0 ],
+        "FOV": 75.0
+      },
+      "ReplayCamera": {
+        "Position": [ 0.0, 3.0, 4.0 ],
+        "Direction": [ 0.0, -0.7, -0.7 ],
+        "Offset": [ 0.0, 0.0, 0.0 ],
+        "FOV": 75.0
+      }
+    },
+    "Walls": [
+      [
+        [ -5.0, 5.0 ],
+        [ -5.0, -30.0 ],
+        [ 5.0, -30.0 ],
+        [ 5.0, 5.0 ]
+      ]
+    ],
+    "Metadata": {
+      "OptimalTime": 20.0
+    }
+  }
+  

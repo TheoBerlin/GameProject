@@ -462,11 +462,13 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->prePassDepthOn();
 	this->ZprePassShaderInstanced->bind();
 
-	float orthoWidth = 20.0f;
-	float orthoHeight = 20.0f * Display::get().getRatio();
+	float orthoWidth = 40.0f;
+	float orthoHeight = 40.0f * Display::get().getRatio();
 	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
 	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
 	lightSpaceMatrix = lightProjection * lightView;
+
+	glCullFace(GL_FRONT);
 
 	//Draw renderingList
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
@@ -474,6 +476,8 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 		if(pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
+
+	glCullFace(GL_BACK);
 
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();

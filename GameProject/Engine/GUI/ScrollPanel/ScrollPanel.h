@@ -7,6 +7,8 @@
 
 #include <vector>
 
+class Button;
+
 class ScrollPanel : public Panel
 {
 public:
@@ -20,13 +22,16 @@ public:
 	void setMaxVisibleItems(unsigned maxItemsVisible);
 	void setItemSpacing(unsigned itemSpacing);
 
+	// Set active button
+	void setActiveButton(unsigned index);
+
 private:
 	void MouseScrollCallback(MouseScrollEvent* evnt);
+	void MouseClickCallback(MouseClickEvent* evnt);
 	
 	int scrollSpeed;
 
 	List* list;
-
-
+	Button* activeButton;
 };
 
