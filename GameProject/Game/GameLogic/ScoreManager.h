@@ -28,6 +28,8 @@ public:
 	float getTotalTime() const;
 	// Get targets hit
 	unsigned getTargetsHit() const;
+	// Reset score
+	void resetScore();
 
 	// Show score GUI
 	void showResults(Level& level, const std::function<void()>& retry);

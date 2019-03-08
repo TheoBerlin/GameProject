@@ -74,6 +74,12 @@ unsigned ScoreManager::getTargetsHit() const
 	return this->targetsHit;
 }
 
+void ScoreManager::resetScore()
+{
+	this->totalScore = 0;
+	this->targetsHit = 0;
+}
+
 void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 {
 	glm::uvec2 panelSize(500, 700);
