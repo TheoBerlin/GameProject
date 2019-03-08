@@ -59,6 +59,7 @@ private:
 	float maxSpeedIncrease;
 	float minSpeedDecrease;
 	float acceleration;
+	float turnSpeedDeceleration;
 	bool isAccelerating;
 	
 	int windowHeight;

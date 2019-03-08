@@ -26,6 +26,7 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float min
 	// Set up for acceleration variables
 	this->maxCamOffset = glm::vec3(0.0f, 0.3f, -1.0f);
 	this->acceleration = 3.0;
+	this->turnSpeedDeceleration = 3.0 * 0.2;
 	this->maxSpeedIncrease = 10.0;
 	this->minSpeedDecrease = movementSpeed;
 	this->maxSpeedOffset = 1.0f;
@@ -88,7 +89,7 @@ void ArrowGuider::update(const float& dt)
 		if (this->isAccelerating) {
 			if (this->movementSpeed < this->maxSpeedIncrease) {
 				this->movementSpeed += acceleration * dt;
-				this->maxTurnSpeed += acceleration * dt * 0.2f;
+				this->maxTurnSpeed += this->turnSpeedDeceleration * dt;
 			}
 			else
 				this->movementSpeed = this->maxSpeedIncrease;
@@ -96,7 +97,7 @@ void ArrowGuider::update(const float& dt)
 		else {
 			if (this->movementSpeed > this->minSpeedDecrease) {
 				this->movementSpeed -= acceleration * dt;
-				this->maxTurnSpeed -= acceleration * dt * 0.2f;
+				this->maxTurnSpeed -= this->turnSpeedDeceleration * dt;
 			}
 			else
 				this->movementSpeed = this->minSpeedDecrease;
