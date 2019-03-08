@@ -16,7 +16,7 @@
 MenuState::MenuState() : State()
 {
 	// Default level
-	this->selectedLevel = "./Game/Level/level.json";
+	this->selectedLevel = "./Game/Level/exampleLevel.json";
 
 	// Add fonts for later
 	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 16);

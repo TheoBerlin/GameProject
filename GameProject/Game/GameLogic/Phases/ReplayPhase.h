@@ -67,6 +67,8 @@ private:
     // Time bar slider (purely cosmetic)
     Panel* timeBarSlider;
 
+	bool panelExist;
+
     // Size relative to screen height
     const glm::vec2 sliderSizeFactors = {timeBarHeightFactor, timeBarHeightFactor};
     glm::uvec2 sliderSize;

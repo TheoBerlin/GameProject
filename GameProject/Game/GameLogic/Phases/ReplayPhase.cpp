@@ -93,11 +93,14 @@ void ReplayPhase::update(const float& dt)
 
         float replayProgress = replayTime/flightTime;
 
-		// Set timeBarFront and timeBarSlider new position
-        glm::uvec2 timeBarSize = {1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight};
-		timeBarFront->setOption(GUI::FLOAT_RIGHT, (int)timeBarFront->getSize().y - (int)timeBarSize.x);
+		if (this->panelExist)
+		{
+			// Set timeBarFront and timeBarSlider new position
+			glm::uvec2 timeBarSize = { 1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight };
+			timeBarFront->setOption(GUI::FLOAT_RIGHT, (int)timeBarFront->getSize().y - (int)timeBarSize.x);
 
-		timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
+			timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
+		}
     }
 
 
@@ -158,7 +161,12 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
 void ReplayPhase::beginAimTransition()
 {
+	this->panelExist = false;
+
     EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+
+	// Reset score
+	level.scoreManager->resetScore();
 
     // Remove freecam
     freeCam->removeComponent(freeMove->getName());
@@ -204,6 +212,8 @@ void ReplayPhase::finishAimTransition(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
+	this->panelExist = true;
+
 	backPanel = new Panel();
     timeBarBack = new Button();
     timeBarFront = new Panel();
