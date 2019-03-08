@@ -29,7 +29,6 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	replayArrow->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
     replayArrow->getTransform()->setPosition(level.player.arrowCamera.position);
-	replayArrow->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	// Copy arrow path from arrow guider to path treader
     ArrowGuider* oldArrowGuider = guidingPhase->getArrowGuider();

@@ -10,6 +10,9 @@
 #include <Engine/Components/PlayerCollision.h>
 #include <GLFW/glfw3.h>
 
+#include "Engine/Config.h"
+#include "Engine/Imgui/imgui.h"
+
 AimPhase::AimPhase(OverviewPhase* overviewPhase)
     :Phase((Phase*)overviewPhase)
 {
@@ -55,13 +58,14 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
     playerTransform->setForward(level.player.arrowCamera.direction);
     playerTransform->resetRoll();
 	playerTransform->setPosition(level.player.arrowCamera.position);
-	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);
 
 	new PlayerCollision(playerArrow);
 
     commonSetup();
+
+
 }
 
 AimPhase::~AimPhase()
@@ -69,6 +73,21 @@ AimPhase::~AimPhase()
 	EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &AimPhase::transitionToOverview);
 	EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
+}
+
+void AimPhase::update(const float & dt)
+{
+#ifdef IMGUI
+	ArrowGuider* arrowGuider = this->getArrowGuider();
+
+	if (ImGui::Begin("Arrow Config")) {
+		ImGui::DragFloat("Speed:", &this->arrowSpeed, 0.2f);
+		ImGui::DragFloat("Max turnspeed:", &this->maxTurnSpeed, 0.5f);
+
+		ImGui::End();
+	}
+
+#endif
 }
 
 Entity* AimPhase::getPlayerArrow() const
@@ -98,18 +117,19 @@ void AimPhase::commonSetup()
 	/*
 		Add camera to arrow entity
 	*/
-    glm::vec3 camOffset = arrowCamSettings.offset;
+	glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
-    arrowCam->setFOV(arrowCamSettings.FOV);
+	arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
+
+	Display::get().getRenderer().setActiveCamera(arrowCam);
 
 	arrowGuider->startAiming();
 
 	// Reset targets
 	level.targetManager->resetTargets();
 
-	Display::get().getRenderer().setActiveCamera(arrowCam);
 
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
@@ -125,10 +145,10 @@ void AimPhase::handleMouseClick(MouseClickEvent* event)
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
-        Phase* newPhase = new GuidingPhase(this);
+		Phase* newPhase = new GuidingPhase(this);
 
-        changePhase(newPhase);
-    }
+		changePhase(newPhase);
+	}
 }
 
 void AimPhase::handleKeyInput(KeyEvent* event)
