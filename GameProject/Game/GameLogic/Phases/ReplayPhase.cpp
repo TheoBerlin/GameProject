@@ -146,7 +146,8 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
     else if (event->key == GLFW_KEY_2) {
         beginAimTransition();
-    } else if (event->key == GLFW_KEY_C) {
+    }
+	else if (event->key == GLFW_KEY_C) {
         // Toggle mouse lock
         if (freeMove->mouseIsEnabled()) {
             glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
