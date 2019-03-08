@@ -31,7 +31,7 @@ private:
 
 	// Spasm
 	glm::vec3 maxTranslation = {0.f, 0.17f, 0.f };
-	const glm::vec3 maxRotation = { 0.0f, 0.0f, glm::quarter_pi<float>() / 4.0f };
+	const glm::vec3 maxRotation = { glm::quarter_pi<float>() / 4.0f, glm::quarter_pi<float>() / 4.0f, glm::quarter_pi<float>() / 4.0f };
 	glm::vec3 totalRotation;
 	glm::vec3 totalTranslation;
 	float spasmTimer;

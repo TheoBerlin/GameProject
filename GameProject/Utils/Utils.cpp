@@ -162,6 +162,12 @@ glm::quat Utils::rotateTo(const glm::vec3 & v1, const glm::vec3 & v2)
 	return q;
 }
 
+glm::quat Utils::rotate(glm::quat & q, float yaw, float pitch, float roll)
+{
+	glm::quat rot = glm::quat({ yaw, pitch, roll });
+	return rot * q;
+}
+
 glm::quat Utils::toQuaternion(float yaw, float pitch, float roll)
 {
 	float cy = cos(roll * .5f);

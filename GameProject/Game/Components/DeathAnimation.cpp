@@ -1,6 +1,7 @@
 #include "DeathAnimation.h"
 
 #include <Engine/Entity/Entity.h>
+#include <Utils/Utils.h>
 
 DeathAnimation::DeathAnimation(Entity * host) : Component(host, "DeathAnimation")
 {
@@ -39,7 +40,6 @@ void DeathAnimation::reset()
 
 void DeathAnimation::spasm(float dt)
 {
-
 	spasmTimer += dt;
 
 	spasmTimer = std::fmod(spasmTimer, glm::two_pi<float>());
@@ -65,6 +65,11 @@ void DeathAnimation::spasm(float dt)
 	// Store total amount of relative transformations applied by Hover
 	totalTranslation = translation;
 	totalRotation = rotation;
+	/*
+	glm::quat rot = transform->getRotationQuat();
+	rot = Utils::rotate(rot, rotation.x, rotation.y, rotation.z);
+	transform->setRotationQuat(rot);
+	*/
 }
 
 void DeathAnimation::fall(float dt)

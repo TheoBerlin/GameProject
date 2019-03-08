@@ -22,6 +22,8 @@ struct Utils
 	*/
 	static glm::quat rotateTo(const glm::vec3& v1, const glm::vec3& v2);
 
+	static glm::quat rotate(glm::quat& q, float yaw, float pitch, float roll);
+
 	/*
 	Converting from Euler angles to quaternion.
 	Atrugments:
