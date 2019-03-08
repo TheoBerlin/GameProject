@@ -53,6 +53,8 @@ private:
     // Use turn factors to update direction
     void applyTurn(const float& dt);
 
+    void updateCamera(const float& dt, const float& turnFactorsLength);
+
     float movementSpeed;
     int windowHeight;
     // Max turn speed measured in radians
@@ -99,4 +101,10 @@ private:
 
     float currentPitch;
     const float maxPitch = glm::half_pi<float>() - 0.01f;
+
+    // Drift camera settings
+    // Maximum angle between entity's forward and drift camera's forward
+    const float maxForwardAngle = glm::quarter_pi<float>() / 3.0f;
+    // Percentage of forward angle being nullified per second
+    const float angleCorrectionFactor = 3.5f;
 };
