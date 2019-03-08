@@ -330,7 +330,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 	if (ImGui::Button("Load")) {
 		entityManager.removeEntities();
 
-		levelParser.readLevel(std::string("./Game/Level/") + levelName.c_str() + ".json", level);
+		levelParser.readLevel(std::string("./Game/Level/") + "level"/*levelName.c_str()*/ + ".json", level);
 		Display::get().getRenderer().initInstancing();
 	}
 	ImGui::End();
@@ -378,12 +378,19 @@ void EditorState::wallWindow(EntityManager & entityManager)
 	}
 	if (std::stoi(currentWall) != -1) {
 		if (ImGui::Button("Add Point")) {
-			level.levelStructure->addPoint(level, std::stoi(currentWall), glm::vec3(0.0f));
+			level.levelStructure->addPoint(level, std::stoi(currentWall), glm::vec3(1.0f, 0.0f, 3.0f));
 		}
-		for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[std::stoi(currentWall)]; i++) {
-			glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i].x, level.levelStructure->getWallPoints()[i].z);
+
+		unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
+		unsigned offset = 0;
+		std::vector<int> getWallGroupsIndex = level.levelStructure->getWallGroupsIndex();
+		for (size_t i = 0; i < wallGroupIndex; i++)
+			offset += getWallGroupsIndex[i];
+
+		for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
+			glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
 			if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
-				level.levelStructure->editPoint(level, std::stoi(currentWall), i, glm::vec3(position.x, 0, position.y));
+				level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));
 			}
 		}
 	}
