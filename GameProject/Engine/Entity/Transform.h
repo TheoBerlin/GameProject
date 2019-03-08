@@ -45,6 +45,10 @@ public:
 	//Get up vector
 	glm::vec3 getUp() const;
 
+	float getYaw() const;
+	float getPitch() const;
+	float getRoll() const;
+
 	glm::vec3 getYawPitchRoll() const;
 
 	glm::vec3 getDefaultForward() const;
