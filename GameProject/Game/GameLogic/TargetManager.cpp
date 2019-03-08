@@ -54,7 +54,7 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
     // Add component pointers to vector
     MovingTarget movingTarget;
 
-    movingTarget.pathTreader = new PathTreader(host, path);
+    movingTarget.pathTreader = new PathTreader(host, path, true);
     movingTarget.rollNullifier = new RollNullifier(host);
 	new MovingTargetCollision(host);
 
