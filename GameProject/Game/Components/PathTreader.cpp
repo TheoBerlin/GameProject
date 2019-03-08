@@ -10,10 +10,10 @@ PathTreader::PathTreader(Entity* host)
     isTreading = false;
 }
 
-PathTreader::PathTreader(Entity* host, const std::vector<KeyPoint>& path)
+PathTreader::PathTreader(Entity* host, const std::vector<KeyPoint>& path, bool loop)
     :Component(host, "PathTreader")
 {
-    setPath(path);
+    setPath(path, loop);
 
     isTreading = false;
 }
@@ -32,7 +32,7 @@ void PathTreader::update(const float& dt)
 	pathTime += dt;
 
     // Check if the end has been reached
-    if (pathTime >= path.at(path.size() - 1).t) {
+    if (!isLooping && pathTime >= path.back().t) {
         stopTreading();
 
         return;
@@ -41,10 +41,12 @@ void PathTreader::update(const float& dt)
     catmullRomTread();
 }
 
-void PathTreader::setPath(const std::vector<KeyPoint>& path)
+void PathTreader::setPath(const std::vector<KeyPoint>& path, bool loop)
 {
     this->path = path;
     currentPointIndex = 0;
+
+	this->isLooping = loop;
 }
 
 KeyPoint & PathTreader::getKeyPoint(unsigned int index)
@@ -72,15 +74,45 @@ void PathTreader::stopTreading()
 
 void PathTreader::catmullRomTread()
 {
+    KeyPoint P0, P1, P2, P3;
+
     // Iterate through points to find P1
     while (currentPointIndex + 2 < path.size() && path.at(currentPointIndex + 1).t < pathTime) {
         currentPointIndex += 1;
     }
 
-    KeyPoint P0 = path.at(glm::max<int>(currentPointIndex - 1, 0));
-    KeyPoint P1 = path.at(currentPointIndex);
-    KeyPoint P2 = path.at(currentPointIndex + 1);
-    KeyPoint P3 = path.at(glm::min<int>(currentPointIndex + 2, path.size() - 1));
+    if (!isLooping) {
+        P0 = path[glm::max<int>(currentPointIndex - 1, 0)];
+        P1 = path[currentPointIndex];
+        P2 = path[currentPointIndex + 1];
+        P3 = path[glm::min<int>(currentPointIndex + 2, path.size() - 1)];
+    }
+
+    else {
+        while (pathTime >= path.back().t) {
+            // Go back to the beginning of the loop if the treader is at the last point
+            pathTime -= path.back().t;
+
+            currentPointIndex = 0;
+
+            // Iterate through points to find P1
+            while (currentPointIndex + 2 < path.size() && path.at(currentPointIndex + 1).t < pathTime) {
+                currentPointIndex += 1;
+            }
+        }
+
+        // Calculate path indices
+        // If the treader is at the first point, set index 0 to the second last point
+        // (not the last point, as the last point is on top of the first point)
+        P0 = path[currentPointIndex >= 1 ? currentPointIndex - 1 : path.size() - 2];
+        P1 = path[currentPointIndex];
+
+        // Avoid out of range
+        P2 = path[(currentPointIndex + 1) % path.size()];
+
+        // If the treader is moving towards the last point, set index 3 to 1
+        P3 = path[currentPointIndex == path.size() - 2 ? 1 : currentPointIndex + 2];
+    }
 
     // Get t in [0, 1] using pathTime's relative position in [P1.t, P2.t]
     // t is derived from the following equation: pathTime = P1.t + t * (P2.t-P1.t)

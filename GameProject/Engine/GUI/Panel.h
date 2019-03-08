@@ -267,6 +267,7 @@ private:
 
 protected:
 	bool shouldUpdate;
+	bool active;
 
 	Panel* parent;
 	std::vector<Panel*> children;

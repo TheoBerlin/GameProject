@@ -19,9 +19,18 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float min
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution
     EventBus::get().subscribe(this, &ArrowGuider::handleWindowResize);
-    windowHeight = Display::get().getHeight();
 
+    windowHeight = Display::get().getHeight();
     currentPitch = 0.0f;
+
+	// Set up for acceleration variables
+	this->maxCamOffset = glm::vec3(0.0f, 0.3f, -1.0f);
+	this->acceleration = 3.0;
+	this->turnSpeedDeceleration = 3.0 * 0.2;
+	this->maxSpeedIncrease = 10.0;
+	this->minSpeedDecrease = movementSpeed;
+	this->maxSpeedOffset = 1.0f;
+	this->isAccelerating = false;
 }
 
 ArrowGuider::~ArrowGuider()
@@ -29,6 +38,7 @@ ArrowGuider::~ArrowGuider()
     EventBus::get().unsubscribe(this, &ArrowGuider::handleWindowResize);
     if (isGuiding) {
         EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+		EventBus::get().unsubscribe(this, &ArrowGuider::handleKeyEvent);
     }
 }
 
@@ -41,13 +51,13 @@ void ArrowGuider::update(const float& dt)
 
     Transform* transform = host->getTransform();
 
-    applyTurn(dt);
+	applyTurn(dt);
 
     float turnFactorsLength = glm::length(turnFactors);
 
     if (isGuiding) {
         // Update position storage
-        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength;
+        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength * this->movementSpeed;
 
         // Gradually increase storing frequency
         float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
@@ -76,6 +86,23 @@ void ArrowGuider::update(const float& dt)
             allowKeypointOverride = true;
         }
 
+		if (this->isAccelerating) {
+			if (this->movementSpeed < this->maxSpeedIncrease) {
+				this->movementSpeed += acceleration * dt;
+				this->maxTurnSpeed += this->turnSpeedDeceleration * dt;
+			}
+			else
+				this->movementSpeed = this->maxSpeedIncrease;
+		}
+		else {
+			if (this->movementSpeed > this->minSpeedDecrease) {
+				this->movementSpeed -= acceleration * dt;
+				this->maxTurnSpeed -= this->turnSpeedDeceleration * dt;
+			}
+			else
+				this->movementSpeed = this->minSpeedDecrease;
+		}
+
         // Update arrow position
         glm::vec3 currentPos = transform->getPosition();
         glm::vec3 newPos = currentPos + transform->getForward() * movementSpeed * dt;
@@ -83,39 +110,10 @@ void ArrowGuider::update(const float& dt)
         transform->setPosition(newPos);
     }
 
+
 	if (arrowCamera) {
-		// Update camera settings using turn factors
-		// Camera FOV
-		float currentFOV = arrowCamera->getFOV();
-
-		// Linearly interpolate between min and max FOV
-		float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
-
-		// Gradually increase FOV
-		float deltaFOV = (desiredFOV - currentFOV) * dt;
-
-		// Limit FOV change per second
-		if (std::abs(deltaFOV) > FOVChangeMax) {
-			deltaFOV *= deltaFOV / FOVChangeMax;
-		}
-
-		arrowCamera->setFOV(currentFOV + deltaFOV);
-
-		// Camera offset
-		glm::vec3 currentOffset = arrowCamera->getOffset();
-
-		// Linearly interpolate between min and max offset
-		glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
-
-		// Gradually increase offset
-		glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
-
-		// Limit offset change per second
-		if (glm::length(deltaOffset) > offsetChangeMax) {
-			deltaOffset *= deltaOffset / offsetChangeMax;
-		}
-
-		arrowCamera->setOffset(currentOffset + deltaOffset);
+		float speedOffsetFactor = (this->movementSpeed - this->minSpeedDecrease) / (this->maxSpeedIncrease - this->minSpeedDecrease);
+		this->updateCamera(dt, turnFactorsLength + speedOffsetFactor);
 	}
 }
 
@@ -133,13 +131,14 @@ void ArrowGuider::startAiming()
 		// Set camera settings
 		arrowCamera->setFOV(minFOV);
 		arrowCamera->setOffset(minCamOffset);
-	}
 
-    // Lock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        // Decouple the camera to allow for drifting
+        arrowCamera->decouple();
+	}
 
     // Subscribe to mouse movement for guiding
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
+
 }
 
 void ArrowGuider::stopAiming()
@@ -150,9 +149,6 @@ void ArrowGuider::stopAiming()
 
     turnFactors.x = 0.0f;
     turnFactors.y = 0.0f;
-
-    // Unlock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void ArrowGuider::startGuiding()
@@ -164,7 +160,8 @@ void ArrowGuider::startGuiding()
     isGuiding = true;
     flightTime = 0.0f;
 
-    allowKeypointOverride = true;
+    // Do not allow the starting point to be overwritten
+    allowKeypointOverride = false;
 
     // Clear previous path and store starting position
     path.clear();
@@ -174,6 +171,9 @@ void ArrowGuider::startGuiding()
     startingKeyPoint.t = 0.0f;
 
     path.push_back(startingKeyPoint);    
+
+	// Subscribe to key events
+	EventBus::get().subscribe(this, &ArrowGuider::handleKeyEvent);
 }
 
 void ArrowGuider::stopGuiding(float flightTime)
@@ -195,14 +195,18 @@ void ArrowGuider::stopGuiding(float flightTime)
 void ArrowGuider::saveKeyPoint(float flightTime)
 {
     // Do not save the key point if one was just saved during the same frame update
-    if (posStoreTimer < FLT_EPSILON * 10.0f || !allowKeypointOverride) {
+    if (posStoreTimer < FLT_EPSILON * 10.0f) {
         return;
     }
 
     posStoreTimer = 0.0f;
-    path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+	if (this->allowKeypointOverride)
+		path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+	else
+		path.push_back(KeyPoint(host->getTransform()->getPosition(), flightTime));
 
-    allowKeypointOverride = false;
+	allowKeypointOverride = false;
+
 }
 
 void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
@@ -230,6 +234,14 @@ void ArrowGuider::handleMouseMove(MouseMoveEvent* event)
 void ArrowGuider::handleWindowResize(WindowResizeEvent* event)
 {
     this->windowHeight = event->height;
+}
+
+void ArrowGuider::handleKeyEvent(KeyEvent * event)
+{
+	if (event->action == GLFW_PRESS && event->key == GLFW_KEY_LEFT_SHIFT) 
+		this->isAccelerating = true;
+	else if (event->action == GLFW_RELEASE && event->key == GLFW_KEY_LEFT_SHIFT) 
+		this->isAccelerating = false;
 }
 
 float ArrowGuider::getMaxTurnSpeed()
@@ -274,6 +286,7 @@ void ArrowGuider::applyTurn(const float& dt)
     turnFactors.y /= 1.0f + turnFactorFalloff * dt;
 
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
+    //glm::vec2 yawPitch;
     float yaw = -turnFactors.x * maxTurnSpeed * dt;
     float pitch = -turnFactors.y * maxTurnSpeed * dt;
 
@@ -289,4 +302,96 @@ void ArrowGuider::applyTurn(const float& dt)
     currentPitch += pitch;
 
     host->getTransform()->rotate(yaw, pitch);
+}
+
+void ArrowGuider::updateCamera(const float& dt, const float& turnFactorsLength)
+{
+    // Update camera settings using turn factors
+    // Camera FOV
+    float currentFOV = arrowCamera->getFOV();
+
+    // Linearly interpolate between min and max FOV
+    float desiredFOV = minFOV + (maxFOV - minFOV) * turnFactorsLength;
+
+    // Gradually increase FOV
+    float deltaFOV = (desiredFOV - currentFOV) * dt;
+
+    // Limit FOV change per second
+    if (std::abs(deltaFOV) > FOVChangeMax) {
+        deltaFOV *= deltaFOV / FOVChangeMax;
+    }
+
+    arrowCamera->setFOV(currentFOV + deltaFOV);
+
+    // Camera offset
+    glm::vec3 currentOffset = arrowCamera->getOffset();
+
+    // Linearly interpolate between min and max offset
+    glm::vec3 desiredOffset = minCamOffset + (maxCamOffset - minCamOffset) * turnFactorsLength;
+
+    // Gradually increase offset
+    glm::vec3 deltaOffset = (desiredOffset - currentOffset) * dt;
+
+    // Limit offset change per second
+    if (glm::length(deltaOffset) > offsetChangeMax) {
+        deltaOffset *= deltaOffset / offsetChangeMax;
+    }
+
+    glm::vec3 newOffset = currentOffset + deltaOffset;
+
+    arrowCamera->setOffset(newOffset);
+
+    /*
+        Drift camera logic: the camera is slowly dragged directly behind the arrow (with an offset)
+        The camera is always facing the arrow
+    */
+    Transform* transform = host->getTransform();
+
+    glm::vec3 arrowPos = transform->getPosition();
+    glm::vec3 arrowForward = transform->getForward();
+
+    glm::vec3 camPos = arrowCamera->getPosition();
+
+    // Desired position is arrow position + offset
+    glm::vec3 desiredPosition = arrowPos + (transform->getRight() * newOffset.x + transform->getUp() * newOffset.y + arrowForward * newOffset.z);
+
+    // Point the camera wants to look at and is rotated around when drifting
+    float offsetDistance = glm::length(arrowPos - desiredPosition);
+    glm::vec3 lookAt = desiredPosition + arrowForward * offsetDistance;
+
+    glm::vec3 camForward = glm::normalize(lookAt - camPos);
+
+    // Angle between forward vectors
+    float forwardAngle = std::acosf(glm::dot(camForward, arrowForward));
+
+    if (forwardAngle > 0.001f) {
+        // Calculate the angle to rotate the forward by
+        float rotationAngle;
+
+        if (forwardAngle > maxForwardAngle) {
+            // The angle differential is too large, snap the forward to the maximum allowed forward differential
+            rotationAngle = glm::max(angleCorrectionFactor * dt * forwardAngle, forwardAngle - maxForwardAngle);
+        } else {
+            // Smoothly rotate the forward
+            rotationAngle = glm::min(angleCorrectionFactor * dt * forwardAngle, forwardAngle);
+        }
+
+        // Limit rotation angle in case of a large dt
+        rotationAngle = glm::min(rotationAngle, forwardAngle);
+
+        // Rotate camera forward
+        glm::vec3 rotationAxis = glm::normalize(glm::cross(camForward, arrowForward));
+
+        glm::quat rotation = {1.0f, 0.0f, 0.0f, 0.0f};
+
+        rotation = glm::rotate(rotation, rotationAngle, rotationAxis);
+
+        camForward = rotation * camForward;
+    }
+
+    // Reposition camera
+    camPos = lookAt - camForward * offsetDistance;
+
+    arrowCamera->setForward(camForward);
+    arrowCamera->setPosition(camPos);
 }
