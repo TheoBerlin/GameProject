@@ -86,18 +86,7 @@ private:
 	*/
 	void init();
 
-	/*
-	Set if the button is active.
-	*/
-	void setActive(bool active) override;
-
-	/*
-	Get if the button is active.
-	*/
-	bool isActive() const override;
-
 private:
-	bool active;
 	bool isHovering;
 	bool pressed;
 
