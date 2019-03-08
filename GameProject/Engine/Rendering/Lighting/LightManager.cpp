@@ -8,8 +8,8 @@ LightManager::LightManager()
 	this->shadowReScale = Settings::get().getShadowReScale();
 	this->shadowHeight = Display::get().getHeight();
 	this->shadowWidth = Display::get().getWidth();
-	this->orthoHeight = 40.0f * Display::get().getRatio();
-	this->orthoWidth = 40.0f; //fix this so that the class gets this info relative to input
+	this->orthoHeight = 80.0f * Display::get().getRatio();
+	this->orthoWidth = 80.0f; //fix this so that the class gets this info relative to input
 	this->shadowPosition = glm::vec3(2.0f, 10.0f, 2.0f);
 }
 
