@@ -319,7 +319,7 @@ void ArrowGuider::updateCamera(const float& dt, const float& turnFactorsLength)
     // Angle between forward vectors
     float forwardAngle = std::acosf(glm::dot(camForward, arrowForward));
 
-    if (forwardAngle > FLT_EPSILON * 10.0f) {
+    if (forwardAngle > 0.001f) {
         // Calculate the angle to rotate the forward by
         float rotationAngle;
 
