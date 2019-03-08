@@ -46,7 +46,7 @@ void PathTreader::setPath(const std::vector<KeyPoint>& path)
     currentPointIndex = 0;
 }
 
-std::vector<KeyPoint> PathTreader::getPath() const
+const std::vector<KeyPoint>& PathTreader::getPath()
 {
 	return path;
 }
