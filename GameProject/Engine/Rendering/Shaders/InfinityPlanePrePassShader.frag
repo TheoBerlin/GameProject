@@ -21,7 +21,8 @@ bool InRoom(vec3 p, int size, int index)
         // Check if the horizontal line, which p.z spans, is intersecting the line between w1 and w2.
         if((w2.z < p.z && w1.z >= p.z) || (w1.z < p.z && w2.z >= p.z)) {
             // Check if the point is not the left or the right side of the line.
-            if(w2.x + (w1.x-w2.x)*(p.z + w2.z)/(w1.z-w2.z) < p.x) {
+            //if(w2.x + (w1.x-w2.x)*(p.z + w2.z)/(w1.z-w2.z) < p.x) {
+            if(((w1.x-w2.x)/(w1.z-w2.z)) * (p.z - w1.z) + w1.x > p.x) {
                 isOdd = !isOdd;
             }
         }

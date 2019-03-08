@@ -20,6 +20,7 @@ public:
 
 	void addPoint(Level& level, int wallGroupIndex, glm::vec3 point);
 	void editPoint(Level& level, int wallGroupIndex, int point, glm::vec3 newPoint);
+	void addWall(Level& level);
 
 	// Update buffers
 	void updateBuffers();

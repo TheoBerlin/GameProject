@@ -365,6 +365,9 @@ void EditorState::wallWindow(EntityManager & entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Wall Window");
+	if (ImGui::Button("Add Wall")) {
+		level.levelStructure->addWall(level);
+	}
 	if (ImGui::BeginCombo("Wall Group", currentWall.c_str())) {
 		for (int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
 			bool is_selected = (currentWall == std::to_string(i)); // You can store your selection however you want, outside or inside your objects

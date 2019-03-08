@@ -31,6 +31,7 @@ private:
 	void writeEntityBoxes(Level& level);
 	void writeEntityTargets(Level& level);
 	void writePlayer(Level& level);
+	void writeWalls(Level& level);
 
 	void readVec3(json::json& file, glm::vec3& vec);
 	void readVec2(json::json& file, glm::vec2& vec);

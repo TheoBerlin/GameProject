@@ -207,7 +207,7 @@ void LevelParser::writeEntityBoxes(Level & level)
 			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == level.entityManager->getEntity(i))
 				found = true;
 		}
-		if (!found) {
+		if (!found && level.entityManager->getEntity(i)->getName().substr(0, 9) != "WallPoint") {
 			Entity* entity = level.entityManager->getEntity(i);
 			Transform* transform = entity->getTransform();
 
@@ -297,6 +297,18 @@ void LevelParser::writePlayer(Level & level)
 	jsonFile["Player"]["ReplayCamera"]["Direction"] = { level.player.replayCamera.direction.x, level.player.replayCamera.direction.y, level.player.replayCamera.direction.z };
 	jsonFile["Player"]["ReplayCamera"]["Offset"] = { level.player.replayCamera.offset.x, level.player.replayCamera.offset.y, level.player.replayCamera.offset.z };
 	jsonFile["Player"]["ReplayCamera"]["FOV"] = level.player.replayCamera.FOV;
+}
+
+void LevelParser::writeWalls(Level & level)
+{
+	int wallPointsOffset = 0;
+	for (int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
+		for (int j = 0; j < level.levelStructure->getWallGroupsIndex()[i]; j++) {
+			glm::vec2 wallPoint = glm::vec2(level.levelStructure->getWallPoints()[wallPointsOffset + j].x, level.levelStructure->getWallPoints()[wallPointsOffset + j].z);
+			jsonFile["Walls"][i][j] = { wallPoint.x, wallPoint.y };
+		}
+		wallPointsOffset += level.levelStructure->getWallGroupsIndex()[i];
+	}
 }
 
 void LevelParser::readMetadata(Level& level)
@@ -454,6 +466,7 @@ void LevelParser::writeLevel(std::string file, Level & level)
 	writeEntityBoxes(level);
 	writeEntityTargets(level);
 	writePlayer(level);
+	writeWalls(level);
 
 	std::ofstream oFile;
 	oFile.open(file);

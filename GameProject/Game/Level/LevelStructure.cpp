@@ -12,6 +12,8 @@
 #include <Engine/Entity/Entity.h>
 #include <Engine/Entity/Transform.h>
 
+#include <Utils/Logger.h>
+
 LevelStructure::LevelStructure()
 {
 	this->height = 5.f;
@@ -27,7 +29,7 @@ void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3
 	this->quad = createQuad();
 	this->plane = createPlane();
 	// Create a wall group for each set
-	for (unsigned i = 0; i < points.size(); i++)
+	for (unsigned i = wallGroupsIndex.size(); i < points.size(); i++)
 	{
 		this->wallGroupsIndex.push_back((int)(points[i].size()));
 		createWallGroup(level, points[i]);
@@ -95,6 +97,21 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 		// Save entity pointer
 		this->wallEntites.push_back(entity);
 	}
+}
+
+void LevelStructure::addWall(Level & level) {
+	std::vector<glm::vec3> points = { glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f) };
+	this->wallGroupsIndex.push_back((int)(3));
+	createWallGroup(level, points);
+
+	std::vector<glm::mat4> mats;
+	for (unsigned i = 0; i < this->wallEntites.size(); i++) {
+		mats.push_back(this->wallEntites[i]->getTransform()->getMatrix());
+	}
+
+	Mesh* mesh = this->quad->getMesh(0);
+
+	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, 3);
 }
 
 void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point)
@@ -175,12 +192,13 @@ void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point
 
 void LevelStructure::editPoint(Level & level, int wallGroupIndex, int point, glm::vec3 newPoint)
 {
-	int prev = (point - 1) % wallGroupsIndex[wallGroupIndex];
-	int next = (point + 1) % wallGroupsIndex[wallGroupIndex];
+	int offset = 0;
 	for (int i = 0; i < wallGroupIndex; i++) {
-		prev += wallGroupsIndex[i];
-		next += wallGroupsIndex[i];
+		offset += wallGroupsIndex[i];
 	}
+
+	int prev = (((point - offset - 1) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
+	int next = (((point - offset + 1) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
 
 	Model* model = this->quad;
 	Mesh* mesh = model->getMesh(0);
@@ -189,51 +207,51 @@ void LevelStructure::editPoint(Level & level, int wallGroupIndex, int point, glm
 	Transform* trans = entity->getTransform();
 
 	glm::vec3 p1 = newPoint;
-	glm::vec3* p2 = &wallPoints[prev];
+	glm::vec3 p2(wallPoints[next].x, 0.0, wallPoints[next].z);
 
-	glm::vec3 width = *p2 - p1;
+	glm::vec3 width = p2 - p1;
+	if (glm::length(width) > 0) {
 
-	float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
-	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
-		angle = -angle;
-	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+			angle = -angle;
+		trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
 
-	float dist = glm::length(width);
-	glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
-	trans->setScale(scale);
+		float dist = glm::length(width);
+		glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
+		trans->setScale(scale);
+		trans->setPosition(p1);
 
-	trans->setPosition(p1);
+		//Update the point after our new one
+		entity = wallEntites[prev];
+		trans = entity->getTransform();
 
-	this->scales.push_back(glm::vec2(glm::length(width), this->height));
+		p2 = glm::vec3(wallPoints[prev].x, 0, wallPoints[prev].z);
 
-	std::vector<Vertex> vertex(mesh->getVerticies().size());
-	unsigned index = 0;
-	for (Vertex& v : mesh->getVerticies())
-	{
-		vertex[index++].Position = scale * v.Position;
+		width = p1 - p2;
+		if (glm::length(width) > 0.0f) {
+
+			angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+			if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+				angle = -angle;
+			trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+
+			dist = glm::length(width);
+			scale = glm::vec3(dist, this->height, 1.0f);
+
+			trans->setScale(scale);
+			trans->setPosition(p2);
+
+			wallPoints[point] = newPoint;
+			updateBuffers();
+		}
+		else {
+			LOG_ERROR("Wall Width is equal to 0, point to avoid this");
+		}
 	}
-
-	//Update the point after our new one
-	entity = wallEntites[next];
-	trans = entity->getTransform();
-
-	p2 = &wallPoints[next];
-
-	width = *p2 - p1;
-
-	angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
-	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
-		angle = -angle;
-	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
-
-	dist = glm::length(width);
-	scale = glm::vec3(dist, this->height, 1.0f);
-	trans->setScale(scale);
-
-	trans->setPosition(*p2);
-	trans->setScale(width);
-
-	updateBuffers();
+	else {
+		LOG_ERROR("Wall Width is equal to 0, point to avoid this");
+	}
 }
 
 std::vector<glm::vec3>& LevelStructure::getWallPoints()
