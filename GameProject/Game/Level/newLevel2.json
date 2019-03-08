@@ -1,4 +1,8 @@
 {
+  "DirectionalLight": {
+    "Direction": [ 0.0, -2.0, 1.0, 1.0 ],
+    "Intensity": [ 1.0, 1.0, 1.0, 1.0 ]
+  },
   "PointLights": [
     {
       "Position": [ 5.0, 2.0, 0.0 ],

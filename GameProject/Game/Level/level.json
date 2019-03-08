@@ -5,27 +5,27 @@
   },
   "PointLights": [
     {
-      "Position": [ -5.0, 0.25, -5.0, 1.0 ],
-      "Color": [ 1.0, 0.0, 1.0, 1.0 ],
+      "Position": [ -4.0, 0.25, -4.0, 1.0 ],
+      "Color": [ 1.0, 0.0, 0.0, 1.0 ],
       "Distance": 13
     },
     {
-      "Position": [ -5.0, 0.25, 5.0, 1.0 ],
+      "Position": [ -4.0, 0.25, 4.0, 1.0 ],
       "Color": [ 0.0, 1.0, 0.0, 1.0 ],
       "Distance": 13
     },
     {
-      "Position": [ 5.0, 0.25, -5.0, 1.0 ],
+      "Position": [ 4.0, 0.25, -4.0, 1.0 ],
       "Color": [ 0.0, 0.0, 1.0, 1.0 ],
       "Distance": 13
     },
     {
-      "Position": [ 5.0, 0.25, 5.0, 1.0 ],
+      "Position": [ 4.0, 0.25, 4.0, 1.0 ],
       "Color": [ 1.0, 0.0, 1.0, 1.0 ],
       "Distance": 13
     },
     {
-      "Position": [ 0.0, -0.25, 0.0, 1.0 ],
+      "Position": [ -1.0, -0.25, -1.0, 1.0 ],
       "Color": [ 1.0, 1.0, 1.0, 1.0 ],
       "Distance": 32
     }
@@ -33,23 +33,23 @@
   "Target": [
     {
       "Name": "Target1",
-      "Position": [ -5, 1, -5 ]
+      "Position": [ -4, 1, -4 ]
     },
     {
       "Name": "Target2",
-      "Position": [ -5, 1, 5 ]
+      "Position": [ -4, 1, 4 ]
     },
     {
       "Name": "Target3",
-      "Position": [ 5, 1, -5 ]
+      "Position": [ 4, 1, -4 ]
     },
     {
       "Name": "Target4",
-      "Position": [ 5, 1, 5 ]
+      "Position": [ 4, 1, 4 ]
     },
     {
       "Name": "Target5",
-      "Position": [ 0, 1, 0 ]
+      "Position": [ -1, 1, -1 ]
     },
     {
       "Name": "Target6",
@@ -76,23 +76,23 @@
   "Boxes": [
     {
       "Name": "Box1",
-      "Position": [ -5, 0.25, -5 ]
+      "Position": [ -4 , 0.25, -4 ]
     },
     {
       "Name": "Box2",
-      "Position": [ -5, 0.25, 5 ]
+      "Position": [ -4, 0.25, 4 ]
     },
     {
       "Name": "Box3",
-      "Position": [ 5, 0.25, -5 ]
+      "Position": [ 4, 0.25, -4 ]
     },
     {
       "Name": "Box4",
-      "Position": [ 5, 0.25, 5 ]
+      "Position": [ 4, 0.25, 4 ]
     },
     {
       "Name": "Box5",
-      "Position": [ 0, -0.25, 0 ]
+      "Position": [ -1, -0.25, -1 ]
     }
   ],
   "Floor": {
