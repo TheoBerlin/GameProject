@@ -20,7 +20,6 @@ public:
     // Inserts material data into a uniform buffer
     void bindMaterial(UniformBuffer* uniformBuffer);
     unsigned short getMaterialIndex();
-	GLuint getBufferID();
 
 	void addBuffer(const void * data, size_t dataSize, const AttributeLayout& layout);
 
@@ -38,7 +37,6 @@ private:
     Model* parentModel;
     VertexArray* vao;
 	IndexBuffer* ib;
-	GLuint bufferID;
 
     std::vector<Vertex>* vertices;
     std::vector<unsigned int>* vertexIndices;
