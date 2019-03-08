@@ -178,3 +178,11 @@ glm::quat Utils::toQuaternion(float yaw, float pitch, float roll)
 	q.z = sy * cp * cr - cy * sp * sr;
 	return q;
 }
+
+float Utils::map(float min, float max, float x, float newMin, float newMax)
+{
+	if (x < min) return newMin;
+	if (x > max) return newMax;
+	float t = (x - min) / (max - min);
+	return newMin + t*(newMax-newMin);
+}

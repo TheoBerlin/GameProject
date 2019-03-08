@@ -30,4 +30,18 @@ struct Utils
 		roll: Angle in radians of a rotation around the z-axis.
 	*/
 	static glm::quat toQuaternion(float yaw, float pitch, float roll);
+
+	/*
+	Map one interval to another. Eg. [-100, 20.4] -> [0, 1]
+	This will do a linear interpolation when mapping to the new interval.
+	Arguments:
+		min:	Old interval minimum.
+		max:	Old interval maximum.
+		x:		The value to map from the old interval to the new.
+		newMin: New interval minimum.
+		newMax: New interval maximum.
+	Return:
+		A value within the new interval.
+	*/
+	static float map(float min, float max, float x, float newMin, float newMax);
 };
