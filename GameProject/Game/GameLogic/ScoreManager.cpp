@@ -195,8 +195,10 @@ void ScoreManager::toggleGuiMinimize()
 	{
 		// Move smallPanel
 		this->smallPanel->setOption(GUI::FLOAT_LEFT, -width);
+		this->smallPanel->setActive(false);
 
 		// Move bigPanel
+		this->bigPanel->setActive(true);
 		this->bigPanel->setOption(GUI::CENTER_X, 0);
 
 		this->minimized = false;
@@ -205,9 +207,13 @@ void ScoreManager::toggleGuiMinimize()
 	{
 		// Move bigPanel
 		this->bigPanel->setOption(GUI::CENTER_X, -width);
+		this->bigPanel->setActive(false);
+
 
 		// Move smallPanel
+		this->smallPanel->setActive(true);
 		this->smallPanel->setOption(GUI::FLOAT_LEFT, 0);
+
 
 		this->minimized = true;
 	}
