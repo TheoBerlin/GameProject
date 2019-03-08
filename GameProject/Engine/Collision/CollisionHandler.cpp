@@ -33,6 +33,8 @@ CollisionHandler::CollisionHandler()
 
 	this->drawCollisionShapes = false;
 #endif
+
+	this->octree.constructOctreeTree({ 0.f, 0.f, 0.f }, { 20.f, 20.f, 20.f });
 }
 
 CollisionHandler::~CollisionHandler()
@@ -533,6 +535,8 @@ void CollisionHandler::updateDrawingData()
 		}
 
 	#if defined(ENABLE_COLLISION_BOXES)
+		drawOctree(this->matrices, this->colors);
+
 		this->cRenderer.updateColors(colors);
 		this->cRenderer.updateMatrices(matrices);
 	#endif
@@ -561,9 +565,27 @@ void CollisionHandler::updateDrawingData()
 	#endif
 	}
 }
+
 void CollisionHandler::drawCollisionBoxes()
 {
 	if (this->drawCollisionShapes)
 		this->cRenderer.render();
+}
+
+void CollisionHandler::drawOctree(std::vector<glm::mat4>& matrices, std::vector<glm::vec3>& colors)
+{
+	for (Octree::Node* node : this->octree.getNodes())
+		drawNode(node);
+}
+
+void CollisionHandler::drawNode(Octree::Node * node)
+{
+	glm::mat4 mat(1.0f);
+	mat = glm::translate(mat, node->aabb.center);
+	mat = glm::scale(mat, node->aabb.size*.5f*0.99f);
+	this->matrices.push_back(mat);
+	this->colors.push_back(node->color);
+	for (Octree::Node* child : node->children)
+		drawNode(child);
 }
 #endif

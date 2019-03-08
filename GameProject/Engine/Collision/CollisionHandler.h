@@ -17,6 +17,8 @@
 
 #include "CollisionConfig.h"
 
+#include "Octree.h"
+
 #ifdef ENABLE_COLLISION_DEBUG_DRAW
 	#include "CollisionRenderer.h"
 #endif
@@ -75,9 +77,13 @@ public:
 	void updateDrawingData();
 
 	void drawCollisionBoxes();
+	void drawOctree(std::vector<glm::mat4>& matrices, std::vector<glm::vec3>& colors);
+	void drawNode(Octree::Node* node);
 #endif
 
 private:
+	Octree octree;
+
 	typedef std::pair<glm::vec3, glm::vec3> AABB;
 	typedef std::tuple<glm::vec3, glm::vec3, glm::quat> OBB;
 	AABB getAABB(Vertex* vertices, unsigned int numVertices, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
