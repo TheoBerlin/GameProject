@@ -10,6 +10,7 @@
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Rendering/GLAbstraction/VertexArray.h"
 #include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
+#include "Lighting/LightManager.h"
 
 
 class Entity;
@@ -21,11 +22,6 @@ struct RenderingTarget {
 	bool visible;
 
 	Model* model;
-};
-
-struct DirectionalLight {
-	glm::vec4 direction;
-	glm::vec4 color_intensity;
 };
 
 enum SHADERS {
@@ -97,6 +93,7 @@ public:
 		Updates shaders
 	*/
 	void updateShaders(const float& dt);
+	void addCurrentLightManager(LightManager * lm);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
@@ -109,7 +106,6 @@ public:
 private:
 	Camera * camera;
 	unsigned int width, height;
-	unsigned int shadowWidth, shadowHeight;
 	Framebuffer fbo;
 	Framebuffer shadowFbo;
 	glm::mat4 lightSpaceMatrix;
@@ -140,7 +136,7 @@ private:
 	void createQuad();
 	Model* quad;
 
-	DirectionalLight mainLight;
+	LightManager * lightManager;
 
 	std::vector<UniformBuffer*> uniformBuffers;
 };
