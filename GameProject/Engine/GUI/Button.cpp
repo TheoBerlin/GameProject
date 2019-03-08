@@ -55,6 +55,11 @@ void Button::removeCallback()
 	this->func = [](void)->void {};
 }
 
+bool Button::hover() const
+{
+	return this->isHovering;
+}
+
 void Button::mouseClickCallback(MouseClickEvent * evnt)
 {
 	if (this->active)
