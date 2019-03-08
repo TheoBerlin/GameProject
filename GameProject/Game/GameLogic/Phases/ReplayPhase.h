@@ -52,6 +52,8 @@ private:
     Button* timeBarBack;
     // Foreground time bar, displays played time
     Panel* timeBarFront;
+	// Background panel that holds the button and the other panel for optimization
+	Panel* backPanel;
 
     // Time bar position and size factors, relative to screen size
     const float timeBarSidePadding = 1.0f/20.0f;

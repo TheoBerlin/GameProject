@@ -8,6 +8,8 @@ List::List(const std::string & font, unsigned maxItemsVisible, unsigned itemSpac
 	this->font = font;
 	this->scrollOffset = 0;
 	this->itemSpacing = itemSpacing;
+
+	this->backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
 }
 
 
@@ -26,11 +28,10 @@ void List::addItem(const std::string& text, std::function<void(void)> func)
 	button->setOption(GUI::CENTER_X);
 
 	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
-	glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
 	glm::vec4 hoverColor = { 0.5f, 0.0f, 0.5f, 1.0f };
 	glm::vec4 pressColor = { 0.3f, 0.0f, 0.3f, 1.0f };
 	button->setHoverColor(hoverColor);
-	button->setNormalColor(backgroundColor);
+	button->setNormalColor(this->backgroundColor);
 	button->setPressedColor(pressColor);
 
 	button->setOption(GUI::TEXT_CENTER_X);
@@ -74,4 +75,14 @@ void List::setItemSpacing(unsigned itemSpacing)
 {
 	this->itemSpacing = itemSpacing;
 	this->scroll(0);
+}
+
+std::vector<Button*>& List::getListButtons()
+{
+	return this->listButtons;
+}
+
+glm::vec4 & List::getBackgroundColor()
+{
+	return this->backgroundColor;
 }

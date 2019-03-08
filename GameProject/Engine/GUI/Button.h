@@ -50,6 +50,11 @@ public:
 	*/
 	void removeCallback();
 
+	/*
+	Check if the button is pressed
+	*/
+	bool hover() const;
+
 private:
 	/*
 	A callback to be called when the MB1 is pressed or released.
