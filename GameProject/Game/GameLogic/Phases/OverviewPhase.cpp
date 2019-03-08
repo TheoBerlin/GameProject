@@ -33,7 +33,6 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
     playerTransform->setForward(level.player.arrowCamera.direction);
     playerTransform->resetRoll();
 	playerTransform->setPosition(level.player.arrowCamera.position);
-	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);
 
