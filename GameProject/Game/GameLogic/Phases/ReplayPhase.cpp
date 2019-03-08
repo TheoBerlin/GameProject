@@ -92,7 +92,7 @@ void ReplayPhase::update(const float& dt)
 
         float replayProgress = replayTime/flightTime;
 
-		if (this->panelExist)
+		if (this->guiExist)
 		{
 			// Set timeBarFront and timeBarSlider new position
 			glm::uvec2 timeBarSize = { 1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight };
@@ -104,7 +104,7 @@ void ReplayPhase::update(const float& dt)
 
 
     // Display results when the replay finishes
-    if (replayTime > flightTime && !level.scoreManager->resultsVisible())
+    if (replayTime > flightTime && !level.scoreManager->resultsVisible() && this->guiExist)
     {
         // Disable freemove and unlock cursor
         glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -146,7 +146,8 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
     else if (event->key == GLFW_KEY_2) {
         beginAimTransition();
-    } else if (event->key == GLFW_KEY_C) {
+    }
+	else if (event->key == GLFW_KEY_C) {
         // Toggle mouse lock
         if (freeMove->mouseIsEnabled()) {
             glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -160,9 +161,14 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
 void ReplayPhase::beginAimTransition()
 {
-	this->panelExist = false;
+	this->guiExist = false;
 
     EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+
+	// Remove results GUI if visible
+	if (level.scoreManager->resultsVisible()) {
+		level.scoreManager->removeResultsGUI(level);
+	}
 
 	// Reset score
 	level.scoreManager->resetScore();
@@ -172,11 +178,6 @@ void ReplayPhase::beginAimTransition()
 
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    // Remove results GUI if visible
-    if (level.scoreManager->resultsVisible()) {
-        level.scoreManager->removeResultsGUI(level);
-    }
 
     // Stop replaying playthrough
     level.replaySystem->stopReplaying();
@@ -211,7 +212,7 @@ void ReplayPhase::finishAimTransition(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
-	this->panelExist = true;
+	this->guiExist = true;
 
 	backPanel = new Panel();
     timeBarBack = new Button();
