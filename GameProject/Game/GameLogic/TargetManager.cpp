@@ -134,6 +134,7 @@ void TargetManager::resetStaticAnimations()
 		targetHost->unpauseModelTransform();
         staticTargets.at(i).hoverAnimation->reset();
 		staticTargets.at(i).explosion->reset();
+		staticTargets.at(i).deathAnimation->reset();
 		
 		//Reset color on entity
 		int attachmentIndex = targetHost->getRenderingGroupIndex();
@@ -153,6 +154,7 @@ void TargetManager::resetMovingAnimations()
         movingTargets.at(i).pathTreader->startTreading();
 		targetHost->getTransform()->resetRoll();
 		movingTargets.at(i).explosion->reset();
+		movingTargets.at(i).deathAnimation->reset();
 
 		//Reset color on entity
 		int attachmentIndex = targetHost->getRenderingGroupIndex();

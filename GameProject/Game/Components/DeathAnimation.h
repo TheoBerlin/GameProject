@@ -18,7 +18,7 @@ public:
 	void reset();
 
 private:
-	void spasm(float dt);
+	bool shake(float dt);
 	void fall(float dt);
 
 	float totalTime;
@@ -30,9 +30,7 @@ private:
 	float totalAngle;
 
 	// Spasm
-	glm::vec3 maxTranslation = {0.f, 0.17f, 0.f };
-	const glm::vec3 maxRotation = { glm::quarter_pi<float>() / 4.0f, glm::quarter_pi<float>() / 4.0f, glm::quarter_pi<float>() / 4.0f };
-	glm::vec3 totalRotation;
-	glm::vec3 totalTranslation;
-	float spasmTimer;
+	glm::vec3 maxTranslation = {0.f, 0.2f, 0.f };
+	const glm::vec3 maxRotation = { 0.f, glm::quarter_pi<float>() / 4.0f, glm::quarter_pi<float>() / 4.0f };
+	float shakeTimer;
 };
