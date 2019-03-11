@@ -424,7 +424,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
 
-#ifdef IMGUI
+/*#ifdef IMGUI
 	auto drawTexture = [](Texture* texture, bool nextLine = false) {
 		ImTextureID texID = (ImTextureID)texture->getID();
 		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
@@ -444,7 +444,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	drawTexture(this->shadowFbo.getDepthTexture());
 
 	ImGui::End();
-#endif
+#endif*/
 
 	Display::get().updateView(displayWidth, displayHeight);
 }
