@@ -43,8 +43,11 @@ EditorState::EditorState()
 	level.scoreManager = &this->scoreManager;
 	level.collisionHandler = &this->collisionHandler;
 	level.levelStructure = &this->levelStructure;
+	level.lightManager = &this->lightManager;
 	level.gui = &this->getGUI();
 	level.isEditor = true;
+
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
 	InputHandler ih(Display::get().getWindowPtr());
@@ -99,6 +102,9 @@ void EditorState::update(const float dt)
 	}
 
 	mainWindow(entityManager);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
 }
 
 void EditorState::render()
@@ -164,8 +170,10 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (activeWindow[2])
 		wallWindow(entityManager);
 	if (activeWindow[3])
-		playerWindow(entityManager);
+		lightWindow();
 	if (activeWindow[4])
+		playerWindow(entityManager);
+	if (activeWindow[5])
 		editorWindow();
 
 }
@@ -332,6 +340,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 		entityManager.removeEntities();
 
 		levelParser.readLevel(std::string("./Game/Level/") + "level"/*levelName.c_str()*/ + ".json", level);
+		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 		Display::get().getRenderer().initInstancing();
 	}
 	ImGui::End();
@@ -404,6 +413,37 @@ void EditorState::wallWindow(EntityManager & entityManager)
 					level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));
 				}
 			}
+		}
+	}
+	ImGui::End();
+#endif
+}
+
+void EditorState::lightWindow()
+{
+#ifdef IMGUI
+	ImGui::Begin("Light Window");
+	if (ImGui::Button("Add Light")) {
+		level.lightManager->createPointLight(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), 7);
+	}
+	if (ImGui::BeginCombo("Light Group", currentLight.c_str())) {
+		for (int i = 0; i < level.lightManager->getNrOfPointLights(); i++) {
+			bool is_selected = (currentLight == std::to_string(i)); // You can store your selection however you want, outside or inside your objects
+			if (ImGui::Selectable(std::to_string(i).c_str(), is_selected)) {
+				currentLight = std::to_string(i);
+			}
+			if (is_selected)
+				ImGui::SetItemDefaultFocus();   // You may set the initial focus when opening the combo (scrolling + for keyboard navigation support)
+		}
+		ImGui::EndCombo();
+	}
+	if (currentLight != "-1") {
+		if (ImGui::Button("Remove Light")) {
+			level.lightManager->removePointLight(std::stoi(currentLight));
+		}
+		else {
+			if (ImGui::InputFloat4("Position", &level.lightManager->getPointLights()->at(std::stoi(currentLight))->getPosition()[0], 2))
+				ImGui::InputFloat4("Color + Intensity", &level.lightManager->getPointLights()->at(std::stoi(currentLight))->getIntensity()[0], 2);
 		}
 	}
 	ImGui::End();

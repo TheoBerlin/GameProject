@@ -52,4 +52,5 @@ private:
 	std::vector<glm::vec3> wallPoints;
 	std::vector<int> wallGroupsIndex;
 	float height;
+	int spawnedPoints;
 };

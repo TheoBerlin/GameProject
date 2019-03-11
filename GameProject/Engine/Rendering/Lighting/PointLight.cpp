@@ -80,3 +80,4 @@ glm::vec4 PointLight::getIntensity()
 {
 	return this->intensity;
 }
+

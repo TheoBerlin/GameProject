@@ -19,6 +19,7 @@ public:
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getLightMatrix();
 	glm::mat4 * getLightMatrixPointer();
+	void removePointLight(int index);
 private:
 	std::vector<PointLight*> pointLights;
 

@@ -70,6 +70,16 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 	return nullptr;
 }
 
+void LightManager::removePointLight(int index)
+{
+	if (index <= pointLights.size() && index >= 0) {
+		pointLights.erase(pointLights.begin() + index);
+	}
+	else {
+		LOG_ERROR("Index out of range in list of Pointlights");
+	}
+}
+
 DirectionalLight * LightManager::getDirectionalLight()
 {
 	return this->dirLight;

@@ -11,7 +11,7 @@
 class EditorState : public State
 {
 private:
-#define NR_OF_WINDOWS 5
+#define NR_OF_WINDOWS 6
 
 	//ImGui windows
 	void mainWindow(EntityManager& entityManager);
@@ -19,6 +19,7 @@ private:
 	void levelWindow(EntityManager& entityManager);
 	void playerWindow(EntityManager& entityManager);
 	void wallWindow(EntityManager& entityManager);
+	void lightWindow();
 	void editorWindow();
 
 	std::string levelName;
@@ -27,6 +28,7 @@ private:
 	int currentEntity = -1;
 	bool currentIsTarget;
 	std::string currentWall = "-1";
+	std::string currentLight = "-1";
 	bool activeWindow[NR_OF_WINDOWS];
 	Entity camera;
 	float camSpeed;
@@ -39,6 +41,7 @@ private:
 	GameLogic gameLogic;
 	CollisionHandler collisionHandler;
 	LevelStructure levelStructure;
+	LightManager lightManager;
 
 	void pauseGame(KeyEvent * ev);
 

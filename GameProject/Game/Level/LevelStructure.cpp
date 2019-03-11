@@ -17,6 +17,7 @@
 LevelStructure::LevelStructure()
 {
 	this->height = 5.f;
+	spawnedPoints = 0;
 }
 
 
@@ -51,7 +52,7 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 	std::vector<glm::mat4> mats;
 	for (unsigned i = 0; i < points.size(); i++)
 	{
-		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(this->wallEntites.size()));
+		Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(spawnedPoints));
 		Transform* trans = entity->getTransform();
 		glm::vec3* p1 = &points[i];
 		glm::vec3* p2 = &points[(i + 1) % (points.size())];
@@ -98,6 +99,7 @@ void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& poin
 
 		// Save entity pointer
 		this->wallEntites.push_back(entity);
+		spawnedPoints++;
 	}
 }
 
@@ -194,7 +196,7 @@ void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point
 	Model* model = this->quad;
 	Mesh* mesh = model->getMesh(0);
 
-	Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(this->wallEntites.size()));
+	Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(spawnedPoints));
 	Transform* trans = entity->getTransform();
 
 	glm::vec3 p1 = point;
@@ -256,6 +258,7 @@ void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point
 	wallGroupsIndex[wallGroupIndex] += 1;
 
 	updateBuffers();
+	spawnedPoints++;
 }
 
 void LevelStructure::editPoint(Level & level, int wallGroupIndex, int point, glm::vec3 newPoint)
