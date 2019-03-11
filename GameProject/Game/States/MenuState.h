@@ -5,6 +5,8 @@
 #include <Engine/GUI/Panel.h>
 #include <Engine/GUI/Button.h>
 
+#include <filesystem>
+
 class MenuState : public State
 {
 public:
@@ -19,7 +21,7 @@ public:
 
 private:
 	void initPanelLayout();
-	void initLevelSelectLayout();
+	void loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths);
 
 	std::string selectedLevel;
 
