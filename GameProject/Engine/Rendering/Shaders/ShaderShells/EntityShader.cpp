@@ -27,6 +27,11 @@ void EntityShader::updateMeshData(unsigned texId)
 	Shader::setTexture2D("tex", 0, texId);
 }
 
+void EntityShader::updateLightMatrixData(glm::mat4 * lightSpaceMatrix)
+{
+	this->lightSpaceMatrix = lightSpaceMatrix;
+}
+
 void EntityShader::setCameraUniform(const std::string& uniformName)
 {
 	Shader::setUniformMatrix4fv(uniformName, 1, false, &((*this->camera)->getVP()[0][0]));

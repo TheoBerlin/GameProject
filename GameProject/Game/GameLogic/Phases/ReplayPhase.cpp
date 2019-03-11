@@ -16,10 +16,18 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase),
     replayTime(0.0f)
 {
-    // GUI setup
+    // Create replay time bar
     setupGUI();
 
     flightTime = guidingPhase->getFlightTime();
+
+    // Create results window and minimize it
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
+
+    level.scoreManager->showResults(level, retry);
+
+    level.scoreManager->toggleGuiMinimize();
 
     /*
 		Create replay arrow
@@ -68,7 +76,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	// Reset targets
+    // Reset targets
 	level.targetManager->resetTargets();
 
     // Begin replaying playthrough
@@ -97,7 +105,7 @@ void ReplayPhase::update(const float& dt)
 
         float replayProgress = replayTime/flightTime;
 
-		if (this->guiExist)
+		if (this->timebarExists)
 		{
 			// Set timeBarFront and timeBarSlider new position
 			glm::uvec2 timeBarSize = { 1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight };
@@ -105,15 +113,6 @@ void ReplayPhase::update(const float& dt)
 
 			timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
 		}
-    }
-
-    // Display results when the replay finishes
-    if (replayTime > flightTime && !level.scoreManager->resultsVisible() && this->guiExist)
-    {
-        // Lambda function which executes when retry is pressed
-        std::function<void()> retry = [this](){beginAimTransition();};
-
-        level.scoreManager->showResults(level, retry);
     }
 }
 
@@ -134,7 +133,7 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
     }
 
     // Minimize / enlarge results GUI
-    if (event->key == GLFW_KEY_ESCAPE && level.scoreManager->resultsVisible()) {
+    if (event->key == GLFW_KEY_ESCAPE) {
         level.scoreManager->toggleGuiMinimize();
     }
 
@@ -168,7 +167,7 @@ void ReplayPhase::handleMouseClick(MouseClickEvent* event)
 
 void ReplayPhase::beginAimTransition()
 {
-	this->guiExist = false;
+	this->timebarExists = false;
 
     EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
     EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
@@ -222,7 +221,7 @@ void ReplayPhase::finishAimTransition(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
-	this->guiExist = true;
+	this->timebarExists = true;
 
 	backPanel = new Panel();
     timeBarBack = new Button();
