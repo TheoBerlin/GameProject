@@ -24,6 +24,7 @@ struct Player {
 };
 
 struct Level {
+	bool isEditor = false;
 	EntityManager* entityManager;
 	TargetManager* targetManager;
 	Player player;

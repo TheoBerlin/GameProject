@@ -44,6 +44,7 @@ EditorState::EditorState()
 	level.collisionHandler = &this->collisionHandler;
 	level.levelStructure = &this->levelStructure;
 	level.gui = &this->getGUI();
+	level.isEditor = true;
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
 	InputHandler ih(Display::get().getWindowPtr());
@@ -383,17 +384,25 @@ void EditorState::wallWindow(EntityManager & entityManager)
 		if (ImGui::Button("Add Point")) {
 			level.levelStructure->addPoint(level, std::stoi(currentWall), glm::vec3(1.0f, 0.0f, 3.0f));
 		}
+		if (ImGui::Button("Remove Point")) {
+			int prevSize = level.levelStructure->getWallGroupsIndex().size();
+			level.levelStructure->removePoint(level, std::stoi(currentWall));
+			if (level.levelStructure->getWallGroupsIndex().size() != prevSize)
+				currentWall = "-1";
+		}
+		else {
 
-		unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
-		unsigned offset = 0;
-		std::vector<int> getWallGroupsIndex = level.levelStructure->getWallGroupsIndex();
-		for (size_t i = 0; i < wallGroupIndex; i++)
-			offset += getWallGroupsIndex[i];
+			unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
+			unsigned offset = 0;
+			std::vector<int> getWallGroupsIndex = level.levelStructure->getWallGroupsIndex();
+			for (int i = 0; i < wallGroupIndex; i++)
+				offset += getWallGroupsIndex[i];
 
-		for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
-			glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
-			if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
-				level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));
+			for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
+				glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
+				if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
+					level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));
+				}
 			}
 		}
 	}
@@ -416,6 +425,14 @@ void EditorState::pauseGame(KeyEvent * ev)
 	if (ev->key == GLFW_KEY_ESCAPE && ev->action == GLFW_PRESS) {
 
 		this->pushState(new PauseState());
+	}
+	if (ev->key == GLFW_KEY_F2 && ev->action == GLFW_PRESS) {
+		if (freeMove->mouseIsEnabled()) {
+			freeMove->disableMouse();
+		}
+		else {
+			freeMove->enableMouse();
+		}
 	}
 	if (ev->key == GLFW_KEY_BACKSPACE) {
 		if (ev->action) {

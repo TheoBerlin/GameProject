@@ -37,8 +37,10 @@ void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3
 	// Create wall buffer
 	createWallBuffers();
 
+
 	// Create infinity plane
-	createInfinityPlane(level);
+	if (!level.isEditor)
+		createInfinityPlane(level);
 }
 
 void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& points, bool invertNormal)
@@ -112,6 +114,72 @@ void LevelStructure::addWall(Level & level) {
 	Mesh* mesh = this->quad->getMesh(0);
 
 	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, 3);
+}
+
+void LevelStructure::removePoint(Level & level, int wallGroupIndex)
+{
+	if (wallGroupsIndex[wallGroupIndex] > 2) {
+		int first = 0;
+		int removePoint = wallGroupsIndex[wallGroupIndex] - 1;
+		for (int i = 0; i < wallGroupIndex; i++) {
+			first += wallGroupsIndex[i];
+			removePoint += wallGroupsIndex[i];
+		}
+		int last = removePoint - 1;
+
+		Model* model = this->quad;
+		Mesh* mesh = model->getMesh(0);
+
+		Entity* entity = wallEntites[last];
+		Transform* trans = entity->getTransform();
+
+		glm::vec3 p1(wallPoints[last].x, 0.0, wallPoints[last].z);
+		glm::vec3 p2(wallPoints[first].x, 0.0, wallPoints[first].z);
+
+		glm::vec3 width = p2 - p1;
+
+		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
+			angle = -angle;
+		trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
+
+		float dist = glm::length(width);
+		glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
+		trans->setScale(scale);
+		trans->setPosition(p1);
+
+		for (int j = 0; j < level.entityManager->getEntitySize(); j++) {
+			if (wallEntites[removePoint] == level.entityManager->getEntity(j))
+				level.entityManager->removedEntity(j);
+		}
+
+		wallPoints.erase(wallPoints.begin() + removePoint);
+		scales.erase(scales.begin() + removePoint);
+		wallEntites.erase(wallEntites.begin() + removePoint);
+		wallGroupsIndex[wallGroupIndex]--;
+
+		updateBuffers();
+	}
+	else {
+		int first = 0;
+
+		for (int i = 0; i < wallGroupIndex; i++)
+			first += wallGroupsIndex[i];
+
+		for (int i = 0; i < 2; i++) {
+			for (int j = 0; j < level.entityManager->getEntitySize(); j++) {
+				if (wallEntites[first] == level.entityManager->getEntity(j)) {
+					level.entityManager->removedEntity(j);
+					wallPoints.erase(wallPoints.begin() + first);
+					scales.erase(scales.begin() + first);
+					wallEntites.erase(wallEntites.begin() + first);;
+				}
+			}
+
+		}
+
+		wallGroupsIndex.erase(wallGroupsIndex.begin() + wallGroupIndex);
+	}
 }
 
 void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point)

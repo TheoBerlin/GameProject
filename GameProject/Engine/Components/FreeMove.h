@@ -29,7 +29,6 @@ private:
 	float currentPitch;
 	float maxPitch = glm::half_pi<float>() - 0.01f;
 	bool mouseEnabled;
-	bool mouseLock;
 	int xPos, yPos;
 	std::unordered_map<unsigned, bool> pressedKeys;
 

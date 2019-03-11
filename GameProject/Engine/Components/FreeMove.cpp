@@ -127,21 +127,6 @@ void FreeMove::moveKeyboard(KeyEvent * evnt)
 		this->pressedKeys[evnt->key] = true;
 	else if (evnt->action == GLFW_RELEASE)
 		this->pressedKeys[evnt->key] = false;
-
-	// Toggle keys
-	if (evnt->key == GLFW_KEY_F2 && evnt->action == GLFW_PRESS)
-	{
-		this->mouseLock = !this->mouseLock;
-
-		if (this->mouseLock) {
-			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-			EventBus::get().subscribe(this, &FreeMove::moveMouse);
-		} else {
-			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
-		}
-	}
 }
 
 void FreeMove::moveMouse(MouseMoveEvent * evnt)
