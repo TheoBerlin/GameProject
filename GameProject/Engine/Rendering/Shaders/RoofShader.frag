@@ -49,23 +49,26 @@ uniform sampler2D tex;
 uniform sampler2D shadowTex;
 uniform vec3 camPos;
 
-bool InRoom(vec3 p, int size, int index)
+float GetMinDist(vec3 p, int size, int index)
 {  
+    float minDist = 10000.0;
     int j = index + size - 1;
-    bool isOdd = index > 0;
     for(int i = index; i < size+index; i++) {
         vec3 w2 = wallPoints.points[i].xyz;
         vec3 w1 = wallPoints.points[j].xyz;
-        // Check if the horizontal line, which p.z spans, is intersecting the line between w1 and w2.
-        if((w2.z < p.z && w1.z >= p.z) || (w1.z < p.z && w2.z >= p.z)) {
-            // Check if the point is not the left or the right side of the line.
-            if(((w1.x-w2.x)/(w1.z-w2.z)) * (p.z - w1.z) + w1.x > p.x) {
-				isOdd = !isOdd;
-            }
-        }
+        vec2 l = normalize((w2-w1).xz);
+        // Make this the normal of the line.
+        float x = l.x;
+        l.x = -l.y; 
+        l.y = x;
+
+        // Check distance from point to line.
+        float d = dot(l, p.xz-w2.xz);
+        if(d < minDist)
+            minDist = d;
         j = i;
     }
-    return isOdd;
+    return d;
 }
 
 float ShadowCalculation(vec4 fragLightSpace)
@@ -119,6 +122,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 void main()
 {
+    /*
     int index = 0;
     int counter = 0;
     for (int i = 0; i < wallPoints.groupSize; i++)
@@ -129,7 +133,7 @@ void main()
     }
     if (counter == wallPoints.groupSize)
         discard;
-
+    */
     vec3 viewDir = normalize(camPos - fragPos);
 
     vec3 result = vec3(0.0f);
@@ -166,5 +170,23 @@ void main()
 	float shadow = ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)+ result) * texColor;
 
-    finalColor = vec4(0.6, 0.6, 0.6, 1.0 - smoothstep(0.0, 75.0, length(fragPos)));
+    float cellSize = 3.0;
+    float borderWidth = 0.2;
+
+    bool isBorderX = bool(step(cellSize-borderWidth, mod(fragPos.x, cellSize)));
+    bool isBorderZ = bool(step(cellSize-borderWidth, mod(fragPos.z, cellSize)));
+    float l =  1.0 - float(isBorderZ || isBorderX);
+    vec3 cellColor = vec3(1.0, 1.0, 1.0);
+    vec3 borderColor = vec3(0.6, 0.6, 0.6);
+
+    float minDist = 1000.0;
+    for (int i = 0; i < wallPoints.groupSize; i++)
+    {   
+        float d = GetMinDist(fragPos, int(wallPoints.points[index].w), index);
+        if(d < minDist)
+            minDist = d;
+        index += int(wallPoints.points[index].w);
+    }
+    // TODO: Discard if outside of room, else check smallest distance to wall.
+    finalColor = vec4(d, d, d, 1.0);//vec4(cellColor * l + (1-l)*borderColor, 1.0);
 }

@@ -25,7 +25,8 @@ LevelStructure::~LevelStructure()
 void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3>>& points)
 {
 	this->quad = createQuad();
-	this->plane = createPlane();
+	this->infPlane = createInfPlane();
+	this->roofPlane = createRoofPlane();
 	// Create a wall group for each set
 	for (unsigned i = 0; i < points.size(); i++)
 	{
@@ -35,8 +36,10 @@ void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3
 	// Create wall buffer
 	createWallBuffers();
 	
-	// Create infinity plane
+	// Create infinity plane entity
 	createInfinityPlane(level);
+	// Create roof entity
+	createRoof(level);
 }
 
 void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& points, bool invertNormal)
@@ -152,12 +155,12 @@ Model * LevelStructure::createQuad()
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
-	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::WALL, false);
+	Display::get().getRenderer().addRenderingTarget(quad, SHADERS::WALL, true);
 
 	return quad;
 }
 
-Model * LevelStructure::createPlane()
+Model * LevelStructure::createInfPlane()
 {
 	Model* plane = new Model();
 
@@ -207,6 +210,56 @@ Model * LevelStructure::createPlane()
 	return plane;
 }
 
+Model * LevelStructure::createRoofPlane()
+{
+	Model* plane = new Model();
+
+	std::vector<Vertex>* vertices = new	std::vector<Vertex>();
+	std::vector<GLuint>* indicies = new std::vector<GLuint>();
+
+	Vertex vertex;
+	vertex.Normal = glm::vec3(0.0, 1.0, 0.0);
+
+	vertex.Position = glm::vec3(-1.0, 0.0, -1.0);
+	vertex.TexCoords = glm::vec2(0.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 0.0, -1.0);
+	vertex.TexCoords = glm::vec2(1.0, 0.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(1.0, 0.0, 1.0);
+	vertex.TexCoords = glm::vec2(1.0, 1.0);
+	vertices->push_back(vertex);
+
+	vertex.Position = glm::vec3(-1.0, 0.0, 1.0);
+	vertex.TexCoords = glm::vec2(0.0, 1.0);
+	vertices->push_back(vertex);
+
+	indicies->push_back(0);
+	indicies->push_back(1);
+	indicies->push_back(3);
+	indicies->push_back(1);
+	indicies->push_back(2);
+	indicies->push_back(3);
+
+	Mesh* planeMesh = new Mesh(vertices, indicies, 0, plane);
+	plane->addMesh(planeMesh);
+
+	Material mat;
+	float f = 0.5f;
+	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
+	mat.textures.push_back(tex);
+	mat.Kd = glm::vec4(0.7f, 0.7f, 0.6f, 1.0f);
+	mat.Ks_factor = glm::vec4(1.0f, 1.0f, 1.0f, 10.0f);
+	plane->addMaterial(mat);
+
+	ModelLoader::addModel("roof", plane);
+	Display::get().getRenderer().addRenderingTarget(plane, SHADERS::ROOF_PLANE, false);
+
+	return plane;
+}
+
 void LevelStructure::createWallBuffers()
 {
 	// Get all entites matrix in one vector
@@ -234,7 +287,16 @@ void LevelStructure::createInfinityPlane(Level& level)
 	Entity* entity = level.entityManager->addTracedEntity("InfinityPlane");
 	entity->getTransform()->setScale(glm::vec3(100.f));
 	entity->getTransform()->setPosition(glm::vec3(0.f, this->height, 0.f));
-	entity->setModel(this->plane);
+	entity->setModel(this->infPlane);
+}
+
+void LevelStructure::createRoof(Level & level)
+{
+	// Add an entity which has a model as a plane.
+	Entity* entity = level.entityManager->addTracedEntity("Roof");
+	entity->getTransform()->setScale(glm::vec3(100.f));
+	entity->getTransform()->setPosition(glm::vec3(0.f, this->height, 0.f));
+	entity->setModel(this->roofPlane);
 }
 
 bool LevelStructure::isClockwise(std::vector<glm::vec3>& points)

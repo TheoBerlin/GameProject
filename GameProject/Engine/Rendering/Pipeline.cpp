@@ -11,6 +11,7 @@
 #include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlaneShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlanePrePassShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/RoofShader.h"
 
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
@@ -38,6 +39,7 @@ Pipeline::Pipeline()
 	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, identityMatrix));
+	this->entityShaders.push_back(new RoofShader(&this->shadowFbo, &this->camera, identityMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -415,16 +417,18 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 
 	//Draw renderingList
+	glCullFace(GL_FRONT);
 	for (auto pair : renderingTargets) {
 		if (pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
+	glCullFace(GL_BACK);
 
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
 
-/*#ifdef IMGUI
+#ifdef IMGUI
 	auto drawTexture = [](Texture* texture, bool nextLine = false) {
 		ImTextureID texID = (ImTextureID)texture->getID();
 		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
@@ -444,7 +448,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	drawTexture(this->shadowFbo.getDepthTexture());
 
 	ImGui::End();
-#endif*/
+#endif
 
 	Display::get().updateView(displayWidth, displayHeight);
 }
@@ -482,7 +486,8 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());	
+	this->entityShaders[ROOF_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
@@ -510,6 +515,10 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 	if (infPlanePrePassShader)
 		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
 
+	EntityShader* eShaderRoof = this->entityShaders[SHADERS::ROOF_PLANE];
+	InfinityPlaneShader* roofShader = dynamic_cast<InfinityPlaneShader*>(eShaderRoof);
+	if (roofShader)
+		this->addUniformBuffer(2, roofShader->getID(), "WallPoints");
 
 	if (infPlaneShader != nullptr)
 	{
