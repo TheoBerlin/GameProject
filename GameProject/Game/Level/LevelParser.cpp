@@ -322,3 +322,30 @@ void LevelParser::readLevel(std::string file, Level& level)
 	}
 
 }
+
+void LevelParser::readLevelInfo(std::string file, std::vector<std::pair<std::string, unsigned>>& info)
+{
+	std::ifstream iFile;
+	iFile.open(file);
+
+	if (iFile.is_open())
+	{
+		try {
+			iFile >> jsonFile;
+		}
+		catch (const std::exception e) {
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
+			return;
+		}
+
+		// Read needed info
+		// Read target size
+		info.push_back(std::make_pair("Targets", jsonFile["Target"].size()));
+		// Read optimal time
+		info.push_back(std::make_pair("Optimal Time", readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+	}
+	else
+	{
+		LOG_ERROR("Can not open file: %s", file.c_str());
+	}
+}
