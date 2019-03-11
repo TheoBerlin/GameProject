@@ -516,7 +516,7 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
 
 	EntityShader* eShaderRoof = this->entityShaders[SHADERS::ROOF_PLANE];
-	InfinityPlaneShader* roofShader = dynamic_cast<InfinityPlaneShader*>(eShaderRoof);
+	RoofShader* roofShader = dynamic_cast<RoofShader*>(eShaderRoof);
 	if (roofShader)
 		this->addUniformBuffer(2, roofShader->getID(), "WallPoints");
 

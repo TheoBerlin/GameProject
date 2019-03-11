@@ -50,25 +50,39 @@ uniform sampler2D shadowTex;
 uniform vec3 camPos;
 
 float GetMinDist(vec3 p, int size, int index)
-{  
+{
     float minDist = 10000.0;
     int j = index + size - 1;
     for(int i = index; i < size+index; i++) {
         vec3 w2 = wallPoints.points[i].xyz;
         vec3 w1 = wallPoints.points[j].xyz;
-        vec2 l = normalize((w2-w1).xz);
+        vec3 l = w2 - w1;
         // Make this the normal of the line.
         float x = l.x;
-        l.x = -l.y; 
-        l.y = x;
+        l.x = -l.z;
+		l.y = w2.y;
+        l.z = x;
+		l = normalize(l);
 
-        // Check distance from point to line.
-        float d = dot(l, p.xz-w2.xz);
-        if(d < minDist)
-            minDist = d;
+		vec3 v2 = p-w2;
+		vec3 v1 = p-w1;
+		// Check if over w2
+		if (dot(cross(v2, l), vec3(0.0, -1.0, 0.0)) > 0.0) {
+			minDist = min(length(w2.xz-p.xz), minDist);
+		} // Check if below w1
+		else if(dot(cross(v1, l), vec3(0.0, 1.0, 0.0)) > 0.0) {
+			minDist = min(length(w1.xz-p.xz), minDist);
+		}
+		// Is on line
+		else {
+			// Check distance from point to line.
+			float d = abs(dot(normalize(l.xz), v2.xz));
+			minDist = min(minDist, d);
+		}
+
         j = i;
     }
-    return d;
+    return minDist;
 }
 
 float ShadowCalculation(vec4 fragLightSpace)
@@ -176,17 +190,22 @@ void main()
     bool isBorderX = bool(step(cellSize-borderWidth, mod(fragPos.x, cellSize)));
     bool isBorderZ = bool(step(cellSize-borderWidth, mod(fragPos.z, cellSize)));
     float l =  1.0 - float(isBorderZ || isBorderX);
-    vec3 cellColor = vec3(1.0, 1.0, 1.0);
-    vec3 borderColor = vec3(0.6, 0.6, 0.6);
+    const vec3 cellColor = vec3(1.0, 1.0, 1.0);
+    const vec3 borderColor = vec3(0.4, 0.4, 0.4);
+	const vec3 wallBorderColor = vec3(0.4, 0.4, 0.4);
 
-    float minDist = 1000.0;
+    float minDist = 10000.0;
+	int index = 0;
     for (int i = 0; i < wallPoints.groupSize; i++)
     {   
         float d = GetMinDist(fragPos, int(wallPoints.points[index].w), index);
-        if(d < minDist)
-            minDist = d;
+		minDist = min(d, minDist);
         index += int(wallPoints.points[index].w);
     }
+	minDist = min(1.0, minDist);
+	float isBorder = step(borderWidth, minDist);
+	l = float(bool(l) && bool(isBorder));
+
     // TODO: Discard if outside of room, else check smallest distance to wall.
-    finalColor = vec4(d, d, d, 1.0);//vec4(cellColor * l + (1-l)*borderColor, 1.0);
+    finalColor = vec4(cellColor * l + (1-l)*(borderColor*isBorder + (1.0 - isBorder)*wallBorderColor), 1.0);
 }
