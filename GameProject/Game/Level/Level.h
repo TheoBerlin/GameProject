@@ -20,7 +20,6 @@ struct CameraSetting {
 struct Player {
 	CameraSetting oversightCamera;
 	CameraSetting arrowCamera;
-	CameraSetting replayCamera;
 };
 
 struct Level {

@@ -6,6 +6,7 @@
 #include <Game/GameLogic/Phases/Phase.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/PathVisualizer.h>
+#include <Game/Components/ThirdPersonController.h>
 
 class GuidingPhase;
 class AimPhase;
@@ -18,13 +19,12 @@ public:
 
     void update(const float& dt);
 
-    Entity* getFreeCam() const;
-
     Entity* getReplayArrow() const;
     PathVisualizer* getPathVisualizer() const;
 
 private:
     void handleKeyInput(KeyEvent* event);
+    void handleMouseClick(MouseClickEvent* event);
 
     void beginAimTransition();
     void finishAimTransition(CameraTransitionEvent* event);
@@ -33,8 +33,18 @@ private:
 
     void handleTimeBarClick();
 
+    void switchCamera();
+
+    // The replay camera is either an entity with freemove, separate from the replay arrow,
+    // or a third person controller component on the replay arrow
+    Camera* camera;
+
+    // Camera option 1
     Entity* freeCam;
     FreeMove* freeMove;
+
+    // Camera option 2
+    ThirdPersonController* thirdPersonController;
 
     Entity* replayArrow;
     PathTreader* pathTreader;

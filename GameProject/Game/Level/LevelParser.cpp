@@ -173,7 +173,6 @@ void LevelParser::readPlayer(Level& level)
 
 	readCameraSetting(player["OversightCamera"], level.player.oversightCamera);
 	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
-	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
 }
 
 void LevelParser::readMetadata(Level& level)
