@@ -59,7 +59,7 @@ void ParticleEmitter::particleUpdate(unsigned int index, float dt, glm::vec3 acc
 	}
 	if (scale != 0.0f && scale != 1.0f) {
 		scale -= 1.0f;
-		scale * dt;
+		scale *= dt;
 		scale += 1.0f;
 		particles[index].scale *= scale;
 	}
@@ -72,7 +72,7 @@ void ParticleEmitter::particleReset(unsigned int index)
 	particles[index].scale = startScale;
 	particlesInfo[index].velocity = startVelocity;
 	particlesInfo[index].life = lifeTime;
-	if (spread != 0) {
+	if (spread != 0.0f) {
 		std::uniform_real_distribution<> r(-spread, spread);
 		particlesInfo[index].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
 	}
@@ -104,7 +104,7 @@ void ParticleEmitter::update(float dt)
 
 		for (unsigned i = 0; i < totalSpawn; i++) {
 			//If all particles have not been spawned create a new one, else reset the oldest particle
-			if (particles.size() < maxParticle) {
+			if (particles.size() < (unsigned)maxParticle) {
 				//Create a new particle
 				particles.push_back(Particle());
 				particles[particles.size() - 1].position = position - (dif * ((float)(i + 1) / (float)totalSpawn));
@@ -113,7 +113,7 @@ void ParticleEmitter::update(float dt)
 				particlesInfo.push_back(ParticleUpdateInfo());
 				particlesInfo[particlesInfo.size() - 1].velocity = startVelocity;
 				particlesInfo[particlesInfo.size() - 1].life = lifeTime;
-				if (spread != 0) {
+				if (spread != 0.0f) {
 					std::uniform_real_distribution<> r(-spread, spread);
 					particlesInfo[particlesInfo.size() - 1].spread = glm::normalize(glm::vec3(r(ran), r(ran), r(ran))) * spread;
 				}
@@ -243,7 +243,7 @@ void ParticleEmitter::setSpread(const float spread)
 	this->spread = spread;
 }
 
-int ParticleEmitter::getSpread() const
+float ParticleEmitter::getSpread() const
 {
 	return spread;
 }

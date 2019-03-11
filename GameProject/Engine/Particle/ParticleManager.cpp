@@ -39,7 +39,7 @@ void ParticleManager::init()
 
 void ParticleManager::update(float dt)
 {
-	for (int i = 0; i < emitters.size(); i++) {
+	for (unsigned i = 0; i < emitters.size(); i++) {
 		emitters[i]->update(dt);
 	}
 }
@@ -127,7 +127,7 @@ void ParticleManager::updateBuffer()
 	int offset = 0;
 
 	this->hasParticlesVisble = false;
-	for (int i = 0; i < emitters.size(); i++) {
+	for (unsigned i = 0; i < emitters.size(); i++) {
 		size_t size = emitters[i]->getParticleArray().size();
 		if (size > 0 && !emitters[i]->isDead()) {
 			this->va.updateBuffer(1, &emitters[i]->getParticleArray().front(), size * sizeof(Particle), offset);
