@@ -100,7 +100,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
     <ClCompile Include="Game\States\PauseState.cpp" />
-
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\TrailShader.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
@@ -202,6 +202,7 @@
     <ClInclude Include="Engine\GUI\ScrollPanel\ScrollBar.h" />
     <ClInclude Include="Game\Level\LevelStructure.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlanePrePassShader.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\TrailShader.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Utils\Logger.h" />

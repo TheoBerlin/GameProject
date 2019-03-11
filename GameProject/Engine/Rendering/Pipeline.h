@@ -93,6 +93,12 @@ public:
 	*/
 	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
 
+
+	/*
+		Draw trail
+	*/
+	void drawTrail();
+
 	/*
 		Updates shaders
 	*/

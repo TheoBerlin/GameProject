@@ -486,6 +486,11 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
+void Pipeline::drawTrail()
+{
+
+}
+
 void Pipeline::updateShaders(const float & dt)
 {
 	for (EntityShader* shader : this->entityShaders)

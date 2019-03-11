@@ -9,12 +9,13 @@
 	drawOption choose between GL_STATIC_DRAW, GL_DYNAMIC_DRAW and GL_STREAM_DRAW
 */
 struct AttributeSettings {
-	AttributeSettings(unsigned size, unsigned offset = 0, unsigned divisor = 0)
-		: size(size), offset(offset), divisor(divisor) {}
+	AttributeSettings(unsigned size, unsigned offset = 0, unsigned divisor = 0, unsigned stride = 0)
+		: size(size), offset(offset), divisor(divisor), stride(stride) {}
 
 	unsigned size;
 	unsigned offset;
 	unsigned divisor;
+	unsigned stride;
 };
 
 struct AttributeLayout {
@@ -28,6 +29,14 @@ struct AttributeLayout {
 	void push(const unsigned& size, const unsigned& divisor = 0) {
 
 		AttributeSettings attribute(size, this->stride*sizeof(float), divisor);
+		this->stride += size;
+
+		this->attribs.push_back(attribute);
+	};
+
+	void push(const unsigned& size, const unsigned& offset, const unsigned& stride, const unsigned& divisor = 0) {
+
+		AttributeSettings attribute(size, offset, divisor, stride);
 		this->stride += size;
 
 		this->attribs.push_back(attribute);
