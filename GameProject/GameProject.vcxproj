@@ -19,6 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Engine\Rendering\Lighting\DirectionalLight.cpp" />
+    <ClCompile Include="Engine\Rendering\Lighting\LightManager.cpp" />
+    <ClCompile Include="Engine\Rendering\Lighting\PointLight.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
@@ -100,7 +103,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
     <ClCompile Include="Game\States\PauseState.cpp" />
-
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
@@ -109,6 +111,9 @@
     <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\Rendering\Lighting\DirectionalLight.h" />
+    <ClInclude Include="Engine\Rendering\Lighting\LightManager.h" />
+    <ClInclude Include="Engine\Rendering\Lighting\PointLight.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
@@ -215,6 +220,8 @@
     <None Include="Engine\Rendering\Shaders\CombineShader.vert" />
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
     <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
+    <None Include="Game\Level\exampleLevel.json" />
+    <None Include="Game\Level\exampleLevel2.json" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

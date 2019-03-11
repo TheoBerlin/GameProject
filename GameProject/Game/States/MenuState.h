@@ -5,6 +5,8 @@
 #include <Engine/GUI/Panel.h>
 #include <Engine/GUI/Button.h>
 
+#include <filesystem>
+
 #include "Game/Level/LevelParser.h"
 
 class MenuState : public State
@@ -20,6 +22,7 @@ public:
 	void render() override;
 
 private:
+	void loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths);
 	void initMainMenu();
 	void initLevelSelect();
 
