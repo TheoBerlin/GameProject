@@ -277,11 +277,14 @@ bool Panel::hasUpdated() const
 
 void Panel::setActive(bool active)
 {
+	this->active = active;
+	for (Panel* p : this->children)
+		p->setActive(active);
 }
 
 bool Panel::isActive() const
 {
-	return false;
+	return this->active;
 }
 
 void Panel::init()
@@ -291,6 +294,7 @@ void Panel::init()
 	this->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	this->shouldUpdate = false;
 	this->parent = nullptr;
+	this->active = true;
 
 	this->options.resize(GUI::OPTION::OPTIONS_MAX);
 

@@ -17,7 +17,7 @@
 MenuState::MenuState() : State()
 {
 	// Default level
-	this->selectedLevel = "./Game/Level/level.json";
+	this->selectedLevel = "./Game/Level/exampleLevel.json";
 
 	// Add fonts for later
 	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 16);
@@ -141,11 +141,12 @@ void MenuState::initPanelLayout()
 	scrollPanel->setColor(glm::vec4(0.2, 0.2, 0.2, 1.0));
 
 	scrollPanel->addItem([this](void) {
-		this->selectedLevel = "./Game/Level/level1.json";
+		this->selectedLevel = "./Game/Level/exampleLevel.json";
 	}, "Level 1");
+	scrollPanel->setActiveButton(0);
 
 	scrollPanel->addItem([this](void) {
-		this->selectedLevel = "./Game/Level/newLevel.json";
+		this->selectedLevel = "./Game/Level/exampleLevel2.json";
 	}, "Level 2");
 
 	scrollPanel->addItem([this](void) {

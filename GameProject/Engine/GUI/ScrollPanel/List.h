@@ -14,6 +14,10 @@ public:
 	void setMaxVisibleItems(unsigned maxItemsVisible);
 	void setItemSpacing(unsigned itemSpacing);
 
+	std::vector<Button*>& getListButtons();
+
+	glm::vec4& getBackgroundColor();
+
 private:
 	int scrollOffset;
 
@@ -22,5 +26,7 @@ private:
 	unsigned itemSpacing;
 
 	std::vector<Button*> listButtons;
+
+	glm::vec4 backgroundColor;
 };
 

@@ -9,11 +9,10 @@
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
 	EventBus::get().subscribe(this, &FreeMove::moveKeyboard);
-	EventBus::get().subscribe(this, &FreeMove::clickMouse);
 
 	this->speed = 5.0f;
 	this->sensitivity = Settings::get().getMouseSensitivity();
-	this->mouseLock = false;
+	this->enableMouse();
 	this->xPos = 0;
 	this->yPos = 0;
 
@@ -31,7 +30,6 @@ FreeMove::~FreeMove()
 {
 	EventBus::get().unsubscribe(this, &FreeMove::moveKeyboard);
 	EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
-	EventBus::get().unsubscribe(this, &FreeMove::clickMouse);
 }
 
 void FreeMove::update(const float & dt)
@@ -91,6 +89,38 @@ float FreeMove::getSpeed() const
 	return speed;
 }
 
+void FreeMove::toggleMouse()
+{
+	if (this->mouseEnabled) {
+		disableMouse();
+	} else {
+		enableMouse();
+	}
+}
+
+void FreeMove::enableMouse()
+{
+	if (!this->mouseEnabled) {
+		EventBus::get().subscribe(this, &FreeMove::moveMouse);
+
+		this->mouseEnabled = true;
+	}
+}
+
+void FreeMove::disableMouse()
+{
+	if (this->mouseEnabled) {
+		EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
+
+		this->mouseEnabled = false;
+	}
+}
+
+bool FreeMove::mouseIsEnabled() const
+{
+	return this->mouseEnabled;
+}
+
 void FreeMove::moveKeyboard(KeyEvent * evnt)
 {
 	if (evnt->action == GLFW_PRESS)
@@ -118,8 +148,4 @@ void FreeMove::moveMouse(MouseMoveEvent * evnt)
 {
 	this->xPos = evnt->deltaX;
 	this->yPos = evnt->deltaY;
-}
-
-void FreeMove::clickMouse(MouseClickEvent * evnt)
-{
 }

@@ -33,7 +33,6 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
     playerTransform->setForward(level.player.arrowCamera.direction);
     playerTransform->resetRoll();
 	playerTransform->setPosition(level.player.arrowCamera.position);
-	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);
 
@@ -81,6 +80,9 @@ void OverviewPhase::commonSetup()
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &OverviewPhase::handleKeyInput);
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void OverviewPhase::handleKeyInput(KeyEvent* event)
@@ -89,7 +91,11 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_2) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_2) {
         EventBus::get().unsubscribe(this, &OverviewPhase::handleKeyInput);
 
         // Remove oversight control

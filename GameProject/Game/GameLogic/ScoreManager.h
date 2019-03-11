@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 class Timer;
 class Panel;
 struct Level;
@@ -26,11 +28,18 @@ public:
 	float getTotalTime() const;
 	// Get targets hit
 	unsigned getTargetsHit() const;
+	// Reset score
+	void resetScore();
 
 	// Show score GUI
-	void showResults(Level& level);
+	void showResults(Level& level, const std::function<void()>& retry);
 	// Returns true if results are being shown
 	bool resultsVisible() const;
+
+	void removeResultsGUI(Level& level);
+
+	// Callback function for results gui
+	void toggleGuiMinimize();
 
 private:
 	bool counting;
@@ -48,7 +57,5 @@ private:
 	Panel* smallPanel;
 	Panel* bigPanel;
 
-	// Callback function for results gui
-	void guiCallback();
 };
 

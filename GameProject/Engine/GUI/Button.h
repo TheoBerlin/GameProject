@@ -50,6 +50,11 @@ public:
 	*/
 	void removeCallback();
 
+	/*
+	Check if the button is pressed
+	*/
+	bool hover() const;
+
 private:
 	/*
 	A callback to be called when the MB1 is pressed or released.
@@ -81,18 +86,7 @@ private:
 	*/
 	void init();
 
-	/*
-	Set if the button is active.
-	*/
-	void setActive(bool active) override;
-
-	/*
-	Get if the button is active.
-	*/
-	bool isActive() const override;
-
 private:
-	bool active;
 	bool isHovering;
 	bool pressed;
 

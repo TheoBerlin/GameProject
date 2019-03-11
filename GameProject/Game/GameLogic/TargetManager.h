@@ -38,6 +38,10 @@ public:
 	std::vector<MovingTarget> getMovingTargets() const;
 	std::vector<StaticTarget> getStaticTargets() const;
 
+	// Separate the transform from the model. (Pause the model)
+	void pauseMovingTargets();
+	void unpauseMovingTargets();
+
     // Reset target components such as the path treader
     void resetTargets();
 

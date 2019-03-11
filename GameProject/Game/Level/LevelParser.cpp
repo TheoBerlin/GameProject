@@ -99,8 +99,10 @@ void LevelParser::readEntityBoxes(Level& level)
 		json::json& box = jsonFile["Boxes"][i];
 		Entity* entity;
 		glm::vec3 position;
+
 		glm::vec3 scale;
 		glm::vec3 rotation;
+
 		//Every object requires a name
 		if (!box["Name"].empty() && box["Name"].is_string()) {
 			std::string name = box["Name"];
@@ -118,6 +120,9 @@ void LevelParser::readEntityBoxes(Level& level)
 			if (!box["Rotation"].empty()) {
 				readVec3(box["Rotation"], rotation);
 				entity->getTransform()->setRotation(rotation);
+			}
+			if (!box["Scale"].empty()) {
+				readVec3(box["Scale"], scale);
 			}
 		} else {
 			LOG_ERROR("An object is missing a name or name is not a string");

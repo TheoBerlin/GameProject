@@ -13,20 +13,8 @@ void RollNullifier::update(const float& dt)
 {
     // Calculate roll
 	Transform* transform = host->getTransform();
-    glm::vec3 rightVec = transform->getRight();
 
-	// Do not proceed if there is no roll
-	if (std::abs(rightVec.y) < FLT_EPSILON) {
-		return;
-	}
-
-    glm::vec3 horizontalRight = glm::normalize(glm::vec3(rightVec.x, 0.0f, rightVec.z));
-
-	float cosRoll = glm::min<float>(glm::dot(rightVec, horizontalRight), 1.0f - FLT_EPSILON);
-
-    float roll = std::acosf(cosRoll);
-
-    roll = (rightVec.y > 0.0f) ? -roll : roll;
+    float roll = transform->getRoll();
 
     // Calculate roll delta
 	float rollDelta = roll * (rollNullifyFactor - 1.0f) * dt;

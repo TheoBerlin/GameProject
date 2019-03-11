@@ -18,8 +18,14 @@ private:
 
 	glm::quat rotationQuat;
 
+	void copy(const Transform& other);
+
 public:
 	Transform();
+	Transform(const Transform& other);
+
+	Transform& operator=(const Transform& other);
+
 	//Get combined matrix of world and model by passing pointer
 	void getMatrix(glm::mat4 * mat) const;
 	//Get combined matrix of world and model
@@ -39,11 +45,13 @@ public:
 	//Get up vector
 	glm::vec3 getUp() const;
 
+	float getYaw() const;
+	float getPitch() const;
+	float getRoll() const;
+
 	glm::vec3 getYawPitchRoll() const;
 
 	glm::vec3 getDefaultForward() const;
-
-	void setRotationQuat(const glm::quat& newQuat);
 
 	/*
 		get status if transform has been changed, reset status if it has.
@@ -61,10 +69,10 @@ public:
 	void rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter);
 	//Rotate around given axis
 	void rotateAxis(const float& radians, const glm::vec3& axis);
-	//Set the rotation by (x,y,z)
-	void setRotation(const glm::vec3& rotation);
+	//Set the rotation by (yaw, pitch, roll)
+	void setRotation(const glm::vec3& yawPitchRoll);
 	//Set the rotation quat
-	void setRotation(const glm::quat& rotation);
+	void setRotationQuat(const glm::quat& newQuat);
 	//Translate from current position plus given vector
 	void translate(const glm::vec3& vector);
 	//Set world position
