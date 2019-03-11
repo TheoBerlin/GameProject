@@ -15,8 +15,12 @@
 
 MenuState::MenuState() : State()
 {
+	// Create panel groups [0] is main menu, [1] is level select
+	this->panelGroups.push_back(std::vector<Panel*>());
+	this->panelGroups.push_back(std::vector<Panel*>());
+
 	// Default level
-	this->selectedLevel = "./Game/Level/exampleLevel.json";
+	this->selectedLevel = ".";
 
 	// Add fonts for later
 	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 16);
@@ -25,43 +29,8 @@ MenuState::MenuState() : State()
 	FontManager::addFont("aldo", "./Game/assets/fonts/aldo/aldo.ttf", 40);
 	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
 
-	// Colors for creation
-	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
-	glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
-	glm::vec4 hoverColor = { 0.5f, 0.0f, 0.5f, 1.0f };
-	glm::vec4 pressColor = { 0.3f, 0.0f, 0.3f, 1.0f };
-
-	// Get GUI
-	GUI& gui = this->getGUI();
-
-	// Create title
-	Panel* titlePnl = new Panel();
-	titlePnl->addText("gameNname", "aldoBig", textColor);
-	titlePnl->setOption(GUI::FLOAT_UP, 40);
-	titlePnl->setOption(GUI::CENTER_X);
-	titlePnl->setOption(GUI::SCALE_TO_TEXT_X);
-	titlePnl->setColor({ 0.0f, 0.0f, 0.0f, 0.0f });
-	gui.addPanel(titlePnl);
-
-	// Create play button
-	this->button = new Button();
-	this->button->setOption(GUI::SCALE_TO_TEXT_X, 5);
-	this->button->setOption(GUI::SCALE_TO_TEXT_Y, 5);
-	this->button->setOption(GUI::CENTER_X);
-	this->button->setOption(GUI::CENTER_Y);
-	this->button->setOption(GUI::TEXT_CENTER_X);
-	this->button->setOption(GUI::TEXT_CENTER_Y);
-	glm::vec4 buttonColor(0.4, 0.4, 0.4, 1.0);
-	this->button->setHoverColor(buttonColor * 1.2f);
-	this->button->setNormalColor(buttonColor);
-	this->button->setPressedColor(buttonColor * 0.8f);
-	this->button->addText("Play", "aldo", glm::vec4(1.0f));
-	this->button->setCallback([this](void) {
-		this->pushState(new GameState(this->selectedLevel));
-	});
-	gui.addPanel(this->button);
-
-	this->initPanelLayout();
+	this->initMainMenu();
+	this->initLevelSelect();
 
 	InputHandler ih(Display::get().getWindowPtr());
 }
@@ -109,11 +78,12 @@ void MenuState::render()
 	guiRenderer.draw(this->getGUI());
 }
 
-void MenuState::initPanelLayout()
+void MenuState::initLevelSelect()
 {
 	Display& display = Display::get();
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
+	// Create scroll list for level selection
 	unsigned width = 200;
 	unsigned height = 300;
 	ScrollPanel* scrollPanel = new ScrollPanel(width, height);
@@ -141,9 +111,94 @@ void MenuState::initPanelLayout()
 	scrollPanel->addItem([this](void) {}, "JACOB");
 	scrollPanel->addItem([this](void) {}, "ANTON");
 
+	this->panelGroups[1].push_back(scrollPanel);
 	this->getGUI().addPanel(scrollPanel);
+
+	// Create select/play button
+	Button* playBtn = new Button();
+	playBtn->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	playBtn->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	playBtn->setOption(GUI::CENTER_X);
+	playBtn->setOption(GUI::CENTER_Y, 70);
+	playBtn->setOption(GUI::TEXT_CENTER_X);
+	playBtn->setOption(GUI::TEXT_CENTER_Y);
+	glm::vec4 buttonColor(0.4, 0.4, 0.4, 1.0);
+	playBtn->setHoverColor(buttonColor * 1.2f);
+	playBtn->setNormalColor(buttonColor);
+	playBtn->setPressedColor(buttonColor * 0.8f);
+	playBtn->addText("Play", "aldo", glm::vec4(1.0f));
+	playBtn->setCallback([this](void) {
+		this->pushState(new GameState(this->selectedLevel));
+	});
+	this->panelGroups[1].push_back(playBtn);
+	this->getGUI().addPanel(playBtn);
+
+	// Create back button
+	Button* backBtn = new Button();
+	backBtn->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	backBtn->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	backBtn->setOption(GUI::CENTER_X);
+	backBtn->setOption(GUI::CENTER_Y);
+	backBtn->setOption(GUI::TEXT_CENTER_X);
+	backBtn->setOption(GUI::TEXT_CENTER_Y);
+	backBtn->setHoverColor(buttonColor * 1.2f);
+	backBtn->setNormalColor(buttonColor);
+	backBtn->setPressedColor(buttonColor * 0.8f);
+	backBtn->addText("Back", "aldo", glm::vec4(1.0f));
+	backBtn->setCallback([this](void) {
+		for (auto p : this->panelGroups[1])
+			p->hide();
+		for (auto p : this->panelGroups[0])
+			p->show();
+	});
+	this->panelGroups[1].push_back(backBtn);
+	this->getGUI().addPanel(backBtn);
+
+	// Hide these panels in the beginning
+	for (auto p : this->panelGroups[1])
+		p->hide();
 }
 
-void MenuState::initLevelSelectLayout()
+void MenuState::initMainMenu()
 {
+	// Colors for creation
+	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
+	glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 0.99f };
+	glm::vec4 hoverColor = { 0.5f, 0.0f, 0.5f, 1.0f };
+	glm::vec4 pressColor = { 0.3f, 0.0f, 0.3f, 1.0f };
+
+	// Get GUI
+	GUI& gui = this->getGUI();
+
+	// Create title
+	Panel* titlePnl = new Panel();
+	titlePnl->addText("gameNname", "aldoBig", textColor);
+	titlePnl->setOption(GUI::FLOAT_UP, 40);
+	titlePnl->setOption(GUI::CENTER_X);
+	titlePnl->setOption(GUI::SCALE_TO_TEXT_X);
+	titlePnl->setColor({ 0.0f, 0.0f, 0.0f, 0.0f });
+	this->panelGroups[0].push_back(titlePnl);
+	gui.addPanel(titlePnl);
+
+	// Create play button
+	this->button = new Button();
+	this->button->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	this->button->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	this->button->setOption(GUI::CENTER_X);
+	this->button->setOption(GUI::CENTER_Y);
+	this->button->setOption(GUI::TEXT_CENTER_X);
+	this->button->setOption(GUI::TEXT_CENTER_Y);
+	glm::vec4 buttonColor(0.4, 0.4, 0.4, 1.0);
+	this->button->setHoverColor(buttonColor * 1.2f);
+	this->button->setNormalColor(buttonColor);
+	this->button->setPressedColor(buttonColor * 0.8f);
+	this->button->addText("Select level", "aldo", glm::vec4(1.0f));
+	this->button->setCallback([this](void) {
+		for (auto p : this->panelGroups[0])
+			p->hide();
+		for (auto p : this->panelGroups[1])
+			p->show();
+	});
+	this->panelGroups[0].push_back(this->button);
+	gui.addPanel(this->button);
 }

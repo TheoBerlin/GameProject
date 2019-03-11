@@ -5,6 +5,8 @@
 #include <Engine/GUI/Panel.h>
 #include <Engine/GUI/Button.h>
 
+#include "Game/Level/LevelParser.h"
+
 class MenuState : public State
 {
 public:
@@ -18,10 +20,14 @@ public:
 	void render() override;
 
 private:
-	void initPanelLayout();
-	void initLevelSelectLayout();
+	void initMainMenu();
+	void initLevelSelect();
+
 
 	std::string selectedLevel;
+
+	LevelParser levelParser;
+	std::vector<std::vector<Panel*>> panelGroups;
 
 	Panel* panel;
 	Button* button;
