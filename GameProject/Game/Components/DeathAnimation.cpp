@@ -27,6 +27,7 @@ void DeathAnimation::play(float totalTime, float gravity, float totalAngle, cons
 
 	this->totalTime = totalTime;
 	this->currentTime = 0.f;
+	this->shakeTimer = 0.f;
 	this->pushDir = pushDir;
 	this->pushSpeed = pushSpeed;
 	this->gravity = gravity;
@@ -44,10 +45,7 @@ bool DeathAnimation::shake(float dt)
 {
 	shakeTimer += dt;
 	const float shakeTime = 0.5f;
-
 	if (shakeTimer <= shakeTime) {
-		//spasmTimer = std::fmod(spasmTimer, glm::two_pi<float>());
-
 		// Translate
 		float translationFactor = Utils::map(0.f, shakeTime*shakeTime, shakeTimer*shakeTimer, 0.05f, 0.2f);
 		glm::vec3 translation = translationFactor * glm::vec3(0.f, 0.1f, 0.f);
