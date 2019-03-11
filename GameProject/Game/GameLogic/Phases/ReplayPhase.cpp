@@ -16,10 +16,18 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase),
     replayTime(0.0f)
 {
-    // GUI setup
+    // Create replay time bar
     setupGUI();
 
     flightTime = guidingPhase->getFlightTime();
+
+    // Create results window and minimize it
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
+
+    level.scoreManager->showResults(level, retry);
+
+    level.scoreManager->toggleGuiMinimize();
 
     /*
 		Create replay arrow
@@ -65,7 +73,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	// Reset targets
+    // Reset targets
 	level.targetManager->resetTargets();
 
     // Begin replaying playthrough
@@ -101,13 +109,6 @@ void ReplayPhase::update(const float& dt)
 			timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
 		}
     }
-
-
-    // Display results when the replay finishes
-    if (replayTime > flightTime && !level.scoreManager->resultsVisible() && this->timebarExists)
-    {
-        this->createScoreMenu();
-    }
 }
 
 Entity* ReplayPhase::getFreeCam() const
@@ -133,16 +134,13 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
 
     // Minimize / enlarge results GUI
     if (event->key == GLFW_KEY_ESCAPE) {
-        if (level.scoreManager->resultsVisible()) {
-            level.scoreManager->toggleGuiMinimize();
-        } else {
-            this->createScoreMenu();
-        }
+        level.scoreManager->toggleGuiMinimize();
     }
 
     else if (event->key == GLFW_KEY_2) {
         beginAimTransition();
     }
+
 	else if (event->key == GLFW_KEY_C) {
         // Toggle mouse lock
         if (freeMove->mouseIsEnabled()) {
@@ -289,17 +287,4 @@ void ReplayPhase::handleTimeBarClick()
     level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
     replayTime = desiredTime;
-}
-
-void ReplayPhase::createScoreMenu()
-{
-    // Disable freemove and unlock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
-    freeMove->disableMouse();
-
-    // Lambda function which executes when retry is pressed
-    std::function<void()> retry = [this](){beginAimTransition();};
-
-    level.scoreManager->showResults(level, retry);
 }

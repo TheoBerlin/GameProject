@@ -33,8 +33,6 @@ private:
 
     void handleTimeBarClick();
 
-    void createScoreMenu();
-
     Entity* freeCam;
     FreeMove* freeMove;
 
