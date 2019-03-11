@@ -97,7 +97,7 @@ public:
 	//Set how much particles should spread from center
 	void setSpread(const float spread);
 	//Get how much particles spread
-	int getSpread() const;
+	float getSpread() const;
 	//Set particles life time, if looping this should be maximum particles divided by spawnRate
 	void setLifeTime(const float lifeTime);
 	//Get particles life time
