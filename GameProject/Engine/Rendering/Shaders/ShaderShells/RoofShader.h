@@ -6,7 +6,7 @@
 class RoofShader : public EntityShader
 {
 public:
-	RoofShader(Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix);
+	RoofShader(Camera ** camera);
 	virtual ~RoofShader();
 
 	void bind();

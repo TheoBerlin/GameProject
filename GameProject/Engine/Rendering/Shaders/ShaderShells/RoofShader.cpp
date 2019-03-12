@@ -2,8 +2,8 @@
 
 #include "../../../AssetManagement/TextureManager.h"
 
-RoofShader::RoofShader(Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix)
-	: EntityShader("./Engine/Rendering/Shaders/RoofShader.vert", "./Engine/Rendering/Shaders/RoofShader.frag", shadowBuffer, camera, lightSpaceMatrix)
+RoofShader::RoofShader(Camera ** camera)
+	: EntityShader("./Engine/Rendering/Shaders/RoofShader.vert", "./Engine/Rendering/Shaders/RoofShader.frag", nullptr, camera, nullptr)
 {
 	this->wallTexture = TextureManager::loadTexture("./Game/assets/textures/noise.jpg");
 
