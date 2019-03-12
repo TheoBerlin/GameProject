@@ -39,7 +39,7 @@ Pipeline::Pipeline()
 	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, identityMatrix));
-	this->entityShaders.push_back(new RoofShader(nullptr, &this->camera, nullptr));
+	this->entityShaders.push_back(new RoofShader(&this->camera));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
