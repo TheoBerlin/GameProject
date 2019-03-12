@@ -189,6 +189,7 @@ void ArrowGuider::stopGuiding(float flightTime)
     // Store end point
     KeyPoint newKeyPoint;
     newKeyPoint.Position = host->getTransform()->getPosition();
+	newKeyPoint.UpVector = host->getTransform()->getUp();
     newKeyPoint.t = this->flightTime;
 
     path.back() = newKeyPoint;
