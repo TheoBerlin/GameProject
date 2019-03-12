@@ -186,7 +186,7 @@ void GuidingPhase::initTargetPanel()
 	Texture* tex = TextureManager::loadTexture("./Game/Assets/droneIcon.png");
 	icon->setBackgroundTexture(tex);
 	icon->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, 40);
-	icon->setColor({ 1.0f, 1.0f, 1.0f, .95f });
+	icon->setColor({ 1.0f, 1.0f, 1.0f, .97f });
 	this->targetPnl->addChild(icon);
 
 	// Create text panel
@@ -198,7 +198,7 @@ void GuidingPhase::initTargetPanel()
 	textPnl->setOption(GUI::SCALE_TO_TEXT_Y);
 	textPnl->setPosition({ (unsigned)40*ratio, 0 });
 	textPnl->setColor({ 0.1f, 0.1f, 0.1f, 0.0f });
-	textPnl->addText("0/" + std::to_string(level.targetManager->getTargetCount()), "aldo", { 1.f, 1.f, 1.f, .95f });
+	textPnl->addText("0/" + std::to_string(level.targetManager->getTargetCount()), "aldo", { 1.f, 1.f, 1.f, .97f });
 	this->targetPnl->addChild(textPnl);
 }
 
