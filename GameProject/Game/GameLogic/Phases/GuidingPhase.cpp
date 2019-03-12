@@ -108,7 +108,7 @@ void GuidingPhase::beginReplayTransition()
 
     CameraSetting newCamSettings = level.player.replayCamera;
 
-    this->setupTransition(currentCamSettings, newCamSettings);
+    this->transitionStraightPath(currentCamSettings, newCamSettings);
 
     EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }
