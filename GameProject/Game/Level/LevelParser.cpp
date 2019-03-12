@@ -311,6 +311,17 @@ void LevelParser::writeWalls(Level & level)
 	}
 }
 
+void LevelParser::writeLight(Level & level)
+{
+	json::json& light = jsonFile["PointLights"];
+
+	for (unsigned int i = 0; i < level.lightManager->getNrOfPointLights(); i++) {
+		light[i]["Position"] = { level.lightManager->getPointLights()->at(i)->getPosition().x, level.lightManager->getPointLights()->at(i)->getPosition().y, level.lightManager->getPointLights()->at(i)->getPosition().z, level.lightManager->getPointLights()->at(i)->getPosition().w };
+		light[i]["Color"] = { level.lightManager->getPointLights()->at(i)->getIntensity().x, level.lightManager->getPointLights()->at(i)->getIntensity().y, level.lightManager->getPointLights()->at(i)->getIntensity().z, level.lightManager->getPointLights()->at(i)->getIntensity().w };
+		light[i]["Distance"] = level.lightManager->getPointLights()->at(i)->getDistance();
+	}
+}
+
 void LevelParser::readMetadata(Level& level)
 {
 	json::json& metadata = jsonFile["Metadata"];
@@ -513,6 +524,7 @@ void LevelParser::writeLevel(std::string file, Level & level)
 	writeEntityTargets(level);
 	writePlayer(level);
 	writeWalls(level);
+	writeLight(level);
 
 	std::ofstream oFile;
 	oFile.open(file);
