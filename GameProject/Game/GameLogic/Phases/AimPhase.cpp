@@ -41,11 +41,6 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 
     level.entityManager->removeTracedEntity(replayArrow->getName());
 
-    // Remove freecam
-    Entity* freeCam = replayPhase->getFreeCam();
-
-    level.entityManager->removeTracedEntity(freeCam->getName());
-
     /*
 		Create arrow entity
 	*/
