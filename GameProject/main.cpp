@@ -30,7 +30,7 @@ int main() {
 	sound.setPitch(1.25f);
 	sound.playSound();
 	sound.setPosition(glm::vec3(0, 0, -10));
-	SoundManager::get().addSound(sound, SOUND_MUSIC);
+	SoundManager::get().addSound(&sound, SOUND_MUSIC);
 
 	Game game;
 	game.start();

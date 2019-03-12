@@ -16,7 +16,7 @@
 MenuState::MenuState() : State()
 {
 	// Default level
-	this->selectedLevel = "./Game/Level/level.json";
+	this->selectedLevel = "./Game/Level/exampleLevel.json";
 
 	// Add fonts for later
 	FontManager::addFont("times", "./Game/assets/fonts/times/times.ttf", 16);
@@ -111,6 +111,9 @@ void MenuState::render()
 
 void MenuState::initPanelLayout()
 {
+	std::vector<std::experimental::filesystem::path> levels;
+	loadLevelPaths("./Game/Level/Levels", levels);
+
 	Display& display = Display::get();
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
@@ -119,30 +122,26 @@ void MenuState::initPanelLayout()
 	ScrollPanel* scrollPanel = new ScrollPanel(width, height);
 	scrollPanel->setOption(GUI::FLOAT_DOWN, 10);
 	scrollPanel->setOption(GUI::CENTER_X);
-	scrollPanel->setColor(glm::vec4(0.2, 0.2, 0.2, 1.0));
+	scrollPanel->setColor(glm::vec4(0.2f, 0.2f, 0.2f, 1.f));
 
-	scrollPanel->addItem([this](void) {
-		this->selectedLevel = "./Game/Level/level.json";
-	}, "Level 1");
+	for (auto entry : levels)
+	{
+		scrollPanel->addItem([this, entry](void) {
+			this->selectedLevel = entry.string();
+		}, entry.filename().replace_extension("").string());
+	}
 
-	scrollPanel->addItem([this](void) {
-		this->selectedLevel = "./Game/Level/newLevel.json";
-	}, "Level 2");
-
-	scrollPanel->addItem([this](void) {
-		this->selectedLevel = "./Game/Level/newLevel2.json";
-	}, "Level 3");
-
-	scrollPanel->addItem([this](void) {}, "ADRIAN");
-	scrollPanel->addItem([this](void) {}, "JONATHAN");
-	scrollPanel->addItem([this](void) {}, "SIMON");
-	scrollPanel->addItem([this](void) {}, "THEO");
-	scrollPanel->addItem([this](void) {}, "JACOB");
-	scrollPanel->addItem([this](void) {}, "ANTON");
+	if (!levels.empty())
+	{
+		scrollPanel->setActiveButton(0);
+		this->selectedLevel = levels[0].string();
+	}
 
 	this->getGUI().addPanel(scrollPanel);
 }
 
-void MenuState::initLevelSelectLayout()
+void MenuState::loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths)
 {
+	for (const auto& entry : std::experimental::filesystem::directory_iterator(dir))
+		paths.push_back(entry.path());
 }

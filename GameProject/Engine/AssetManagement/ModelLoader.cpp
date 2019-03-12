@@ -145,6 +145,15 @@ size_t ModelLoader::modelCount()
     return loadedModels.size();
 }
 
+void ModelLoader::addModel(const std::string& name, Model * model)
+{
+	if (loadedModels[name]) {
+		LOG_INFO("Model [%s] already loaded", name.c_str());
+		return;
+	}
+	loadedModels[name] = model;
+}
+
 void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureType type, const std::string& directory)
 {
     aiString texturePath;

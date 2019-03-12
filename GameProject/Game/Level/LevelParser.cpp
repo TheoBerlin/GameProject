@@ -5,6 +5,8 @@
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/Components/RollNullifier.h>
+#include <Engine/AssetManagement/Mesh.h>
+#include <Engine/Rendering/GLAbstraction/RenderingResources.h>
 #include <Utils/Logger.h>
 #include <Utils/Utils.h>
 
@@ -16,6 +18,7 @@ void LevelParser::readEntityTargets(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(model, SHADERS::DRONE_SHADER);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -78,6 +81,7 @@ void LevelParser::readEntityBoxes(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(model);
 	}
 
 	for (int i = 0; i < targetSize; i++)
@@ -85,6 +89,7 @@ void LevelParser::readEntityBoxes(Level& level)
 		json::json& box = jsonFile["Boxes"][i];
 		Entity* entity;
 		glm::vec3 position;
+		glm::vec3 scale(0.25f);
 		//Every object requires a name
 		if (!box["Name"].empty() && box["Name"].is_string()) {
 			std::string name = box["Name"];
@@ -93,13 +98,16 @@ void LevelParser::readEntityBoxes(Level& level)
 			if (!box["Position"].empty()) {
 				readVec3(box["Position"], position);
 			}
+			if (!box["Scale"].empty()) {
+				readVec3(box["Scale"], scale);
+			}
 		} else {
 			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
 
 		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setScale(0.5f);
+		entity->getTransform()->setScale(scale);
 		entity->setModel(model);
 		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 	}
@@ -107,13 +115,41 @@ void LevelParser::readEntityBoxes(Level& level)
 
 void LevelParser::readEntityWalls(Level& level)
 {
-	//Add read for walls
+	// Load points from level file
+	if (jsonFile.find("Walls") == jsonFile.end())
+		return;
+	json::json& file = jsonFile["Walls"];
+	std::vector<std::vector<glm::vec3>> points;
+	glm::vec2 point(0.0f);
+	if (!file.empty()) {
+		for (unsigned group = 0; group < file.size(); group++)
+		{
+			points.push_back(std::vector<glm::vec3>());
+			for (unsigned i = 0; i < file[group].size(); i++)
+			{
+				readVec2(file[group][i], point);
+				points[group].push_back({ point.x, 0.0f, point.y });
+			}
+		}
+		level.levelStructure->createWalls(level, points);
+	}
+	else {
+		LOG_WARNING("No walls found, walls will not be created.");
+		return;
+	}
 }
 
 void LevelParser::readEntityFloor(Level& level)
 {
 	Model *model = nullptr;
-	model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
+
+	//Get the size of the target entities
+	int targetSize = jsonFile["Floor"].size();
+
+	if (targetSize != 0) {
+		model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(model);
+	}
 
 	Entity* entity;
 	glm::vec3 position;
@@ -148,6 +184,51 @@ void LevelParser::readMetadata(Level& level)
 	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
 }
 
+void LevelParser::readLights(Level & level)
+{
+	int lightSize = jsonFile["PointLights"].size();
+	glm::vec4 position;
+	glm::vec4 color;
+	glm::vec4 direction;
+	glm::vec4 intensity;
+	int distance;
+	for (int i = 0; i < lightSize; i++) {
+		json::json& light = jsonFile["PointLights"][i];
+		readVec4(light["Position"], position);
+		readVec4(light["Color"], color);
+		distance = light["Distance"];
+
+		level.lightManager->createPointLight(position, color, distance);
+	}
+	json::json& dLight = jsonFile["DirectionalLight"];
+	readVec4(dLight["Direction"], direction);
+	readVec4(dLight["Intensity"], intensity);
+
+	level.lightManager->createDirectionalLight(direction, intensity);
+}
+
+void LevelParser::readVec4(json::json & file, glm::vec4 & vec)
+{
+	// Iterate through position components
+	for (int j = 0; j < 4; j++) {
+		// If object exists go ahead otherwise write a default position
+		if (!file[j].empty()) {
+			try {
+				vec[j] = file[j];
+			}
+			catch (const std::exception& e) {
+				LOG_ERROR("Failed to read vector component: %s", e.what());
+				break;
+			}
+		}
+		else {
+			// Default component
+			vec[j] = 1.0f;
+			LOG_WARNING("Did not find Vec4 component %d (0=X, 1=Y, 2=Z, 3 = W), defaulting to 1", j);
+		}
+	}
+}
+
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 {
 	// Iterate through position components
@@ -165,6 +246,28 @@ void LevelParser::readVec3(json::json& file, glm::vec3& vec)
 			// Default component
 			vec[j] = 1.0f;
 			LOG_WARNING("Did not find Vec3 component %d (0=X, 1=Y, 2=Z), defaulting to 1", j);
+		}
+	}
+}
+
+void LevelParser::readVec2(json::json& file, glm::vec2& vec)
+{
+	// Iterate through position components
+	for (int j = 0; j < 2; j++) {
+		// If object exists go ahead otherwise write a default position
+		if (!file[j].empty()) {
+			try {
+				vec[j] = file[j];
+			}
+			catch (const std::exception& e) {
+				LOG_ERROR("Failed to read vector component: %s", e.what());
+				break;
+			}
+		}
+		else {
+			// Default component
+			vec[j] = 1.0f;
+			LOG_WARNING("Did not find Vec2 component %d (0=X, 1=Z), defaulting to 1", j);
 		}
 	}
 }
@@ -214,11 +317,20 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 
 void LevelParser::createCollisionBodies(Level& level)
 {
-	// Start at 1 to give space for a player later on.
-	int bodiesNeeded = 2;
+	int bodiesNeeded = 0;
+	// Player
+	bodiesNeeded += 1;
+	// Floor (expected only one in this version)
+	bodiesNeeded += 1;
+	// Targets
 	bodiesNeeded += jsonFile["Target"].size();
 	bodiesNeeded += jsonFile["Boxes"].size();
+	// Walls
+	json::json& walls = jsonFile["Walls"];
+	for (unsigned group = 0; group < walls.size(); group++)
+		bodiesNeeded += walls[group].size();
 
+	// Create bodies in collision handler
 	level.collisionHandler->createCollisionBodies(bodiesNeeded);
 }
 
@@ -248,6 +360,7 @@ void LevelParser::readLevel(std::string file, Level& level)
 		readEntityWalls(level);
 		readEntityFloor(level);
 		readPlayer(level);
+		readLights(level);
 	}
 	else
 	{

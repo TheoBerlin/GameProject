@@ -105,6 +105,17 @@ void Settings::readMouseSensitivity()
 	}
 }
 
+void Settings::readShadowReScale()
+{
+	json::json& jsonShadowScale = jsonFile["ShadowReScale"];
+	if (!jsonShadowScale.empty()) {
+		shadowReScale = jsonShadowScale;
+	}
+	else {
+		LOG_ERROR("%s: ShadowReScale has no value");
+	}
+}
+
 Settings& Settings::get()
 {
 	static Settings instance;
@@ -150,6 +161,17 @@ void Settings::setMouseSensitivity(const float mouseSensitivity)
 {
 	this->mouseSensitivity = mouseSensitivity;
 
+	changed = true;
+}
+
+float Settings::getShadowReScale()
+{
+	return this->shadowReScale;
+}
+
+void Settings::setShadowReScale(float shadowReScale)
+{
+	this->shadowReScale = shadowReScale;
 	changed = true;
 }
 

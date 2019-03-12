@@ -1,5 +1,16 @@
-#define GLM_FORCE_SWIZZLE
 #include "Transform.h"
+#include <glm/gtx/vector_angle.hpp>
+
+void Transform::copy(const Transform & other)
+{
+	this->position = other.position;
+	this->scaleFactor = other.scaleFactor;
+	this->f = other.f;
+	this->r = other.r;
+	this->u = other.u;
+	this->isUpdated = other.isUpdated;
+	this->rotationQuat = other.rotationQuat;
+}
 
 Transform::Transform()
 {
@@ -13,6 +24,18 @@ Transform::Transform()
 	this->position = glm::vec3(0, 0, 0);
 
 	this->isUpdated = false;
+}
+
+Transform::Transform(const Transform& other)
+{
+	copy(other);
+}
+
+Transform& Transform::operator=(const Transform& other)
+{
+	if (this != &other)
+		copy(other);
+	return *this;
 }
 
 void Transform::getMatrix(glm::mat4 * mat) const
@@ -35,11 +58,6 @@ glm::mat4 Transform::getMatrix() const
 glm::vec3 Transform::getPosition() const
 {
 	return position;
-}
-
-glm::vec3 Transform::getRotation() const
-{
-	return glm::eulerAngles(rotationQuat);
 }
 
 glm::quat Transform::getRotationQuat() const
@@ -67,37 +85,36 @@ glm::vec3 Transform::getUp() const
 	return this->u;
 }
 
-glm::vec3 Transform::getYawPitchRoll() const
+float Transform::getYaw() const
 {
-	glm::vec3 yawPitchRoll;
-
 	// Calculate yaw
 	glm::vec3 temp = glm::normalize(glm::vec3(this->f.x, defaultForward.y, this->f.z));
 
-	yawPitchRoll.x = std::acosf(glm::dot(defaultForward, temp));
+	return glm::orientedAngle(defaultForward, temp, GLOBAL_UP_VECTOR);
+}
 
-	// Determine yaw sign
-	temp = glm::cross(defaultForward, this->f);
-
-	yawPitchRoll.x = (temp.y > 0.0f) ? yawPitchRoll.x : -yawPitchRoll.x;
-
+float Transform::getPitch() const
+{
 	// Calculate pitch
-	temp = glm::normalize(glm::vec3(defaultForward.x, this->f.y, defaultForward.z));
+	glm::vec3 temp = glm::normalize(glm::vec3(this->f.x, 0.0f, this->f.z));
 
-	yawPitchRoll.y = std::acosf(glm::dot(defaultForward, temp));
+	return glm::orientedAngle(temp, this->f, this->r);
+}
 
-	// Determine pitch sign
-	yawPitchRoll.y = (this->f.y > defaultForward.y) ? yawPitchRoll.y : -yawPitchRoll.y;
-
+float Transform::getRoll() const
+{
 	// Calculate roll
-	temp = glm::normalize(glm::vec3(this->r.x, 0.0f, this->r.z));
+	// Horizontal right vec
+	glm::vec3 temp = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
+	// Up vector without roll
+	temp = glm::normalize(glm::cross(temp, this->f));
 
-	yawPitchRoll.z = std::acosf(glm::dot(this->r, temp));
+	return glm::orientedAngle(temp, this->u, this->f);
+}
 
-	// Determine roll sign
-	yawPitchRoll.z = (this->r.y < 0.0f) ? yawPitchRoll.z : -yawPitchRoll.z;
-
-	return yawPitchRoll;
+glm::vec3 Transform::getYawPitchRoll() const
+{
+	return {this->getYaw(), this->getPitch(), this->getRoll()};
 }
 
 glm::vec3 Transform::getDefaultForward() const
@@ -162,13 +179,13 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 
 void Transform::setRotation(const glm::vec3 &rotation)
 {
-	rotationQuat = glm::quat(rotation);
+	this->rotationQuat = glm::quat_cast(glm::mat4(1.0f));
 
 	this->f = rotationQuat * defaultForward;
-	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
-	this->u = glm::cross(this->r, this->f);
+	this->r = rotationQuat * glm::cross(defaultForward, GLOBAL_UP_VECTOR);
+	this->u = rotationQuat * GLOBAL_UP_VECTOR;
 
-	this->isUpdated = true;
+	this->rotate(rotation.x, rotation.y, rotation.z);
 }
 
 void Transform::translate(const glm::vec3& vector)
@@ -272,6 +289,14 @@ void Transform::rotate(const float yaw, const float pitch, const float roll)
 
 void Transform::resetRoll()
 {
-	this->r = glm::normalize(glm::vec3(r.x, 0.0f, r.z));
-	this->u = glm::cross(this->r, this->f);
+	float roll = getRoll();
+
+	glm::quat rollQuat = glm::angleAxis(roll, this->f);
+
+	this->r = glm::normalize(rollQuat * this->r);
+	this->u = glm::normalize(rollQuat * this->u);
+
+	rotationQuat = rollQuat * rotationQuat;
+
+	this->isUpdated = true;
 }

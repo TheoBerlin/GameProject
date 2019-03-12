@@ -10,19 +10,26 @@
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Rendering/GLAbstraction/VertexArray.h"
 #include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
+#include "Lighting/LightManager.h"
 
 
 class Entity;
 class PostProcessShader;
 
-struct DirectionalLight {
-	glm::vec4 direction;
-	glm::vec4 color_intensity;
+struct RenderingTarget {
+	bool prePass;
+	bool castShadow;
+	bool visible;
+
+	Model* model;
 };
 
 enum SHADERS {
 	DEFAULT = 0,
-	DRONE_SHADER = 1, // Requires a third vbo with colors bound to location 7.
+	DRONE_SHADER = 1,	// Requires a third vbo with colors bound to location 7.
+	WALL = 2,			//  Requires a third vbo with scale bound to location 7.
+	INFINITY_PLANE = 3,
+	INFINITY_PLANE_PREPASS = 4	//Used for cutout in depthbuffer 
 };
 
 enum SHADERS_POST_PROCESS {
@@ -45,19 +52,19 @@ public:
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
 	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false); // Old rendering
-	void prePassDepthModel(const std::vector<std::pair<Model*, SHADERS>>& renderingModels, bool toScreen = false);
+	void prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen = false);
 
 	/*
 		Draw directly to the screen
 	*/
 	void drawToScreen(const std::vector<Entity*>& renderingList); // Old rendering
-	void drawModelToScreen(const std::vector<std::pair<Model*, SHADERS>>& renderingModels);
+	void drawModelToScreen(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	/*
 		Draw to framebuffer color texture, nothing will be visible on screen unless you draw the texture to a quad
 	*/
 	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
-	Texture* drawModelToTexture(const std::vector<std::pair<Model*, SHADERS>>& renderingModels);
+	Texture* drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	Texture* combineTextures(Texture* sceen, Texture* particles);
 
@@ -75,7 +82,7 @@ public:
 		Generates depth texture for shadows, input entities who should give away shadows
 	*/
 	void calcDirLightDepth(const std::vector<Entity*>& renderingList); // Old rendering
-	void calcDirLightDepthInstanced(const std::vector<std::pair<Model*, SHADERS>>& renderingModels);
+	void calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	/*
 		Generates uniform buffer with shaders uniform blocks size and data specified, bound to bindingpoint specified.
@@ -86,9 +93,12 @@ public:
 		Updates shaders
 	*/
 	void updateShaders(const float& dt);
+	void addCurrentLightManager(LightManager * lm);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
+
+	void setWallPoints(const std::vector<glm::vec3>& wallPoints, const std::vector<int>& wallGroupsIndex);
 
 	Framebuffer* getFbo();
 	Framebuffer* getShadowFbo();
@@ -96,7 +106,6 @@ public:
 private:
 	Camera * camera;
 	unsigned int width, height;
-	unsigned int shadowWidth, shadowHeight;
 	Framebuffer fbo;
 	Framebuffer shadowFbo;
 	glm::mat4 lightSpaceMatrix;
@@ -127,7 +136,7 @@ private:
 	void createQuad();
 	Model* quad;
 
-	DirectionalLight mainLight;
+	LightManager * lightManager;
 
 	std::vector<UniformBuffer*> uniformBuffers;
 };
