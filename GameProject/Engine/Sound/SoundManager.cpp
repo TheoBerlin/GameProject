@@ -33,6 +33,20 @@ void SoundManager::addSound(Sound* sound, SoundType type)
 	}
 }
 
+void SoundManager::removeSound(Sound * sound)
+{
+	for (int i = 0; i < sounds.size(); i++) {
+		if (sound == sounds[i]) {
+			sounds.erase(sounds.begin() + i);
+		}
+	}
+}
+
+std::vector<Sound*>* SoundManager::getSoundsVector()
+{
+	return &sounds;
+}
+
 void SoundManager::setListenerPosition(glm::vec3 position)
 {
 	alListener3f(AL_POSITION, position.x, position.y, position.z);

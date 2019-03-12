@@ -29,8 +29,9 @@ int main() {
 	sound.setLoopState(true);
 	sound.setPitch(1.25f);
 	sound.playSound();
-	sound.setPosition(glm::vec3(0, 0, -10));
 	SoundManager::get().addSound(&sound, SOUND_MUSIC);
+
+	sound.stopSound();
 
 	Game game;
 	game.start();

@@ -15,6 +15,8 @@ private:
 	ALuint source;
 	ALuint buffer;
 
+	std::string fileName;
+
 	SoundType type;
 	float volume;
 
@@ -30,6 +32,7 @@ public:
 
 	void loadSound(std::string file);
 	void playSound();
+	void stopSound();
 
 	void setSoundType(SoundType type);
 	SoundType getSoundType() const;

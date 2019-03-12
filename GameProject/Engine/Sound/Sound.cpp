@@ -50,18 +50,14 @@ Sound::~Sound()
 
 void Sound::loadSound(std::string fileName)
 {
-	SoundManager::get().
-
 	FILE *file;
 	file = fopen(fileName.c_str(), "rb");
-	
 	if (file == NULL) {
 		LOG_ERROR("SOUND: File not read properly");
 		return;
 	}
-	//Read file size
-	fseek(file, 0, SEEK_END);
-	unsigned int size = ftell(file) - 44;
+
+	this->fileName = fileName;
 
 	//Read number of audio channels
 	fseek(file, 22, SEEK_SET);
@@ -75,10 +71,15 @@ void Sound::loadSound(std::string fileName)
 	fseek(file, 34, SEEK_SET);
 	fread(&bitsPerSample, 2, 1, file);
 
+	//Read bits per sample
+	unsigned int size;
+	fseek(file, 40, SEEK_SET);
+	fread(&size, 4, 1, file);
+
 	//Read audio data
 	unsigned char* buf = new unsigned char[size];
 	fseek(file, 44, SEEK_SET);
-	fread(buf, sizeof(BYTE), size - 44, file);
+	fread(buf, sizeof(BYTE), size, file);
 
 	//Read data to buffer, (-44) is sice of wav header.
 	if(channels == 1 && bitsPerSample == 8)
@@ -97,11 +98,22 @@ void Sound::loadSound(std::string fileName)
 
 void Sound::playSound()
 {
-	bool playing = false;
-	alSourcei(source, AL_SOURCE_STATE, playing);
+	ALint playing = 0;
+	alGetSourcei(source, AL_SOURCE_STATE, &playing);
 	errorCheck();
-	if (!playing) {
+	if (playing == 4113) {
 		alSourcePlay(source);
+		errorCheck();
+	}
+}
+
+void Sound::stopSound()
+{
+	ALint playing = 0;
+	alGetSourcei(source, AL_SOURCE_STATE, &playing);
+	errorCheck();
+	if (playing == 4114) {
+		alSourceStop(source);
 		errorCheck();
 	}
 }
