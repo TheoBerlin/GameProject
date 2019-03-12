@@ -57,7 +57,7 @@ void ArrowGuider::update(const float& dt)
 
     if (isGuiding) {
         // Update position storage
-        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * turnFactorsLength * this->movementSpeed;
+        float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * (turnFactorsLength * 3.0f) * this->movementSpeed;
 
         // Gradually increase storing frequency
         float deltaFrequency = (desiredFrequency - posStoreFrequency) * dt;
@@ -80,6 +80,7 @@ void ArrowGuider::update(const float& dt)
             KeyPoint newKeyPoint;
             newKeyPoint.Position = transform->getPosition();
             newKeyPoint.t = flightTime;
+			newKeyPoint.UpVector = host->getTransform()->getUp();
 
             path.push_back(newKeyPoint);
 
@@ -168,6 +169,7 @@ void ArrowGuider::startGuiding()
 
     KeyPoint startingKeyPoint;
     startingKeyPoint.Position = host->getTransform()->getPosition();
+	startingKeyPoint.UpVector = host->getTransform()->getUp();
     startingKeyPoint.t = 0.0f;
 
     path.push_back(startingKeyPoint);    
@@ -201,9 +203,9 @@ void ArrowGuider::saveKeyPoint(float flightTime)
 
     posStoreTimer = 0.0f;
 	if (this->allowKeypointOverride)
-		path.back() = KeyPoint(host->getTransform()->getPosition(), flightTime);
+		path.back() = KeyPoint(host->getTransform()->getPosition(), host->getTransform()->getUp(), flightTime);
 	else
-		path.push_back(KeyPoint(host->getTransform()->getPosition(), flightTime));
+		path.push_back(KeyPoint(host->getTransform()->getPosition(), host->getTransform()->getUp(), flightTime));
 
 	allowKeypointOverride = false;
 
