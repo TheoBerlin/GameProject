@@ -173,12 +173,15 @@ void Panel::rebake()
 {
 	if (hasUpdated())
 	{
-		processOptions();
+		if (this->shown)
+		{
+			processOptions();
 
-		Display& display = Display::get();
-		GUIRenderer& guiRenderer = display.getGUIRenderer();
-		guiRenderer.prepareTextRendering();
-		guiRenderer.bakePanel(this);
+			Display& display = Display::get();
+			GUIRenderer& guiRenderer = display.getGUIRenderer();
+			guiRenderer.prepareTextRendering();
+			guiRenderer.bakePanel(this);
+		}
 		this->shouldUpdate = false;
 	}
 }
@@ -287,6 +290,33 @@ bool Panel::isActive() const
 	return this->active;
 }
 
+void Panel::hide()
+{
+	this->shown = false;
+	this->active = false;
+	this->shouldUpdate = true;
+
+	unsigned char data[4];
+	memset(data, 0, 4);
+
+	if (!this->bakedTexture)
+		this->bakedTexture = new Texture(data, 1, 1);
+	else
+		this->bakedTexture->update(data, 1, 1);
+}
+
+void Panel::show()
+{
+	this->shown = true;
+	this->active = true;
+	this->shouldUpdate = true;
+}
+
+bool Panel::isShown() const
+{
+	return this->shown;
+}
+
 void Panel::init()
 {
 	this->pos = { 0, 0 };
@@ -295,6 +325,7 @@ void Panel::init()
 	this->shouldUpdate = false;
 	this->parent = nullptr;
 	this->active = true;
+	this->shown = true;
 
 	this->options.resize(GUI::OPTION::OPTIONS_MAX);
 

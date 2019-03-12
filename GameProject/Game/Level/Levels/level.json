@@ -114,12 +114,6 @@
       "Direction": [ 0.0, 0.0, -1.0 ],
       "Offset": [ 0.0, 0.2, -0.75 ],
       "FOV": 75.0
-    },
-    "ReplayCamera": {
-      "Position": [ 0.0, 3.0, 4.0 ],
-      "Direction": [ 0.0, -0.7, -0.7 ],
-      "Offset": [ 0.0, 0.0, 0.0 ],
-      "FOV": 75.0
     }
   },
   "Walls": [
