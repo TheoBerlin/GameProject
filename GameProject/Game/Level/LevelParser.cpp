@@ -173,7 +173,6 @@ void LevelParser::readPlayer(Level& level)
 
 	readCameraSetting(player["OversightCamera"], level.player.oversightCamera);
 	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
-	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
 }
 
 void LevelParser::readMetadata(Level& level)
@@ -367,4 +366,34 @@ void LevelParser::readLevel(std::string file, Level& level)
 		LOG_ERROR("Can not open file: %s", file.c_str());
 	}
 
+}
+
+void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info)
+{
+	std::ifstream iFile;
+	iFile.open(file);
+
+	if (iFile.is_open())
+	{
+		try {
+			iFile >> jsonFile;
+		}
+		catch (const std::exception e) {
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
+			return;
+		}
+
+		// Reset vector for new level
+		info.clear();
+
+		// Read needed info
+		// Read target size
+		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
+		// Read optimal time
+		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+	}
+	else
+	{
+		LOG_ERROR("Can not open file: %s", file.c_str());
+	}
 }

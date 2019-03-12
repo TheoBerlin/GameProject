@@ -106,7 +106,14 @@ void GuidingPhase::beginReplayTransition()
     currentCamSettings.offset = {0.0f, 0.0f, 0.0f};
     currentCamSettings.FOV = arrowCam->getFOV();
 
-    CameraSetting newCamSettings = level.player.replayCamera;
+    CameraSetting newCamSettings = level.player.arrowCamera;
+
+    // Set the destination's forward to point to the second keypoint in the path
+    if (arrowGuider->getPath().size() > 1) {
+        newCamSettings.direction = glm::normalize(arrowGuider->getPath()[1].Position - arrowGuider->getPath()[0].Position);
+    }
+
+    newCamSettings.offset = {0.0f, 0.0f, -1.6f};
 
     this->transitionStraightPath(currentCamSettings, newCamSettings);
 
