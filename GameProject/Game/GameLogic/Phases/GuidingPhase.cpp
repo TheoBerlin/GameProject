@@ -9,6 +9,8 @@
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Game/GameLogic/Phases/ReplayPhase.h>
 
+#include "Game/Components/TrailEmitter.h"
+
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase),
     flightTimer(0.0f),
@@ -21,6 +23,12 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     // Start guiding the arrow
     arrowGuider = aimPhase->getArrowGuider();
     arrowGuider->startGuiding();
+
+	//Reset trail emitter timer
+	if (this->playerArrow) {
+		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(this->playerArrow->getComponent("TrailEmitter"));
+		trailEmitter->resetTrailTimer();
+	}
 
     level.targetManager->resetTargets();
 	level.targetManager->pauseMovingTargets();
@@ -60,6 +68,11 @@ Entity* GuidingPhase::getPlayerArrow() const
 ArrowGuider* GuidingPhase::getArrowGuider() const
 {
     return arrowGuider;
+}
+
+TrailEmitter * GuidingPhase::getTrailEmitter() const
+{
+	return this->trailEmitter;
 }
 
 float GuidingPhase::getFlightTime()
@@ -119,6 +132,13 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 
 	level.collisionHandler->removeCollisionBody(this->playerArrow);
 	level.targetManager->unpauseMovingTargets();
+
+	//Reset trail emitter timer
+	if (this->playerArrow) {
+		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(this->playerArrow->getComponent("TrailEmitter"));
+		trailEmitter->resetTrailTimer();
+		this->trailEmitter = trailEmitter;
+	}
 
     Phase* guidingPhase = new ReplayPhase(this);
     changePhase(guidingPhase);

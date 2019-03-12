@@ -52,6 +52,11 @@ void Camera::setForward(const glm::vec3 & forward)
 	this->u = glm::cross(this->r, this->f);
 }
 
+glm::vec3 Camera::getUp() const
+{
+	return this->u;
+}
+
 glm::vec3 Camera::getRight() const
 {
 	return this->r;
