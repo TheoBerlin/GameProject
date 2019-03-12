@@ -78,7 +78,7 @@ void Phase::transitionAboveWalls(const CameraSetting& currentCamSettings, const 
 
     KeyPoint point;
 
-    // P0: directly above the current camera, only added if the camera is currently below the ceiling
+    // P0: directly above the current camera, only added if the current camera is below the ceiling
     if (currentPos.y < wallHeight * heightMarginFactor) {
         point.Position = {currentPos.x, pathHeight * 1.2f, currentPos.z};
         point.t = transitionLength / 3.0f;
@@ -86,8 +86,8 @@ void Phase::transitionAboveWalls(const CameraSetting& currentCamSettings, const 
         transitionPath.push(point);
     }
 
-    // P0: directly above destination, only added if the camera is currently above the ceiling
-    else if (currentPos.y > wallHeight * heightMarginFactor) {
+    // P0/P1: directly above destination, only added if the target camera is below the ceiling
+    if (destinationPos.y < wallHeight * heightMarginFactor) {
         point.Position = {destinationPos.x, pathHeight * 1.2f, destinationPos.z};    
         point.t = transitionLength * 2.0f / 3.0f;
 
