@@ -483,6 +483,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+
 }
 
 void Pipeline::setActiveCamera(Camera * camera)

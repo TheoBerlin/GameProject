@@ -15,6 +15,7 @@ public:
 	PointLight * createPointLight(glm::vec4 position, glm::vec4 intensity, int distance);
 	std::vector<PointLight*> * getPointLights();
 	int getNrOfPointLights();
+	void removePointLight(int index);
 	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity);
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getLightMatrix();
