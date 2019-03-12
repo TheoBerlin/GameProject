@@ -465,11 +465,6 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	/*
 		Set up Point Light
 	*/
-	struct LightBuffer {
-		PointLight pointLights[10];
-		int nrOfPointLights;
-		glm::vec3 padding;
-	} lightBuffer;
 
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
@@ -483,6 +478,21 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+
+}
+
+void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
+{
+	if (index > lightManager->getNrOfPointLights() - 1) {
+		LOG_ERROR("Index out of range");
+	}
+	else {
+		lightManager->updatePointLight(index, position, intensity, distance);
+
+		lightBuffer.pointLights[index] = *lightManager->getPointLights()->at(index);
+
+		this->uniformBuffers[3]->setLightSubData((void*)(&lightBuffer.pointLights[index]), sizeof(PointLight), sizeof(PointLight) * index);
+	}
 }
 
 void Pipeline::setActiveCamera(Camera * camera)

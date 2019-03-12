@@ -41,9 +41,15 @@ float LightManager::getShadowWidthScaled()
 
 PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 {
-	PointLight *  pointLight = new PointLight(position, intensity, distance);
-	pointLights.push_back(pointLight);
-	return pointLight;
+	if (pointLights.size() < 10) {
+		PointLight *  pointLight = new PointLight(position, intensity, distance);
+		pointLights.push_back(pointLight);
+		return pointLight;
+	}
+	else {
+		LOG_ERROR("Maximum number of pointlights already added");
+	}
+	return nullptr;
 }
 
 std::vector<PointLight*> * LightManager::getPointLights()
@@ -54,6 +60,18 @@ std::vector<PointLight*> * LightManager::getPointLights()
 int LightManager::getNrOfPointLights()
 {
 	return pointLights.size();
+}
+
+void LightManager::removePointLight(int index)
+{
+	if ((unsigned int)index <= pointLights.size() && index >= 0) {
+		delete pointLights[index];
+		pointLights[index] = pointLights[pointLights.size()-1];
+		pointLights.pop_back();
+	}
+	else {
+		LOG_ERROR("Index out of range in list of Pointlights");
+	}
 }
 
 DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm::vec4 intensity)
@@ -93,6 +111,13 @@ glm::mat4 LightManager::getLightMatrix()
 glm::mat4 * LightManager::getLightMatrixPointer()
 {
 	return &this->lightMatrix;
+}
+
+void LightManager::updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
+{
+	pointLights.at(index)->setPosition(position);
+	pointLights.at(index)->setIntensity(intensity);
+	pointLights.at(index)->setDistance(distance);
 }
 
 void LightManager::calcLightMatrix()

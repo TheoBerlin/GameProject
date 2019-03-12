@@ -10,16 +10,18 @@ public:
 	LightManager();
 	~LightManager();
 	void setShadowReScale(float reScale);
-	float getShadowHeightScaled();
-	float getShadowWidthScaled();
+	float getShadowHeightScaled() const;
+	float getShadowWidthScaled() const;
 	PointLight * createPointLight(glm::vec4 position, glm::vec4 intensity, int distance);
 	std::vector<PointLight*> * getPointLights();
-	int getNrOfPointLights();
-	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity);
-	DirectionalLight * getDirectionalLight();
-	glm::mat4 getLightMatrix();
-	glm::mat4 * getLightMatrixPointer();
+	unsigned int getNrOfPointLights() const;
 	void removePointLight(int index);
+	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity);
+	DirectionalLight * getDirectionalLight() const;
+	glm::mat4 getLightMatrix() const;
+	glm::mat4 * getLightMatrixPointer();
+	void updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
+
 private:
 	std::vector<PointLight*> pointLights;
 
