@@ -79,8 +79,6 @@ void CameraTransition::update(const float& dt)
         return;
     }
 
-    Transform* transform = host->getTransform();
-
     transitionTime += dt;
 
     if (transitionTime > path.back().t) {
@@ -93,6 +91,28 @@ void CameraTransition::update(const float& dt)
         return;
     }
 
+    this->catmullRomMove();
+
+    // Interpolate FOV if the entity has a camera
+    if (!entityCam) {
+        return;
+    }
+
+    // Get the slerp factor T in [0,1]
+    float T = transitionTime / path.back().t;
+
+    // Calculate current rotation quat
+    glm::quat currentRotationQuat = glm::slerp(beginQuat, endQuat, T);
+
+    host->getTransform()->setForward(currentRotationQuat * host->getTransform()->getDefaultForward());
+
+    float currentFOV = glm::mix(beginFOV, endFOV, T);
+
+    entityCam->setFOV(currentFOV);
+}
+
+void CameraTransition::catmullRomMove()
+{
     KeyPoint P0, P1, P2, P3;
 
     // Iterate through points to find P1
@@ -105,26 +125,10 @@ void CameraTransition::update(const float& dt)
     P2 = path[pathIndex + 1];
     P3 = path[glm::min<int>(pathIndex + 2, path.size() - 1)];
 
-    // Get the slerp factor T in [0,1]
-    float T = transitionTime / path.back().t;
-
-    // Calculate current rotation quat
-    glm::quat currentRotationQuat = glm::slerp(beginQuat, endQuat, T);
-
     // Calculate current position
     // The position interpolation needs a different T than the rotation
-    T = (transitionTime - P1.t) / (P2.t - P1.t);
+    float T = (transitionTime - P1.t) / (P2.t - P1.t);
 
     // Set new rotation and position
-    transform->setForward(currentRotationQuat * host->getTransform()->getDefaultForward());
-	transform->setPosition(glm::catmullRom(P0.Position, P1.Position, P2.Position, P3.Position, T));
-
-    // Lerp FOV if the entity has a camera
-    if (!entityCam) {
-        return;
-    }
-
-    float currentFOV = glm::mix(beginFOV, endFOV, T);
-
-    entityCam->setFOV(currentFOV);
+	host->getTransform()->setPosition(glm::catmullRom(P0.Position, P1.Position, P2.Position, P3.Position, T));
 }

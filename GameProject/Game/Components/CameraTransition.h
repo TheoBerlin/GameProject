@@ -20,6 +20,8 @@ public:
 
     void update(const float& dt);
 private:
+    void catmullRomMove();
+
     // Quaternions for the default forward and final forward directions
     glm::quat beginQuat, endQuat;
 
