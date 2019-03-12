@@ -11,7 +11,7 @@
 #include "Engine/Rendering/GLAbstraction/VertexArray.h"
 #include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
 
-
+class TrailShader;
 class Entity;
 class PostProcessShader;
 
@@ -100,6 +100,11 @@ public:
 	*/
 	void updateShaders(const float& dt);
 
+	/*
+		Updates trail shader
+	*/
+	void updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors);
+
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
 
@@ -126,6 +131,7 @@ private:
 	Shader* ZprePassShaderInstanced;
 	Shader* quadShader;
 	Shader* particleShader;
+	TrailShader* trailShader;
 	Shader* combineShader;
 
 	std::vector<EntityShader*> entityShaders;

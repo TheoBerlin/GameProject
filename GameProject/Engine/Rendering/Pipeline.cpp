@@ -11,6 +11,7 @@
 #include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlaneShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlanePrePassShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/TrailShader.h"
 
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
@@ -38,6 +39,7 @@ Pipeline::Pipeline()
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
 
+	this->trailShader = new TrailShader(&this->camera);
 	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
 	this->ZprePassShaderInstanced = new Shader("./Engine/Rendering/Shaders/ZPrepassInstanced.vert", "./Engine/Rendering/Shaders/ZPrepassInstanced.frag");
 	this->combineShader = new Shader("./Engine/Rendering/Shaders/CombineShader.vert", "./Engine/Rendering/Shaders/CombineShader.frag");
@@ -93,6 +95,7 @@ Pipeline::~Pipeline()
 	delete this->ZprePassShaderInstanced;
 	delete this->particleShader;
 	delete this->combineShader;
+	delete this->trailShader;
 
 	for (UniformBuffer* ubo : this->uniformBuffers)
 		delete ubo;
@@ -371,13 +374,28 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 
 void Pipeline::drawTrail()
 {
+	this->fbo.bind();
+	this->trailShader->bind();
 
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, this->trailShader->getDrawCount());
+
+	this->trailShader->setHorizontal(false);
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, this->trailShader->getDrawCount());
+
+	this->trailShader->unbind();
+	this->fbo.unbind();
 }
 
 void Pipeline::updateShaders(const float & dt)
 {
 	for (EntityShader* shader : this->entityShaders)
 		shader->update(dt);
+}
+
+void Pipeline::updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors)
+{
+	this->trailShader->updateTrail(points, upVectors);
 }
 
 void Pipeline::setActiveCamera(Camera * camera)

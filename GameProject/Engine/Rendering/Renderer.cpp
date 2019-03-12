@@ -82,6 +82,8 @@ void Renderer::drawAllInstanced()
 	*/
 	Texture* postProcess = this->pipeline.drawModelToTexture(this->renderingTargets);
 
+	this->pipeline.drawTrail();
+
 	pipeline.drawParticle();
 	
 	postProcessTexture = pipeline.getFbo()->getColorTexture(0);
