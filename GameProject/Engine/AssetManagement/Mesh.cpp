@@ -66,7 +66,7 @@ unsigned short Mesh::getMaterialIndex()
     return this->materialIndex;
 }
 
-void Mesh::addBuffer(const void * data, size_t dataSize, const AttributeLayout & layout)
+void Mesh::addBuffer(const void * data, size_t dataSize, const AttributeLayout & layout, GLenum usage)
 {
 
 	VertexBuffer* vbo = new VertexBuffer(data, dataSize);
@@ -100,12 +100,12 @@ void Mesh::initInstancing(const void * data, size_t dataSize, const AttributeLay
 	this->vao->addBuffer(vbo, attributeLayout);
 }
 
-void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned offset, unsigned buffer)
+void Mesh::updateInstancingData(const void * data, size_t dataSize, unsigned offset, unsigned buffer, GLenum usage)
 {
 	/*
 		Update second vbo contaning the matrices
 	*/
-	this->vao->updateBuffer(buffer, data, dataSize, offset);
+	this->vao->updateBuffer(buffer, data, dataSize, offset, usage);
 }
 
 std::vector<Vertex>& Mesh::getVerticies() const
