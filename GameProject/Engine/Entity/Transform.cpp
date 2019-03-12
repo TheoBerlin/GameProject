@@ -294,7 +294,7 @@ void Transform::resetRoll()
 {
 	float roll = getRoll();
 
-	glm::quat rollQuat = glm::angleAxis(roll, this->f);
+	glm::quat rollQuat = glm::angleAxis(-roll, this->f);
 
 	this->r = glm::normalize(rollQuat * this->r);
 	this->u = glm::normalize(rollQuat * this->u);
