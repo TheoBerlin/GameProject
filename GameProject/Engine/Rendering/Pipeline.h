@@ -94,7 +94,9 @@ public:
 	*/
 	void updateShaders(const float& dt);
 	void addCurrentLightManager(LightManager * lm);
+	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
 	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
+	void removeLight(int index);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();

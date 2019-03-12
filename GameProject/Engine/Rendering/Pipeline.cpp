@@ -481,6 +481,20 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 
 }
 
+void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance)
+{
+	lightManager->createPointLight(position, intensity, distance);
+
+	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
+
+	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
+	}
+
+	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+}
+
+
 void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
 {
 	if (index > lightManager->getNrOfPointLights() - 1) {
@@ -493,6 +507,18 @@ void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, i
 
 		this->uniformBuffers[3]->setLightSubData((void*)(&lightBuffer.pointLights[index]), sizeof(PointLight), sizeof(PointLight) * index);
 	}
+}
+
+void Pipeline::removeLight(int index)
+{
+	lightManager->removePointLight(index);
+	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
+
+	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
+	}
+
+	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 }
 
 void Pipeline::setActiveCamera(Camera * camera)

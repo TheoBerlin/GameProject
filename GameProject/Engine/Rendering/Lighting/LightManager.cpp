@@ -29,12 +29,12 @@ void LightManager::setShadowReScale(float reScale)
 	this->shadowReScale = reScale;
 }
 
-float LightManager::getShadowHeightScaled()
+float LightManager::getShadowHeightScaled() const
 {
 	return this->shadowHeight * shadowReScale;
 }
 
-float LightManager::getShadowWidthScaled()
+float LightManager::getShadowWidthScaled() const
 {
 	return this->shadowWidth * shadowReScale;
 }
@@ -57,7 +57,7 @@ std::vector<PointLight*> * LightManager::getPointLights()
 	return &this->pointLights;
 }
 
-int LightManager::getNrOfPointLights()
+unsigned int LightManager::getNrOfPointLights() const
 {
 	return pointLights.size();
 }
@@ -88,22 +88,12 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 	return nullptr;
 }
 
-void LightManager::removePointLight(int index)
-{
-	if (index <= pointLights.size() && index >= 0) {
-		pointLights.erase(pointLights.begin() + index);
-	}
-	else {
-		LOG_ERROR("Index out of range in list of Pointlights");
-	}
-}
-
-DirectionalLight * LightManager::getDirectionalLight()
+DirectionalLight * LightManager::getDirectionalLight() const
 {
 	return this->dirLight;
 }
 
-glm::mat4 LightManager::getLightMatrix()
+glm::mat4 LightManager::getLightMatrix() const
 {
 	return this->lightMatrix;
 }

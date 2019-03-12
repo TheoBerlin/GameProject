@@ -297,11 +297,6 @@ void LevelParser::writePlayer(Level & level)
 	jsonFile["Player"]["ArrowCamera"]["Direction"] = { level.player.arrowCamera.direction.x, level.player.arrowCamera.direction.y, level.player.arrowCamera.direction.z };
 	jsonFile["Player"]["ArrowCamera"]["Offset"] = { level.player.arrowCamera.offset.x, level.player.arrowCamera.offset.y, level.player.arrowCamera.offset.z };
 	jsonFile["Player"]["ArrowCamera"]["FOV"] = level.player.arrowCamera.FOV;
-
-	jsonFile["Player"]["ReplayCamera"]["Position"] = { level.player.replayCamera.position.x, level.player.replayCamera.position.y, level.player.replayCamera.position.z };
-	jsonFile["Player"]["ReplayCamera"]["Direction"] = { level.player.replayCamera.direction.x, level.player.replayCamera.direction.y, level.player.replayCamera.direction.z };
-	jsonFile["Player"]["ReplayCamera"]["Offset"] = { level.player.replayCamera.offset.x, level.player.replayCamera.offset.y, level.player.replayCamera.offset.z };
-	jsonFile["Player"]["ReplayCamera"]["FOV"] = level.player.replayCamera.FOV;
 }
 
 void LevelParser::writeWalls(Level & level)
