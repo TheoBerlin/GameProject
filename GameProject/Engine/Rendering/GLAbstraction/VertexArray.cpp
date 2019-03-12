@@ -24,14 +24,14 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 	for (size_t i = 0; i < attributes.attribs.size(); i++) {
 		AttributeSettings attrib = attributes.attribs[i];
 
-		if (attrib.stride = 0) {
+		if (attrib.stride == 0) {
 			glEnableVertexAttribArray(this->nextLocation);
 			glVertexAttribPointer(this->nextLocation, attrib.size, GL_FLOAT, GL_FALSE, attributes.stride * sizeof(float), (void*)attrib.offset);
 			glVertexAttribDivisor(this->nextLocation, attrib.divisor);
 		}
 		else {
 			glEnableVertexAttribArray(this->nextLocation);
-			glVertexAttribPointer(this->nextLocation, attrib.size, GL_FLOAT, GL_FALSE, attrib.stride * sizeof(float), (void*)attrib.offset);
+			glVertexAttribPointer(this->nextLocation, attrib.size, GL_FLOAT, GL_FALSE, attrib.stride * sizeof(float), (void*)(attrib.offset * sizeof(float)));
 			glVertexAttribDivisor(this->nextLocation, attrib.divisor);
 		}
 
