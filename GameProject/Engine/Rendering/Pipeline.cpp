@@ -16,10 +16,14 @@
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
 
+
+
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
 	
+	glm::mat4 * identityMatrix = &glm::mat4(1.0f);
+
 	//Create quad for drwaing textures to.
 	this->createQuad();
 
@@ -28,13 +32,13 @@ Pipeline::Pipeline()
 		Test shader will be swapped out with a option to choose between multiple shaders for rendering Entities
 	*/
 	this->entityShaders.push_back(new EntityShader("./Engine/Rendering/Shaders/EntityShaderInstanced.vert", "./Engine/Rendering/Shaders/EntityShaderInstanced.frag",
-											&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+											&this->shadowFbo, &this->camera, identityMatrix));
 
-	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new DroneShader(&this->shadowFbo, &this->camera, identityMatrix));
 
-	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
-	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
-	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, &this->lightSpaceMatrix));
+	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, identityMatrix));
+	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, identityMatrix));
+	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, identityMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -53,9 +57,7 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
 	float shadowResScale = 4.0f;
-	shadowWidth = (unsigned)(Display::get().getWidth() * shadowResScale);
-	shadowHeight = (unsigned)(Display::get().getHeight() * shadowResScale);
-	this->shadowFbo.attachTexture(shadowWidth, shadowHeight, AttachmentType::DEPTH);
+	this->shadowFbo.attachTexture(Display::get().getWidth() * 4, Display::get().getHeight() * 4, AttachmentType::DEPTH);
 
 	//Particle init
 	ParticleManager::get().init();
@@ -73,14 +75,9 @@ Pipeline::Pipeline()
 		if (i != SHADERS::INFINITY_PLANE_PREPASS) {
 			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
+			this->addUniformBuffer(3, this->entityShaders[i]->getID(), "LightBuffer");
 		}
 	}
-	/*
-		Set up Directional Light
-	*/
-	this->mainLight.direction = glm::normalize(glm::vec4(0.5f, -1.0f, -0.5f, 1.0f));
-	this->mainLight.color_intensity = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	this->uniformBuffers[1]->setSubData((void*)&this->mainLight, sizeof(this->mainLight), 0);
 }
 
 
@@ -337,40 +334,87 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 	}
 }
 
+void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList)
+{
+	
+	
+}
+
 void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(shadowWidth, shadowHeight);
+	Display::get().updateView(Display::get().getWidth() * 4, (Display::get().getHeight() * 4));
 
 	this->shadowFbo.bind();
 	this->prePassDepthOn();
 	this->ZprePassShaderInstanced->bind();
 
-	float orthoWidth = 40.0f;
-	float orthoHeight = 40.0f * Display::get().getRatio();
-	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(-10.0f, 20.0f, 10.0f), glm::vec3(0.5f, -1.0f, -0.5f), glm::vec3(0.0f, 1.0f, 0.0f));
-	lightSpaceMatrix = lightProjection * lightView;
-
-	glCullFace(GL_FRONT);
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 
 	//Draw renderingList
-	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightSpaceMatrix[0][0]);
 	for (auto pair : renderingTargets) {
-		if(pair.first.castShadow)
+		if (pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
-
-	glCullFace(GL_BACK);
 
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
 
+/*#ifdef IMGUI
+	auto drawTexture = [](Texture* texture, bool nextLine = false) {
+		ImTextureID texID = (ImTextureID)texture->getID();
+		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
+		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
+		if (nextLine)
+			ImGui::SameLine();
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Image(texID, ImVec2(370 * ratio, 370), ImVec2(0, 1), ImVec2(1, 0), ImVec4(1, 1, 1, 1), ImVec4(1, 1, 1, 1));
+			ImGui::EndTooltip();
+		}
+	};
+
+	ImGui::Begin("Shadow buffer");
+
+	drawTexture(this->shadowFbo.getDepthTexture());
+
+	ImGui::End();
+#endif*/
+
 	Display::get().updateView(displayWidth, displayHeight);
 }
+
+void Pipeline::updateShaders(const float & dt)
+{
+	for (EntityShader* shader : this->entityShaders)
+		shader->update(dt);
+}
+
+void Pipeline::addCurrentLightManager(LightManager * lm)
+{
+	this->lightManager = lm;
+	/*
+		Set up Directional Light
+	*/
+	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
+	/*
+		Set up Point Light
+	*/
+	struct LightBuffer {
+		PointLight pointLights[10];
+		int nrOfPointLights;
+		glm::vec3 padding;
+	} lightBuffer;
+
+	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
+
+	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
+	}
 
 void Pipeline::drawTrail()
 {
@@ -391,6 +435,12 @@ void Pipeline::updateShaders(const float & dt)
 {
 	for (EntityShader* shader : this->entityShaders)
 		shader->update(dt);
+	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 }
 
 void Pipeline::updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors)

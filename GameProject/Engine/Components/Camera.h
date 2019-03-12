@@ -47,6 +47,7 @@ public:
 	void setOffset(const glm::vec3& offset);
 
 	void decouple();
+	void couple();
 	bool isDecoupled() const;
 
 private:
