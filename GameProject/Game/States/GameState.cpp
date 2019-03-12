@@ -29,8 +29,11 @@ GameState::GameState(const std::string& levelJSON)
 	level.replaySystem = &this->replaySystem;
 	level.scoreManager = &this->scoreManager;
 	level.levelStructure = &this->levelStructure;
+	level.lightManager = &this->lightManager;
 
 	levelParser.readLevel(levelJSON, level);
+
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 
 	gameLogic.init(level);
 
