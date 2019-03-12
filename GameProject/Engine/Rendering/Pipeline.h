@@ -94,6 +94,7 @@ public:
 	*/
 	void updateShaders(const float& dt);
 	void addCurrentLightManager(LightManager * lm);
+	void updateLightManager();
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();

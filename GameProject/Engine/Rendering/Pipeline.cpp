@@ -486,6 +486,11 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 
 }
 
+void Pipeline::updateLightManager()
+{
+
+}
+
 void Pipeline::setActiveCamera(Camera * camera)
 {
 	this->camera = camera;

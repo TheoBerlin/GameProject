@@ -41,9 +41,14 @@ float LightManager::getShadowWidthScaled()
 
 PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 {
-	PointLight *  pointLight = new PointLight(position, intensity, distance);
-	pointLights.push_back(pointLight);
-	return pointLight;
+	if (pointLights.size() < 10) {
+		PointLight *  pointLight = new PointLight(position, intensity, distance);
+		pointLights.push_back(pointLight);
+		return pointLight;
+	}
+	else {
+		LOG_ERROR("Maximum number of pointlights already added");
+	}
 }
 
 std::vector<PointLight*> * LightManager::getPointLights()
