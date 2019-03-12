@@ -29,7 +29,7 @@ public:
 		texType: The texture type. Eg. diffuse, specular etc.
 		internalFormat: The format it will have when loaded by openGL.
 	*/
-	Texture(const std::string& fileName, TextureType texType = TextureType::TXTYPE_DIFFUSE, unsigned internalFormat = GL_RGBA);
+	Texture(const std::string& fileName, unsigned internalFormat = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	/*
 	Creates a texture from memory.
@@ -41,7 +41,7 @@ public:
 		format: The format of the data which will be loaded.
 		texType: The texture type. Eg. diffuse, specular etc.
 	*/
-	Texture(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, TextureType texType = TextureType::TXTYPE_DIFFUSE);
+	Texture(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 	virtual ~Texture();
 
 	/*
@@ -51,7 +51,7 @@ public:
 		texType: The texture type. Eg. diffuse, specular etc.
 		internalFormat: The format it will have when loaded by openGL.
 	*/
-	void reload(const std::string& fileName, TextureType texType = TextureType::TXTYPE_DIFFUSE, unsigned internalFormat = GL_RGBA);
+	void reload(const std::string& fileName, unsigned internalFormat = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	/*
 	Delete the previous texture and creates a new from memory.
@@ -63,7 +63,7 @@ public:
 		format: The format of the data which will be loaded.
 		texType: The texture type. Eg. diffuse, specular etc.
 	*/
-	void recreate(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, TextureType texType = TextureType::TXTYPE_DIFFUSE);
+	void recreate(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	/*
 	Update textre data with new information.
@@ -75,12 +75,12 @@ public:
 		format: The format of the data which will be loaded.
 		texType: The texture type. Eg. diffuse, specular etc.
 	*/
-	void update(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, TextureType texType = TextureType::TXTYPE_DIFFUSE);
+	void update(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	/*
 		Resize existing texture
 	*/
-	void resize(unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA);
+	void resize(unsigned int width, unsigned int height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	/*
 	Returns the width in pixels.
@@ -96,18 +96,6 @@ public:
 	Get the texture id.
 	*/
 	GLuint getID() const;
-
-	/*
-	Get the texture type. Eg. diffuse, specular, etc.
-	*/
-	TextureType getType() const;
-
-	/*
-	Set the texture type. Eg. diffuse, specular, etc.
-	Arguments:
-		type: The new type.
-	*/
-	void setType(TextureType type);
 
 	/*
 	Get the path to the texture data.
@@ -135,14 +123,14 @@ public:
 private:
 	void copyData(const Texture& other);
 	void copyTextureData(const Texture& other);
-	void loadImage(const std::string& fileName, TextureType texType, unsigned internalFormat = GL_RGBA);
-	void init(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, TextureType texType);
+	void loadImage(const std::string& fileName, unsigned internalFormat = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
+	void init(unsigned char* data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type);
 	void setParameters();
 
 	GLuint id;
 	GLuint internalFormat;
 	GLuint format;
-	TextureType type;
+	GLenum type;
 	std::string path;
 
 	unsigned int width;

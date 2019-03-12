@@ -5,12 +5,11 @@
 
 LightManager::LightManager()
 {
-	this->shadowReScale = Settings::get().getShadowReScale();
+	this->shadowResolutionFactor = Settings::get().getShadowResolutionFactor();
 	this->shadowHeight = Display::get().getHeight();
 	this->shadowWidth = Display::get().getWidth();
-	this->orthoHeight = 80.0f * Display::get().getRatio();
-	this->orthoWidth = 80.0f; //fix this so that the class gets this info relative to input
-	this->shadowPosition = glm::vec3(2.0f, 10.0f, 2.0f);
+	this->orthoHeight = 20.0f * Display::get().getRatio();
+	this->orthoWidth = 20.0f; //fix this so that the class gets this info relative to input
 }
 
 
@@ -24,19 +23,9 @@ LightManager::~LightManager()
 	delete this->dirLight;
 }
 
-void LightManager::setShadowReScale(float reScale)
+float LightManager::getShadowResolutionFactor() const
 {
-	this->shadowReScale = reScale;
-}
-
-float LightManager::getShadowHeightScaled()
-{
-	return this->shadowHeight * shadowReScale;
-}
-
-float LightManager::getShadowWidthScaled()
-{
-	return this->shadowWidth * shadowReScale;
+	return this->shadowResolutionFactor;
 }
 
 PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
@@ -61,7 +50,8 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 	if (!dirLightExist) {
 		dirLight = new DirectionalLight(direction, intensity);
 		dirLightExist = true;
-		calcLightMatrix();
+		calcShadowProjection(this->orthoWidth, this->orthoHeight, 5.0f, 35.0f);
+		calcShadowMatrix();
 		return dirLight;
 	}
 	else {
@@ -75,19 +65,27 @@ DirectionalLight * LightManager::getDirectionalLight()
 	return this->dirLight;
 }
 
-glm::mat4 LightManager::getLightMatrix()
+glm::mat4 LightManager::getShadowMatrix()
 {
-	return this->lightMatrix;
+	return this->shadowMatrix;
 }
 
-glm::mat4 * LightManager::getLightMatrixPointer()
+glm::mat4 * LightManager::getShadowMatrixPointer()
 {
-	return &this->lightMatrix;
+	return &this->shadowMatrix;
 }
 
-void LightManager::calcLightMatrix()
+void LightManager::calcShadowProjection(float width, float height, float near, float far)
 {
-	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(shadowPosition), glm::vec3(dirLight->getDirection()), glm::vec3(0.0f, 1.0f, 0.0f));
-	lightMatrix = lightProjection * lightView;
+	this->shadowProjection = glm::ortho(-((float)width * 0.5f), ((float)width * 0.5f), -((float)height * 0.5f), ((float)height * 0.5f), near, far);
+}
+
+void LightManager::calcShadowMatrix()
+{
+	glm::vec3 dir = glm::vec3(dirLight->getDirection());
+	dir = {0.0f, -1.0f, 0.1f};
+	glm::mat4 shadowView = glm::lookAt(glm::vec3(0.0f), dir, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 t(1.0f);
+	t = glm::translate(t, {0.0f, -20.0f, 15.0f});
+	this->shadowMatrix = this->shadowProjection * shadowView * t;
 }

@@ -56,9 +56,6 @@ Pipeline::Pipeline()
 	this->fbo.attachTexture(width, height, AttachmentType::COLOR);
 	this->fbo.attachTexture(width, height, AttachmentType::DEPTH);
 
-	float shadowResScale = 4.0f;
-	this->shadowFbo.attachTexture(Display::get().getWidth() * 4, Display::get().getHeight() * 4, AttachmentType::DEPTH);
-
 	//Particle init
 	ParticleManager::get().init();
 
@@ -406,29 +403,31 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(Display::get().getWidth() * 4, (Display::get().getHeight() * 4));
+	float shadowResFact = this->lightManager->getShadowResolutionFactor();
+	Display::get().updateView(Display::get().getWidth() * shadowResFact, (Display::get().getHeight() * shadowResFact));
 
 	this->shadowFbo.bind();
 	this->prePassDepthOn();
 	this->ZprePassShaderInstanced->bind();
 
-	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
+	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getShadowMatrix()[0][0]);
 
+	glCullFace(GL_FRONT);
 	//Draw renderingList
 	for (auto pair : renderingTargets) {
 		if (pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
-
+	glCullFace(GL_BACK);
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
 
-/*#ifdef IMGUI
+#ifdef IMGUI
 	auto drawTexture = [](Texture* texture, bool nextLine = false) {
 		ImTextureID texID = (ImTextureID)texture->getID();
 		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
-		ImGui::Image(texID, ImVec2(50 * ratio, 50), ImVec2(0, 1), ImVec2(1, 0));
+		ImGui::Image(texID, ImVec2(150 * ratio, 150), ImVec2(0, 1), ImVec2(1, 0));
 		if (nextLine)
 			ImGui::SameLine();
 		if (ImGui::IsItemHovered())
@@ -444,7 +443,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	drawTexture(this->shadowFbo.getDepthTexture());
 
 	ImGui::End();
-#endif*/
+#endif
 
 	Display::get().updateView(displayWidth, displayHeight);
 }
@@ -462,6 +461,10 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 		Set up Directional Light
 	*/
 	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
+
+	float shadowResFact = this->lightManager->getShadowResolutionFactor();
+	this->shadowFbo.attachTexture(Display::get().getWidth() * shadowResFact, Display::get().getHeight() * shadowResFact, AttachmentType::DEPTH, GL_R32F, GL_R32F, GL_FLOAT);
+
 	/*
 		Set up Point Light
 	*/
@@ -478,11 +481,11 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	}
 
 	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
-	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
@@ -616,6 +619,7 @@ void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 {
 	this->fbo.updateDimensions(0, event->width, event->height);
 	this->fbo.updateDimensions(1, event->width, event->height);
+	this->shadowFbo.updateDimensions(0, event->width, event->height);
 }
 
 Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)

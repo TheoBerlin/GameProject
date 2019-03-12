@@ -3,7 +3,6 @@
 
 class DirectionalLight
 {
-
 public:
 	DirectionalLight(glm::vec4 direction, glm::vec4 intensity);
 	~DirectionalLight();
