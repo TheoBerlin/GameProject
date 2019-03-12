@@ -65,8 +65,9 @@ void Phase::transitionAboveWalls(const CameraSetting& currentCamSettings, const 
     float heightMarginFactor = 2.0f;
     float transitionLength = 2.5f;
 
-    // Get the current camera position, account for offset
+    // Get the starting and destinnation camera positions by accounting for offset
     glm::vec3 currentPos = this->calculatePosition(currentCamSettings);
+    glm::vec3 destinationPos = this->calculatePosition(newCamSettings);
 
     // Height to position far-up points at
     float pathHeight  = wallHeight * 1.2f;
@@ -77,7 +78,7 @@ void Phase::transitionAboveWalls(const CameraSetting& currentCamSettings, const 
 
     KeyPoint point;
 
-    // P0: directly above camera, only added if camera is below ceiling
+    // P0: directly above the current camera, only added if the camera is currently below the ceiling
     if (currentPos.y < wallHeight * heightMarginFactor) {
         point.Position = {currentPos.x, pathHeight * 1.2f, currentPos.z};
         point.t = transitionLength / 3.0f;
@@ -85,17 +86,15 @@ void Phase::transitionAboveWalls(const CameraSetting& currentCamSettings, const 
         transitionPath.push(point);
     }
 
-    glm::vec3 destinationPos = this->calculatePosition(newCamSettings);
-
-    // P1: directly above destination, only added if the camera is currently above the ceiling
-    if (currentPos.y > wallHeight * heightMarginFactor) {
+    // P0: directly above destination, only added if the camera is currently above the ceiling
+    else if (currentPos.y > wallHeight * heightMarginFactor) {
         point.Position = {destinationPos.x, pathHeight * 1.2f, destinationPos.z};    
         point.t = transitionLength * 2.0f / 3.0f;
 
         transitionPath.push(point);
     }
 
-    // P2: destination
+    // P1: destination
     point.Position = destinationPos;
     point.t = transitionLength;
 
