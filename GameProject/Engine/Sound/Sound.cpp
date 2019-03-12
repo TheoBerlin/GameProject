@@ -50,6 +50,8 @@ Sound::~Sound()
 
 void Sound::loadSound(std::string fileName)
 {
+	SoundManager::get().
+
 	FILE *file;
 	file = fopen(fileName.c_str(), "rb");
 	
@@ -95,8 +97,13 @@ void Sound::loadSound(std::string fileName)
 
 void Sound::playSound()
 {
-	alSourcePlay(source);
+	bool playing = false;
+	alSourcei(source, AL_SOURCE_STATE, playing);
 	errorCheck();
+	if (!playing) {
+		alSourcePlay(source);
+		errorCheck();
+	}
 }
 
 void Sound::setSoundType(SoundType type)

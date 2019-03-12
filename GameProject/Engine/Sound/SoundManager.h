@@ -5,7 +5,7 @@
 
 class SoundManager {
 private:
-	std::vector<Sound> sounds;
+	std::vector<Sound*> sounds;
 
 	//Volume between 0.0 and 1.0
 	float masterVolume = 1.0f;
@@ -22,7 +22,10 @@ public:
 	static SoundManager& get();
 	virtual ~SoundManager() {};
 
-	void addSound(Sound &sound, SoundType type);
+	void addSound(Sound *sound, SoundType type);
+	void removeSound(Sound *sound);
+
+	std::vector<Sound*>* getSoundsVector();
 
 	void setListenerPosition(glm::vec3 position);
 	glm::vec3 getListenerPosition() const;

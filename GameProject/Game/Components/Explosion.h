@@ -33,6 +33,5 @@ private:
 	unsigned debriAmount;
 	std::vector<Debri*> debris;
 	Sound sound;
-	bool first = true;
 };
 

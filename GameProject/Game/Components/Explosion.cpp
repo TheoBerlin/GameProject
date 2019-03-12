@@ -7,9 +7,9 @@
 Explosion::Explosion(Entity * host)
 	: Component(host, "Explosion")
 {
-	sound.loadSound("./Game/assets/sound/Explosion.wav");
+	sound.loadSound("Game/assets/sound/Explosion.wav");
 	sound.setLoopState(false);
-	SoundManager::get().addSound(sound, SOUND_EFFECT);
+	SoundManager::get().addSound(&sound, SOUND_EFFECT);
 }
 
 Explosion::~Explosion()
@@ -25,6 +25,8 @@ void Explosion::update(const float & dt)
 		debri->emitter->setPosition(debri->position);
 	}
 
+	sound.setPosition(getHost()->getTransform()->getPosition());
+
 	this->timer += dt;
 	if (this->timer > lifeTime) {
 		this->removeDebris();
@@ -36,10 +38,7 @@ void Explosion::update(const float & dt)
 
 void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDebris, float speed, float grav)
 {
-	if (first) {
-		sound.playSound();
-		first = false;
-	}
+	sound.playSound();
 
 	this->lifeTime = lifeTime;
 	if (timeElapsed < this->lifeTime) {
@@ -71,7 +70,6 @@ void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDeb
 void Explosion::reset()
 {
 	this->removeDebris();
-	first = true;
 }
 
 void Explosion::createDebri(const glm::vec3& pos, const glm::vec3& startVelocity, const glm::vec3& startAcceleration, const glm::vec3& color,

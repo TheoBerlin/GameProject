@@ -21,15 +21,15 @@ SoundManager & SoundManager::get()
 	return soundManager;
 }
 
-void SoundManager::addSound(Sound & sound, SoundType type)
+void SoundManager::addSound(Sound* sound, SoundType type)
 {
-	sound.setSoundType(type);
+	sound->setSoundType(type);
 	sounds.push_back(sound);
-	switch (sound.getSoundType()) {
-	case(SOUND_MUSIC): sound.updateSound(masterVolume * musicVolume); break;
-	case(SOUND_EFFECT): sound.updateSound(masterVolume * effectVolume); break;
-	case(SOUND_AMBIENT): sound.updateSound(masterVolume * ambientVolume); break;
-	case(SOUND_MISC): sound.updateSound(masterVolume * miscVolume); break;
+	switch (sound->getSoundType()) {
+	case(SOUND_MUSIC): sound->updateSound(masterVolume * musicVolume); break;
+	case(SOUND_EFFECT): sound->updateSound(masterVolume * effectVolume); break;
+	case(SOUND_AMBIENT): sound->updateSound(masterVolume * ambientVolume); break;
+	case(SOUND_MISC): sound->updateSound(masterVolume * miscVolume); break;
 	}
 }
 
@@ -64,11 +64,11 @@ void SoundManager::setMasterVolume(float volume)
 {
 	this->masterVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
-		switch (sounds[i].getSoundType()) {
-		case(SOUND_MUSIC): sounds[i].updateSound(masterVolume * musicVolume); break;
-		case(SOUND_EFFECT): sounds[i].updateSound(masterVolume * effectVolume); break;
-		case(SOUND_AMBIENT): sounds[i].updateSound(masterVolume * ambientVolume); break;
-		case(SOUND_MISC): sounds[i].updateSound(masterVolume * miscVolume); break;
+		switch (sounds[i]->getSoundType()) {
+		case(SOUND_MUSIC): sounds[i]->updateSound(masterVolume * musicVolume); break;
+		case(SOUND_EFFECT): sounds[i]->updateSound(masterVolume * effectVolume); break;
+		case(SOUND_AMBIENT): sounds[i]->updateSound(masterVolume * ambientVolume); break;
+		case(SOUND_MISC): sounds[i]->updateSound(masterVolume * miscVolume); break;
 		}
 	}
 }
@@ -82,8 +82,8 @@ void SoundManager::setMusicVolume(float volume)
 {
 	musicVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
-		if (sounds[i].getSoundType() == SOUND_MUSIC)
-			sounds[i].updateSound(masterVolume * musicVolume);
+		if (sounds[i]->getSoundType() == SOUND_MUSIC)
+			sounds[i]->updateSound(masterVolume * musicVolume);
 	}
 }
 
@@ -96,8 +96,8 @@ void SoundManager::setEffectVolume(float volume)
 {
 	effectVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
-		if (sounds[i].getSoundType() == SOUND_EFFECT)
-			sounds[i].updateSound(masterVolume * effectVolume);
+		if (sounds[i]->getSoundType() == SOUND_EFFECT)
+			sounds[i]->updateSound(masterVolume * effectVolume);
 	}
 }
 
@@ -110,8 +110,8 @@ void SoundManager::setAmbientVolume(float volume)
 {
 	ambientVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
-		if (sounds[i].getSoundType() == SOUND_AMBIENT)
-			sounds[i].updateSound(masterVolume * ambientVolume);
+		if (sounds[i]->getSoundType() == SOUND_AMBIENT)
+			sounds[i]->updateSound(masterVolume * ambientVolume);
 	}
 }
 
@@ -124,8 +124,8 @@ void SoundManager::setMiscVolume(float volume)
 {
 	miscVolume = volume;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
-		if (sounds[i].getSoundType() == SOUND_MISC)
-			sounds[i].updateSound(masterVolume * miscVolume);
+		if (sounds[i]->getSoundType() == SOUND_MISC)
+			sounds[i]->updateSound(masterVolume * miscVolume);
 	}
 }
 
