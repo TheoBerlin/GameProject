@@ -4,7 +4,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Engine/Entity/Entity.h>
-#include <queue>
+#include <vector>
 
 Phase::Phase(const Level& level, Entity* transitionEntity)
     :level(level),
@@ -74,31 +74,43 @@ void Phase::transitionAboveWalls(const CameraSetting& currentCamSettings, const 
 
     pathHeight = (currentPos.y > wallHeight * heightMarginFactor) ? currentPos.y : wallHeight * heightMarginFactor;
 
-    std::queue<KeyPoint> transitionPath;
+    std::vector<KeyPoint> transitionPath;
 
+    // Set keypoints in the path. Begin by only setting the positions.
     KeyPoint point;
 
-    // P0: directly above the current camera, only added if the current camera is below the ceiling
+    // P0: current position
+    point.Position = currentPos;
+
+    transitionPath.push_back(point);
+
+    // P1: directly above the current camera, only added if the current camera is below the ceiling
     if (currentPos.y < wallHeight * heightMarginFactor) {
         point.Position = {currentPos.x, pathHeight * 1.2f, currentPos.z};
-        point.t = transitionLength / 3.0f;
 
-        transitionPath.push(point);
+        transitionPath.push_back(point);
     }
 
-    // P0/P1: directly above destination, only added if the target camera is below the ceiling
+    // P1/P2: directly above destination, only added if the target camera is below the ceiling
     if (destinationPos.y < wallHeight * heightMarginFactor) {
         point.Position = {destinationPos.x, pathHeight * 1.2f, destinationPos.z};    
-        point.t = transitionLength * 2.0f / 3.0f;
 
-        transitionPath.push(point);
+        transitionPath.push_back(point);
     }
 
-    // P1: destination
+    // P2/P3: destination
     point.Position = destinationPos;
-    point.t = transitionLength;
 
-    transitionPath.push(point);
+    transitionPath.push_back(point);
+
+    // Set keypoint timestamps
+    float t = 0.0f;
+
+    for (unsigned int i = 0; i < transitionPath.size(); i += 1) {
+        transitionPath[i].t = t;
+
+        t += transitionLength / (transitionPath.size() - 1);
+    }
 
     // Set current camera settins to the transition camera
     transitionEntity->getTransform()->setPosition(currentPos);

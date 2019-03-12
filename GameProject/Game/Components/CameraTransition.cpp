@@ -6,6 +6,7 @@
 #include <Engine/Events/Events.h>
 #include <Utils/Logger.h>
 #include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/spline.hpp>
 
 CameraTransition::CameraTransition(Entity* host)
     :Component(host, "CameraTransition"),
@@ -25,17 +26,19 @@ CameraTransition::~CameraTransition()
 
 void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
 {
-    std::queue<KeyPoint> newPath;
+    std::vector<KeyPoint> newPath;
 
-    newPath.push(KeyPoint(newPos, transitionLength));
+    newPath.push_back(KeyPoint(host->getTransform()->getPosition(), 0.0f));
+
+    newPath.push_back(KeyPoint(newPos, transitionLength));
 
     this->setPath(newPath, newForward, newFOV);
 }
 
-void CameraTransition::setPath(const std::queue<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
+void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
-    if (path.empty()) {
-        LOG_WARNING("Transition path is empty!");
+    if (path.size() < 2) {
+        LOG_WARNING("Path too small to start transitioning, size: %d", path.size());
 
         this->isTransitioning = false;
         return;
@@ -45,6 +48,7 @@ void CameraTransition::setPath(const std::queue<KeyPoint>& path, const glm::vec3
     this->transitionTime = 0.0f;
     this->beginT = 0.0f;
     this->path = path;
+    this->pathIndex = 0;
 
     // Calculate final rotation quaternion
     Transform* transform = host->getTransform();
@@ -52,8 +56,6 @@ void CameraTransition::setPath(const std::queue<KeyPoint>& path, const glm::vec3
     this->defaultForward = transform->getDefaultForward();
 
     this->beginQuat = transform->getRotationQuat();
-
-    this->beginPos = transform->getPosition();
 
     // Quaternion for achieving the forward direction for the next point in the path
 	this->endQuat = glm::rotation(transform->getDefaultForward(), newForward);
@@ -81,25 +83,27 @@ void CameraTransition::update(const float& dt)
 
     transitionTime += dt;
 
-    while (transitionTime > path.front().t) {
-        // The next point in the path has been reached
-        path.pop();
+    if (transitionTime > path.back().t) {
+        // Transition is finished
+        isTransitioning = false;
 
-        if (path.size() > 0) {
-            this->beginPos = transform->getPosition();
-            this->beginT = transitionTime;
-        }
+        // Publish camera transition event
+        EventBus::get().publish(&CameraTransitionEvent(host));
 
-        else {
-            // Transition is finished
-            isTransitioning = false;
-
-            // Publish camera transition event
-            EventBus::get().publish(&CameraTransitionEvent(host));
-
-            return;
-        }
+        return;
     }
+
+    KeyPoint P0, P1, P2, P3;
+
+    // Iterate through points to find P1
+    while (pathIndex + 2 < path.size() && path[pathIndex + 1].t < transitionTime) {
+        pathIndex += 1;
+    }
+
+    P0 = path[glm::max<int>(pathIndex - 1, 0)];
+    P1 = path[pathIndex];
+    P2 = path[pathIndex + 1];
+    P3 = path[glm::min<int>(pathIndex + 2, path.size() - 1)];
 
     // Get the slerp factor T in [0,1]
     float T = transitionTime / path.back().t;
@@ -109,13 +113,11 @@ void CameraTransition::update(const float& dt)
 
     // Calculate current position
     // The position interpolation needs a different T than the rotation
-    T = (transitionTime - beginT) / (path.front().t - beginT);
-
-    glm::vec3 currentPosition = glm::mix(beginPos, path.front().Position, T);
+    T = (transitionTime - P1.t) / (P2.t - P1.t);
 
     // Set new rotation and position
     transform->setForward(currentRotationQuat * host->getTransform()->getDefaultForward());
-	transform->setPosition(currentPosition);
+	transform->setPosition(glm::catmullRom(P0.Position, P1.Position, P2.Position, P3.Position, T));
 
     // Lerp FOV if the entity has a camera
     if (!entityCam) {
