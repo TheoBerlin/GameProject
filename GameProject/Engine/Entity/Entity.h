@@ -21,11 +21,8 @@ public:
 	void update(const float dt);
 
 	bool addComponent(Component* component);
-	// Deletes and unlists component
 	bool removeComponent(const std::string& componentName);
 	void removeAllComponents();
-	// Unlists component
-	bool detachComponent(const std::string& componentName);
 	/*
 		Get component by name for the given entity
 		Returns:

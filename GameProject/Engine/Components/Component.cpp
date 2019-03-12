@@ -7,7 +7,11 @@ Component::Component(Entity* parentEntity, const std::string & tagName)
 {
 	this->tagName = tagName;
 
-	this->setHost(parentEntity);
+	if (parentEntity->addComponent(this)) 
+		this->setHost(parentEntity);
+	else {
+		LOG_WARNING("Component already exists on entity");
+	}
 }
 
 Component::~Component()
@@ -26,19 +30,7 @@ Entity * Component::getHost()
 
 void Component::setHost(Entity* entity)
 {
-	// Detach component from old host
-	if (this->host != nullptr) {
-		this->host->detachComponent(this->tagName);
-
-		this->host = nullptr;
-	}
-
-	// Set new host
-	if (entity->addComponent(this)) {
-		this->host = entity;
-	} else {
-		LOG_WARNING("Component already exists on entity %s", this->tagName.c_str());
-	}
+	this->host = entity;
 }
 
 void Component::init()

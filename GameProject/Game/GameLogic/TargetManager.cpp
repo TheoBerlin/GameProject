@@ -5,7 +5,6 @@
 #include <Game/Components/Explosion.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/RollNullifier.h>
-#include <Game/Components/DeathAnimation.h>
 #include <Engine/Components/MovingTargetCollision.h>
 #include <Engine/Components/StaticTargetCollision.h>
 #include <reactphysics3d/reactphysics3d.h>
@@ -32,7 +31,6 @@ void TargetManager::addStaticTarget(Entity* host)
 
     staticTarget.hoverAnimation = new Hover(host);
 	staticTarget.explosion = new Explosion(host);
-	staticTarget.deathAnimation = new DeathAnimation(host);
 
 	new StaticTargetCollision(host);
 
@@ -55,8 +53,6 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
 
     movingTarget.pathTreader = new PathTreader(host, path, true);
     movingTarget.rollNullifier = new RollNullifier(host);
-	movingTarget.explosion = new Explosion(host);
-	movingTarget.deathAnimation = new DeathAnimation(host);
 	new MovingTargetCollision(host);
 
     movingTargets.push_back(movingTarget);
@@ -169,16 +165,14 @@ void TargetManager::resetStaticAnimations()
 	unsigned int staticTargetCount = staticTargets.size();
 
     for (unsigned int i = 0; i != staticTargetCount; i += 1) {
-		Entity* targetHost = staticTargets.at(i).hoverAnimation->getHost();
-		targetHost->unpauseModelTransform();
         staticTargets.at(i).hoverAnimation->reset();
 		staticTargets.at(i).explosion->reset();
-		staticTargets.at(i).deathAnimation->reset();
 		
 		//Reset color on entity
-		int attachmentIndex = targetHost->getRenderingGroupIndex();
+		Entity* host = staticTargets.at(i).hoverAnimation->getHost();
+		int attachmentIndex = host->getRenderingGroupIndex();
 		if(attachmentIndex != -1)
-			targetHost->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
+			host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
 				attachmentIndex *sizeof(glm::vec3), 0, 2);
     }
 }
@@ -189,17 +183,8 @@ void TargetManager::resetMovingAnimations()
 
     for (unsigned int i = 0; i != movingTargetCount; i += 1) {
 		Entity* targetHost = movingTargets.at(i).pathTreader->getHost();
-		targetHost->unpauseModelTransform();
         movingTargets.at(i).pathTreader->startTreading();
 		targetHost->getTransform()->resetRoll();
-		movingTargets.at(i).explosion->reset();
-		movingTargets.at(i).deathAnimation->reset();
-
-		//Reset color on entity
-		int attachmentIndex = targetHost->getRenderingGroupIndex();
-		if (attachmentIndex != -1)
-			targetHost->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
-				attachmentIndex * sizeof(glm::vec3), 0, 2);
     }
 }
 

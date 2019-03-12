@@ -48,7 +48,7 @@ void List::addItem(const std::string& text, std::function<void(void)> func)
 void List::scroll(int scrollOffset)
 {
 	this->scrollOffset += scrollOffset;
-	if (this->listButtons.size() != 0 && this->listButtons.size() > this->maxItemsVisible)
+	if (this->listButtons.size() != 0)
 	{
 		unsigned btnSize = (unsigned)(this->listButtons[0]->getSize().y + this->itemSpacing);
 		int lowLimit = -(int)((this->listButtons.size() * btnSize) - this->maxItemsVisible * btnSize);

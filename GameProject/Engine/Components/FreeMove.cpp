@@ -49,7 +49,7 @@ void FreeMove::update(const float & dt)
 		newPosition += this->dt * mat->getRight() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_S])
 		newPosition += this->dt * -mat->getForward() * this->speed;
-	if (this->pressedKeys[GLFW_KEY_LEFT_SHIFT])
+	if (this->pressedKeys[GLFW_KEY_SPACE])
 		newPosition += this->dt * GLOBAL_UP_VECTOR * this->speed;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
 		newPosition += this->dt * -GLOBAL_UP_VECTOR * this->speed;

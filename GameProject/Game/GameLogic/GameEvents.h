@@ -13,14 +13,6 @@ struct PlayerCollisionEvent : public Event
 	Entity* entity2;
 	const reactphysics3d::ProxyShape* shape1;
 	const reactphysics3d::ProxyShape* shape2;
-
-	enum PHASE
-	{
-		GUIDING_PHASE,
-		REPLAY_PHASE
-	};
-
-	PHASE phase;
 };
 
 class Phase;

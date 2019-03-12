@@ -1,7 +1,6 @@
 #include "ScrollPanel.h"
 
 #include "Engine/GUI/Button.h"
-#include "Engine/GUI/GUIColors.h"
 
 ScrollPanel::ScrollPanel(unsigned width, unsigned height, const std::string& font, int scrollSpeed) : Panel()
 {
@@ -13,7 +12,7 @@ ScrollPanel::ScrollPanel(unsigned width, unsigned height, const std::string& fon
 	this->list->setSize(glm::vec2((unsigned)(width * 0.8f), (unsigned)(height * 0.9f)));
 	this->list->setOption(GUI::CENTER_X);
 	this->list->setOption(GUI::FLOAT_UP, (int)(height * 0.05));
-	this->list->setColor(PANEL_BACKGROUND_COLOR);
+	this->list->setColor(glm::vec4(0.9, 0.9, 0.9, 1.0));
 
 	this->addChild(list);
 
@@ -53,15 +52,9 @@ void ScrollPanel::setActiveButton(unsigned index)
 {
 	if (index < this->list->getListButtons().size())
 	{
-		this->activeButtonIndex = index;
 		this->activeButton = this->list->getListButtons()[index];
 		this->activeButton->setNormalColor({ 0.4f, 0.f, 0.6f, 1.f });
 	}
-}
-
-unsigned ScrollPanel::getActiveButtonIndex() const
-{
-	return this->activeButtonIndex;
 }
 
 void ScrollPanel::MouseScrollCallback(MouseScrollEvent * evnt)
@@ -92,7 +85,6 @@ void ScrollPanel::MouseClickCallback(MouseClickEvent * evnt)
 					{
 						this->activeButton->setNormalColor(this->list->getBackgroundColor());
 					}
-					this->activeButtonIndex = i;
 					this->activeButton = current;
 					break;
 				}

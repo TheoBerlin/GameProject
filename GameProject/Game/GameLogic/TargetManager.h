@@ -8,20 +8,16 @@ class PathTreader;
 class RollNullifier;
 class Hover;
 class Explosion;
-class DeathAnimation;
 struct KeyPoint;
 
 struct MovingTarget {
     PathTreader* pathTreader;
     RollNullifier* rollNullifier;
-	Explosion* explosion;
-	DeathAnimation* deathAnimation;
 };
 
 struct StaticTarget {
     Hover* hoverAnimation;
 	Explosion* explosion;
-	DeathAnimation* deathAnimation;
 };
 
 class TargetManager
