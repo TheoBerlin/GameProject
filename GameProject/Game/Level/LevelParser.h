@@ -44,7 +44,7 @@ private:
 public:
 	//void writeToFile(std::string file, EntityManager *entityManager);
 	void readLevel(std::string file, Level& level);
-	void readLevelInfo(std::string file, std::vector<std::pair<std::string, unsigned>>& info);
+	void readLevelInfo(std::string file, std::vector<std::string>& info);
 };
 
 template<class T>

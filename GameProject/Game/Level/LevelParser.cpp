@@ -369,7 +369,7 @@ void LevelParser::readLevel(std::string file, Level& level)
 
 }
 
-void LevelParser::readLevelInfo(std::string file, std::vector<std::pair<std::string, unsigned>>& info)
+void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info)
 {
 	std::ifstream iFile;
 	iFile.open(file);
@@ -384,11 +384,14 @@ void LevelParser::readLevelInfo(std::string file, std::vector<std::pair<std::str
 			return;
 		}
 
+		// Reset vector for new level
+		info.clear();
+
 		// Read needed info
 		// Read target size
-		info.push_back(std::make_pair("Targets", jsonFile["Target"].size()));
+		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
 		// Read optimal time
-		info.push_back(std::make_pair("Optimal Time", readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
 	}
 	else
 	{
