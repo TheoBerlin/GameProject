@@ -94,7 +94,7 @@ public:
 	*/
 	void updateShaders(const float& dt);
 	void addCurrentLightManager(LightManager * lm);
-	void updateLightManager();
+	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
@@ -140,5 +140,11 @@ private:
 	LightManager * lightManager;
 
 	std::vector<UniformBuffer*> uniformBuffers;
+
+	struct LightBuffer {
+		PointLight pointLights[10];
+		int nrOfPointLights;
+		glm::vec3 padding;
+	} lightBuffer;
 };
 

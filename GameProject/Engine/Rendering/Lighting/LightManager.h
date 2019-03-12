@@ -20,6 +20,8 @@ public:
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getLightMatrix();
 	glm::mat4 * getLightMatrixPointer();
+
+	void updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 private:
 	std::vector<PointLight*> pointLights;
 

@@ -465,11 +465,6 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	/*
 		Set up Point Light
 	*/
-	struct LightBuffer {
-		PointLight pointLights[10];
-		int nrOfPointLights;
-		glm::vec3 padding;
-	} lightBuffer;
 
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
@@ -486,9 +481,18 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 
 }
 
-void Pipeline::updateLightManager()
+void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
 {
+	if (index > lightManager->getNrOfPointLights() - 1) {
 
+	}
+	else {
+		lightManager->updatePointLight(index, position, intensity, distance);
+
+		lightBuffer.pointLights[index] = *lightManager->getPointLights()->at(index);
+
+		this->uniformBuffers[3]->setLightSubData((void*)(&lightBuffer.pointLights[index]), sizeof(PointLight), sizeof(PointLight) * index);
+	}
 }
 
 void Pipeline::setActiveCamera(Camera * camera)

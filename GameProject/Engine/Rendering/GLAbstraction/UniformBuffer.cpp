@@ -71,3 +71,19 @@ bool UniformBuffer::setSubData(const void* const data, size_t dataSize, unsigned
 	LOG_WARNING("Data doesn't fit in uniform buffer! Data size: %d Free Data from offset: %d", dataSize, this->currentSize - offset);
 	return false;
 }
+
+bool UniformBuffer::setLightSubData(const void * const data, size_t dataSize, unsigned offset)
+{
+	if (offset + dataSize <= this->currentSize) {
+		glBindBuffer(GL_UNIFORM_BUFFER, this->id);
+
+		glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, data);
+
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+		return true;
+	}
+
+	LOG_WARNING("Data doesn't fit in uniform buffer! Data size: %d Free Data from offset: %d", dataSize, this->currentSize - offset);
+	return false;
+}

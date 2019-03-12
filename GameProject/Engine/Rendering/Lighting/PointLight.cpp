@@ -80,3 +80,63 @@ glm::vec4 PointLight::getIntensity()
 {
 	return this->intensity;
 }
+
+void PointLight::setPosition(glm::vec4 position)
+{
+	this->position = position;
+}
+
+void PointLight::setIntensity(glm::vec4 intensity)
+{
+	this->intensity = intensity;
+}
+
+void PointLight::setDistance(int distance)
+{
+	switch (distance) {
+	case 7:
+		this->linear = 0.7f;
+		this->quadratic = 1.8f;
+		break;
+	case 13:
+		this->linear = 0.35f;
+		this->quadratic = 0.44f;
+		break;
+	case 20:
+		this->linear = 0.22f;
+		this->quadratic = 0.20f;
+		break;
+	case 32:
+		this->linear = 0.14f;
+		this->quadratic = 0.07f;
+		break;
+	case 50:
+		this->linear = 0.09f;
+		this->quadratic = 0.032f;
+		break;
+	case 65:
+		this->linear = 0.07f;
+		this->quadratic = 0.017f;
+		break;
+	case 100:
+		this->linear = 0.045f;
+		this->quadratic = 0.0075f;
+		break;
+	case 160:
+		this->linear = 0.027f;
+		this->quadratic = 0.0028f;
+		break;
+	case 200:
+		this->linear = 0.022f;
+		this->quadratic = 0.0019f;
+		break;
+	case 325:
+		this->linear = 0.014f;
+		this->quadratic = 0.0007f;
+		break;
+	default:
+		this->linear = 0.007f;
+		this->quadratic = 0.0002f;
+		break;
+	}
+}
