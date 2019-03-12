@@ -25,7 +25,7 @@ void Explosion::update(const float & dt)
 		debri->emitter->setPosition(debri->position);
 	}
 
-	sound.setPosition(getHost()->getTransform()->getPosition());
+	sound.setPosition(host->getTransform()->getPosition());
 
 	this->timer += dt;
 	if (this->timer > lifeTime) {

@@ -7,7 +7,6 @@ class SoundManager {
 private:
 	std::vector<Sound*> sounds;
 
-	//Volume between 0.0 and 1.0
 	float masterVolume = 1.0f;
 	float musicVolume = 1.0f;
 	float effectVolume = 1.0f;

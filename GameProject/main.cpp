@@ -31,8 +31,6 @@ int main() {
 	sound.playSound();
 	SoundManager::get().addSound(&sound, SOUND_MUSIC);
 
-	sound.stopSound();
-
 	Game game;
 	game.start();
 

@@ -1,6 +1,5 @@
 #include "SoundManager.h"
 
-
 bool SoundManager::errorCheck()
 {
 	bool error = true;
@@ -35,7 +34,7 @@ void SoundManager::addSound(Sound* sound, SoundType type)
 
 void SoundManager::removeSound(Sound * sound)
 {
-	for (int i = 0; i < sounds.size(); i++) {
+	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sound == sounds[i]) {
 			sounds.erase(sounds.begin() + i);
 		}
@@ -76,7 +75,7 @@ glm::vec3 SoundManager::getListenerOrientation() const
 
 void SoundManager::setMasterVolume(float volume)
 {
-	this->masterVolume = volume;
+	this->masterVolume = glm::clamp(volume, 0.0f, 1.0f);;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		switch (sounds[i]->getSoundType()) {
 		case(SOUND_MUSIC): sounds[i]->updateSound(masterVolume * musicVolume); break;
@@ -94,7 +93,7 @@ float SoundManager::getMasterVolume() const
 
 void SoundManager::setMusicVolume(float volume)
 {
-	musicVolume = volume;
+	musicVolume = glm::clamp(volume, 0.0f, 1.0f);
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_MUSIC)
 			sounds[i]->updateSound(masterVolume * musicVolume);
@@ -108,7 +107,7 @@ float SoundManager::getMusicVolume() const
 
 void SoundManager::setEffectVolume(float volume)
 {
-	effectVolume = volume;
+	effectVolume = glm::clamp(volume, 0.0f, 1.0f);;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_EFFECT)
 			sounds[i]->updateSound(masterVolume * effectVolume);
@@ -122,7 +121,7 @@ float SoundManager::getEffectVolume() const
 
 void SoundManager::setAmbientVolume(float volume)
 {
-	ambientVolume = volume;
+	ambientVolume = glm::clamp(volume, 0.0f, 1.0f);;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_AMBIENT)
 			sounds[i]->updateSound(masterVolume * ambientVolume);
@@ -136,7 +135,7 @@ float SoundManager::getAmbientVolume() const
 
 void SoundManager::setMiscVolume(float volume)
 {
-	miscVolume = volume;
+	miscVolume = glm::clamp(volume, 0.0f, 1.0f);;
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_MISC)
 			sounds[i]->updateSound(masterVolume * miscVolume);

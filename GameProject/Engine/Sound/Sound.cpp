@@ -12,7 +12,7 @@ bool Sound::errorCheck()
 
 	e = alGetError();
 	if (e != AL_NO_ERROR) {
-		std::cout << "OpenAL error with error code: " << alGetString(e) << std::endl;
+		LOG_ERROR("OpenAL error with error code: %s", alGetString(e));
 		error = false;
 	}
 
@@ -82,12 +82,14 @@ void Sound::loadSound(std::string fileName)
 	fread(buf, sizeof(BYTE), size, file);
 
 	//Read data to buffer, (-44) is sice of wav header.
-	if(channels == 1 && bitsPerSample == 8)
+	if (channels == 1 && bitsPerSample == 8) {
 		alBufferData(buffer, AL_FORMAT_MONO8, buf, size, freq);
-	if (channels == 1 && bitsPerSample == 16)
+	}
+	else if (channels == 1 && bitsPerSample == 16) {
 		alBufferData(buffer, AL_FORMAT_MONO16, buf, size, freq);
-	if (channels == 2)
+	} else if (channels == 2)
 		LOG_ERROR("OpenAL can't play stereo sound, convert it to Mono");
+
 	errorCheck();
 
 	alSourcei(source, AL_BUFFER, buffer);
@@ -101,6 +103,7 @@ void Sound::playSound()
 	ALint playing = 0;
 	alGetSourcei(source, AL_SOURCE_STATE, &playing);
 	errorCheck();
+
 	if (playing == 4113) {
 		alSourcePlay(source);
 		errorCheck();
@@ -112,6 +115,7 @@ void Sound::stopSound()
 	ALint playing = 0;
 	alGetSourcei(source, AL_SOURCE_STATE, &playing);
 	errorCheck();
+
 	if (playing == 4114) {
 		alSourceStop(source);
 		errorCheck();
@@ -143,14 +147,18 @@ float Sound::getPitch() const
 void Sound::setVolume(const float volume)
 {
 	this->volume = volume;
-	if (type == SOUND_AMBIENT)
+	if (type == SOUND_AMBIENT) {
 		updateSound(SoundManager::get().getAmbientVolume() * SoundManager::get().getMasterVolume());
-	if (type == SOUND_EFFECT)
+	}
+	else if (type == SOUND_EFFECT) {
 		updateSound(SoundManager::get().getEffectVolume() * SoundManager::get().getMasterVolume());
-	if (type == SOUND_MISC)
+	}
+	else if (type == SOUND_MISC) {
 		updateSound(SoundManager::get().getMiscVolume() * SoundManager::get().getMasterVolume());
-	if (type == SOUND_MUSIC)
+	}
+	else if (type == SOUND_MUSIC) {
 		updateSound(SoundManager::get().getMusicVolume() * SoundManager::get().getMasterVolume());
+	}
 
 	errorCheck();
 }
