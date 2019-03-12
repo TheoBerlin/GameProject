@@ -484,7 +484,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
 {
 	if (index > lightManager->getNrOfPointLights() - 1) {
-
+		LOG_ERROR("Index out of range")
 	}
 	else {
 		lightManager->updatePointLight(index, position, intensity, distance);
