@@ -179,7 +179,7 @@ void HelpGUI::animate(const float& dt, bool in)
 		if (!in)
 			progress = (1.f - progress);
 
-		this->currentGUI->setOption(GUI::FLOAT_LEFT, (int)((this->maxMove * progress) - this->maxMove));
+		this->currentGUI->setOption(GUI::FLOAT_LEFT, glm::max((int)((this->maxMove * progress) - this->maxMove), -(int)this->maxMove));
 	}
 }
 
