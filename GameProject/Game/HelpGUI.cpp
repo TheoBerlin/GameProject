@@ -66,6 +66,11 @@ void HelpGUI::switchGUI(Panel* newGUI)
 		this->currentGUI->hide();
 	this->currentGUI = newGUI;
 	this->currentGUI->show();
+
+	if (in)
+		this->currentGUI->setOption(GUI::FLOAT_LEFT, 0);
+	else
+		this->currentGUI->setOption(GUI::FLOAT_LEFT, -(int)this->maxMove);
 }
 
 void HelpGUI::createOverviewGUI()
@@ -78,106 +83,84 @@ void HelpGUI::createOverviewGUI()
 	this->overviewGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
 	this->gui->addPanel(this->overviewGUI);
 
-	// Add "Press 2 for guiding" icon
-	Panel* guidPnl = new Panel();
-	guidPnl->setSize({ 50, 50 });
-	guidPnl->setOption(GUI::FLOAT_LEFT, 200);
-	guidPnl->setOption(GUI::FLOAT_UP, 200);
-	guidPnl->setColor({1.f, 1.f, 1.f, 1.f});
-	guidPnl->setBackgroundTexture(TextureManager::loadTexture("./Game/Assets/buttons/2.png"));
-	this->overviewGUI->addChild(guidPnl);
+	addButton(this->overviewGUI, "AIM", "2.png");
+	addButton(this->overviewGUI, "CAMERA", "wasdMini.png");
+	addButton(this->overviewGUI, "DESCEND", "ctrl.png");
+	addButton(this->overviewGUI, "ASCEND", "shift.png");
 
-	// Add "Guiding" text
-	Panel* guidPnlText = new Panel();
-	guidPnlText->setSize({ this->innerPanelSize });
-	guidPnlText->setOption(GUI::FLOAT_LEFT);
-	guidPnlText->setOption(GUI::FLOAT_UP, 200);
-	guidPnlText->setOption(GUI::TEXT_FLOAT_LEFT, 10);
-	guidPnlText->setOption(GUI::TEXT_CENTER_Y);
-	guidPnlText->setColor(PANEL_BACKGROUND_COLOR_TRANSPARENT);
-	guidPnlText->addText("Guiding", "aldo", TEXT_COLOR);
-	this->overviewGUI->addChild(guidPnlText);
-
-	// Add "WASD for control"
-	Panel* wasdPnl = new Panel();
-	wasdPnl->setSize({ 50, 50 });
-	wasdPnl->setOption(GUI::FLOAT_LEFT, 200);
-	wasdPnl->setOption(GUI::FLOAT_UP, 250);
-	wasdPnl->setOption(GUI::TEXT_CENTER_X);
-	wasdPnl->setOption(GUI::TEXT_CENTER_Y);
-	wasdPnl->setColor({ 1.f, 1.f, 1.f, 1.f });
-	wasdPnl->setBackgroundTexture(TextureManager::loadTexture("./Game/Assets/buttons/W.png"));
-	this->overviewGUI->addChild(wasdPnl);
-
-	// Add "Camera" text
-	Panel* wasdPnlText = new Panel();
-	wasdPnlText->setSize({ this->innerPanelSize });
-	wasdPnlText->setOption(GUI::FLOAT_LEFT);
-	wasdPnlText->setOption(GUI::FLOAT_UP, 250);
-	wasdPnlText->setOption(GUI::TEXT_FLOAT_LEFT, 10);
-	wasdPnlText->setOption(GUI::TEXT_CENTER_Y);
-	wasdPnlText->setColor(PANEL_BACKGROUND_COLOR_TRANSPARENT);
-	wasdPnlText->addText("Camera", "aldo", TEXT_COLOR);
-	this->overviewGUI->addChild(wasdPnlText);
-
-	// Add "Ctrl to lower"
-	Panel* ctrlPnl = new Panel();
-	ctrlPnl->setSize({ 100, 50 });
-	ctrlPnl->setOption(GUI::FLOAT_LEFT, 200);
-	ctrlPnl->setOption(GUI::FLOAT_UP, 300);
-	ctrlPnl->setOption(GUI::TEXT_CENTER_X);
-	ctrlPnl->setOption(GUI::TEXT_CENTER_Y);
-	ctrlPnl->setColor({ 1.f, 1.f, 1.f, 1.f });
-	ctrlPnl->setBackgroundTexture(TextureManager::loadTexture("./Game/Assets/buttons/ctrl.png"));
-	this->overviewGUI->addChild(ctrlPnl);
-
-	// Add "Decend" text
-	Panel* ctrlPnlText = new Panel();
-	ctrlPnlText->setSize({ this->innerPanelSize });
-	ctrlPnlText->setOption(GUI::FLOAT_LEFT);
-	ctrlPnlText->setOption(GUI::FLOAT_UP, 300);
-	ctrlPnlText->setOption(GUI::TEXT_FLOAT_LEFT, 10);
-	ctrlPnlText->setOption(GUI::TEXT_CENTER_Y);
-	ctrlPnlText->setColor(PANEL_BACKGROUND_COLOR_TRANSPARENT);
-	ctrlPnlText->addText("Descend", "aldo", TEXT_COLOR);
-	this->overviewGUI->addChild(ctrlPnlText);
-
-	// Add "Shift to higher"
-	Panel* shiftPnl = new Panel();
-	shiftPnl->setSize({ 100, 50 });
-	shiftPnl->setOption(GUI::FLOAT_LEFT, 200);
-	shiftPnl->setOption(GUI::FLOAT_UP, 350);
-	shiftPnl->setColor({ 1.f, 1.f, 1.f, 1.f });
-	shiftPnl->setBackgroundTexture(TextureManager::loadTexture("./Game/Assets/buttons/shift.png"));
-	this->overviewGUI->addChild(shiftPnl);
-
-	// Add "Ascend" text
-	Panel* shiftPnlText = new Panel();
-	shiftPnlText->setSize({ this->innerPanelSize });
-	shiftPnlText->setOption(GUI::FLOAT_LEFT);
-	shiftPnlText->setOption(GUI::FLOAT_UP, 350);
-	shiftPnlText->setOption(GUI::TEXT_FLOAT_LEFT, 10);
-	shiftPnlText->setOption(GUI::TEXT_CENTER_Y);
-	shiftPnlText->setColor(PANEL_BACKGROUND_COLOR_TRANSPARENT);
-	shiftPnlText->addText("Ascend", "aldo", TEXT_COLOR);
-	this->overviewGUI->addChild(shiftPnlText);
+	this->overviewGUI->hide();
 }
 
 void HelpGUI::createAimGUI()
 {
+	// Container panel for aim
+	this->aimGUI = new Panel();
+	this->aimGUI->setOption(GUI::FLOAT_LEFT);
+	this->aimGUI->setSize({ 500, 0 });
+	this->aimGUI->setOption(GUI::FIT_Y);
+	this->aimGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
+	this->gui->addPanel(this->aimGUI);
+
+	addButton(this->aimGUI, "OVERVIEW", "1.png");
+	addButton(this->aimGUI, "SHOOT", "mouse1.png");
+
+	this->aimGUI->hide();
 }
 
 void HelpGUI::createGuidingGUI()
 {
+	// Container panel for guiding
+	this->guidingGUI = new Panel();
+	this->guidingGUI->setOption(GUI::FLOAT_LEFT);
+	this->guidingGUI->setSize({ 500, 0 });
+	this->guidingGUI->setOption(GUI::FIT_Y);
+	this->guidingGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
+	this->gui->addPanel(this->guidingGUI);
+
+	addButton(this->guidingGUI, "REPLAY", "3.png");
+	
+	this->guidingGUI->hide();
 }
 
 void HelpGUI::createReplayGUI()
 {
+	// Container panel for replay
+	this->replayGUI = new Panel();
+	this->replayGUI->setOption(GUI::FLOAT_LEFT);
+	this->replayGUI->setSize({ 500, 0 });
+	this->replayGUI->setOption(GUI::FIT_Y);
+	this->replayGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
+	this->gui->addPanel(this->replayGUI);
+
+	addButton(this->replayGUI, "AIM", "2.png");
+	addButton(this->replayGUI, "DETATCH", "space.png");
+
+	this->replayGUI->hide();
 }
 
 void HelpGUI::addButton(Panel * parent, std::string text, std::string icon)
 {
+	unsigned offset = this->heightOffset + 50 * (parent->getChildren().size() / 2);
+
+	// Create icon panel
 	Panel* p = new Panel();
+	p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, 50);
+	p->setOption(GUI::FLOAT_LEFT, this->innerPanelSize.x);
+	p->setOption(GUI::FLOAT_UP, offset);
+	p->setColor({ 1.f, 1.f, 1.f, 1.f });
+	p->setBackgroundTexture(TextureManager::loadTexture("./Game/Assets/buttons/" + icon));
+	parent->addChild(p);
+
+	// Create text panel
+	Panel* t = new Panel();
+	t->setSize(this->innerPanelSize);
+	t->setOption(GUI::FLOAT_LEFT);
+	t->setOption(GUI::FLOAT_UP, offset);
+	t->setOption(GUI::TEXT_FLOAT_LEFT, 10);
+	t->setOption(GUI::TEXT_CENTER_Y);
+	t->setColor(PANEL_BACKGROUND_COLOR_TRANSPARENT);
+	t->addText(text, "aldo", TEXT_COLOR);
+	parent->addChild(t);
 }
 
 void HelpGUI::animate(const float& dt, bool in)

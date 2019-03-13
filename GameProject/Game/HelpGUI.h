@@ -33,6 +33,7 @@ private:
 	const unsigned maxMove = 200;
 	const glm::uvec2 innerPanelSize = { 200, 50 };
 	const float animateTime = 0.5f;
+	const unsigned heightOffset = 200;
 	bool in;
 
 	GUI* gui;
