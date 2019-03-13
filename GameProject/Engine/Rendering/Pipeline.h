@@ -94,6 +94,9 @@ public:
 	*/
 	void updateShaders(const float& dt);
 
+	/*
+		Functions for updating bufferdata for the light	
+	*/
 	void addCurrentLightManager(LightManager * lm);
 	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 	void removeLight(int index);
