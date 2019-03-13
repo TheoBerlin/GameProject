@@ -15,8 +15,6 @@
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
 
-
-
 Pipeline::Pipeline()
 {
 	EventBus::get().subscribe(this, &Pipeline::updateFramebufferDimension);
@@ -403,8 +401,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	float shadowResFact = this->lightManager->getShadowResolutionFactor();
-	Display::get().updateView(Display::get().getWidth() * shadowResFact, (Display::get().getHeight() * shadowResFact));
+	Display::get().updateView(this->lightManager->getShadowHeight(), this->lightManager->getShadowWidth());
 
 	this->shadowFbo.bind();
 	this->prePassDepthOn();
@@ -422,7 +419,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
-
+	/*
 #ifdef IMGUI
 	auto drawTexture = [](Texture* texture, bool nextLine = false) {
 		ImTextureID texID = (ImTextureID)texture->getID();
@@ -444,7 +441,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 
 	ImGui::End();
 #endif
-
+*/
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
@@ -462,8 +459,8 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	*/
 	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
 
-	float shadowResFact = this->lightManager->getShadowResolutionFactor();
-	this->shadowFbo.attachTexture(Display::get().getWidth() * shadowResFact, Display::get().getHeight() * shadowResFact, AttachmentType::DEPTH, GL_R32F, GL_R32F, GL_FLOAT);
+	// GL_R32F does nothing if the attachmenttype is depth!
+	this->shadowFbo.attachTexture(this->lightManager->getShadowHeight(), this->lightManager->getShadowWidth(), AttachmentType::DEPTH, GL_R32F, GL_R32F, GL_FLOAT);
 
 	/*
 		Set up Point Light

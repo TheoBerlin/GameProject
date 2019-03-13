@@ -9,6 +9,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/GUIRenderer.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/Rendering/LineRenderer.h>
 #include <Engine/GUI/GUI.h>
 #include <Engine/InputHandler.h>
 #include <Game/GameLogic/TargetManager.h>
@@ -136,6 +137,7 @@ void GameState::render()
 #ifdef ENABLE_COLLISION_DEBUG_DRAW
 	this->collisionHandler.updateDrawingData();
 	this->collisionHandler.drawCollisionBoxes();
+	lightManager.drawDebugBox();
 #endif
 
 	// Draw gui elements.

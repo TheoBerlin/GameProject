@@ -78,10 +78,6 @@ public:
 #endif
 
 private:
-	typedef std::pair<glm::vec3, glm::vec3> AABB;
-	typedef std::tuple<glm::vec3, glm::vec3, glm::quat> OBB;
-	AABB getAABB(Vertex* vertices, unsigned int numVertices, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
-	OBB getOBB(Model* ptr, Vertex* vertices, unsigned int numVertices);
 	void constructShape(CollisionShapeDrawingData* data, const glm::vec3& pos, const glm::vec3& size, glm::quat rot = glm::quat(1.f, 0.f, 0.f, 0.f), CATEGORY cat = CATEGORY::NO_COLLISION, const glm::vec3& scale = {1.f, 1.f, 1.f}, const glm::vec3& color = { 1.f, 1.f, 1.f });
 	void addCollisionShapeToBody(rp3d::CollisionBody * body, rp3d::CollisionShape* shape, CATEGORY category, const glm::vec3& pos, const glm::quat& rotation, CollisionShapeDrawingData* data = nullptr);
 	void addVariedCollisionShapeToBody(unsigned int index, CollisionShapeDrawingData* shape, rp3d::CollisionBody* body, CATEGORY category, const glm::vec3& scale, const glm::vec3& localScale, const glm::vec3& offset, const glm::quat& rotation);

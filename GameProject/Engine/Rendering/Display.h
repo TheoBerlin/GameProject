@@ -8,6 +8,7 @@
 
 #include <string>
 
+class LineRenderer;
 class GUIRenderer;
 class Renderer;
 class Display
@@ -37,6 +38,7 @@ public:
 	GLFWwindow* getWindowPtr();
 	Renderer& getRenderer();
 	GUIRenderer& getGUIRenderer();
+	LineRenderer& getLineRenderer();
 
 	~Display();
 
@@ -57,4 +59,5 @@ private:
 
 	Renderer* renderer;
 	GUIRenderer* guiRenderer;
+	LineRenderer* lineRenderer;
 };
