@@ -24,12 +24,6 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     arrowGuider = aimPhase->getArrowGuider();
     arrowGuider->startGuiding();
 
-	//Reset trail emitter timer
-	if (this->playerArrow) {
-		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(this->playerArrow->getComponent("TrailEmitter"));
-		trailEmitter->resetTrailTimer();
-	}
-
     level.targetManager->resetTargets();
 	level.targetManager->pauseMovingTargets();
 
@@ -139,13 +133,6 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 
 	level.collisionHandler->removeCollisionBody(this->playerArrow);
 	level.targetManager->unpauseMovingTargets();
-
-	//Reset trail emitter timer
-	if (this->playerArrow) {
-		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(this->playerArrow->getComponent("TrailEmitter"));
-		trailEmitter->resetTrailTimer();
-		this->trailEmitter = trailEmitter;
-	}
 
     Phase* guidingPhase = new ReplayPhase(this);
     changePhase(guidingPhase);
