@@ -64,4 +64,5 @@ struct Material {
 	glm::vec4 Kd;
 	glm::vec4 Ks_factor;
 	std::vector<Texture*> textures;
+	bool glow;
 };

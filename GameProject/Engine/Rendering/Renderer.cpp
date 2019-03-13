@@ -80,16 +80,20 @@ void Renderer::drawAllInstanced()
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	Texture* postProcess = this->pipeline.drawModelToTexture(this->renderingTargets);
+	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets);
 
 	this->pipeline.drawTrail();
 
 	pipeline.drawParticle();
-	
-	postProcessTexture = pipeline.getFbo()->getColorTexture(0);
-	tex = pipeline.getFbo()->getColorTexture(1);
 
-	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, tex);
+	tex = pipeline.getFbo()->getColorTexture(1);
+	/*
+		Apply blur to glow texture
+	*/
+	this->pipeline.drawTextureToQuad(tex, SHADERS_POST_PROCESS::BLUR_FILTER, true);
+	Texture* blurTexture = this->getPipeline()->getPostProcessFbo()->getColorTexture(0);
+	
+	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, blurTexture);
 
 	/*
 		Draw texture of scene to quad for postprocessing
@@ -117,7 +121,7 @@ Texture* Renderer::drawTextureToFbo(Texture * texture, SHADERS_POST_PROCESS shad
 	*/
 	this->pipeline.drawTextureToQuad(texture, shader, true);
 
-	return this->pipeline.getFbo()->getColorTexture(0);
+	return this->pipeline.getPostProcessFbo()->getColorTexture(0);
 }
 
 Pipeline * Renderer::getPipeline()

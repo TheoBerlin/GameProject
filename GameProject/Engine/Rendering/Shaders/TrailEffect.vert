@@ -1,9 +1,5 @@
 #version 420
 
-/*
-    Credit to pyalot on github https://github.com/pyalot/webgl-trails/blob/master/src/textured.shader#L25
-*/
-
 layout(location = 0) in vec4 previous;
 layout(location = 1) in vec4 current;
 layout(location = 2) in float alpha;

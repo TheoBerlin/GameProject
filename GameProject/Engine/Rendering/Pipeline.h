@@ -86,11 +86,15 @@ public:
 	*/
 	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
 
-
 	/*
 		Draw trail
 	*/
 	void drawTrail();
+
+	/*
+		Draw everything that should glow and blurs it
+	*/
+	void glowPass();
 
 	/*
 		Updates shaders
@@ -110,11 +114,13 @@ public:
 
 	Framebuffer* getFbo();
 	Framebuffer* getShadowFbo();
+	Framebuffer* getPostProcessFbo();
 
 private:
 	Camera * camera;
 	unsigned int width, height;
 	Framebuffer fbo;
+	Framebuffer postProcessFbo;
 	Framebuffer shadowFbo;
 	glm::mat4 lightSpaceMatrix;
 

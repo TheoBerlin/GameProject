@@ -59,6 +59,8 @@ Pipeline::Pipeline()
 	float shadowResScale = 4.0f;
 	this->shadowFbo.attachTexture(Display::get().getWidth() * 4, Display::get().getHeight() * 4, AttachmentType::DEPTH);
 
+	this->postProcessFbo.attachTexture(Display::get().getWidth() * 0.5f, Display::get().getHeight() * 0.5f, AttachmentType::COLOR);
+
 	//Particle init
 	ParticleManager::get().init();
 
@@ -106,6 +108,9 @@ Texture* Pipeline::drawParticle()
 {
 	ParticleManager& pm = ParticleManager::get();
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 	//Updates vbo if particles are visible also updates particle managers hasVisibleParticles
 	if (pm.getParticleCount() != 0) {
 		pm.updateBuffer();
@@ -129,6 +134,8 @@ Texture* Pipeline::drawParticle()
 		this->particleShader->unbind();
 		fbo.unbind();
 	}
+
+	glDisable(GL_BLEND);
 
 	return fbo.getColorTexture(1);
 }
@@ -275,16 +282,17 @@ Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<RenderingTarg
 	for (auto pair : renderingTargets) {
 
 		if (pair.first.visible) {
-			this->entityShaders[pair.second]->bind();
+			EntityShader* shader = this->entityShaders[pair.second];
+			shader->bind();
 
 			drawInstanced(pair.first.model, pair.second);
 
-			this->entityShaders[pair.second]->unbind();
+			shader->unbind();
 		}
 	}
 
 	this->fbo.unbind();
-
+	
 	return this->fbo.getColorTexture(0);
 }
 
@@ -314,23 +322,31 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 		BlurShader * blurShader = dynamic_cast<BlurShader*>(ppShader);
 		glDisable(GL_DEPTH_TEST);
 
-		this->fbo.bind();
-		
+		this->postProcessFbo.bind();
+		Texture* t = this->postProcessFbo.getColorTexture(0);
+	
+		glViewport(0, 0, t->getWidth(), t->getHeight());
+
 		blurShader->bind(tex, true);
 
 		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 
 		if(!drawToFBO)
-			this->fbo.unbind();
+			this->postProcessFbo.unbind();
 		
-		blurShader->bind(fbo.getColorTexture(0), false);
+		blurShader->bind(postProcessFbo.getColorTexture(0), false);
 
 		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 		
 		blurShader->unbind();
 
-		if (drawToFBO)
-			this->fbo.unbind();
+		if (drawToFBO) {
+			this->postProcessFbo.unbind();
+		
+		}
+		int displayWidth = Display::get().getWidth();
+		int displayHeight = Display::get().getHeight();
+		glViewport(0, 0, displayWidth, displayHeight);
 	}
 }
 
@@ -427,6 +443,10 @@ void Pipeline::drawTrail()
 	this->fbo.unbind();
 }
 
+void Pipeline::glowPass()
+{
+}
+
 void Pipeline::updateShaders(const float & dt)
 {
 	for (EntityShader* shader : this->entityShaders)
@@ -497,20 +517,33 @@ Framebuffer * Pipeline::getShadowFbo()
 	return &this->shadowFbo;
 }
 
+Framebuffer * Pipeline::getPostProcessFbo()
+{
+	return &this->postProcessFbo;
+}
+
 void Pipeline::drawInstanced(Model * model, SHADERS shader)
 {
 
 	for (size_t i = 0; i < model->meshCount(); i++)
 	{
+		EntityShader * eShader = this->entityShaders[shader];
 		Mesh* mesh = model->getMesh(i);
-
+		
 		unsigned int materialIndex = mesh->getMaterialIndex();
 		Material& material = model->getMaterial(materialIndex);
 
-		this->uniformBuffers[0]->setSubData((void*)&material, sizeof(material) - sizeof(material.textures), 0);
+		this->uniformBuffers[0]->setSubData((void*)&material, sizeof(material.Kd) + sizeof(material.Ks_factor), 0);
 
+		if (shader != SHADERS::INFINITY_PLANE && shader != SHADERS::WALL) {
+			if (material.glow)
+				eShader->setGlowUniform(true);
+			else
+				eShader->setGlowUniform(false);
+		}
+	
 		for (Texture* texture : material.textures) {
-			this->entityShaders[shader]->updateMeshData(texture->getID());
+			eShader->updateMeshData(texture->getID());
 		}
 
 		mesh->bindVertexArray();

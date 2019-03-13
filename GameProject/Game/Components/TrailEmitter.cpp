@@ -15,9 +15,8 @@ TrailEmitter::TrailEmitter(Entity * host) : Component(host, "TrailEmitter")
 	this->forwardPos = this->startPos + forward;
 	this->startUpVector = this->host->getTransform()->getUp();
 
-
 	this->startingWidth = 0.025f;
-	this->startingAlpha = 1.0f;
+	this->startingAlpha = 0.5f;
 
 	this->timer = 0.0f;
 	this->trailDuration = 4.0f;
