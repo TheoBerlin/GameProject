@@ -181,6 +181,7 @@ void Panel::rebake()
 	{
 		if (this->shown)
 		{
+			updateGlobalPosition();
 			Display& display = Display::get();
 			GUIRenderer& guiRenderer = display.getGUIRenderer();
 			guiRenderer.prepareTextRendering();
@@ -375,11 +376,6 @@ void Panel::processOptions()
 		if (option.first)
 			processOption(option, i);
 	}
-
-	if (this->parent != nullptr)
-		this->globalPos = this->parent->getGlobalPosition() + this->pos;
-	else
-		this->globalPos = this->pos;
 }
 
 void Panel::processOption(std::pair<bool, GUI::OPTION_VALUE>& option, unsigned int index)
@@ -603,4 +599,12 @@ void Panel::resizeCallback(WindowResizeEvent * evnt)
 {
 	this->shouldUpdate = true;
 	rebake();
+}
+
+void Panel::updateGlobalPosition()
+{
+	if (this->parent != nullptr)
+		this->globalPos = this->parent->getGlobalPosition() + this->pos;
+	else
+		this->globalPos = this->pos;
 }

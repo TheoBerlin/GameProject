@@ -280,6 +280,11 @@ private:
 	*/
 	void resizeCallback(WindowResizeEvent* evnt);
 
+	/*
+	Update global position
+	*/
+	void updateGlobalPosition();
+
 protected:
 	bool shouldUpdate;
 	bool shouldUpdateOptions;
