@@ -414,12 +414,13 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 
+	glCullFace(GL_FRONT);
 	//Draw renderingList
 	for (auto pair : renderingTargets) {
 		if (pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
-
+	glCullFace(GL_BACK);
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
