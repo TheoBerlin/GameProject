@@ -172,7 +172,7 @@ void AimPhase::handleKeyInput(KeyEvent* event)
 
         CameraSetting newCamSettings = level.player.oversightCamera;
 
-        this->setupTransition(currentCamSettings, newCamSettings);
+        this->transitionAboveWalls(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
     }

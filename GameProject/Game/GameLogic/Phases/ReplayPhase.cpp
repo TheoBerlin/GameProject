@@ -199,7 +199,7 @@ void ReplayPhase::beginAimTransition()
 
     CameraSetting newCamSettings = level.player.arrowCamera;
 
-    this->setupTransition(currentCamSettings, newCamSettings);
+    this->transitionStraightPath(currentCamSettings, newCamSettings);
 
     // Remove camera controller
     if (freeCam) {

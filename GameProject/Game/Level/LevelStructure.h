@@ -23,6 +23,8 @@ public:
 	// Get all wall groups index
 	std::vector<int>& getWallGroupsIndex();
 
+	float getWallHeight() const;
+
 private:
 	// Create quad model for walls
 	Model* createQuad();
