@@ -169,10 +169,10 @@ void Phase::transitionBackwards(const CameraSetting& currentCamSettings, const C
     }
 
     // Set the last point to the destination camera
-    backwardsPath.back().t = backwardsPath[backwardsPath.size() - 2].t + 0.5f;
+    backwardsPath.back().t = backwardsPath[backwardsPath.size() - 2].t + 0.3f;
     backwardsPath.back().Position = destinationPos;
 
-    transitionComponent->setPath(backwardsPath, newCamSettings.FOV);
+    transitionComponent->setBackwardsPath(backwardsPath, newCamSettings.direction, newCamSettings.FOV);
 
     // Smoothen the forward redirects
     float maxAngle = glm::two_pi<float>();

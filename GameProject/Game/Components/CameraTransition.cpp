@@ -54,9 +54,11 @@ void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec
 	this->endQuat = glm::rotation(transform->getDefaultForward(), newForward);
 }
 
-void CameraTransition::setPath(const std::vector<KeyPoint>& path, float newFOV)
+void CameraTransition::setBackwardsPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
     this->interpForward = false;
+
+    this->endForward = newForward;
 
     this->commonSetup(path, newFOV);
 }
@@ -69,9 +71,13 @@ void CameraTransition::update(const float& dt)
 
     transitionTime += dt;
 
+    Transform* transform = host->getTransform();
+
     if (transitionTime > path.back().t) {
         // Transition is finished
         isTransitioning = false;
+
+        glm::vec3 forward = transform->getForward();
 
         // Publish camera transition event
         EventBus::get().publish(&CameraTransitionEvent(host));
@@ -79,7 +85,21 @@ void CameraTransition::update(const float& dt)
         return;
     }
 
-    Transform* transform = host->getTransform();
+    // If at the second last keypoint
+    else if (transitionTime > path[path.size() - 2].t && !this->interpForward) {
+        // Start interpolating the forward to avoid a jitter when the transition finishes
+
+        this->interpForward = true;
+
+        if (entityCam) {
+            entityCam->couple();
+
+            transform->setPosition(entityCam->getPosition());
+            transform->setForward(entityCam->getForward());
+        }
+
+        this->setDestination(path.back().Position, this->endForward, this->endFOV, path.back().t - this->transitionTime);
+    }
 
     glm::vec3 previousPosition = transform->getPosition();
 
