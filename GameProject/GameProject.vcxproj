@@ -102,6 +102,7 @@
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Game\Level\LevelStructure.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlanePrePassShader.cpp" />
+    <ClCompile Include="Game\HelpGUI.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
     <ClCompile Include="Game\States\PauseState.cpp" />
@@ -213,6 +214,7 @@
     <ClInclude Include="Engine\GUI\ScrollPanel\ScrollBar.h" />
     <ClInclude Include="Game\Level\LevelStructure.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlanePrePassShader.h" />
+    <ClInclude Include="Game\HelpGUI.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Utils\Logger.h" />
