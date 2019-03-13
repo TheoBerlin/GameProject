@@ -84,6 +84,7 @@ void HelpGUI::createOverviewGUI()
 	this->overviewGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
 	this->gui->addPanel(this->overviewGUI);
 
+	addButton(this->overviewGUI, "TOGGLE INFO", "f1.png");
 	addButton(this->overviewGUI, "AIM", "2.png");
 	addButton(this->overviewGUI, "CAMERA", "wasdMini.png");
 	addButton(this->overviewGUI, "DESCEND", "ctrl.png");
@@ -102,6 +103,7 @@ void HelpGUI::createAimGUI()
 	this->aimGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
 	this->gui->addPanel(this->aimGUI);
 
+	addButton(this->aimGUI, "TOGGLE INFO", "f1.png");
 	addButton(this->aimGUI, "OVERVIEW", "1.png");
 	addButton(this->aimGUI, "SHOOT", "mouse1.png");
 
@@ -118,6 +120,7 @@ void HelpGUI::createGuidingGUI()
 	this->guidingGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
 	this->gui->addPanel(this->guidingGUI);
 
+	addButton(this->guidingGUI, "TOGGLE INFO", "f1.png");
 	addButton(this->guidingGUI, "REPLAY", "3.png");
 	
 	this->guidingGUI->hide();
@@ -133,6 +136,7 @@ void HelpGUI::createReplayGUI()
 	this->replayGUI->setColor({ 1.f, 1.f, 1.f, 0.f });
 	this->gui->addPanel(this->replayGUI);
 
+	addButton(this->replayGUI, "TOGGLE INFO", "f1.png");
 	addButton(this->replayGUI, "AIM", "2.png");
 	addButton(this->replayGUI, "DETATCH", "space.png");
 
@@ -157,7 +161,7 @@ void HelpGUI::addButton(Panel * parent, std::string text, std::string icon)
 	t->setSize(this->innerPanelSize);
 	t->setOption(GUI::FLOAT_LEFT);
 	t->setOption(GUI::FLOAT_UP, offset);
-	t->setOption(GUI::TEXT_FLOAT_LEFT, 10);
+	t->setOption(GUI::TEXT_CENTER_X);
 	t->setOption(GUI::TEXT_CENTER_Y);
 	t->setColor(PANEL_BACKGROUND_COLOR_TRANSPARENT);
 	t->addText(text, "aldo", TEXT_COLOR);
