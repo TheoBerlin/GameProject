@@ -77,6 +77,7 @@
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.cpp" />
+    <ClCompile Include="Game\Components\CameraDrift.cpp" />
     <ClCompile Include="Game\Components\DeathAnimation.cpp" />
     <ClCompile Include="Game\Components\Explosion.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
+    <ClInclude Include="Game\Components\CameraDrift.h" />
     <ClInclude Include="Game\Components\DeathAnimation.h" />
     <ClInclude Include="Game\Components\Explosion.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />

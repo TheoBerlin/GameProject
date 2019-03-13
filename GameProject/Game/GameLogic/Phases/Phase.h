@@ -19,7 +19,10 @@ public:
 protected:
     void changePhase(Phase* newPhase);
 
-    void setupTransition(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
+    // Begins camera transition in a straight path
+    void transitionStraightPath(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
+    // Transitions above walls
+    void transitionAboveWalls(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
 
     Level level;
 
@@ -27,4 +30,8 @@ protected:
     Entity* transitionEntity;
     Camera* transitionCam;
     CameraTransition* transitionComponent;
+
+private:
+    // Calculate the position of a camera by accounting for offset
+    glm::vec3 calculatePosition(const CameraSetting& camSettings);
 };

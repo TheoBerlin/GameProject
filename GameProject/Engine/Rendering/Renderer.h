@@ -23,17 +23,6 @@ public:
 	void setActiveCamera(Camera* camera);
 
 	Camera* getActiveCamera();
-	/*
-	Push entity to the rendering list.
-	Arguments:
-		entity: The entity to be rendered.
-	*/
-	void push(Entity* entity);
-
-	/*
-	Draw all entites in the rendering list and clear it.
-	*/
-	void drawAll();
 
 	/*
 		inits vertex buffer for meshes rendering groups transforms and create renderingTargets list
@@ -87,7 +76,6 @@ private:
 	Texture* postProcessTexture;
 	Texture* tex;
 
-	std::vector<Entity*> renderingList;
 	std::vector<std::pair<RenderingTarget, SHADERS>> renderingTargets;
 
 };

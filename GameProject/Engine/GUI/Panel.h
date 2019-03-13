@@ -268,6 +268,14 @@ private:
 	void processScaleToTextOption(unsigned int index, int v);
 
 	/*
+	Process the options related to scaling the panel to match the texture.
+	Arguments:
+		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
+		v: The value of the option.
+	*/
+	void processScaleToTextureOption(unsigned int index, int v);
+
+	/*
 	A callback for when the window is resized. This will updated all the option and rebaked the panel.
 	*/
 	void resizeCallback(WindowResizeEvent* evnt);
