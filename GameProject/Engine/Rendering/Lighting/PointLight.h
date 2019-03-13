@@ -18,6 +18,6 @@ private:
 	float constant;
 	float linear;
 	float quadratic;
-	float padding = 0.0f;
+	int distance;
 };
 
