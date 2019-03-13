@@ -3,6 +3,7 @@
 #include "DirectionalLight.h"
 #include "Utils/Settings.h"
 #include <vector>
+#include "../../Config.h"
 
 struct Level;
 class LightManager
@@ -23,6 +24,7 @@ public:
 	float getShadowWidth() const;
 	float getShadowHeight() const;
 
+#ifdef ENABLE_SHADOW_BOX
 	struct ShadowBox {
 		glm::vec3 tl;
 		glm::vec3 tr;
@@ -44,6 +46,9 @@ public:
 	void drawDebugBox();
 
 	void toggleDrawing(KeyEvent* evnt);
+#else
+	void drawDebugBox() {}
+#endif
 
 private:
 	void calcShadowProjection(float width, float height, float near=5.0f, float far = 50.0f);
@@ -62,7 +67,9 @@ private:
 	float shadowResolutionFactor;
 	glm::mat4 shadowProjection;
 
+#ifdef ENABLE_SHADOW_BOX
 	// Debug
 	bool activateShadowBox;
 	ShadowBox shadowBox;
+#endif
 };

@@ -13,8 +13,10 @@ LightManager::LightManager()
 	this->orthoHeight = 0.f;
 	this->shadowWidth = Settings::get().getScreenWidth()*this->shadowResolutionFactor;
 
+#ifdef ENABLE_SHADOW_BOX
 	EventBus::get().subscribe(this, &LightManager::toggleDrawing);
 	this->activateShadowBox = false;
+#endif ENABLE_SHADOW_BOX
 }
 
 LightManager::~LightManager()
@@ -25,6 +27,10 @@ LightManager::~LightManager()
 	}
 	pointLights.clear();
 	delete this->dirLight;
+
+#ifdef ENABLE_SHADOW_BOX
+	EventBus::get().unsubscribe(this, &LightManager::toggleDrawing);
+#endif
 }
 
 PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
@@ -83,6 +89,7 @@ float LightManager::getShadowHeight() const
 	return this->shadowWidth * (this->orthoWidth/this->orthoHeight);
 }
 
+#ifdef ENABLE_SHADOW_BOX
 void LightManager::drawDebugBox()
 {
 	if (this->activateShadowBox)
@@ -116,6 +123,7 @@ void LightManager::toggleDrawing(KeyEvent * evnt)
 		this->activateShadowBox = !this->activateShadowBox;
 	}
 }
+#endif
 
 void LightManager::calcShadowProjection(float width, float height, float near, float far)
 {
@@ -132,20 +140,22 @@ void LightManager::calcShadowMatrix(Level* level)
 	glm::vec3 e3 = { shadowView[0].z, shadowView[1].z, shadowView[2].z };
 	Utils::AABB aabb = level->levelStructure->createBoundingBox(e1, e2, e3);
 
-	this->shadowBox.e1 = e1 * aabb.size.x*.5f;
-	this->shadowBox.e2 = e2 * aabb.size.y*.5f;
-	this->shadowBox.e3 = e3 * aabb.size.z*.5f;
 
 	this->orthoWidth = aabb.size.x;
 	this->orthoHeight = aabb.size.y;
 	calcShadowProjection(aabb.size.x, aabb.size.y, 0.01f,  aabb.size.z);
 
 	glm::vec3 pos = aabb.pos + e3 * aabb.size.z*.5f;
-	this->shadowBox.p = pos;
 
 	glm::mat4 translation(1.0f);
 	translation = glm::translate(translation, -pos);
 	this->shadowMatrix = this->shadowProjection * shadowView * translation;
+
+#ifdef ENABLE_SHADOW_BOX
+	this->shadowBox.e1 = e1 * aabb.size.x*.5f;
+	this->shadowBox.e2 = e2 * aabb.size.y*.5f;
+	this->shadowBox.e3 = e3 * aabb.size.z*.5f;
+	this->shadowBox.p = pos;
 
 	this->shadowBox.tl = aabb.pos + e3 * aabb.size.z*.5f - e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
 	this->shadowBox.tr = aabb.pos + e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
@@ -156,4 +166,5 @@ void LightManager::calcShadowMatrix(Level* level)
 	this->shadowBox.ftr = aabb.pos - e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
 	this->shadowBox.fbl = aabb.pos - e3 * aabb.size.z*.5f - e1 * aabb.size.x * .5f + e2 * aabb.size.y*.5f;
 	this->shadowBox.fbr = aabb.pos - e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f + e2 * aabb.size.y*.5f;
+#endif
 }

@@ -137,6 +137,9 @@ void GameState::render()
 #ifdef ENABLE_COLLISION_DEBUG_DRAW
 	this->collisionHandler.updateDrawingData();
 	this->collisionHandler.drawCollisionBoxes();
+#endif
+
+#ifdef ENABLE_SHADOW_BOX
 	lightManager.drawDebugBox();
 #endif
 

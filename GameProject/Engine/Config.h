@@ -11,6 +11,7 @@
 
 //Debug defines
 #define ENABLE_PATH_VISUALIZERS false
+#define ENABLE_SHADOW_BOX
 
 // Common defines
 #define EPSILON 0.0000001

@@ -62,7 +62,6 @@ float ShadowCalculation(vec4 fragLightSpace)
             shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
-    //shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
     if(projCoords.z > 1.0)
         shadow = 0.0;
