@@ -78,7 +78,6 @@ Pipeline::Pipeline()
 	}
 }
 
-
 Pipeline::~Pipeline()
 {
 	for(EntityShader* shader : this->entityShaders)
@@ -111,7 +110,6 @@ Texture* Pipeline::drawParticle()
 	if (pm.hasVisibleParticles()) {
 		fbo.bind();
 		this->particleShader->bind();
-		
 
 		this->particleShader->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
 		this->particleShader->setUniform3f("cameraUp", this->camera->getView()[0][1], this->camera->getView()[1][1], this->camera->getView()[2][1]);
@@ -135,7 +133,7 @@ void Pipeline::prePassDepthModel(const std::vector<std::pair<RenderingTarget, SH
 	if (!toScreen)
 		this->fbo.bind();
 	this->prePassDepthOn();
-	
+
 	this->ZprePassShaderInstanced->bind();
 
 	for (auto pair : renderingTargets) {
@@ -392,6 +390,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 		Set up Directional Light
 	*/
 	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
+
 	/*
 		Set up Point Light
 	*/
@@ -472,6 +471,18 @@ Framebuffer * Pipeline::getFbo()
 Framebuffer * Pipeline::getShadowFbo()
 {
 	return &this->shadowFbo;
+}
+
+void Pipeline::activatePostFilter(SHADERS_POST_PROCESS shader)
+{
+	activePostFilters.remove(shader);
+
+	activePostFilters.push_back(shader);
+}
+
+void Pipeline::deactivatePostFilter(SHADERS_POST_PROCESS shader)
+{
+	activePostFilters.remove(shader);
 }
 
 void Pipeline::drawInstanced(Model * model, SHADERS shader)

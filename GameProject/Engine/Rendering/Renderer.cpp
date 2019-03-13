@@ -3,6 +3,7 @@
 #include "../Entity/Entity.h"
 #include "../AssetManagement/Mesh.h"
 #include "GLAbstraction/Texture.h"
+#include <Utils/Logger.h>
 
 Renderer::Renderer()
 {
@@ -138,5 +139,22 @@ void Renderer::addRenderingTarget(Model * model, SHADERS shader, bool castShadow
 	}
 }
 
+void Renderer::activatePostFilter(SHADERS_POST_PROCESS shader)
+{
+	if (shader == SHADERS_POST_PROCESS::NO_FILTER) {
+		LOG_WARNING("Illegal post process shader attempted to be activated (NO_FILTER)");
+		return;
+	}
 
+	this->pipeline.activatePostFilter(shader);
+}
 
+void Renderer::deactivatePostFilter(SHADERS_POST_PROCESS shader)
+{
+	if (shader == SHADERS_POST_PROCESS::NO_FILTER) {
+		LOG_WARNING("Illegal post process shader attempted to be deactivated (NO_FILTER)");
+		return;
+	}
+
+	this->pipeline.deactivatePostFilter(shader);
+}
