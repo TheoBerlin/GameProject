@@ -147,7 +147,7 @@ void CollisionHandler::removeCollisionBody(Entity * entity)
 	}
 }
 
-void CollisionHandler::addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer, glm::quat rot)
+void CollisionHandler::addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer, glm::quat rot, int desiredIndex)
 {
 	if (entity == nullptr)
 	{
@@ -178,7 +178,11 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, CATEGORY cat, bool 
 	unsigned int index = 0;
 	glm::vec3 entityScale = entity->getTransform()->getScale();
 	for (auto data : this->shapesMap[entity->getModel()]) 
-		addVariedCollisionShapeToBody(index++, data, entityBody, cat, entityScale, glm::vec3(1.f), glm::vec3(0.f), rot);
+	{
+		if((unsigned)desiredIndex == index || desiredIndex == -1)
+			addVariedCollisionShapeToBody(index, data, entityBody, cat, entityScale, glm::vec3(1.f), glm::vec3(0.f), rot);
+		index++;
+	}
 
 	entityBody->setTransform(transform);
 

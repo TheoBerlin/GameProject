@@ -2,12 +2,13 @@
 
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Events/EventBus.h"
-#include "Engine/Events/Events.h"
 #include <Engine/States/State.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
 #include "Engine/Collision/CollisionHandler.h"
 #include <Game/GameLogic/ScoreManager.h>
+#include <Game/Level/LevelStructure.h>
+#include <Engine/Rendering/Lighting/LightManager.h>
 
 class GameState : public State
 {
@@ -21,9 +22,10 @@ public:
 	void updateLogic(const float dt) override;
 	void render() override;
 private:
-	void pauseGame(KeyEvent * ev);
+	void pauseGame(PauseEvent * ev);
+	void exitGame(ExitEvent* ev);
 
-	bool hasSubscribedToPause;
+	bool hasSubscribedToPause, hasSubscribedToExit;
 
 	LevelParser levelParser;
 	TargetManager* targetManager;
@@ -31,4 +33,6 @@ private:
 	CollisionHandler collisionHandler;
 	ReplaySystem replaySystem;
 	ScoreManager scoreManager;
+	LevelStructure levelStructure;
+	LightManager lightManager;
 };

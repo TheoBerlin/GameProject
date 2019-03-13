@@ -14,6 +14,8 @@ public:
     AimPhase(ReplayPhase* replayPhase);
 	~AimPhase();
 
+	void update(const float& dt);
+
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
     Camera* getArrowCam() const;

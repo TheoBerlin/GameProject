@@ -16,10 +16,18 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase),
     replayTime(0.0f)
 {
-    // GUI setup
+    // Create replay time bar
     setupGUI();
 
     flightTime = guidingPhase->getFlightTime();
+
+    // Create results window and minimize it
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
+
+    level.scoreManager->showResults(level, retry);
+
+    level.scoreManager->toggleGuiMinimize();
 
     /*
 		Create replay arrow
@@ -28,12 +36,20 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	replayArrow->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
-    replayArrow->getTransform()->setPosition(level.player.arrowCamera.position);
-	replayArrow->getTransform()->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
+    Transform* arrowTransform = replayArrow->getTransform();
 
-	// Copy arrow path from arrow guider to path treader
+    arrowTransform->setPosition(level.player.arrowCamera.position);
+
+    // Set the arrow's forward to point to the second keypoint in the path
     ArrowGuider* oldArrowGuider = guidingPhase->getArrowGuider();
 
+    if (oldArrowGuider->getPath().size() > 1) {
+        arrowTransform->setForward(glm::normalize(oldArrowGuider->getPath()[1].Position - oldArrowGuider->getPath()[0].Position));
+
+        arrowTransform->resetRoll();
+    }
+
+	// Copy arrow path from arrow guider to path treader
     pathTreader = new PathTreader(replayArrow, oldArrowGuider->getPath());
     pathTreader->startTreading();
 
@@ -48,21 +64,19 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     level.entityManager->removeTracedEntity(oldArrow->getName());
 
     // Set up the player camera
-    freeCam = level.entityManager->addTracedEntity("FreeCam");
+	this->camera = new Camera(replayArrow, "Camera");
+    this->camera->setFOV(level.player.arrowCamera.FOV);
+	this->camera->init();
 
-    Transform* camTransform = freeCam->getTransform();
+	this->camera->setPosition(transitionCam->getPosition());
+	this->camera->setForward(transitionCam->getForward());
 
-	camTransform->setPosition(level.player.replayCamera.position);
-	camTransform->setForward(level.player.replayCamera.direction);
-    camTransform->resetRoll();
+    // Create freemove and lock cursor
+    this->thirdPersonController = new ThirdPersonController(replayArrow);
 
-	Camera* camera = new Camera(freeCam, "Camera");
-    camera->setFOV(level.player.replayCamera.FOV);
-	camera->init();
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
-	freeMove = new FreeMove(freeCam);
-
-	// Reset targets
+    // Reset targets
 	level.targetManager->resetTargets();
 
     // Begin replaying playthrough
@@ -71,12 +85,14 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
+    EventBus::get().subscribe(this, &ReplayPhase::handleMouseClick);
 }
 
 ReplayPhase::~ReplayPhase()
 {
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
-	EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
+	EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
+    EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
 }
 
 void ReplayPhase::update(const float& dt)
@@ -89,22 +105,15 @@ void ReplayPhase::update(const float& dt)
 
         float replayProgress = replayTime/flightTime;
 
-        glm::uvec2 timeBarSize = {1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight};
-        timeBarFront->setSize(timeBarSize);
+		if (this->timebarExists)
+		{
+			// Set timeBarFront and timeBarSlider new position
+			glm::uvec2 timeBarSize = { 1 + screenWidth * (1 - timeBarSidePadding * 2) * replayProgress, timeBarHeightFactor * screenHeight };
+			timeBarFront->setOption(GUI::FLOAT_RIGHT, (int)timeBarFront->getSize().y - (int)timeBarSize.x);
 
-        glm::uvec2 sliderPos = {timeBarSidePadding * screenWidth + timeBarSize.x - sliderSize.x / 2, screenHeight * timeBarBottomPadding};
-        timeBarSlider->setPosition(sliderPos);
+			timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
+		}
     }
-
-	if (replayTime > flightTime && !level.scoreManager->resultsVisible())
-	{
-		level.scoreManager->showResults(level);
-	}
-}
-
-Entity* ReplayPhase::getFreeCam() const
-{
-    return freeCam;
 }
 
 Entity* ReplayPhase::getReplayArrow() const
@@ -123,41 +132,88 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_2) {
-        EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+    // Minimize / enlarge results GUI
+    if (event->key == GLFW_KEY_ESCAPE) {
+        level.scoreManager->toggleGuiMinimize();
+    }
 
-        // Teardown
-        freeCam->removeComponent(freeMove->getName());
-
-        // Stop replaying playthrough
-        level.replaySystem->stopReplaying();
-
-        // Remove GUI elements
-        level.gui->removePanel(timeBarSlider);
-        level.gui->removePanel(timeBarFront);
-        level.gui->removePanel(timeBarBack);
-
-        // Begin camera transition to the arrow
-        CameraSetting currentCamSettings;
-
-        Transform* camTransform = freeCam->getTransform();
-
-        currentCamSettings.position = camTransform->getPosition();
-        currentCamSettings.direction = camTransform->getForward();
-        currentCamSettings.offset = level.player.replayCamera.offset;
-        currentCamSettings.FOV = level.player.replayCamera.FOV;
-
-        CameraSetting newCamSettings = level.player.arrowCamera;
-
-        this->setupTransition(currentCamSettings, newCamSettings);
-
-        EventBus::get().subscribe(this, &ReplayPhase::transitionToAim);
+    else if (event->key == GLFW_KEY_SPACE) {
+        this->switchCamera();
     }
 }
 
-void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
+void ReplayPhase::handleMouseClick(MouseClickEvent* event)
 {
-    EventBus::get().unsubscribe(this, &ReplayPhase::transitionToAim);
+    if (event->button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (event->action == GLFW_PRESS) {
+            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+            if (thirdPersonController) {
+                thirdPersonController->enableMouse();
+            } else {
+                freeMove->enableMouse();
+            }
+        } else {
+            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+            if (thirdPersonController) {
+                thirdPersonController->disableMouse();
+            } else {
+                freeMove->disableMouse();
+            }
+        }
+    }
+}
+
+void ReplayPhase::beginAimTransition()
+{
+	this->timebarExists = false;
+
+    EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+    EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
+
+	// Remove results GUI if visible
+	if (level.scoreManager->resultsVisible()) {
+		level.scoreManager->removeResultsGUI(level);
+	}
+
+	// Reset score
+	level.scoreManager->resetScore();
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    // Stop replaying playthrough
+    level.replaySystem->stopReplaying();
+
+	// Remove GUI elements
+	level.gui->removePanel(backPanel);
+
+    // Begin camera transition to the arrow
+    CameraSetting currentCamSettings;
+
+    currentCamSettings.position = camera->getPosition();
+    currentCamSettings.direction = camera->getForward();
+    currentCamSettings.offset = {0.0f, 0.0f, 0.0f};
+    currentCamSettings.FOV = level.player.arrowCamera.FOV;
+
+    CameraSetting newCamSettings = level.player.arrowCamera;
+
+    this->transitionStraightPath(currentCamSettings, newCamSettings);
+
+    // Remove camera controller
+    if (freeCam) {
+        level.entityManager->removeTracedEntity(freeCam->getName());
+    } else {
+        replayArrow->removeComponent(thirdPersonController->getName());
+    }
+
+    EventBus::get().subscribe(this, &ReplayPhase::finishAimTransition);
+}
+
+void ReplayPhase::finishAimTransition(CameraTransitionEvent* event)
+{
+    EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
 
     Phase* guidingPhase = new AimPhase(this);
     changePhase(guidingPhase);
@@ -165,6 +221,9 @@ void ReplayPhase::transitionToAim(CameraTransitionEvent* event)
 
 void ReplayPhase::setupGUI()
 {
+	this->timebarExists = true;
+
+	backPanel = new Panel();
     timeBarBack = new Button();
     timeBarFront = new Panel();
 
@@ -174,22 +233,26 @@ void ReplayPhase::setupGUI()
 
     glm::uvec2 timeBarPos = {screenWidth * timeBarSidePadding, screenHeight * timeBarBottomPadding};
 
-    timeBarBack->setPosition(timeBarPos);
-    timeBarFront->setPosition(timeBarPos);
+	timeBarBack->setOption(GUI::FIT_X);
+	timeBarBack->setOption(GUI::FIT_Y);
+	backPanel->setPosition(timeBarPos);
 
     // Size the time bars so that the back panel covers nearly the entire width
     // and the front panel is invisible
     glm::uvec2 timeBarSize = {screenWidth * (1 - timeBarSidePadding * 2), timeBarHeightFactor * screenHeight};
     timeBarBack->setSize(timeBarSize);
+	backPanel->setSize(timeBarSize);
 
     // Make the front time bar to be as small as possible
-    timeBarSize.x = 1;
     timeBarFront->setSize(timeBarSize);
+	timeBarFront->setOption(GUI::FLOAT_LEFT);
 
     // Set panel visuals
     timeBarBack->setNormalColor(timeBarBackColor);
     timeBarBack->setHoverColor(timeBarBackColor);
     timeBarBack->setPressedColor(timeBarBackColor);
+
+	backPanel->setColor({ 0.0f, 0.0f, 0.0f, 0.0f });
 
     timeBarFront->setColor(timeBarFrontColor);
 
@@ -197,8 +260,8 @@ void ReplayPhase::setupGUI()
     timeBarBack->setCallback([this](void) {handleTimeBarClick();});
 
     // Add panels to GUI
-    level.gui->addPanel(timeBarBack);
-    level.gui->addPanel(timeBarFront);
+	backPanel->addChild(timeBarBack);
+	backPanel->addChild(timeBarFront);
 
     // Add slider to time bar
     timeBarSlider = new Panel();
@@ -209,13 +272,16 @@ void ReplayPhase::setupGUI()
     timeBarSlider->setSize(sliderSize);
 
     // Position the slider
-    timeBarSlider->setPosition({timeBarPos.x - sliderSize.x / 2, timeBarPos.y + 20});
+	timeBarSlider->setOption(GUI::FLOAT_LEFT);
 
     // Set button visuals
     timeBarSlider->setColor({1.0f, 1.0f, 1.0f, 1.0f});
 
     // Add button to GUI
-    level.gui->addPanel(timeBarSlider);
+	backPanel->addChild(timeBarSlider);
+
+	// Add the parent panel to level GUI
+	level.gui->addPanel(backPanel);
 }
 
 void ReplayPhase::handleTimeBarClick()
@@ -236,4 +302,40 @@ void ReplayPhase::handleTimeBarClick()
     level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
     replayTime = desiredTime;
+}
+
+void ReplayPhase::switchCamera()
+{
+    if (freeCam) {
+        // Switch to third person camera
+        this->camera->setHost(replayArrow);
+
+        this->thirdPersonController = new ThirdPersonController(replayArrow);
+
+        level.entityManager->removeTracedEntity(freeCam->getName());
+
+        freeCam = nullptr;
+    } else {
+        // Switch to freecam
+        this->freeCam = level.entityManager->addTracedEntity("FreeCam");
+
+        // Set freecam's position and forward
+        Transform* transform = freeCam->getTransform();
+
+        transform->setPosition(camera->getPosition());
+        transform->setForward(camera->getForward());
+        transform->resetRoll();
+
+        glm::vec3 r = transform->getRight();
+
+        this->freeMove = new FreeMove(freeCam);
+        this->freeMove->disableMouse();
+
+        this->camera->setHost(freeCam);
+        this->camera->couple();
+
+        this->replayArrow->removeComponent(this->thirdPersonController->getName());
+
+        this->thirdPersonController = nullptr;
+    }
 }

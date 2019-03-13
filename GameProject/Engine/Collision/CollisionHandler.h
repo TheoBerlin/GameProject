@@ -45,7 +45,7 @@ public:
 	void removeCollisionBody(Entity * entity);
 
 	// Add collision body to an entity with a predefined shape
-	void addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer = false, glm::quat rot = glm::quat(1.f, 0.f, 0.f, 0.f));
+	void addCollisionToEntity(Entity * entity, CATEGORY cat, bool isPlayer = false, glm::quat rot = glm::quat(1.f, 0.f, 0.f, 0.f), int desiredIndex = -1);
 
 	struct ShapeData
 	{

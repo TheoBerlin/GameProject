@@ -36,6 +36,7 @@ public:
     // Event handlers
     void handleMouseMove(MouseMoveEvent* event);
     void handleWindowResize(WindowResizeEvent* event);
+	void handleKeyEvent(KeyEvent* event);
 
     float getMaxTurnSpeed();
     void setMaxTurnSpeed(const float maxTurnSpeed);
@@ -53,8 +54,17 @@ private:
     // Use turn factors to update direction
     void applyTurn(const float& dt);
 
-    float movementSpeed;
-    int windowHeight;
+	float maxSpeedOffset;
+	float movementSpeed;
+	float maxSpeedIncrease;
+	float minSpeedDecrease;
+	float acceleration;
+	float turnSpeedDeceleration;
+	bool isAccelerating;
+	
+	int windowHeight;
+    void updateCamera(const float& dt, const float& turnFactorsLength);
+
     // Max turn speed measured in radians
     float maxTurnSpeed;
     // Mouse movement, relative to window height, required to reach max turn speed
@@ -89,7 +99,7 @@ private:
 
     // Camera settings
     glm::vec3 minCamOffset;
-    const glm::vec3 maxCamOffset = glm::vec3(0.0f, 0.3f, -1.6f);
+    glm::vec3 maxCamOffset;
     // Max offset change in forward direction per second
     const float offsetChangeMax = 0.35f;
 
@@ -98,5 +108,5 @@ private:
     const float maxFOV = 90.0f, FOVChangeMax = 15.0f;
 
     float currentPitch;
-    const float maxPitch = glm::half_pi<float>() - 0.01f;
+    const float maxPitch = glm::half_pi<float>() - 0.15f;
 };

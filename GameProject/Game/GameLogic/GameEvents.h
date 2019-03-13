@@ -13,6 +13,14 @@ struct PlayerCollisionEvent : public Event
 	Entity* entity2;
 	const reactphysics3d::ProxyShape* shape1;
 	const reactphysics3d::ProxyShape* shape2;
+
+	enum PHASE
+	{
+		GUIDING_PHASE,
+		REPLAY_PHASE
+	};
+
+	PHASE phase;
 };
 
 class Phase;
@@ -29,4 +37,13 @@ struct CameraTransitionEvent : public Event
 {
 	CameraTransitionEvent(Entity* host) : host{ host } {};
 	Entity* host;
+};
+
+struct PauseEvent : public Event
+{
+};
+
+// Signals to exit game state
+struct ExitEvent : public Event
+{
 };

@@ -3,7 +3,6 @@
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/Transform.h>
 #include <Game/components/ComponentResources.h>
-#include <glm/gtx/spline.hpp>
 #include <vector>
 
 class Entity;
@@ -12,12 +11,13 @@ class PathTreader : public Component
 {
 public:
     PathTreader(Entity* host);
-    PathTreader(Entity* host, const std::vector<KeyPoint>& path);
+    PathTreader(Entity* host, const std::vector<KeyPoint>& path, bool loop = false);
     ~PathTreader();
 
     void update(const float& dt);
 
-    void setPath(const std::vector<KeyPoint>& path);
+    void setPath(const std::vector<KeyPoint>& path, bool loop = false);
+	KeyPoint& getKeyPoint(unsigned int index);
 
     // Start or restart path treading from the beginning
     void startTreading();
@@ -26,7 +26,6 @@ public:
 private:
     bool isTreading;
 
-    void linearTread();
     void catmullRomTread();
 
     std::vector<KeyPoint> path;
@@ -34,4 +33,7 @@ private:
     // Points to the key point currently behind or on the treader
     unsigned int currentPointIndex;
     float pathTime;
+
+    // Whether or not the treader will loop its path
+    bool isLooping;
 };

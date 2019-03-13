@@ -16,9 +16,6 @@ OversightController::OversightController(Entity* host)
 
     windowHeight = Display::get().getHeight();
 
-    // Lock mouse and get mouse position
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
     double cursorPos;
     glfwGetCursorPos(Display::get().getWindowPtr(), &cursorPos, nullptr);
 
@@ -54,7 +51,7 @@ void OversightController::update(const float& dt)
 		moveFactors.x = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_S])
 		moveFactors.z = -1.0f;
-	if (this->pressedKeys[GLFW_KEY_SPACE])
+	if (this->pressedKeys[GLFW_KEY_LEFT_SHIFT])
 		moveFactors.y = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
 		moveFactors.y = -1.0f;

@@ -1,11 +1,11 @@
 #include "ScoreManager.h"
 
-#include "Utils/Timer.h"
+#include <Engine/Events/EventBus.h>
 #include "Engine/GUI/Panel.h"
 #include "Engine/GUI/Button.h"
 #include "Engine/GUI/GUI.h"
 #include "Game/Level/Level.h"
-
+#include "Utils/Timer.h"
 #include "Utils/Logger.h"
 
 ScoreManager::ScoreManager()
@@ -74,7 +74,13 @@ unsigned ScoreManager::getTargetsHit() const
 	return this->targetsHit;
 }
 
-void ScoreManager::showResults(Level& level)
+void ScoreManager::resetScore()
+{
+	this->totalScore = 0;
+	this->targetsHit = 0;
+}
+
+void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 {
 	glm::uvec2 panelSize(500, 700);
 	glm::vec4 textColor = { 0.9f, 0.9f, 0.9f, 1.0f };
@@ -93,11 +99,16 @@ void ScoreManager::showResults(Level& level)
 
 	// Create minimized panel/button
 	Button* smallPanel = new Button();
-	smallPanel->setSize({ 70, 50 });
 	smallPanel->setOption(GUI::FLOAT_LEFT);
 	smallPanel->setOption(GUI::FLOAT_UP);
-	smallPanel->addText("Show", "aldo", textColor);
-	smallPanel->setColor(backgroundColor);
+	smallPanel->setOption(GUI::SCALE_TO_TEXT_X, 20);
+	smallPanel->setOption(GUI::SCALE_TO_TEXT_Y, 20);
+	smallPanel->setOption(GUI::TEXT_CENTER_X);
+	smallPanel->setOption(GUI::TEXT_CENTER_Y);
+	smallPanel->addText("MENU", "aldo", textColor);
+	smallPanel->setNormalColor(backgroundColor);
+	smallPanel->setHoverColor(hoverColor);
+	smallPanel->setPressedColor(pressColor);
 	this->smallPanel = smallPanel;
 	level.gui->addPanel(smallPanel);
 
@@ -113,7 +124,7 @@ void ScoreManager::showResults(Level& level)
 	miniBtn->addText("MINIMIZE", "aldo", textColor);
 
 	// assign callback function
-	std::function<void(void)> callback = std::bind(&ScoreManager::guiCallback, this);
+	std::function<void(void)> callback = std::bind(&ScoreManager::toggleGuiMinimize, this);
 	miniBtn->setCallback(callback);
 	smallPanel->setCallback(callback);
 	bigPanel->addChild(miniBtn);
@@ -142,26 +153,27 @@ void ScoreManager::showResults(Level& level)
 	exitBtn->setOption(GUI::TEXT_CENTER_Y);
 	exitBtn->setHoverColor(hoverColor);
 	exitBtn->setPressedColor(pressColor);
-	exitBtn->setCallback([](void) { printf("add exit\n"); });
+	exitBtn->setCallback([](void) {
+		EventBus::get().publish(&ExitEvent());
+	});
 	bigPanel->addChild(exitBtn);
 
-	// Add restart button
-	Button* resBtn = new Button();
-	resBtn->setSize({ panelSize.x - 40, 50 });
-	resBtn->addText("RESTART", "aldo", textColor);
-	resBtn->setOption(GUI::FLOAT_DOWN, 80);
-	resBtn->setOption(GUI::CENTER_X);
-	resBtn->setOption(GUI::TEXT_CENTER_X);
-	resBtn->setOption(GUI::TEXT_CENTER_Y);
-	resBtn->setHoverColor(hoverColor);
-	resBtn->setPressedColor(pressColor);
-	resBtn->setCallback([](void) { printf("add restart\n"); });
-	bigPanel->addChild(resBtn);
-
+	// Add retry button
+	Button* retryBtn = new Button();
+	retryBtn->setSize({ panelSize.x - 40, 50 });
+	retryBtn->addText("RETRY", "aldo", textColor);
+	retryBtn->setOption(GUI::FLOAT_DOWN, 80);
+	retryBtn->setOption(GUI::CENTER_X);
+	retryBtn->setOption(GUI::TEXT_CENTER_X);
+	retryBtn->setOption(GUI::TEXT_CENTER_Y);
+	retryBtn->setHoverColor(hoverColor);
+	retryBtn->setPressedColor(pressColor);
+	retryBtn->setCallback(retry);
+	bigPanel->addChild(retryBtn);
 
 	// Set initial state
 	this->minimized = true;
-	guiCallback();
+	toggleGuiMinimize();
 	this->showGui = true;
 }
 
@@ -170,15 +182,28 @@ bool ScoreManager::resultsVisible() const
 	return this->showGui;
 }
 
-void ScoreManager::guiCallback()
+void ScoreManager::removeResultsGUI(Level& level)
+{
+	level.gui->removePanel(this->bigPanel);
+	level.gui->removePanel(this->smallPanel);
+
+	this->bigPanel = nullptr;
+	this->smallPanel = nullptr;
+
+	this->showGui = false;
+}
+
+void ScoreManager::toggleGuiMinimize()
 {
 	int width = Display::get().getWidth();
 	if (this->minimized)
 	{
 		// Move smallPanel
 		this->smallPanel->setOption(GUI::FLOAT_LEFT, -width);
+		this->smallPanel->setActive(false);
 
 		// Move bigPanel
+		this->bigPanel->setActive(true);
 		this->bigPanel->setOption(GUI::CENTER_X, 0);
 
 		this->minimized = false;
@@ -187,9 +212,13 @@ void ScoreManager::guiCallback()
 	{
 		// Move bigPanel
 		this->bigPanel->setOption(GUI::CENTER_X, -width);
+		this->bigPanel->setActive(false);
+
 
 		// Move smallPanel
+		this->smallPanel->setActive(true);
 		this->smallPanel->setOption(GUI::FLOAT_LEFT, 0);
+
 
 		this->minimized = true;
 	}

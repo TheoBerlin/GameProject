@@ -208,6 +208,21 @@ public:
 	*/
 	virtual bool isActive() const;
 
+	/*
+	Hide the panel
+	*/
+	virtual void hide();
+
+	/*
+	Show the panel
+	*/
+	virtual void show();
+
+	/*
+	Get if the panel is shown or not
+	*/
+	virtual bool isShown() const;
+
 private:
 
 	/*
@@ -261,12 +276,22 @@ private:
 	void processScaleToTextOption(unsigned int index, int v);
 
 	/*
+	Process the options related to scaling the panel to match the texture.
+	Arguments:
+		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
+		v: The value of the option.
+	*/
+	void processScaleToTextureOption(unsigned int index, int v);
+
+	/*
 	A callback for when the window is resized. This will updated all the option and rebaked the panel.
 	*/
 	void resizeCallback(WindowResizeEvent* evnt);
 
 protected:
 	bool shouldUpdate;
+	bool active;
+	bool shown;
 
 	Panel* parent;
 	std::vector<Panel*> children;

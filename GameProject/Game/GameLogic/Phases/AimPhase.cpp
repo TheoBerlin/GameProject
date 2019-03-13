@@ -4,6 +4,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/Components/CameraDrift.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/OverviewPhase.h>
 #include <Game/GameLogic/Phases/ReplayPhase.h>
@@ -38,11 +39,6 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 
     level.entityManager->removeTracedEntity(replayArrow->getName());
 
-    // Remove freecam
-    Entity* freeCam = replayPhase->getFreeCam();
-
-    level.entityManager->removeTracedEntity(freeCam->getName());
-
     /*
 		Create arrow entity
 	*/
@@ -55,7 +51,6 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
     playerTransform->setForward(level.player.arrowCamera.direction);
     playerTransform->resetRoll();
 	playerTransform->setPosition(level.player.arrowCamera.position);
-	playerTransform->setScale(glm::vec3(0.5f, 0.5f, 0.25f));
 
 	playerArrow->setModel(model);
 
@@ -69,6 +64,11 @@ AimPhase::~AimPhase()
 	EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &AimPhase::transitionToOverview);
 	EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
+}
+
+void AimPhase::update(const float & dt)
+{
+
 }
 
 Entity* AimPhase::getPlayerArrow() const
@@ -88,30 +88,36 @@ Camera* AimPhase::getArrowCam() const
 
 void AimPhase::commonSetup()
 {
-	/*
-		Add camera to arrow entity
-	*/
     CameraSetting arrowCamSettings = level.player.arrowCamera;
-
-    glm::vec3 camOffset = arrowCamSettings.offset;
-	arrowCam = new Camera(playerArrow, "Camera", camOffset);
-
-    arrowCam->setFOV(arrowCamSettings.FOV);
-	arrowCam->init();
 
 	/*
 		Add arrowguider to entity
 	*/
 	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
+
+	/*
+		Add camera to arrow entity
+	*/
+	glm::vec3 camOffset = arrowCamSettings.offset;
+	arrowCam = new Camera(playerArrow, "Camera", camOffset);
+
+    new CameraDrift(playerArrow);
+
+	arrowCam->setFOV(arrowCamSettings.FOV);
+	arrowCam->init();
+
+	Display::get().getRenderer().setActiveCamera(arrowCam);
+
 	arrowGuider->startAiming();
 
 	// Reset targets
 	level.targetManager->resetTargets();
 
-	Display::get().getRenderer().setActiveCamera(arrowCam);
-
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void AimPhase::handleMouseClick(MouseClickEvent* event)
@@ -121,10 +127,10 @@ void AimPhase::handleMouseClick(MouseClickEvent* event)
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
-        Phase* newPhase = new GuidingPhase(this);
+		Phase* newPhase = new GuidingPhase(this);
 
-        changePhase(newPhase);
-    }
+		changePhase(newPhase);
+	}
 }
 
 void AimPhase::handleKeyInput(KeyEvent* event)
@@ -133,7 +139,11 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         return;
     }
 
-    if (event->key == GLFW_KEY_1) {
+    if (event->key == GLFW_KEY_ESCAPE) {
+        EventBus::get().publish(&PauseEvent());
+    }
+
+    else if (event->key == GLFW_KEY_1) {
         EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
@@ -149,7 +159,7 @@ void AimPhase::handleKeyInput(KeyEvent* event)
 
         CameraSetting newCamSettings = level.player.oversightCamera;
 
-        this->setupTransition(currentCamSettings, newCamSettings);
+        this->transitionAboveWalls(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
     }

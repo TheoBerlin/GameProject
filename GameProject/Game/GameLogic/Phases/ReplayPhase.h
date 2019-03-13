@@ -6,6 +6,7 @@
 #include <Game/GameLogic/Phases/Phase.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/PathVisualizer.h>
+#include <Game/Components/ThirdPersonController.h>
 
 class GuidingPhase;
 class AimPhase;
@@ -18,22 +19,32 @@ public:
 
     void update(const float& dt);
 
-    Entity* getFreeCam() const;
-
     Entity* getReplayArrow() const;
     PathVisualizer* getPathVisualizer() const;
 
 private:
     void handleKeyInput(KeyEvent* event);
+    void handleMouseClick(MouseClickEvent* event);
 
-    void transitionToAim(CameraTransitionEvent* event);
+    void beginAimTransition();
+    void finishAimTransition(CameraTransitionEvent* event);
 
     void setupGUI();
 
     void handleTimeBarClick();
 
+    void switchCamera();
+
+    // The replay camera is either an entity with freemove, separate from the replay arrow,
+    // or a third person controller component on the replay arrow
+    Camera* camera;
+
+    // Camera option 1
     Entity* freeCam;
     FreeMove* freeMove;
+
+    // Camera option 2
+    ThirdPersonController* thirdPersonController;
 
     Entity* replayArrow;
     PathTreader* pathTreader;
@@ -51,6 +62,8 @@ private:
     Button* timeBarBack;
     // Foreground time bar, displays played time
     Panel* timeBarFront;
+	// Background panel that holds the button and the other panel for optimization
+	Panel* backPanel;
 
     // Time bar position and size factors, relative to screen size
     const float timeBarSidePadding = 1.0f/20.0f;
@@ -63,6 +76,8 @@ private:
 
     // Time bar slider (purely cosmetic)
     Panel* timeBarSlider;
+
+	bool timebarExists;
 
     // Size relative to screen height
     const glm::vec2 sliderSizeFactors = {timeBarHeightFactor, timeBarHeightFactor};

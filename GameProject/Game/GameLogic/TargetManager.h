@@ -8,16 +8,20 @@ class PathTreader;
 class RollNullifier;
 class Hover;
 class Explosion;
+class DeathAnimation;
 struct KeyPoint;
 
 struct MovingTarget {
     PathTreader* pathTreader;
     RollNullifier* rollNullifier;
+	Explosion* explosion;
+	DeathAnimation* deathAnimation;
 };
 
 struct StaticTarget {
     Hover* hoverAnimation;
 	Explosion* explosion;
+	DeathAnimation* deathAnimation;
 };
 
 class TargetManager
@@ -29,6 +33,10 @@ public:
     // Add target entity
     void addStaticTarget(Entity* host, const glm::vec3& position);
     void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
+
+	// Separate the transform from the model. (Pause the model)
+	void pauseMovingTargets();
+	void unpauseMovingTargets();
 
     // Reset target components such as the path treader
     void resetTargets();

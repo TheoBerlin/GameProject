@@ -58,7 +58,10 @@ bool UniformBuffer::setSubData(const void* const data, size_t dataSize, unsigned
 	if (offset + dataSize <= this->currentSize) {
 		glBindBuffer(GL_UNIFORM_BUFFER, this->id);
 
-		glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, data);
+		glBufferData(GL_UNIFORM_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
+
+		// Causes wntdll.pdb not loaded error for unknown reason. 
+		//glBufferSubData(GL_UNIFORM_BUFFER, offset, dataSize, data);
 
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
