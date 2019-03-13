@@ -15,6 +15,7 @@
 class TrailShader;
 class Entity;
 class PostProcessShader;
+struct TrailPointData;
 
 struct RenderingTarget {
 	bool prePass;
@@ -100,7 +101,7 @@ public:
 	/*
 		Updates trail shader
 	*/
-	void updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors);
+	void updateTrail(const std::vector<TrailPointData>& pointData, const glm::vec3& color = glm::vec3(1.0f, 0.0f, 0.0f));
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();

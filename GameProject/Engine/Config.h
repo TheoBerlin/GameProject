@@ -10,7 +10,7 @@
 #define IMGUI
 
 //Debug defines
-#define ENABLE_PATH_VISUALIZERS true
+#define ENABLE_PATH_VISUALIZERS false
 
 // Common defines
 #define EPSILON 0.0000001

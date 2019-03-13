@@ -334,12 +334,6 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 	}
 }
 
-void Pipeline::calcDirLightDepth(const std::vector<Entity*>& renderingList)
-{
-	
-	
-}
-
 void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 	int displayWidth = Display::get().getWidth();
@@ -388,12 +382,6 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
-void Pipeline::updateShaders(const float & dt)
-{
-	for (EntityShader* shader : this->entityShaders)
-		shader->update(dt);
-}
-
 void Pipeline::addCurrentLightManager(LightManager * lm)
 {
 	this->lightManager = lm;
@@ -416,6 +404,14 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
 	}
 
+	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+}
+
 void Pipeline::drawTrail()
 {
 	this->fbo.bind();
@@ -435,17 +431,11 @@ void Pipeline::updateShaders(const float & dt)
 {
 	for (EntityShader* shader : this->entityShaders)
 		shader->update(dt);
-	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
-	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 }
 
-void Pipeline::updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors)
+void Pipeline::updateTrail(const std::vector<TrailPointData>& pointData, const glm::vec3& color)
 {
-	this->trailShader->updateTrail(points, upVectors);
+	this->trailShader->updateTrail(pointData, color);
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
