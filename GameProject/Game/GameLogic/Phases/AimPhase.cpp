@@ -21,6 +21,8 @@ AimPhase::AimPhase(OverviewPhase* overviewPhase)
     Entity* overviewCamera = overviewPhase->getOverviewCamera();
     level.entityManager->removeTracedEntity(overviewCamera->getName());
 
+	level.helpGUI->switchPhase(PHASE::AIM);
+
     commonSetup();
 }
 
@@ -55,6 +57,8 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 	playerArrow->setModel(model);
 
 	new PlayerCollision(playerArrow);
+
+	level.helpGUI->switchPhase(PHASE::AIM);
 
     commonSetup();
 }
@@ -129,8 +133,6 @@ void AimPhase::handleMouseClick(MouseClickEvent* event)
 
 		Phase* newPhase = new GuidingPhase(this);
 
-		level.helpGUI->switchPhase(PHASE::GUIDING);
-
 		changePhase(newPhase);
 	}
 }
@@ -150,8 +152,6 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
         arrowGuider->stopAiming();
-
-		level.helpGUI->switchPhase(PHASE::OVERVIEW);
 
         // Begin camera transition to the oversight camera
         CameraSetting currentCamSettings = level.player.arrowCamera;

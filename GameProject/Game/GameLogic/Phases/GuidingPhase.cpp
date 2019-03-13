@@ -41,6 +41,8 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	// Create target panel
 	initTargetPanel();
 
+	level.helpGUI->switchPhase(PHASE::GUIDING);
+
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
@@ -95,8 +97,6 @@ void GuidingPhase::beginReplayTransition()
     level.replaySystem->stopRecording();
 
 	level.scoreManager->stop();
-
-	level.helpGUI->switchPhase(PHASE::REPLAY);
 
 	level.gui->removePanel(this->targetPnl);
 
