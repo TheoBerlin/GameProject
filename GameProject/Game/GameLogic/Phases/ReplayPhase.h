@@ -9,6 +9,7 @@
 #include <Game/Components/ThirdPersonController.h>
 
 class GuidingPhase;
+class TrailEmitter;
 class AimPhase;
 
 class ReplayPhase : public Phase
