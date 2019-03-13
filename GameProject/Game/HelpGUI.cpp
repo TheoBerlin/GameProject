@@ -65,12 +65,13 @@ void HelpGUI::switchGUI(Panel* newGUI)
 	if (this->currentGUI)
 		this->currentGUI->hide();
 	this->currentGUI = newGUI;
-	this->currentGUI->show();
 
 	if (in)
 		this->currentGUI->setOption(GUI::FLOAT_LEFT, 0);
 	else
 		this->currentGUI->setOption(GUI::FLOAT_LEFT, -(int)this->maxMove);
+
+	this->currentGUI->show();
 }
 
 void HelpGUI::createOverviewGUI()
