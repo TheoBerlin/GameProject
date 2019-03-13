@@ -74,6 +74,7 @@ void main()
 		minDist = min(d, minDist);
         index += int(wallPoints.points[index].w);
     }
+
 	minDist = min(1.0, minDist);
 	float isBorder = step(borderWidth, minDist);
 	l = float(bool(l) && bool(isBorder));

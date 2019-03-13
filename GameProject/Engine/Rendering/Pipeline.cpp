@@ -357,7 +357,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
-
+	/*
 #ifdef IMGUI
 	auto drawTexture = [](Texture* texture, bool nextLine = false) {
 		ImTextureID texID = (ImTextureID)texture->getID();
@@ -379,7 +379,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 
 	ImGui::End();
 #endif
-
+*/
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
@@ -416,8 +416,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());	
-	//this->entityShaders[ROOF_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 }
 
 void Pipeline::setActiveCamera(Camera * camera)
