@@ -27,6 +27,10 @@ private:
 
 	bool hasSubscribedToPause;
 
+	std::string levelJSON;
+
+	Level level;
+
 	LevelParser levelParser;
 	TargetManager* targetManager;
 	GameLogic gameLogic;

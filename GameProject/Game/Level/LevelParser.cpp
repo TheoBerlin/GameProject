@@ -181,6 +181,7 @@ void LevelParser::readMetadata(Level& level)
 
 	// Read optimal time for scoreManager
 	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
+	level.scoreManager->setHighscore(readValue<unsigned>(metadata, "Highscore"));
 }
 
 void LevelParser::readLights(Level & level)
@@ -391,9 +392,22 @@ void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info
 		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
 		// Read optimal time
 		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+		// Read highscore
+		info.push_back("Highscore: " + std::to_string(readValue<unsigned>(jsonFile["Metadata"], "Highscore")));
 	}
 	else
 	{
 		LOG_ERROR("Can not open file: %s", file.c_str());
 	}
+}
+
+void LevelParser::writeScore(std::string file, Level & level)
+{
+	json::json& score = jsonFile["Metadata"]["Highscore"];
+	
+	score = level.scoreManager->getHighscore();
+
+	std::ofstream oFile;
+	oFile.open(file);
+	oFile << std::setw(4) << jsonFile << std::endl;
 }
