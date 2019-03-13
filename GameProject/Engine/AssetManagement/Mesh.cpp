@@ -47,7 +47,7 @@ IndexBuffer & Mesh::getIndexBuffer()
 void Mesh::bindMaterial(UniformBuffer* uniformBuffer)
 {
     Material* material = &parentModel->getMaterial(this->materialIndex);
-    uniformBuffer->setSubData((void*)material, sizeof(*material) - sizeof(material->textures), 0);
+    uniformBuffer->setSubData((void*)material, sizeof(material->Kd) + sizeof(material->Ks_factor), 0);
 }
 
 Mesh::~Mesh()
