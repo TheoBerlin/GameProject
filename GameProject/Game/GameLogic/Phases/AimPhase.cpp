@@ -11,9 +11,6 @@
 #include <Engine/Components/PlayerCollision.h>
 #include <GLFW/glfw3.h>
 
-#include "Engine/Config.h"
-#include "Engine/Imgui/imgui.h"
-
 AimPhase::AimPhase(OverviewPhase* overviewPhase)
     :Phase((Phase*)overviewPhase)
 {
@@ -60,8 +57,6 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 	new PlayerCollision(playerArrow);
 
     commonSetup();
-
-
 }
 
 AimPhase::~AimPhase()
@@ -73,17 +68,7 @@ AimPhase::~AimPhase()
 
 void AimPhase::update(const float & dt)
 {
-#ifdef IMGUI
-	ArrowGuider* arrowGuider = this->getArrowGuider();
 
-	if (ImGui::Begin("Arrow Config")) {
-		ImGui::DragFloat("Speed:", &this->arrowSpeed, 0.2f);
-		ImGui::DragFloat("Max turnspeed:", &this->maxTurnSpeed, 0.5f);
-
-		ImGui::End();
-	}
-
-#endif
 }
 
 Entity* AimPhase::getPlayerArrow() const
