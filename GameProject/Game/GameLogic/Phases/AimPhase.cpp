@@ -4,6 +4,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/Components/CameraDrift.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/OverviewPhase.h>
 #include <Game/GameLogic/Phases/ReplayPhase.h>
@@ -115,6 +116,8 @@ void AimPhase::commonSetup()
 	glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
+    new CameraDrift(playerArrow);
+
 	arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
 
@@ -124,7 +127,6 @@ void AimPhase::commonSetup()
 
 	// Reset targets
 	level.targetManager->resetTargets();
-
 
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
