@@ -2,9 +2,11 @@
 
 #include "Engine/Components/Camera.h"
 #include "Engine/Rendering/Display.h"
+#include "Game/Components/TrailEmitter.h"
 
 TrailShader::TrailShader(Camera ** camera)
-	: Shader("./Engine/Rendering/Shaders/TrailEffect.vert", "./Engine/Rendering/Shaders/TrailEffect.frag")
+	: Shader("./Engine/Rendering/Shaders/TrailEffect.vert", "./Engine/Rendering/Shaders/TrailEffect.frag"),
+	trailColor(1.0f, 0.0f, 0.0f)
 {
 	this->camera = camera;
 	this->pointCount = pointCount;
@@ -35,6 +37,8 @@ void TrailShader::bind()
 	
 	Shader::setUniformMatrix4fv("proj", 1, false, &((*this->camera)->getProj()[0][0]));
 	Shader::setUniformMatrix4fv("view", 1, false, &((*this->camera)->getView()[0][0]));
+	Shader::setUniform3fv("cameraPos", 1, &((*this->camera)->getPosition()[0]));
+	Shader::setUniform3fv("trailColor", 1, &(this->trailColor[0]));
 
 	this->setHorizontal(true);
 
@@ -60,51 +64,54 @@ void TrailShader::setHorizontal(bool horiz)
 size_t TrailShader::getDrawCount() const
 {
 	if (pointCount >= 4)
-		return (this->pointCount - 2) * 2;
+		return (this->pointCount - 1) * 2;
 	else
 		return 0;
 	
 }
 
-void TrailShader::updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors)
+void TrailShader::updateTrail(const std::vector<TrailPointData>& pointData, const glm::vec3& color)
 {
-	if (points.size() < 4)
+	this->pointCount = pointData.size();
+
+	if (pointData.size() < 4)
 		return;
 
-	this->pointCount = points.size();
+	this->trailColor = color;
 
-	std::vector<glm::vec4> pointData;
+	
+
+	std::vector<glm::vec4> positionData;
 	std::vector<float> metaData;
 
-	for (size_t i = 0; i < points.size(); i++) {
+	for (size_t i = 0; i < pointData.size(); i++) {
 		glm::vec4 pos;
 
-		pos.x = points[i].x;
-		pos.y = points[i].y;
-		pos.z = points[i].z;
+		pos.x = pointData[i].pos.x;
+		pos.y = pointData[i].pos.y;
+		pos.z = pointData[i].pos.z;
 
 		pos.w = 1.0;
-		pointData.push_back(pos);
+		positionData.push_back(pos);
 
-		float width = 0.07;
-		float alpha = 0.5;
+		metaData.push_back(pointData[i].alpha);
+		metaData.push_back(pointData[i].width);
 
-		metaData.push_back(alpha);
-		metaData.push_back(width);
-		metaData.push_back(upVectors[i].x);
-		metaData.push_back(upVectors[i].y);
-		metaData.push_back(upVectors[i].z);
+		glm::vec3 upVector = pointData[i].upVector;
+		metaData.push_back(upVector.x);
+		metaData.push_back(upVector.y);
+		metaData.push_back(upVector.z);
 
 		pos.w = -1.0;
-		pointData.push_back(pos);
+		positionData.push_back(pos);
 
-		metaData.push_back(alpha);
-		metaData.push_back(width);
-		metaData.push_back(upVectors[i].x);
-		metaData.push_back(upVectors[i].y);
-		metaData.push_back(upVectors[i].z);
+		metaData.push_back(pointData[i].alpha);
+		metaData.push_back(pointData[i].width);
+		metaData.push_back(upVector.x);
+		metaData.push_back(upVector.y);
+		metaData.push_back(upVector.z);
 	}
 
-	mesh->updateInstancingData((void*)(&pointData[0][0]), pointData.size() * sizeof(glm::vec4), 0, 0);
+	mesh->updateInstancingData((void*)(&positionData[0][0]), positionData.size() * sizeof(glm::vec4), 0, 0);
 	mesh->updateInstancingData((void*)(&metaData[0]), metaData.size() * sizeof(float), 0, 1);
 }

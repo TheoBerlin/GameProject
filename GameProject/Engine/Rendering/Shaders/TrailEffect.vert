@@ -11,11 +11,13 @@ layout(location = 3) in float width;
 layout(location = 4) in vec3 upVector;
 
 uniform mat4 proj, view;
+uniform vec3 trailColor;
 uniform bool horizontal;
 
 const float pi = 3.141592653589793;
 
 out vec3 fragColor;
+out vec3 fragPos;
 out float fragAlpha;
 
 vec4 transform(vec3 coord){
@@ -24,9 +26,8 @@ vec4 transform(vec3 coord){
 
 void main()
 {
-    fragColor = vec3(1.0, 0.0, 0.0);
+    fragColor = trailColor;
     fragAlpha = alpha;
-
 
     vec3 normal = normalize(current.xyz - previous.xyz);
 
@@ -38,6 +39,8 @@ void main()
     else {
         pos = current.xyz + width * upVector * off;
     }
+
+    fragPos = pos;
 
     gl_Position = transform(pos);
 }

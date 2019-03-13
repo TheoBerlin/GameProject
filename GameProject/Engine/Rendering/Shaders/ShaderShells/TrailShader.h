@@ -6,6 +6,7 @@
 #include "Engine/AssetManagement/Mesh.h"
 
 class Camera;
+struct TrailPointData;
 
 class TrailShader : public Shader
 {
@@ -20,9 +21,11 @@ public:
 
 	size_t getDrawCount() const;
 
-	void updateTrail(const std::vector<glm::vec3>& points, const std::vector<glm::vec3>& upVectors);
+	void updateTrail(const std::vector<TrailPointData>& pointData, const glm::vec3& color = glm::vec3(1.0f, 0.0f, 0.0f));
 private:
 	VertexArray vao;
+
+	glm::vec3 trailColor;
 
 	bool horizontal;
 	size_t pointCount;
