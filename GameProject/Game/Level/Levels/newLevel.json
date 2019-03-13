@@ -3,41 +3,41 @@
     {
       "Name": "Box1",
       "Position": [
-        -5,
+        0,
         -1,
-        0
+        -5
       ]
     },
     {
       "Name": "Box2",
       "Position": [
-        -4,
+        0,
         -1,
-        0
+        -6
       ]
     },
     {
       "Name": "Box3",
       "Position": [
-        -3,
+        0,
         -1,
-        0
+        -7
       ]
     },
     {
       "Name": "Box4",
       "Position": [
-        -2,
+        0,
         -1,
-        0
+        -8
       ]
     },
     {
       "Name": "Box5",
       "Position": [
+        0,
         -1,
-        -1,
-        0
+        -9
       ]
     },
     {
@@ -45,119 +45,119 @@
       "Position": [
         0,
         -1,
-        0
+        -10
       ]
     },
     {
       "Name": "Box7",
       "Position": [
-        1,
+        0,
         -1,
-        0
+        -11
       ]
     },
     {
       "Name": "Box8",
       "Position": [
-        2,
+        0,
         -1,
-        0
+        -12
       ]
     },
     {
       "Name": "Box9",
       "Position": [
-        3,
+        0,
         -1,
-        0
+        -13
       ]
     },
     {
       "Name": "Box10",
       "Position": [
-        4,
+        0,
         -1,
-        0
+        -14
       ]
     },
     {
       "Name": "Box11",
       "Position": [
-        5,
+        0,
         -1,
-        0
+        -15
       ]
     },
     {
       "Name": "Box12",
       "Position": [
-        6,
+        0,
         -1,
-        0
+        -16
       ]
     },
     {
       "Name": "Box13",
       "Position": [
-        7,
+        0,
         -1,
-        0
+        -17
       ]
     },
     {
       "Name": "Box14",
       "Position": [
-        8,
+        0,
         -1,
-        0
+        -18
       ]
     },
     {
       "Name": "Box15",
       "Position": [
-        9,
+        0,
         -1,
-        0
+        -19
       ]
     },
     {
       "Name": "Box16",
       "Position": [
-        10,
+        0,
         -1,
-        0
+        -20
       ]
     },
     {
       "Name": "Box17",
       "Position": [
-        11,
+        0,
         -1,
-        0
+        -21
       ]
     },
     {
       "Name": "Box18",
       "Position": [
-        12,
+        0,
         -1,
-        0
+        -22
       ]
     },
     {
       "Name": "Box19",
       "Position": [
-        13,
+        0,
         -1,
-        0
+        -23
       ]
     },
     {
       "Name": "Box20",
       "Position": [
-        14,
+        0,
         -1,
-        0
+        -24
       ]
     }
   ],
@@ -172,41 +172,41 @@
     {
       "Name": "Target1",
       "Position": [
-        -5,
         0,
-        0
+        0,
+        -5
       ]
     },
     {
       "Name": "Target2",
       "Position": [
-        -4,
         0,
-        0
+        0,
+        -6
       ]
     },
     {
       "Name": "Target3",
       "Position": [
-        -3,
         0,
-        0
+        0,
+        -7
       ]
     },
     {
       "Name": "Target4",
       "Position": [
-        -2,
         0,
-        0
+        0,
+        -8
       ]
     },
     {
       "Name": "Target5",
       "Position": [
-        -1,
         0,
-        0
+        0,
+        -9
       ]
     },
     {
@@ -214,119 +214,119 @@
       "Position": [
         0,
         0,
-        0
+        -10
       ]
     },
     {
       "Name": "Target7",
       "Position": [
-        1,
         0,
-        0
+        0,
+        -11
       ]
     },
     {
       "Name": "Target8",
       "Position": [
-        2,
         0,
-        0
+        0,
+        -12
       ]
     },
     {
       "Name": "Target9",
       "Position": [
-        3,
         0,
-        0
+        0,
+        -13
       ]
     },
     {
       "Name": "Target10",
       "Position": [
-        4,
         0,
-        0
+        0,
+        -14
       ]
     },
     {
       "Name": "Target11",
       "Position": [
-        5,
         0,
-        0
+        0,
+        -15
       ]
     },
     {
       "Name": "Target12",
       "Position": [
-        6,
         0,
-        0
+        0,
+        -16
       ]
     },
     {
       "Name": "Target13",
       "Position": [
-        7,
         0,
-        0
+        0,
+        -17
       ]
     },
     {
       "Name": "Target14",
       "Position": [
-        8,
         0,
-        0
+        0,
+        -18
       ]
     },
     {
       "Name": "Target15",
       "Position": [
-        9,
         0,
-        0
+        0,
+        -19
       ]
     },
     {
       "Name": "Target16",
       "Position": [
-        10,
         0,
-        0
+        0,
+        -20
       ]
     },
     {
       "Name": "Target17",
       "Position": [
-        11,
         0,
-        0
+        0,
+        -21
       ]
     },
     {
       "Name": "Target18",
       "Position": [
-        12,
         0,
-        0
+        0,
+        -22
       ]
     },
     {
       "Name": "Target19",
       "Position": [
-        13,
         0,
-        0
+        0,
+        -23
       ]
     },
     {
       "Name": "Target20",
       "Position": [
-        14,
         0,
-        0
+        0,
+        -24
       ]
     }
   ],
@@ -341,12 +341,6 @@
       "Position": [ 1.0, 1.0, 12.0 ],
       "Direction": [ 0.0, 0.0, -1.0 ],
       "Offset": [ 0.0, 0.3, -1.0 ],
-      "FOV": 75.0
-    },
-    "ReplayCamera": {
-      "Position": [ 0.0, 3.0, 4.0 ],
-      "Direction": [ 0.0, -0.7, -0.7 ],
-      "Offset": [ 0.0, 0.0, 0.0 ],
       "FOV": 75.0
     }
   },

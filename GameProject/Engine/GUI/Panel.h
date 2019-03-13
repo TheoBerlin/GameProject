@@ -208,6 +208,21 @@ public:
 	*/
 	virtual bool isActive() const;
 
+	/*
+	Hide the panel
+	*/
+	virtual void hide();
+
+	/*
+	Show the panel
+	*/
+	virtual void show();
+
+	/*
+	Get if the panel is shown or not
+	*/
+	virtual bool isShown() const;
+
 private:
 
 	/*
@@ -267,6 +282,8 @@ private:
 
 protected:
 	bool shouldUpdate;
+	bool active;
+	bool shown;
 
 	Panel* parent;
 	std::vector<Panel*> children;

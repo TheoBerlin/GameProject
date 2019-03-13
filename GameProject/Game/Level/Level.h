@@ -8,6 +8,7 @@
 #include <Game/GameLogic/ReplaySystem.h>
 #include <Game/GameLogic/ScoreManager.h>
 #include <Game/Level/LevelStructure.h>
+#include <Engine/Rendering/Lighting/LightManager.h>
 #include <glm/glm.hpp>
 
 struct CameraSetting {
@@ -20,7 +21,6 @@ struct CameraSetting {
 struct Player {
 	CameraSetting oversightCamera;
 	CameraSetting arrowCamera;
-	CameraSetting replayCamera;
 };
 
 struct Level {
@@ -32,4 +32,5 @@ struct Level {
 	ReplaySystem* replaySystem;
 	ScoreManager* scoreManager;
 	LevelStructure* levelStructure;
+	LightManager* lightManager;
 };

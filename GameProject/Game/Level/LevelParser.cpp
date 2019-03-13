@@ -173,7 +173,6 @@ void LevelParser::readPlayer(Level& level)
 
 	readCameraSetting(player["OversightCamera"], level.player.oversightCamera);
 	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
-	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
 }
 
 void LevelParser::readMetadata(Level& level)
@@ -182,6 +181,51 @@ void LevelParser::readMetadata(Level& level)
 
 	// Read optimal time for scoreManager
 	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
+}
+
+void LevelParser::readLights(Level & level)
+{
+	int lightSize = jsonFile["PointLights"].size();
+	glm::vec4 position;
+	glm::vec4 color;
+	glm::vec4 direction;
+	glm::vec4 intensity;
+	int distance;
+	for (int i = 0; i < lightSize; i++) {
+		json::json& light = jsonFile["PointLights"][i];
+		readVec4(light["Position"], position);
+		readVec4(light["Color"], color);
+		distance = light["Distance"];
+
+		level.lightManager->createPointLight(position, color, distance);
+	}
+	json::json& dLight = jsonFile["DirectionalLight"];
+	readVec4(dLight["Direction"], direction);
+	readVec4(dLight["Intensity"], intensity);
+
+	level.lightManager->createDirectionalLight(direction, intensity);
+}
+
+void LevelParser::readVec4(json::json & file, glm::vec4 & vec)
+{
+	// Iterate through position components
+	for (int j = 0; j < 4; j++) {
+		// If object exists go ahead otherwise write a default position
+		if (!file[j].empty()) {
+			try {
+				vec[j] = file[j];
+			}
+			catch (const std::exception& e) {
+				LOG_ERROR("Failed to read vector component: %s", e.what());
+				break;
+			}
+		}
+		else {
+			// Default component
+			vec[j] = 1.0f;
+			LOG_WARNING("Did not find Vec4 component %d (0=X, 1=Y, 2=Z, 3 = W), defaulting to 1", j);
+		}
+	}
 }
 
 void LevelParser::readVec3(json::json& file, glm::vec3& vec)
@@ -315,10 +359,41 @@ void LevelParser::readLevel(std::string file, Level& level)
 		readEntityWalls(level);
 		readEntityFloor(level);
 		readPlayer(level);
+		readLights(level);
 	}
 	else
 	{
 		LOG_ERROR("Can not open file: %s", file.c_str());
 	}
 
+}
+
+void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info)
+{
+	std::ifstream iFile;
+	iFile.open(file);
+
+	if (iFile.is_open())
+	{
+		try {
+			iFile >> jsonFile;
+		}
+		catch (const std::exception e) {
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
+			return;
+		}
+
+		// Reset vector for new level
+		info.clear();
+
+		// Read needed info
+		// Read target size
+		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
+		// Read optimal time
+		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+	}
+	else
+	{
+		LOG_ERROR("Can not open file: %s", file.c_str());
+	}
 }

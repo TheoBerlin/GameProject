@@ -41,11 +41,6 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 
     level.entityManager->removeTracedEntity(replayArrow->getName());
 
-    // Remove freecam
-    Entity* freeCam = replayPhase->getFreeCam();
-
-    level.entityManager->removeTracedEntity(freeCam->getName());
-
     /*
 		Create arrow entity
 	*/
@@ -177,7 +172,7 @@ void AimPhase::handleKeyInput(KeyEvent* event)
 
         CameraSetting newCamSettings = level.player.oversightCamera;
 
-        this->setupTransition(currentCamSettings, newCamSettings);
+        this->transitionAboveWalls(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
     }

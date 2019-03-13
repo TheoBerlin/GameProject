@@ -99,11 +99,16 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 
 	// Create minimized panel/button
 	Button* smallPanel = new Button();
-	smallPanel->setSize({ 70, 50 });
 	smallPanel->setOption(GUI::FLOAT_LEFT);
 	smallPanel->setOption(GUI::FLOAT_UP);
-	smallPanel->addText("Show", "aldo", textColor);
-	smallPanel->setColor(backgroundColor);
+	smallPanel->setOption(GUI::SCALE_TO_TEXT_X, 20);
+	smallPanel->setOption(GUI::SCALE_TO_TEXT_Y, 20);
+	smallPanel->setOption(GUI::TEXT_CENTER_X);
+	smallPanel->setOption(GUI::TEXT_CENTER_Y);
+	smallPanel->addText("SHOW SCORE", "aldo", textColor);
+	smallPanel->setNormalColor(backgroundColor);
+	smallPanel->setHoverColor(hoverColor);
+	smallPanel->setPressedColor(pressColor);
 	this->smallPanel = smallPanel;
 	level.gui->addPanel(smallPanel);
 
@@ -195,8 +200,10 @@ void ScoreManager::toggleGuiMinimize()
 	{
 		// Move smallPanel
 		this->smallPanel->setOption(GUI::FLOAT_LEFT, -width);
+		this->smallPanel->setActive(false);
 
 		// Move bigPanel
+		this->bigPanel->setActive(true);
 		this->bigPanel->setOption(GUI::CENTER_X, 0);
 
 		this->minimized = false;
@@ -205,9 +212,13 @@ void ScoreManager::toggleGuiMinimize()
 	{
 		// Move bigPanel
 		this->bigPanel->setOption(GUI::CENTER_X, -width);
+		this->bigPanel->setActive(false);
+
 
 		// Move smallPanel
+		this->smallPanel->setActive(true);
 		this->smallPanel->setOption(GUI::FLOAT_LEFT, 0);
+
 
 		this->minimized = true;
 	}

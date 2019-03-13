@@ -1,4 +1,35 @@
 {
+  "DirectionalLight": {
+    "Direction": [ 0.0, -2.0, 1.0, 1.0 ],
+    "Intensity": [ 1.0, 1.0, 1.0, 1.0 ]
+  },
+  "PointLights": [
+    {
+      "Position": [ -4.0, 0.25, -4.0, 1.0 ],
+      "Color": [ 1.0, 0.0, 0.0, 1.0 ],
+      "Distance": 13
+    },
+    {
+      "Position": [ -4.0, 0.25, 4.0, 1.0 ],
+      "Color": [ 0.0, 1.0, 0.0, 1.0 ],
+      "Distance": 13
+    },
+    {
+      "Position": [ 4.0, 0.25, -4.0, 1.0 ],
+      "Color": [ 0.0, 0.0, 1.0, 1.0 ],
+      "Distance": 13
+    },
+    {
+      "Position": [ 4.0, 0.25, 4.0, 1.0 ],
+      "Color": [ 1.0, 0.0, 1.0, 1.0 ],
+      "Distance": 13
+    },
+    {
+      "Position": [ -1.0, 0.25, -1.0, 1.0 ],
+      "Color": [ 1.0, 1.0, 0.0, 1.0 ],
+      "Distance": 32
+    }
+  ],
   "Target": [
     {
       "Name": "Target1",
@@ -24,20 +55,24 @@
       "Name": "Target6",
       "Path": [
         {
-          "Position": [0, 3, -5],
+          "Position": [ 0, 3, -5 ],
           "Time": 0
         },
         {
-          "Position": [5, 5, 0],
+          "Position": [ 5, 5, 0 ],
           "Time": 3
         },
         {
-          "Position": [0, 2, 5],
+          "Position": [ 0, 2, 5 ],
           "Time": 6
         },
         {
-          "Position": [-5, 4, 0],
+          "Position": [ -5, 4, 0 ],
           "Time": 9
+        },
+        {
+          "Position": [0, 3, -5],
+          "Time": 13
         }
       ]
     }
@@ -78,12 +113,6 @@
       "Position": [ 1.0, 1.0, 12.0 ],
       "Direction": [ 0.0, 0.0, -1.0 ],
       "Offset": [ 0.0, 0.2, -0.75 ],
-      "FOV": 75.0
-    },
-    "ReplayCamera": {
-      "Position": [ 0.0, 3.0, 4.0 ],
-      "Direction": [ 0.0, -0.7, -0.7 ],
-      "Offset": [ 0.0, 0.0, 0.0 ],
       "FOV": 75.0
     }
   },

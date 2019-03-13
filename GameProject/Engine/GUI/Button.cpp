@@ -70,7 +70,7 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 			if (this->isHovering)
 				toPressedStyle();
 		}
-		else if (this->isHovering)
+		else if (this->isHovering && evnt->action == GLFW_RELEASE)
 		{
 			if (this->func)
 				this->func();
@@ -81,20 +81,17 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 
 void Button::mouseMoveCallback(MouseMoveEvent * evnt)
 {
-	if (this->active)
+	int py = ((int)Display::get().getHeight() - (int)evnt->posY);
+	if ((int)evnt->posX >= this->globalPos.x && (int)evnt->posX <= this->globalPos.x + (int)this->size.x &&
+		py >= this->globalPos.y && py <= this->globalPos.y + (int)this->size.y && this->active)
 	{
-		int py = ((int)Display::get().getHeight() - (int)evnt->posY);
-		if ((int)evnt->posX >= this->globalPos.x && (int)evnt->posX <= this->globalPos.x + (int)this->size.x &&
-			py >= this->globalPos.y && py <= this->globalPos.y + (int)this->size.y)
-		{
-			this->isHovering = true;
-			toHoverStyle();
-		}
-		else
-		{
-			this->isHovering = false;
-			toNormalStyle();
-		}
+		this->isHovering = true;
+		toHoverStyle();
+	}
+	else
+	{
+		this->isHovering = false;
+		toNormalStyle();
 	}
 }
 
@@ -132,14 +129,4 @@ void Button::init()
 	this->pressedColor = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 	this->active = true;
-}
-
-void Button::setActive(bool active)
-{
-	this->active = active;
-}
-
-bool Button::isActive() const
-{
-	return this->active;
 }

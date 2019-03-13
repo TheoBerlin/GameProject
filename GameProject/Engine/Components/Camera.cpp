@@ -111,6 +111,11 @@ void Camera::decouple()
     this->decoupled = true;
 }
 
+void Camera::couple()
+{
+	this->decoupled = false;
+}
+
 bool Camera::isDecoupled() const
 {
 	return this->decoupled;
