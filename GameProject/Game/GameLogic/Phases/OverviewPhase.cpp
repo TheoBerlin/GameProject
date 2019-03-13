@@ -125,6 +125,8 @@ void OverviewPhase::transitionToAim(CameraTransitionEvent* event)
 {
     EventBus::get().unsubscribe(this, &OverviewPhase::transitionToAim);
 
+	level.helpGUI->switchPhase(PHASE::AIM);
+
     Phase* guidingPhase = new AimPhase(this);
     changePhase(guidingPhase);
 }

@@ -96,6 +96,8 @@ void GuidingPhase::beginReplayTransition()
 
 	level.scoreManager->stop();
 
+	level.helpGUI->switchPhase(PHASE::REPLAY);
+
 	level.gui->removePanel(this->targetPnl);
 
     // Get flight time

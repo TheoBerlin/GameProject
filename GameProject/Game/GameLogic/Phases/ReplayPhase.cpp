@@ -180,6 +180,8 @@ void ReplayPhase::beginAimTransition()
 	// Reset score
 	level.scoreManager->resetScore();
 
+	level.helpGUI->switchPhase(PHASE::AIM);
+
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 

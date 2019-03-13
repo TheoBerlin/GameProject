@@ -129,6 +129,8 @@ void AimPhase::handleMouseClick(MouseClickEvent* event)
 
 		Phase* newPhase = new GuidingPhase(this);
 
+		level.helpGUI->switchPhase(PHASE::GUIDING);
+
 		changePhase(newPhase);
 	}
 }
@@ -148,6 +150,8 @@ void AimPhase::handleKeyInput(KeyEvent* event)
         EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
         arrowGuider->stopAiming();
+
+		level.helpGUI->switchPhase(PHASE::OVERVIEW);
 
         // Begin camera transition to the oversight camera
         CameraSetting currentCamSettings = level.player.arrowCamera;
