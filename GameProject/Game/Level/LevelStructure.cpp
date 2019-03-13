@@ -103,11 +103,16 @@ std::vector<glm::vec3>& LevelStructure::getWallPoints()
 {
 	return this->wallPoints;
 }
+
 std::vector<int>& LevelStructure::getWallGroupsIndex()
 {
 	return this->wallGroupsIndex;
 }
 
+float LevelStructure::getWallHeight() const
+{
+	return this->height;
+}
 
 Model * LevelStructure::createQuad()
 {

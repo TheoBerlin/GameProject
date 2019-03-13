@@ -24,6 +24,8 @@ public:
 	// Get all wall groups index
 	std::vector<int>& getWallGroupsIndex();
 
+	float getWallHeight() const;
+
 	// Get a AABB around the outer walls which is oriented to the axis: e1, e2, e3
 	Utils::AABB createBoundingBox(const glm::vec3& e1, const glm::vec3& e2, const glm::vec3& e3);
 
