@@ -162,6 +162,12 @@ glm::quat Utils::rotateTo(const glm::vec3 & v1, const glm::vec3 & v2)
 	return q;
 }
 
+glm::quat Utils::rotate(glm::quat & q, float yaw, float pitch, float roll)
+{
+	glm::quat rot = glm::quat({ yaw, pitch, roll });
+	return rot * q;
+}
+
 glm::quat Utils::toQuaternion(float yaw, float pitch, float roll)
 {
 	float cy = cos(roll * .5f);
@@ -177,4 +183,12 @@ glm::quat Utils::toQuaternion(float yaw, float pitch, float roll)
 	q.y = sy * cp * sr + cy * sp * cr;
 	q.z = sy * cp * cr - cy * sp * sr;
 	return q;
+}
+
+float Utils::map(float min, float max, float x, float newMin, float newMax)
+{
+	if (x < min) return newMin;
+	if (x > max) return newMax;
+	float t = (x - min) / (max - min);
+	return newMin + t*(newMax-newMin);
 }

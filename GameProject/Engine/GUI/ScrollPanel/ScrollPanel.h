@@ -25,6 +25,9 @@ public:
 	// Set active button
 	void setActiveButton(unsigned index);
 
+	// Get active button index
+	unsigned getActiveButtonIndex() const;
+
 private:
 	void MouseScrollCallback(MouseScrollEvent* evnt);
 	void MouseClickCallback(MouseClickEvent* evnt);
@@ -33,5 +36,6 @@ private:
 
 	List* list;
 	Button* activeButton;
+	unsigned activeButtonIndex;
 };
 

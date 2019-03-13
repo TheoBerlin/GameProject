@@ -108,11 +108,5 @@ private:
     const float maxFOV = 90.0f, FOVChangeMax = 15.0f;
 
     float currentPitch;
-    const float maxPitch = glm::half_pi<float>() - 0.01f;
-
-    // Drift camera settings
-    // Maximum angle between entity's forward and drift camera's forward
-    const float maxForwardAngle = glm::quarter_pi<float>() / 3.0f;
-    // Percentage of forward angle being nullified per second
-    const float angleCorrectionFactor = 3.5f;
+    const float maxPitch = glm::half_pi<float>() - 0.15f;
 };
