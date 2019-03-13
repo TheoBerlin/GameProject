@@ -17,9 +17,13 @@ public:
 
     void setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength);
     void setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV);
+    // Transition whilst facing backwards along a path
+    void setPath(const std::vector<KeyPoint>& path, float newFOV);
 
     void update(const float& dt);
 private:
+    bool commonSetup(const std::vector<KeyPoint>& path, float newFOV);
+
     void catmullRomMove();
 
     // Quaternions for the default forward and final forward directions
@@ -41,4 +45,7 @@ private:
     std::vector<KeyPoint> path;
 
     unsigned int pathIndex;
+
+    // Whether or not to interpolate forward
+    bool interpForward;
 };

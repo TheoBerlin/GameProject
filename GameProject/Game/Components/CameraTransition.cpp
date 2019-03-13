@@ -37,18 +37,11 @@ void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& 
 
 void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
-    if (path.size() < 2) {
-        LOG_WARNING("Path too small to start transitioning, size: %d", path.size());
-
-        this->isTransitioning = false;
+    if (!this->commonSetup(path, newFOV)) {
         return;
     }
 
-    this->isTransitioning = true;
-    this->transitionTime = 0.0f;
-    this->beginT = 0.0f;
-    this->path = path;
-    this->pathIndex = 0;
+    this->interpForward = true;
 
     // Calculate final rotation quaternion
     Transform* transform = host->getTransform();
@@ -59,18 +52,13 @@ void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec
 
     // Quaternion for achieving the forward direction for the next point in the path
 	this->endQuat = glm::rotation(transform->getDefaultForward(), newForward);
+}
 
-    // Attempt to get entity camera to read and write FOV
-    entityCam = dynamic_cast<Camera*>(host->getComponent("Camera"));
+void CameraTransition::setPath(const std::vector<KeyPoint>& path, float newFOV)
+{
+    this->interpForward = false;
 
-    if (!entityCam) {
-        LOG_WARNING("Failed to find camera component, will not edit FOV");
-        return;
-    }
-
-    // Starting FOV and the final FOV for the transition
-    this->beginFOV = entityCam->getFOV();
-    this->endFOV = newFOV;
+    this->commonSetup(path, newFOV);
 }
 
 void CameraTransition::update(const float& dt)
@@ -91,24 +79,63 @@ void CameraTransition::update(const float& dt)
         return;
     }
 
+    Transform* transform = host->getTransform();
+
+    glm::vec3 previousPosition = transform->getPosition();
+
     this->catmullRomMove();
+
+    // Get the slerp factor T in [0,1]
+    float T = transitionTime / path.back().t;
+
+    if (interpForward) {
+        // Calculate current rotation quat
+        glm::quat currentRotationQuat = glm::slerp(beginQuat, endQuat, T);
+
+        transform->setForward(currentRotationQuat * transform->getDefaultForward());
+    } else {
+        glm::vec3 currentPosition = transform->getPosition();
+
+        transform->setForward(glm::normalize(previousPosition - currentPosition));
+    }
 
     // Interpolate FOV if the entity has a camera
     if (!entityCam) {
         return;
     }
 
-    // Get the slerp factor T in [0,1]
-    float T = transitionTime / path.back().t;
-
-    // Calculate current rotation quat
-    glm::quat currentRotationQuat = glm::slerp(beginQuat, endQuat, T);
-
-    host->getTransform()->setForward(currentRotationQuat * host->getTransform()->getDefaultForward());
-
     float currentFOV = glm::mix(beginFOV, endFOV, T);
 
     entityCam->setFOV(currentFOV);
+}
+
+bool CameraTransition::commonSetup(const std::vector<KeyPoint>& path, float newFOV)
+{
+    if (path.size() < 2) {
+        LOG_WARNING("Path too small to start transitioning, size: %d", path.size());
+
+        this->isTransitioning = false;
+        return false;
+    }
+
+    this->isTransitioning = true;
+    this->transitionTime = 0.0f;
+    this->beginT = 0.0f;
+    this->path = path;
+    this->pathIndex = 0;
+
+    // Attempt to get entity camera to read and write FOV
+    entityCam = dynamic_cast<Camera*>(host->getComponent("Camera"));
+
+    if (!entityCam) {
+        LOG_WARNING("Failed to find camera component, will not edit FOV");
+    } else {
+        // Starting FOV and the final FOV for the transition
+        this->beginFOV = entityCam->getFOV();
+        this->endFOV = newFOV;
+    }
+
+    return true;
 }
 
 void CameraTransition::catmullRomMove()

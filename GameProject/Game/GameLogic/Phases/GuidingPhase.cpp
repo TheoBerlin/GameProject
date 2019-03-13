@@ -115,7 +115,7 @@ void GuidingPhase::beginReplayTransition()
 
     newCamSettings.offset = {0.0f, 0.0f, -1.6f};
 
-    this->transitionStraightPath(currentCamSettings, newCamSettings);
+    this->transitionBackwards(currentCamSettings, newCamSettings, arrowGuider->getPath());
 
     EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }
