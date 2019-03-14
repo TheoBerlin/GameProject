@@ -109,8 +109,8 @@ public:
 	*/
 	void addCurrentLightManager(LightManager * lm);
 	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
-	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
-	void removeLight(int index);
+	void updateLight(unsigned index, glm::vec4 position, glm::vec4 intensity, int distance);
+	void removeLight(unsigned index);
 
 	/*
 		Updates trail shader

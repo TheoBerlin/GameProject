@@ -440,7 +440,7 @@ void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance
 }
 
 
-void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
+void Pipeline::updateLight(unsigned index, glm::vec4 position, glm::vec4 intensity, int distance)
 {
 	if (index > lightManager->getNrOfPointLights() - 1) {
 		LOG_ERROR("Index out of range");
@@ -454,12 +454,12 @@ void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, i
 	}
 }
 
-void Pipeline::removeLight(int index)
+void Pipeline::removeLight(unsigned index)
 {
 	lightManager->removePointLight(index);
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
-	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+	for (unsigned i = 0; i < lightManager->getNrOfPointLights(); i++) {
 		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
 	}
 
@@ -488,6 +488,9 @@ void Pipeline::glowPass()
 void Pipeline::updateShaders(const float & dt)
 {
 	for (EntityShader* shader : this->entityShaders)
+		shader->update(dt);
+
+	for (PostProcessShader* shader : this->postProcessShaders)
 		shader->update(dt);
 }
 

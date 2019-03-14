@@ -29,10 +29,10 @@ public:
 
 	virtual void update(const float& dt);
 
-	float getTime();
+	static float getTime();
 
 private:
-	float time;
+	static float time;
 	Camera** camera;
 	Framebuffer* shadowBuffer;
 	glm::mat4* lightSpaceMatrix;
