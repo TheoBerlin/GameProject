@@ -9,6 +9,7 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/GUIRenderer.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/Rendering/LineRenderer.h>
 #include <Engine/GUI/GUI.h>
 #include <Engine/InputHandler.h>
 #include <Game/GameLogic/TargetManager.h>
@@ -151,6 +152,10 @@ void GameState::render()
 	this->collisionHandler.drawCollisionBoxes();
 #endif
 
+#ifdef ENABLE_SHADOW_BOX
+	lightManager.drawDebugBox();
+#endif
+
 	// Draw gui elements.
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 	GUI& gui = this->getGUI();
@@ -166,3 +171,4 @@ void GameState::exitGame(ExitEvent* ev)
 {
 	this->popState();
 }
+

@@ -5,10 +5,12 @@
 #include <Engine/States/State.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/GameLogic.h>
+#include "Engine/Sound/SoundManager.h"
 #include "Engine/Collision/CollisionHandler.h"
 #include <Game/GameLogic/ScoreManager.h>
 #include <Game/Level/LevelStructure.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
+
 
 class GameState : public State
 {

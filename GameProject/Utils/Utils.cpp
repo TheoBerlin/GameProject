@@ -1,6 +1,8 @@
 #include "Utils.h"
 
 #include <cmath>
+#include <Engine/Rendering/GLAbstraction/RenderingResources.h>
+#include <glm/glm.hpp>
 
 std::pair<glm::vec3, glm::mat3> Utils::jacobiMethod(const glm::mat3 & mat, unsigned int maxIterations)
 {
@@ -192,5 +194,121 @@ float Utils::map(float min, float max, float x, float newMin, float newMax)
 	if (x < min) return newMin;
 	if (x > max) return newMax;
 	float t = (x - min) / (max - min);
-	return newMin + t * (newMax - newMin);
+	return newMin + t*(newMax-newMin);
+}
+
+Utils::AABB Utils::getAABB(Vertex * vertices, unsigned int numVertices, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
+{
+	glm::vec3 min = glm::vec3(10000.0f);
+	glm::vec3 max = glm::vec3(-10000.0f);
+	for (unsigned int i = 0; i < numVertices; i++)
+	{
+		Vertex& vert = vertices[i];
+		float e1dot = glm::dot(e1, vert.Position);
+		float e2dot = glm::dot(e2, vert.Position);
+		float e3dot = glm::dot(e3, vert.Position);
+		min.x = glm::min(min.x, e1dot);
+		min.y = glm::min(min.y, e2dot);
+		min.z = glm::min(min.z, e3dot);
+
+		max.x = glm::max(max.x, e1dot);
+		max.y = glm::max(max.y, e2dot);
+		max.z = glm::max(max.z, e3dot);
+	}
+
+	glm::vec3 pos = e1 * (min.x + (max.x - min.x)*.5f) + e2 * (min.y + (max.y - min.y)*.5f) + e3 * (min.z + (max.z - min.z)*.5f);
+
+	return { glm::max(max - min, 0.01f), pos };
+}
+
+Utils::AABB Utils::getAABB(std::vector<glm::vec3> points, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
+{
+	glm::vec3 min = glm::vec3(10000.0f);
+	glm::vec3 max = glm::vec3(-10000.0f);
+	for (unsigned int i = 0; i < points.size(); i++)
+	{
+		glm::vec3& p = points[i];
+		float e1dot = glm::dot(e1, p);
+		float e2dot = glm::dot(e2, p);
+		float e3dot = glm::dot(e3, p);
+		min.x = glm::min(min.x, e1dot);
+		min.y = glm::min(min.y, e2dot);
+		min.z = glm::min(min.z, e3dot);
+
+		max.x = glm::max(max.x, e1dot);
+		max.y = glm::max(max.y, e2dot);
+		max.z = glm::max(max.z, e3dot);
+	}
+
+	glm::vec3 pos = e1 * (min.x + (max.x - min.x)*.5f) + e2 * (min.y + (max.y - min.y)*.5f) + e3 * (min.z + (max.z - min.z)*.5f);
+
+	return { glm::max(max - min, 0.01f), pos };
+}
+
+Utils::OBB Utils::getOBB(Vertex * vertices, unsigned int numVertices)
+{
+	std::vector<Vertex> verts(vertices, vertices + numVertices);
+
+	// Calculate centroid.
+	glm::vec3 centroid(0.0f);
+	for (Vertex& v : verts)
+		centroid += v.Position;
+	centroid /= (float)numVertices;
+
+	// Distance from centroid to vertex.
+	std::vector<glm::vec3> changeInPos;
+	for (Vertex& v : verts)
+		changeInPos.push_back(v.Position - centroid);
+
+	/* Matrix multiplication for a single element.
+		c[i][j] = (a*b)[i][j]
+	Arguments:
+		m1: matrix a
+		m2: matrix b
+		i: row index
+		j: col index
+	*/
+	auto getElem = [](std::vector<glm::vec3>& m1, std::vector<glm::vec3>& m2, int i, int j)->float {
+		float a = 0.0f;
+		for (unsigned k = 0; k < m1.size(); k++)
+			a += m1[k][i] * m2[k][j];
+		return a;
+	};
+
+	// Calculate the covariance matrix. By multiplying the Nx3 matrix with its transpose from the left we get a 3x3 matrix which will be the covariance matrix after normalization. 
+	glm::mat3 cov;
+	for (unsigned i = 0; i < 3; i++)
+		for (unsigned j = 0; j < 3; j++)
+			cov[j][i] = getElem(changeInPos, changeInPos, i, j) / 3.f; // Multiply by its transpose and divide by the dimension size to normalize it.
+
+	// Calculate the eigenvectors from the covariance matrix. This will also give us the eigenvalues as a byproduct but we will not use them.
+	std::pair<glm::vec3, glm::mat3> jacobiResult = Utils::jacobiMethod(cov);
+
+	glm::vec3 e1 = glm::normalize(jacobiResult.second[0]);
+	glm::vec3 e2 = glm::normalize(jacobiResult.second[1]);
+	glm::vec3 e3 = glm::normalize(jacobiResult.second[2]);
+
+	// Get the AABB in the base [e1 e2 e3].
+	AABB aabb = getAABB(vertices, numVertices, e1, e2, e3);
+
+	// Rotate the x-axis to the first eigenvector.
+	glm::vec3 vx = glm::vec3{ 1.f, 0.f, 0.f };
+	glm::quat rotX = Utils::rotateTo(vx, e1);
+
+	// If the first eigenvector is parallel to the x-axis, do not rotate.
+	float d = glm::dot(vx, e1);
+	if (abs(d) > 0.999f)
+		rotX = glm::quat(1.f, 0.f, 0.f, 0.f);
+
+	// Rotate the z-axis by the previous rotation and then rotate that vector to the second eigenvector.
+	// This is equivalent to make a roll around the previously calculated axis to match the second and third eigenvector..
+	glm::vec3 vz = glm::normalize(rotX * glm::vec3(0.f, 0.f, 1.f));
+	glm::quat roll = Utils::rotateTo(vz, e3);
+
+	// If the second eigenvector is parallel to the new z-axis, do not rotate.
+	d = glm::dot(e3, vz);
+	if (abs(d) > 0.999f)
+		roll = glm::quat(1.f, 0.f, 0.f, 0.f);
+
+	return { aabb.size, aabb.pos, roll * rotX };
 }

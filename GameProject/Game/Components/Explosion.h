@@ -2,6 +2,7 @@
 
 #include "Engine/Particle/ParticleManager.h"
 #include "Engine/Components/Component.h"
+#include "Engine/Sound/SoundManager.h"
 
 struct Debri {
 	glm::vec3 position;
@@ -31,5 +32,6 @@ private:
 	float timer;
 	unsigned debriAmount;
 	std::vector<Debri*> debris;
+	Sound sound;
 };
 
