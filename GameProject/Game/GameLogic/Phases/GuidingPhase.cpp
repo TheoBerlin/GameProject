@@ -14,9 +14,10 @@
 #include "Game/Components/TrailEmitter.h"
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
-    :Phase((Phase*)aimPhase),
-    flightTimer(0.0f),
-    flightTime(0.0f)
+	:Phase((Phase*)aimPhase),
+	flightTimer(0.0f),
+	flightTime(0.0f),
+	hasCollided(false)
 {
 	this->playerArrow = aimPhase->getPlayerArrow();
 
@@ -52,6 +53,9 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 void GuidingPhase::update(const float& dt)
 {
     flightTimer += dt;
+
+	if (this->playerArrow->getTransform()->getPosition().y > level.levelStructure->getWallHeight() && !this->hasCollided)
+		beginReplayTransition();
 }
 
 GuidingPhase::~GuidingPhase()
@@ -98,6 +102,8 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 
 void GuidingPhase::beginReplayTransition()
 {
+	this->hasCollided = true;
+
     EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
 
