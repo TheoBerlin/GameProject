@@ -23,7 +23,6 @@ void EntityManager::update(const float dt)
 	for (unsigned int i = 0; i < this->entities.size(); i++) {
 		this->entities[i]->update(dt);
 	}
-		
 }
 
 Entity* EntityManager::addEntity()

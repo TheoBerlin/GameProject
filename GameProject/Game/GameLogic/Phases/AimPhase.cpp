@@ -73,7 +73,18 @@ AimPhase::~AimPhase()
 
 void AimPhase::update(const float & dt)
 {
+    ParticleManager::get().update(dt);
 
+	// Update entities.
+	level.entityManager->update(dt);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(dt);
 }
 
 Entity* AimPhase::getPlayerArrow() const

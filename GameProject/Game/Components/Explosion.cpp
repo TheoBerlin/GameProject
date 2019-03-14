@@ -62,7 +62,6 @@ void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDeb
 
 		this->timer = timeElapsed;
 	}
-
 }
 
 void Explosion::reset()

@@ -13,7 +13,6 @@
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Utils/Settings.h>
 
-
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
@@ -22,6 +21,11 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
     // Create replay time bar
     setupGUI();
+
+    flightTime = guidingPhase->getFlightTime();
+
+    this->replaySpeedFactor = 1.0f;
+    this->isPausing = false;
 
     // Create results window and minimize it
     // Lambda function which executes when retry is pressed
@@ -113,11 +117,32 @@ ReplayPhase::~ReplayPhase()
 
 void ReplayPhase::update(const float& dt)
 {
-	level.replaySystem->update(dt);
+    if (isPausing) {
+        // Slow down time if pausing
+        replaySpeedFactor = glm::max(replaySpeedFactor - dt * (1.0f / timeToPause), 0.0f);
+    } else {
+        // Increase speed factor back to 1.0f
+        replaySpeedFactor = glm::min(replaySpeedFactor + dt * (1.0f / timeToPause), 1.0f);
+    }
 
-	// Advance time bar and slider
-	if (replayTime < flightTime) {
-		replayTime += dt;
+    // Make sure the player camera is always updated with dt, regardless of replay speed factor
+    float cameraUpdateTime = dt + dt * (1.0f - replaySpeedFactor);
+
+    if (thirdPersonController) {
+        thirdPersonController->update(cameraUpdateTime);
+
+        camera->update(cameraUpdateTime);
+    } else if (freeCam) {
+        freeCam->update(cameraUpdateTime);
+    }
+
+    float updateTime = dt * replaySpeedFactor;
+
+    level.replaySystem->update(updateTime);
+
+    // Advance time bar and slider
+    if (replayTime < flightTime) {
+        replayTime += updateTime;
 
 		float replayProgress = replayTime / flightTime;
 
@@ -129,7 +154,20 @@ void ReplayPhase::update(const float& dt)
 
 			timeBarSlider->setOption(GUI::FLOAT_LEFT, (int)timeBarSize.x - (int)timeBarSlider->getSize().x);
 		}
-	}
+    }
+
+    ParticleManager::get().update(updateTime);
+
+	// Update entities
+    level.entityManager->update(updateTime);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(updateTime);
 }
 
 Entity* ReplayPhase::getReplayArrow() const
@@ -191,6 +229,10 @@ void ReplayPhase::beginAimTransition()
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
 
+	// Reset time speed
+	this->isPausing = false;
+	this->replaySpeedFactor = 1.0f;
+
 	// Remove results GUI if visible
 	if (level.scoreManager->resultsVisible()) {
 		level.scoreManager->removeResultsGUI(level);
@@ -210,6 +252,7 @@ void ReplayPhase::beginAimTransition()
 
 	// Remove GUI elements
 	level.gui->removePanel(backPanel);
+    level.gui->removePanel(playPauseButton);
 
 	// Begin camera transition to the arrow
 	CameraSetting currentCamSettings;
@@ -236,9 +279,10 @@ void ReplayPhase::beginAimTransition()
 	// Remove camera controller
 	if (freeCam) {
 		level.entityManager->removeTracedEntity(freeCam->getName());
-	}
-	else {
+		freeCam = nullptr;
+	} else {
 		replayArrow->removeComponent(thirdPersonController->getName());
+		thirdPersonController = nullptr;
 	}
 
 	EventBus::get().subscribe(this, &ReplayPhase::finishAimTransition);
@@ -316,6 +360,30 @@ void ReplayPhase::setupGUI()
 	// Add the parent panel to level GUI
 	level.gui->addPanel(backPanel);
 
+    // Create play/pause button
+    playPauseButton = new Button();
+
+    // Horizontal size
+    glm::vec2 playPauseSize = {screenHeight * playPauseSizeFactor * playPauseAspect, screenHeight * playPauseSizeFactor};
+
+    playPauseButton->setSize(glm::uvec2((unsigned)playPauseSize.x, (unsigned)playPauseSize.y));
+
+    // Place the button in the middle of the screen, slightly above the time bar
+    glm::uvec2 playPausePos = {(unsigned)screenWidth / 2 - playPauseSize.x / 2, timeBarPos.y + timeBarSize.y * 2};
+
+    playPauseButton->setPosition(playPausePos);
+
+    playPauseButton->setNormalColor(timeBarBackColor);
+    playPauseButton->setHoverColor(timeBarBackColor * 1.1f);
+    playPauseButton->setPressedColor(timeBarFrontColor);
+
+    playPauseButton->setCallback([this](){this->handlePlayPause();});
+
+    Texture* playPauseTx = TextureManager::loadTexture("./Game/Assets/playPause.png");
+
+    playPauseButton->setBackgroundTexture(playPauseTx);
+
+    level.gui->addPanel(playPauseButton);
 	// Add collision marks to bar
 	addCollisionMarks();
 }
@@ -327,7 +395,7 @@ void ReplayPhase::addCollisionMarks()
 	for (auto t : v)
 	{
 		float replayProgress = t.time / this->flightTime;
-		int width = this->backPanel->getSize().x * replayProgress;
+		unsigned int width = (unsigned)(this->backPanel->getSize().x * replayProgress);
 		Panel* p = new Panel();
 		p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
 		p->setColor({ 1.f, 1.f, 1.f, 1.f });
@@ -362,6 +430,11 @@ void ReplayPhase::handleTimeBarClick()
 	if (trailEmitter)
 		trailEmitter->setTrailTimer(this->replayTime);
 }	
+
+void ReplayPhase::handlePlayPause()
+{
+    this->isPausing = !this->isPausing;
+}
 
 void ReplayPhase::switchCamera()
 {
