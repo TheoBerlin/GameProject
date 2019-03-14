@@ -143,11 +143,11 @@ public:
 	*/
 	std::vector<std::pair<Text*, glm::ivec2>>& getTextList();
 
-		/*
-	Get a list of the current text elements.
-	Return:
-		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
-	*/
+	/*
+Get a list of the current text elements.
+Return:
+	A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
+*/
 	Text * getText(const unsigned& index);
 
 	/*

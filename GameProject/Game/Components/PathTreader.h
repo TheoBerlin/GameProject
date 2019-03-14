@@ -17,7 +17,9 @@ public:
     void update(const float& dt);
 
     void setPath(const std::vector<KeyPoint>& path, bool loop = false);
+
     std::vector<KeyPoint>& getPath();
+
 	KeyPoint& getKeyPoint(unsigned int index);
 
     // Start or restart path treading from the beginning

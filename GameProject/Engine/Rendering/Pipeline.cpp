@@ -410,11 +410,6 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	/*
 		Set up Point Light
 	*/
-	struct LightBuffer {
-		PointLight pointLights[10];
-		int nrOfPointLights;
-		glm::vec3 padding;
-	} lightBuffer;
 
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
@@ -428,6 +423,47 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
 	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+
+}
+
+void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance)
+{
+	lightManager->createPointLight(position, intensity, distance);
+
+	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
+
+	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
+	}
+
+	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
+}
+
+
+void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
+{
+	if (index > lightManager->getNrOfPointLights() - 1) {
+		LOG_ERROR("Index out of range");
+	}
+	else {
+		lightManager->updatePointLight(index, position, intensity, distance);
+
+		lightBuffer.pointLights[index] = *lightManager->getPointLights()->at(index);
+
+		this->uniformBuffers[3]->setLightSubData((void*)(&lightBuffer.pointLights[index]), sizeof(PointLight), sizeof(PointLight) * index);
+	}
+}
+
+void Pipeline::removeLight(int index)
+{
+	lightManager->removePointLight(index);
+	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
+
+	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
+	}
+
+	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 }
 
 void Pipeline::drawTrail()

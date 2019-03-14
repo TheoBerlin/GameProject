@@ -30,7 +30,7 @@ private:
 	float totalAngle;
 
 	// Spasm
-	glm::vec3 maxTranslation = {0.f, 0.2f, 0.f };
+	glm::vec3 maxTranslation = { 0.f, 0.2f, 0.f };
 	const glm::vec3 maxRotation = { 0.f, glm::quarter_pi<float>() / 4.0f, glm::quarter_pi<float>() / 4.0f };
 	float shakeTimer;
 };

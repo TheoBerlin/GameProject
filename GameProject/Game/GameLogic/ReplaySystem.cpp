@@ -6,28 +6,28 @@
 #include <Game/Level/Level.h>
 
 ReplaySystem::ReplaySystem()
-    :replayTime(0.0f),
-    isRecording(false),
-    isReplaying(false)
+	:replayTime(0.0f),
+	isRecording(false),
+	isReplaying(false)
 {
 }
 
 ReplaySystem::~ReplaySystem()
 {
-    EventBus::get().unsubscribe(this, &ReplaySystem::handlePlayerCollision);
+	EventBus::get().unsubscribe(this, &ReplaySystem::handlePlayerCollision);
 }
 
 void ReplaySystem::update(const float& dt)
 {
-    if (!isReplaying) {
-        return;
-    }
+	if (!isReplaying) {
+		return;
+	}
 
-    replayTime += dt;
+	replayTime += dt;
 
-    // Advance collisionIndex and republish events
-    while (collisionIndex < collisions.size() && collisions[collisionIndex].time < replayTime) {
-		
+	// Advance collisionIndex and republish events
+	while (collisionIndex < collisions.size() && collisions[collisionIndex].time < replayTime) {
+
 		//Adds explosion on collision
 		Component * explosionComponent = collisions[collisionIndex].event.entity2->getComponent("Explosion");
 		if (explosionComponent) {
@@ -36,94 +36,94 @@ void ReplaySystem::update(const float& dt)
 		}
 
 		collisions[collisionIndex].event.phase = PlayerCollisionEvent::REPLAY_PHASE;
-        EventBus::get().publish(&collisions[collisionIndex].event);
+		EventBus::get().publish(&collisions[collisionIndex].event);
 
-        collisionIndex += 1;
-    }
+		collisionIndex += 1;
+	}
 
-    // Stop replaying if all collision events have been republished
-    if (collisionIndex == collisions.size()) {
-        stopReplaying();
-    }
+	// Stop replaying if all collision events have been republished
+	if (collisionIndex == collisions.size()) {
+		stopReplaying();
+	}
 }
 
 void ReplaySystem::startRecording()
 {
-    EventBus::get().subscribe(this, &ReplaySystem::handlePlayerCollision);
+	EventBus::get().subscribe(this, &ReplaySystem::handlePlayerCollision);
 
-    // Delete old replay
-    if (collisions.size() > 0) {
-        deleteReplay();
-    }
+	// Delete old replay
+	if (collisions.size() > 0) {
+		deleteReplay();
+	}
 
-    // Safety measure to avoid having the replay system record its own replays
-    if (isReplaying) {
-        stopReplaying();
-    }
+	// Safety measure to avoid having the replay system record its own replays
+	if (isReplaying) {
+		stopReplaying();
+	}
 
-    recordingTimer.start();
-    isRecording = true;
+	recordingTimer.start();
+	isRecording = true;
 }
 
 void ReplaySystem::stopRecording()
 {
-    EventBus::get().unsubscribe(this, &ReplaySystem::handlePlayerCollision);
+	EventBus::get().unsubscribe(this, &ReplaySystem::handlePlayerCollision);
 
-    isRecording = false;
+	isRecording = false;
 
-    recordingTimer.stop();
+	recordingTimer.stop();
 }
 
 void ReplaySystem::deleteReplay()
 {
-    collisions.clear();
+	collisions.clear();
 }
 
 void ReplaySystem::startReplaying()
 {
-    // This will enable update to republish collision events
-    isReplaying = true;
+	// This will enable update to republish collision events
+	isReplaying = true;
 
-    collisionIndex = 0;
-    replayTime = 0.0f;
+	collisionIndex = 0;
+	replayTime = 0.0f;
 
-    // Safety measure
-    if (isRecording) {
-        stopRecording();
-    }
+	// Safety measure
+	if (isRecording) {
+		stopRecording();
+	}
 }
 
 void ReplaySystem::stopReplaying()
 {
-    isReplaying = false;
+	isReplaying = false;
 }
 
 void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time)
 {
-    /*
-        Rewinding the level is done in two steps:
-        1. Reset the level to its original state
-        2. Fast forward the level to its state at the given time
-    */
-    // Reset targets
-    level.targetManager->resetTargets();
+	/*
+		Rewinding the level is done in two steps:
+		1. Reset the level to its original state
+		2. Fast forward the level to its state at the given time
+	*/
+	// Reset targets
+	level.targetManager->resetTargets();
 
-    // Reset replay arrow
-    replayArrow->startTreading();
+	// Reset replay arrow
+	replayArrow->startTreading();
 
-    // Reset collision replays
-    this->startReplaying();
+	// Reset collision replays
+	this->startReplaying();
 
-    this->update(time);
+	this->update(time);
 
-    // Fast forward level, update every entity except the player entity
-    std::vector<Entity*> entities = level.entityManager->getAll();
+	// Fast forward level, update every entity except the player entity
+	std::vector<Entity*> entities = level.entityManager->getAll();
 
-    for (auto& entity : entities) {
-        if (entity != playerEntity) {
-            entity->update(time);
-        }
-    }
+	for (auto& entity : entities) {
+		if (entity != playerEntity) {
+			entity->update(time);
+		}
+	}
 }
 
 std::vector<CollisionReplay>& ReplaySystem::getCollisionReplays()
@@ -133,8 +133,8 @@ std::vector<CollisionReplay>& ReplaySystem::getCollisionReplays()
 
 void ReplaySystem::handlePlayerCollision(PlayerCollisionEvent* event)
 {
-    recordingTimer.update();
-    float timeStamp = recordingTimer.getTime();
+	recordingTimer.update();
+	float timeStamp = recordingTimer.getTime();
 
-    collisions.push_back(CollisionReplay(*event, timeStamp));
+	collisions.push_back(CollisionReplay(*event, timeStamp));
 }

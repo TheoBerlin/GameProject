@@ -104,6 +104,9 @@ public:
 	*/
 	void updateShaders(const float& dt);
 	void addCurrentLightManager(LightManager * lm);
+	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
+	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
+	void removeLight(int index);
 
 	/*
 		Updates trail shader
@@ -149,4 +152,10 @@ private:
 	LightManager * lightManager;
 
 	std::vector<UniformBuffer*> uniformBuffers;
+
+	struct LightBuffer {
+		PointLight pointLights[10];
+		int nrOfPointLights;
+		glm::vec3 padding;
+	} lightBuffer;
 };

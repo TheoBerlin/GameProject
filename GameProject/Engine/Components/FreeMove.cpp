@@ -32,6 +32,16 @@ FreeMove::~FreeMove()
 	EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
 }
 
+void FreeMove::setSpeed(const float speed)
+{
+	this->speed = speed;
+}
+
+float FreeMove::getSpeed() const
+{
+	return speed;
+}
+
 void FreeMove::update(const float & dt)
 {
 	Transform * mat = host->getTransform();
@@ -66,7 +76,8 @@ void FreeMove::update(const float & dt)
 
 		if (newPitch > maxPitch) {
 			pitch = maxPitch - currentPitch;
-		} else if (newPitch < -maxPitch) {
+		}
+		else if (newPitch < -maxPitch) {
 			pitch = -maxPitch - currentPitch;
 		}
 
@@ -83,7 +94,8 @@ void FreeMove::toggleMouse()
 {
 	if (this->mouseEnabled) {
 		disableMouse();
-	} else {
+	}
+	else {
 		enableMouse();
 	}
 }

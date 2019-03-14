@@ -41,6 +41,8 @@ void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes
 	vbo->unbind();
 
 	vbo->setAttribCount(attributes.attribs.size());
+
+	
 }
 
 void VertexArray::updateBuffer(unsigned vboIndex, const void* data, const size_t dataSize, unsigned offset, const unsigned& usage)

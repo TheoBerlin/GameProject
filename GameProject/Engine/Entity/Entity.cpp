@@ -105,7 +105,8 @@ Component* Entity::getComponent(const std::string& componentName)
 
 	if (elem != this->components.end()) {
 		return elem->second;
-	} else {
+	}
+	else {
 		return nullptr;
 	}
 }

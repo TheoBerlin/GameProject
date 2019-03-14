@@ -88,7 +88,7 @@
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
-    <ClCompile Include="Game\Components\ThirdPersonController.cpp" />
+    <ClCompile Include="Game\components\ThirdPersonController.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\AimPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\GuidingPhase.cpp" />
@@ -100,6 +100,7 @@
     <ClCompile Include="Game\GameLogic\ScoreManager.cpp" />
     <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\States\EditorState.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
     <ClCompile Include="Game\Level\LevelStructure.cpp" />
@@ -123,7 +124,6 @@
     <ClInclude Include="Engine\Rendering\Lighting\DirectionalLight.h" />
     <ClInclude Include="Engine\Rendering\Lighting\LightManager.h" />
     <ClInclude Include="Engine\Rendering\Lighting\PointLight.h" />
-    <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
@@ -194,7 +194,7 @@
     <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
-    <ClInclude Include="Game\Components\ThirdPersonController.h" />
+    <ClInclude Include="Game\components\ThirdPersonController.h" />
     <ClInclude Include="Game\GameLogic.h" />
     <ClInclude Include="Game\GameLogic\GameEvents.h" />
     <ClInclude Include="Game\GameLogic\Phases\AimPhase.h" />
@@ -211,6 +211,7 @@
     <ClInclude Include="Game\Components\ComponentResources.h" />
     <ClInclude Include="Game\Components\PathTreader.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\States\EditorState.h" />
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\MenuState.h" />
     <ClInclude Include="Game\States\PauseState.h" />
