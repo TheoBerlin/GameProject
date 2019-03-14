@@ -17,7 +17,7 @@
 
 GameState::GameState(const std::string& levelJSON)
 {
-	Level level;
+	this->levelJSON = levelJSON;
 
 	targetManager = new TargetManager();
 
@@ -31,13 +31,12 @@ GameState::GameState(const std::string& levelJSON)
 	level.levelStructure = &this->levelStructure;
 	level.lightManager = &this->lightManager;
 
-	levelParser.readLevel(levelJSON, level);
-
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	levelParser.readLevel(this->levelJSON, level);
 
 	gameLogic.init(level);
-
+	
 	Display::get().getRenderer().initInstancing();
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -51,6 +50,7 @@ GameState::GameState(const std::string& levelJSON)
 
 GameState::~GameState()
 {
+
 	delete targetManager;
 
 	Display::get().getRenderer().clearRenderingTargets();
@@ -78,6 +78,8 @@ void GameState::start()
 
 void GameState::end()
 {
+	levelParser.writeScore(this->levelJSON, level);
+
 	/*
 		All entities removes themselves from the rendering group of their model
 	*/

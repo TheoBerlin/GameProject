@@ -18,9 +18,6 @@ class LevelParser {
 private:
 	json::json jsonFile;
 
-	/*void writePosition(int index, glm::vec3 position);
-	void writeName(int index, std::string name);*/
-
 	void readEntityTargets(Level& level);
 	void readEntityBoxes(Level& level);
 	void readEntityWalls(Level& level);
@@ -48,7 +45,6 @@ private:
 	void createCollisionBodies(Level& level);
 
 public:
-	//void writeToFile(std::string file, EntityManager *entityManager);
 	void readLevel(std::string file, Level& level);
 	void readLevelInfo(std::string file, std::vector<std::string>& info);
 	void writeLevel(std::string file, Level& level);

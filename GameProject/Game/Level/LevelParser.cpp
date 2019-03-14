@@ -328,6 +328,7 @@ void LevelParser::readMetadata(Level& level)
 
 	// Read optimal time for scoreManager
 	level.scoreManager->setOptimalTime(readValue<float>(metadata, "OptimalTime"));
+	level.scoreManager->setHighscore(readValue<unsigned>(metadata, "Highscore"));
 }
 
 void LevelParser::readLights(Level & level)

@@ -39,3 +39,9 @@ struct PauseEvent : public Event
 struct ExitEvent : public Event
 {
 };
+
+struct UpdateScoreEvent : public Event
+{
+	UpdateScoreEvent(int highscore) : highscore{ highscore } {};
+	int highscore;
+};
