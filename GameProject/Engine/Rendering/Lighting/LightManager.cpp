@@ -82,7 +82,7 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 	return nullptr;
 }
 
-DirectionalLight * LightManager::getDirectionalLight() const
+DirectionalLight * LightManager::getDirectionalLight()
 {
 	return this->dirLight;
 }

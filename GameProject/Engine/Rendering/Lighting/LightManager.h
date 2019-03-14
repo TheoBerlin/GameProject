@@ -16,7 +16,9 @@ public:
 	
 	PointLight * createPointLight(glm::vec4 position, glm::vec4 intensity, int distance);
 	std::vector<PointLight*> * getPointLights();
-	int getNrOfPointLights();
+	void removePointLight(int index);
+	void updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
+	unsigned int getNrOfPointLights() const;
 
 	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity, Level* level);
 	DirectionalLight * getDirectionalLight();
@@ -51,10 +53,6 @@ public:
 #else
 	void drawDebugBox() {}
 #endif
-
-	unsigned int getNrOfPointLights() const;
-	void removePointLight(int index);
-	void updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 
 private:
 	void calcShadowProjection(float width, float height, float near=5.0f, float far = 50.0f);

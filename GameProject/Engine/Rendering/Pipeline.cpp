@@ -349,7 +349,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	int displayWidth = Display::get().getWidth();
 	int displayHeight = Display::get().getHeight();
 
-	Display::get().updateView(this->lightManager->getShadowHeight(), this->lightManager->getShadowWidth());
+	Display::get().updateView((int)this->lightManager->getShadowHeight(), (int)this->lightManager->getShadowWidth());
 
 	this->shadowFbo.bind();
 	this->prePassDepthOn();
@@ -403,7 +403,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
 
 	// GL_R32F does nothing if the attachmenttype is depth!
-	this->shadowFbo.attachTexture(this->lightManager->getShadowHeight(), this->lightManager->getShadowWidth(), AttachmentType::DEPTH, GL_R32F, GL_R32F, GL_FLOAT);
+	this->shadowFbo.attachTexture((GLuint)this->lightManager->getShadowHeight(), (GLuint)this->lightManager->getShadowWidth(), AttachmentType::DEPTH, GL_R32F, GL_R32F, GL_FLOAT);
 
 	/*
 		Set up Point Light
@@ -411,16 +411,16 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
-	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+	for (unsigned int i = 0; i < lightManager->getNrOfPointLights(); i++) {
 		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
 	}
 
 	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
-	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getLightMatrixPointer());
-	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getLightMatrixPointer());
+	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 
 }
 
@@ -430,7 +430,7 @@ void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance
 
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
-	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+	for (unsigned int i = 0; i < lightManager->getNrOfPointLights(); i++) {
 		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
 	}
 
@@ -440,7 +440,7 @@ void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance
 
 void Pipeline::updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
 {
-	if (index > lightManager->getNrOfPointLights() - 1) {
+	if ((unsigned)index > lightManager->getNrOfPointLights() - 1) {
 		LOG_ERROR("Index out of range");
 	}
 	else {
@@ -457,7 +457,7 @@ void Pipeline::removeLight(int index)
 	lightManager->removePointLight(index);
 	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
 
-	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
+	for (unsigned int i = 0; i < lightManager->getNrOfPointLights(); i++) {
 		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
 	}
 
