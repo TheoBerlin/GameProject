@@ -114,7 +114,7 @@ float Transform::getRoll() const
 
 glm::vec3 Transform::getYawPitchRoll() const
 {
-	return {this->getYaw(), this->getPitch(), this->getRoll()};
+	return { this->getYaw(), this->getPitch(), this->getRoll() };
 }
 
 glm::vec3 Transform::getDefaultForward() const
@@ -155,7 +155,7 @@ void Transform::rotate(const glm::vec3& rotation)
 
 void Transform::rotate(const glm::vec3& rotation, const glm::vec3& rotationCenter)
 {
-	if(rotation != glm::vec3(0.0f)) {
+	if (rotation != glm::vec3(0.0f)) {
 		position -= rotationCenter;
 
 		position = glm::quat(rotation) * position;
@@ -245,11 +245,13 @@ void Transform::setForward(const glm::vec3 & forward)
 	if (cosAngle >= 1.0f - FLT_EPSILON * 10.0f) {
 		// The new forward is identical to the old one, do nothing
 		return;
-	} else if (cosAngle <= -1.0f + FLT_EPSILON * 10.0f) {
+	}
+	else if (cosAngle <= -1.0f + FLT_EPSILON * 10.0f) {
 		// The new forward is parallell to the old one, create a 180 degree rotation quarternion
 		// around any axis
 		rotQuat = glm::angleAxis(glm::pi<float>(), GLOBAL_UP_VECTOR) * rotationQuat;
-	} else {
+	}
+	else {
 		// Calculate rotation quaternion
 		glm::vec3 axis = glm::normalize(glm::cross(this->f, normForward));
 		float angle = std::acosf(cosAngle);

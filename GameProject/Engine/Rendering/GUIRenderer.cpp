@@ -30,9 +30,8 @@ void GUIRenderer::draw(GUI & gui)
 	std::vector<Panel*>& panelList = gui.getPanelList();
 	for (Panel* panel : panelList)
 	{
-		// Rebake if needed
-		if (panel->hasUpdated())
-			panel->rebake();
+		// Rebake panels
+		panel->rebake();
 
 		// Draw baked texture.
 		this->orthoText = this->orthoDisplay;

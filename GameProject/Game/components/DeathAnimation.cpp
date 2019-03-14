@@ -43,7 +43,6 @@ void DeathAnimation::play(float totalTime, float gravity, float totalAngle, cons
 	this->gravity = gravity;
 	this->totalAngle = totalAngle;
 	this->totalTranslation = {0.0f, 0.0f, 0.0f};
-	this->translationFactor = 0.0f;
 }
 
 void DeathAnimation::reset()

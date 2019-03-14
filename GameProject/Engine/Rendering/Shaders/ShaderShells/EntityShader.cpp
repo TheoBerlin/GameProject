@@ -65,6 +65,11 @@ void EntityShader::setCamPosUniform(const std::string & uniformName)
 		Shader::setUniform3fv("camPos", 1, &(*this->camera)->getPosition()[0]);
 }
 
+void EntityShader::setGlowUniform(bool shouldGlow)
+{
+	Shader::setUniform1b("isGlowing", shouldGlow);
+}
+
 void EntityShader::update(const float & dt)
 {
 	this->time += dt;

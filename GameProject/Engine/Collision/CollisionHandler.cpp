@@ -105,15 +105,14 @@ void CollisionHandler::removeCollisionBody(rp3d::CollisionBody * body)
 void CollisionHandler::removeCollisionBody(Entity * entity)
 {
 	rp3d::CollisionBody* body = entity->getCollisionBody();
-	
+
 	rp3d::ProxyShape* current = body->getProxyShapesList();
 
 	// Look for the proxy shape that contains the collision shape in parameter
 	while (current != nullptr) {
-
 		// Remove the proxy collision shape
 		rp3d::ProxyShape* nextElement = current->getNext();
-		
+
 #ifdef ENABLE_COLLISION_DEBUG_DRAW
 		rp3d::ProxyShape* proxyPtr;
 		size_t size = this->proxyShapes.size();
@@ -172,13 +171,14 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, CATEGORY cat, bool 
 	if (isPlayer)
 		this->player = entityBody;
 
-	
+
 	unsigned int index = 0;
 	glm::vec3 entityScale = entity->getTransform()->getScale();
 	for (auto data : this->shapesMap[entity->getModel()]) 
 	{
 		if((unsigned)desiredIndex == index || desiredIndex == -1)
 			addVariedCollisionShapeToBody(index, data, entityBody, cat, entityScale, glm::vec3(1.f), glm::vec3(0.f), rot);
+
 		index++;
 	}
 
@@ -186,6 +186,7 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, CATEGORY cat, bool 
 
 	// Set the body for the entity
 	entity->setCollisionBody(entityBody);
+
 	// Save the pair of entity and body for collision detection later
 	this->entities[entityBody] = entity;
 }

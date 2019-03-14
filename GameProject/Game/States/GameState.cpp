@@ -17,7 +17,7 @@
 
 GameState::GameState(const std::string& levelJSON)
 {
-	Level level;
+	this->levelJSON = levelJSON;
 
 	targetManager = new TargetManager();
 
@@ -30,14 +30,16 @@ GameState::GameState(const std::string& levelJSON)
 	level.scoreManager = &this->scoreManager;
 	level.levelStructure = &this->levelStructure;
 	level.lightManager = &this->lightManager;
+	level.helpGUI = &this->helpGUI;
 
-	levelParser.readLevel(levelJSON, level);
+	this->helpGUI.init(&this->getGUI());
 
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	levelParser.readLevel(this->levelJSON, level);
 
 	gameLogic.init(level);
-
+	
 	Display::get().getRenderer().initInstancing();
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -51,6 +53,7 @@ GameState::GameState(const std::string& levelJSON)
 
 GameState::~GameState()
 {
+
 	delete targetManager;
 
 	Display::get().getRenderer().clearRenderingTargets();
@@ -78,6 +81,8 @@ void GameState::start()
 
 void GameState::end()
 {
+	levelParser.writeScore(this->levelJSON, level);
+
 	/*
 		All entities removes themselves from the rendering group of their model
 	*/
@@ -95,6 +100,9 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+	// Update time for helpGUI for animations
+	this->helpGUI.update(dt);
+
 	if (!this->hasSubscribedToPause) {
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
@@ -112,10 +120,6 @@ void GameState::updateLogic(const float dt)
 
 void GameState::render()
 {
-	/*
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
-	*/
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
 
