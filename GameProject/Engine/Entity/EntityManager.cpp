@@ -40,7 +40,7 @@ void EntityManager::addEntity(Entity* entity)
 	this->entities.push_back(entity);
 }
 
-void EntityManager::removedEntity(unsigned int index)
+void EntityManager::removeEntity(unsigned int index)
 {
 	if (index < entities.size()) {
 		delete entities[index];
