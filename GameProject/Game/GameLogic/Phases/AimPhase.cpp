@@ -5,14 +5,12 @@
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/TrailEmitter.h>
+#include <Game/Components/CameraDrift.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/OverviewPhase.h>
 #include <Game/GameLogic/Phases/ReplayPhase.h>
 #include <Engine/Components/PlayerCollision.h>
 #include <GLFW/glfw3.h>
-
-#include "Engine/Config.h"
-#include "Engine/Imgui/imgui.h"
 
 AimPhase::AimPhase(OverviewPhase* overviewPhase)
     :Phase((Phase*)overviewPhase)
@@ -60,8 +58,6 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 	new PlayerCollision(playerArrow);
 
     commonSetup();
-
-
 }
 
 AimPhase::~AimPhase()
@@ -73,17 +69,7 @@ AimPhase::~AimPhase()
 
 void AimPhase::update(const float & dt)
 {
-#ifdef IMGUI
-	ArrowGuider* arrowGuider = this->getArrowGuider();
 
-	if (ImGui::Begin("Arrow Config")) {
-		ImGui::DragFloat("Speed:", &this->arrowSpeed, 0.2f);
-		ImGui::DragFloat("Max turnspeed:", &this->maxTurnSpeed, 0.5f);
-
-		ImGui::End();
-	}
-
-#endif
 }
 
 Entity* AimPhase::getPlayerArrow() const
@@ -117,6 +103,8 @@ void AimPhase::commonSetup()
 	glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
+    new CameraDrift(playerArrow);
+
 	arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
 
@@ -126,7 +114,6 @@ void AimPhase::commonSetup()
 
 	// Reset targets
 	level.targetManager->resetTargets();
-
 
     EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
     EventBus::get().subscribe(this, &AimPhase::handleMouseClick);

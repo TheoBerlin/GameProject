@@ -24,6 +24,20 @@ public:
 		*/
 		SCALE_TO_TEXT_Y,
 
+		/*
+		Used when want to match the size of the panel to the texture which it holds.
+		Value:
+			Texture width in pixels.
+		*/
+		SCALE_TEXTURE_TO_WIDTH,
+
+		/*
+		Used when want to match the size of the panel to the texture which it holds.
+		Value:
+			Texture height in pixels.
+		*/
+		SCALE_TEXTURE_TO_HEIGHT,
+
 		// ---------------------------------- Position options ----------------------------------
 
 		/*
