@@ -237,7 +237,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				}
 			}
 		}
-		entityManager.removedEntity(currentEntity);
+		entityManager.removeEntity(currentEntity);
 		currentEntity = -1;
 	}
 	if (currentEntity != -1) {

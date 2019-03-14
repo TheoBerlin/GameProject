@@ -155,7 +155,7 @@ void LevelStructure::removePoint(Level & level, int wallGroupIndex)
 
 		for (int j = 0; j < level.entityManager->getEntitySize(); j++) {
 			if (wallEntites[removePoint] == level.entityManager->getEntity(j))
-				level.entityManager->removedEntity(j);
+				level.entityManager->removeEntity(j);
 		}
 
 		wallPoints.erase(wallPoints.begin() + removePoint);
@@ -174,7 +174,7 @@ void LevelStructure::removePoint(Level & level, int wallGroupIndex)
 		for (int i = 0; i < 2; i++) {
 			for (int j = 0; j < level.entityManager->getEntitySize(); j++) {
 				if (wallEntites[first] == level.entityManager->getEntity(j)) {
-					level.entityManager->removedEntity(j);
+					level.entityManager->removeEntity(j);
 					wallPoints.erase(wallPoints.begin() + first);
 					scales.erase(scales.begin() + first);
 					wallEntites.erase(wallEntites.begin() + first);;

@@ -15,7 +15,7 @@ VertexArray::~VertexArray()
 	glDeleteVertexArrays(1, &this->id);
 }
 
-unsigned int VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes)
+void VertexArray::addBuffer(VertexBuffer* vbo, const AttributeLayout& attributes)
 {
 	this->buffers.push_back(vbo);
 
