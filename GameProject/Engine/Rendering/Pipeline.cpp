@@ -11,6 +11,7 @@
 #include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlaneShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlanePrePassShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/RoofShader.h"
 
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
@@ -38,6 +39,7 @@ Pipeline::Pipeline()
 	this->entityShaders.push_back(new WallShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, identityMatrix));
+	this->entityShaders.push_back(new RoofShader(&this->camera));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -70,7 +72,7 @@ Pipeline::Pipeline()
 		ubo = nullptr;
 
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
-		if (i != SHADERS::INFINITY_PLANE_PREPASS) {
+		if (i != SHADERS::INFINITY_PLANE_PREPASS && i != SHADERS::ROOF_PLANE) {
 			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
 			this->addUniformBuffer(3, this->entityShaders[i]->getID(), "LightBuffer");
@@ -345,16 +347,18 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 
 	//Draw renderingList
+	glCullFace(GL_FRONT);
 	for (auto pair : renderingTargets) {
 		if (pair.first.castShadow)
 			drawModelPrePassInstanced(pair.first.model);
 	}
+	glCullFace(GL_BACK);
 
 	this->ZprePassShaderInstanced->unbind();
 	this->prePassDepthOff();
 	this->shadowFbo.unbind();
-
-/*#ifdef IMGUI
+	/*
+#ifdef IMGUI
 	auto drawTexture = [](Texture* texture, bool nextLine = false) {
 		ImTextureID texID = (ImTextureID)texture->getID();
 		float ratio = (float)texture->getWidth() / (float)texture->getHeight();
@@ -374,8 +378,8 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	drawTexture(this->shadowFbo.getDepthTexture());
 
 	ImGui::End();
-#endif*/
-
+#endif
+*/
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
@@ -440,6 +444,10 @@ void Pipeline::setWallPoints(const std::vector<glm::vec3>& wallPoints, const std
 	if (infPlanePrePassShader)
 		this->addUniformBuffer(2, infPlanePrePassShader->getID(), "WallPoints");
 
+	EntityShader* eShaderRoof = this->entityShaders[SHADERS::ROOF_PLANE];
+	RoofShader* roofShader = dynamic_cast<RoofShader*>(eShaderRoof);
+	if (roofShader)
+		this->addUniformBuffer(2, roofShader->getID(), "WallPoints");
 
 	if (infPlaneShader != nullptr)
 	{

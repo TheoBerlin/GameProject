@@ -42,6 +42,7 @@ GameState::GameState(const std::string& levelJSON)
 	InputHandler ih(Display::get().getWindowPtr());
 
 	EventBus::get().subscribe(this, &GameState::exitGame);
+	this->hasSubscribedToExit = true;
 
 	//For pause event
 	this->hasSubscribedToPause = false;
@@ -67,6 +68,12 @@ void GameState::start()
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->attachToModel();
+
+	if (!hasSubscribedToExit) {
+		EventBus::get().subscribe(this, &GameState::exitGame);
+
+		this->hasSubscribedToExit = true;
+	}
 }
 
 void GameState::end()
@@ -83,6 +90,8 @@ void GameState::end()
 
 	EventBus::get().unsubscribe(this, &GameState::pauseGame);
 	EventBus::get().unsubscribe(this, &GameState::exitGame);
+
+	this->hasSubscribedToExit = false;
 	this->hasSubscribedToPause = false;
 }
 

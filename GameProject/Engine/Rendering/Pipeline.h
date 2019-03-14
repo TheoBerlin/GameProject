@@ -29,7 +29,8 @@ enum SHADERS {
 	DRONE_SHADER = 1,	// Requires a third vbo with colors bound to location 7.
 	WALL = 2,			//  Requires a third vbo with scale bound to location 7.
 	INFINITY_PLANE = 3,
-	INFINITY_PLANE_PREPASS = 4	//Used for cutout in depthbuffer 
+	INFINITY_PLANE_PREPASS = 4,	//Used for cutout in depthbuffer 
+	ROOF_PLANE = 5
 };
 
 enum SHADERS_POST_PROCESS {
