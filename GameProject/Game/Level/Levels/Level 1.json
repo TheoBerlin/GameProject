@@ -40,9 +40,9 @@
     "DirectionalLight": {
         "Direction": [
             0.0,
-            -0.6030226349830627,
-            0.30151131749153137,
-            0.7385489344596863
+            -1.0,
+            0.1,
+            1.0
         ],
         "Intensity": [
             1.0,
@@ -53,7 +53,7 @@
     },
     "Floor": null,
     "Metadata": {
-        "Highscore": 0,
+        "Highscore": 80,
         "OptimalTime": 10.0
     },
     "Player": {

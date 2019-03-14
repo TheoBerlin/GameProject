@@ -51,20 +51,20 @@
             "Scale": null
         }
     ],
-    "DirectionalLight": {
-        "Direction": [
-            0.0,
-            -2.0,
-            1.0,
-            1.0
-        ],
-        "Intensity": [
-            1.0,
-            1.0,
-            1.0,
-            1.0
-        ]
-    },
+  "DirectionalLight": {
+    "Direction": [
+      0.0,
+      -1.0,
+      0.1,
+      1.0
+    ],
+    "Intensity": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ]
+  },
     "Floor": {
         "Position": [
             0,

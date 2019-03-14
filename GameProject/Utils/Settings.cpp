@@ -25,6 +25,7 @@ bool Settings::readFile(std::string fileName)
 	readScreenWidth();
 	readScreenHeight();
 	readMouseSensitivity();
+	readShadowResolutionFactor();
 
 	if (iFile.is_open()) {
 		iFile.close();
@@ -105,14 +106,14 @@ void Settings::readMouseSensitivity()
 	}
 }
 
-void Settings::readShadowReScale()
+void Settings::readShadowResolutionFactor()
 {
-	json::json& jsonShadowScale = jsonFile["ShadowReScale"];
-	if (!jsonShadowScale.empty()) {
-		shadowReScale = jsonShadowScale;
+	json::json& jsonResolutionFactor = jsonFile["ShadowResolutionFactor"];
+	if (!jsonResolutionFactor.empty()) {
+		this->shadowResolutionFactor = jsonResolutionFactor;
 	}
 	else {
-		LOG_ERROR("%s: ShadowReScale has no value");
+		LOG_ERROR("%s: ShadowResolutionFactor has no value");
 	}
 }
 
@@ -164,15 +165,9 @@ void Settings::setMouseSensitivity(const float mouseSensitivity)
 	changed = true;
 }
 
-float Settings::getShadowReScale()
+float Settings::getShadowResolutionFactor()
 {
-	return this->shadowReScale;
-}
-
-void Settings::setShadowReScale(float shadowReScale)
-{
-	this->shadowReScale = shadowReScale;
-	changed = true;
+	return this->shadowResolutionFactor;
 }
 
 void Settings::handleResizeEvent(WindowResizeEvent * evnt)
