@@ -37,9 +37,24 @@
             ]
         }
     ],
+    "DirectionalLight": {
+        "Direction": [
+            null,
+            null,
+            null,
+            null
+        ],
+        "Intensity": [
+            null,
+            null,
+            null,
+            null
+        ]
+    },
+    "Floor": null,
     "Metadata": {
-        "OptimalTime": 10.0,
-        "Highscore": 0
+        "Highscore": 0,
+        "OptimalTime": 10.0
     },
     "Player": {
         "ArrowCamera": {
