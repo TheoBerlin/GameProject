@@ -128,8 +128,6 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
     // Reset the arrow again
     replayArrow->startTreading();
 
-    replayArrow->update(0.0f);
-
     // Reset collision replays
     this->startReplaying();
 
