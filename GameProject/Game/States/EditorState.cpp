@@ -266,7 +266,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				bool found = false;
 				for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 					if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(glm::vec3(0.0f), 1.0f));
+						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
 						found = true;
 					}
 				}
@@ -274,8 +274,8 @@ void EditorState::entityWindow(EntityManager& entityManager)
 					for (unsigned int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
 						if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
 							std::vector<KeyPoint> path;
-							path.push_back(KeyPoint(glm::vec3(0.0f), 1.0f));
-							path.push_back(KeyPoint(glm::vec3(1.0f), 1.0f));
+							path.push_back(KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+							path.push_back(KeyPoint(glm::vec3(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
 							level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 							level.targetManager->addMovingTarget(entityManager.getEntity(currentEntity), path);
 						}
