@@ -202,7 +202,17 @@ void ReplayPhase::beginAimTransition()
 
 	CameraSetting newCamSettings = level.player.arrowCamera;
 
-	this->transitionStraightPath(currentCamSettings, newCamSettings);
+    // Transition above walls if the free cam is being used, otherwise transition backwards through the arrow's path
+    if (freeCam) {
+        this->transitionAboveWalls(currentCamSettings, newCamSettings);
+    } else {
+        std::vector<KeyPoint> path = pathTreader->getPath();
+
+        // Start treading backwards from the treader's current position
+        path.resize(pathTreader->getCurrentPointIndex() + 1);
+
+        this->transitionBackwards(currentCamSettings, newCamSettings, path);
+    }
 
 	// Remove camera controller
 	if (freeCam) {

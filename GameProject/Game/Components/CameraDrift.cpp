@@ -4,8 +4,10 @@
 #include <Utils/Logger.h>
 #include <glm/gtx/vector_angle.hpp>
 
-CameraDrift::CameraDrift(Entity* host)
-    :Component(host, "CameraDrift")
+CameraDrift::CameraDrift(Entity* host, float angleCorrectionFactor, float maxAngle)
+    :Component(host, "CameraDrift"),
+    angleCorrectionFactor(angleCorrectionFactor),
+    maxAngle(maxAngle)
 {
     Component* tmp = host->getComponent("Camera");
 
@@ -93,5 +95,7 @@ void CameraDrift::update(const float& dt)
         glm::vec3 lookAt = desiredPosition + entityForward * offsetDistance;
 
         camera->setPosition(lookAt - camForward * offsetDistance);
+    } else {
+        camera->setPosition(transform->getPosition());
     }
 }
