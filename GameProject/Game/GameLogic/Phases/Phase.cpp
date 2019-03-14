@@ -24,6 +24,18 @@ Phase::Phase(Phase* other)
 
 void Phase::update(const float & dt)
 {
+	ParticleManager::get().update(dt);
+
+	// Update entities.
+	level.entityManager->update(dt);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(dt);
 }
 
 Phase::~Phase()

@@ -32,6 +32,7 @@ private:
     void setupGUI();
 
     void handleTimeBarClick();
+    void handlePlayPause();
 
     void switchCamera();
 
@@ -56,6 +57,13 @@ private:
     // Total flight time retrieved from guiding phase
     float flightTime, replayTime;
 
+    // [0,1], determines the update rate of the replay
+    float replaySpeedFactor;
+
+    bool isPausing;
+    // When pausing, slow down time gradually rather than instantly stopping time
+    const float timeToPause = 0.8f;
+
     // GUI data
     unsigned int screenWidth, screenHeight;
     // Background time bar
@@ -64,6 +72,13 @@ private:
     Panel* timeBarFront;
 	// Background panel that holds the button and the other panel for optimization
 	Panel* backPanel;
+
+    Button* playPauseButton;
+
+    // Relative to screen height
+    const float playPauseSizeFactor = 1.0f / 16.0f;
+    // Width / height
+    const float playPauseAspect = 1.0f;
 
     // Time bar position and size factors, relative to screen size
     const float timeBarSidePadding = 1.0f/20.0f;

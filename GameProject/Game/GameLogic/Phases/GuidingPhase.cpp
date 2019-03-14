@@ -48,6 +48,19 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 void GuidingPhase::update(const float& dt)
 {
     flightTimer += dt;
+
+	ParticleManager::get().update(dt);
+
+	// Update entities.
+	level.entityManager->update(dt);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(dt);
 }
 
 GuidingPhase::~GuidingPhase()
