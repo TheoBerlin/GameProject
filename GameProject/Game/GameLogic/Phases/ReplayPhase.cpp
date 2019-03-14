@@ -8,9 +8,11 @@
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
+#include <Game/Components/TrailEmitter.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Utils/Settings.h>
+
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase),
@@ -59,8 +61,20 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
         pathVisualizer->addPath(oldArrowGuider->getPath());
     }
 
+	//Retrieve trail emitter from playerArrow
+	Entity* oldArrow = guidingPhase->getPlayerArrow();
+	if (oldArrow) {
+		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(oldArrow->getComponent("TrailEmitter"));
+		// Detach trail emitter from player arrow
+		oldArrow->detachComponent("TrailEmitter");
+
+		// Attach component to replay arrow
+		trailEmitter->setHost(this->replayArrow);
+
+		trailEmitter->resetTrailTimer();
+	}
+
     // Remove old arrow entity
-    Entity* oldArrow = guidingPhase->getPlayerArrow();
     level.entityManager->removeTracedEntity(oldArrow->getName());
 
     // Set up the player camera
@@ -333,7 +347,13 @@ void ReplayPhase::handleTimeBarClick()
     level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
     replayTime = desiredTime;
-}
+
+	//Update trail emitter timer
+	TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(replayArrow->getComponent("TrailEmitter"));
+
+	if (trailEmitter)
+		trailEmitter->setTrailTimer(this->replayTime);
+}	
 
 void ReplayPhase::switchCamera()
 {

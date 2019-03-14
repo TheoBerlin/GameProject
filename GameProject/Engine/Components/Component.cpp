@@ -26,6 +26,11 @@ Entity * Component::getHost()
 
 void Component::setHost(Entity* entity)
 {
+	if (entity == nullptr) {
+		this->host = nullptr;
+		return;
+	}
+
 	// Detach component from old host
 	if (this->host != nullptr) {
 		this->host->detachComponent(this->tagName);
@@ -36,7 +41,8 @@ void Component::setHost(Entity* entity)
 	// Set new host
 	if (entity->addComponent(this)) {
 		this->host = entity;
-	} else {
+	}
+	else {
 		LOG_WARNING("Component already exists on entity %s", this->tagName.c_str());
 	}
 }

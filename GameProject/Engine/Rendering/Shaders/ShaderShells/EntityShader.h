@@ -25,6 +25,7 @@ public:
 	void setShadowBufferUniform(const std::string& uniformName = "shadowTex");
 	void setLightSpaceMatrixUniform(const std::string& uniformName = "lightMatrix");
 	void setCamPosUniform(const std::string& uniformName = "camPos");
+	void setGlowUniform(bool shouldGlow = false);
 
 	virtual void update(const float& dt);
 

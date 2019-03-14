@@ -132,10 +132,6 @@ void GameState::updateLogic(const float dt)
 
 void GameState::render()
 {
-	/*
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
-	*/
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
 

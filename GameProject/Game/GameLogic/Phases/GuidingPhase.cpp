@@ -11,6 +11,8 @@
 #include <Engine/GUI/GUI.h>
 #include <Engine/GUI/Panel.h>
 
+#include "Game/Components/TrailEmitter.h"
+
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase),
     flightTimer(0.0f),
@@ -65,6 +67,11 @@ Entity* GuidingPhase::getPlayerArrow() const
 ArrowGuider* GuidingPhase::getArrowGuider() const
 {
     return arrowGuider;
+}
+
+TrailEmitter * GuidingPhase::getTrailEmitter() const
+{
+	return this->trailEmitter;
 }
 
 float GuidingPhase::getFlightTime()

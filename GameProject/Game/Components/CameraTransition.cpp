@@ -27,10 +27,10 @@ CameraTransition::~CameraTransition()
 void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
 {
     std::vector<KeyPoint> newPath;
+	glm::vec3 upVector = host->getTransform()->getUp();
+    newPath.push_back(KeyPoint(host->getTransform()->getPosition(), upVector, 0.0f));
 
-    newPath.push_back(KeyPoint(host->getTransform()->getPosition(), 0.0f));
-
-    newPath.push_back(KeyPoint(newPos, transitionLength));
+    newPath.push_back(KeyPoint(newPos, upVector, transitionLength));
 
     this->setPath(newPath, newForward, newFOV);
 }

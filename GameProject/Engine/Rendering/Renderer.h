@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "../Components/Camera.h"
 #include "GLAbstraction/UniformBuffer.h"
 #include "GLAbstraction/Shader.h"
 #include "Pipeline.h"
-
 #include "Engine/Particle/ParticleManager.h"
 
 class Model;
@@ -53,7 +54,7 @@ public:
 		Draw texture to screen using a post process  shader
 	*/
 	void drawTextureToScreen(Texture * texture, SHADERS_POST_PROCESS shader);
-	
+
 	/*
 		Draw texture to fbo color attachment 0 using a post process  shader
 	*/
@@ -69,6 +70,11 @@ public:
 	*/
 	void addRenderingTarget(Model* model, SHADERS shader = SHADERS::DEFAULT, bool castShadow = true, bool prePass = true, bool visible = true);
 
+	// Activate post process filter
+	void activatePostFilter(SHADERS_POST_PROCESS shader);
+	// Deactivate post process filter
+	void deactivatePostFilter(SHADERS_POST_PROCESS shader);
+
 private:
 	Pipeline pipeline;
 
@@ -78,4 +84,6 @@ private:
 
 	std::vector<std::pair<RenderingTarget, SHADERS>> renderingTargets;
 
+	// Contains active post process filters
+	std::vector<bool> activePostFilters;
 };
