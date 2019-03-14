@@ -1,9 +1,10 @@
 #pragma once
 
-#include <Game/Level/Level.h>
-#include <Engine/Events/Events.h>
-#include <Game/Components/CameraTransition.h>
 #include <Engine/Components/Camera.h>
+#include <Engine/Events/Events.h>
+#include <Game/Level/Level.h>
+#include <Game/Components/CameraDrift.h>
+#include <Game/Components/CameraTransition.h>
 
 class Entity;
 
@@ -23,6 +24,8 @@ protected:
     void transitionStraightPath(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
     // Transitions above walls
     void transitionAboveWalls(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings);
+    // Transition backwards along a path
+    void transitionBackwards(const CameraSetting& currentCamSettings, const CameraSetting& newCamSettings, const std::vector<KeyPoint>& path);
 
     Level level;
 
@@ -30,6 +33,7 @@ protected:
     Entity* transitionEntity;
     Camera* transitionCam;
     CameraTransition* transitionComponent;
+    CameraDrift* transitionCamDrift;
 
 private:
     // Calculate the position of a camera by accounting for offset

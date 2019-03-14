@@ -19,6 +19,15 @@ public:
 	// Create wall group
 	void createWallGroup(Level& level, std::vector<glm::vec3>& points, bool invertNormals = false);
 
+	void addPoint(Level& level, int wallGroupIndex, glm::vec3 point);
+	void editPoint(Level& level, int wallGroupIndex, int point, glm::vec3 newPoint);
+	void addWall(Level& level);
+
+	void removePoint(Level& level, int pointIndex);
+
+	// Update buffers
+	void updateBuffers();
+
 	// Get all wall points of the current level
 	std::vector<glm::vec3>& getWallPoints();
 	// Get all wall groups index
@@ -33,20 +42,26 @@ private:
 	// Create quad model for walls
 	Model* createQuad();
 	// Create plane model for infinity plane
-	Model* createPlane();
+	Model* createInfPlane();
+	// Create plane model for roof
+	Model* createRoofPlane();
 	// Create mesh buffer for walls
 	void createWallBuffers();
+
 	// Create infinity plane
 	void createInfinityPlane(Level& level);
+	// Create roof plane
+	void createRoof(Level& level);
 	// Check if the points are expressed in clockwise or anticlockwise order
-	bool isClockwise(std::vector<glm::vec3>& points); 
+	bool isClockwise(std::vector<glm::vec3>& points);
 
 	std::vector<Entity*> wallEntites;
 	std::vector<glm::vec2> scales;
 	Model* quad;
-	Model* plane;
+	Model* infPlane;
+	Model* roofPlane;
 	std::vector<glm::vec3> wallPoints;
 	std::vector<int> wallGroupsIndex;
 	float height;
+	int spawnedPoints;
 };
-

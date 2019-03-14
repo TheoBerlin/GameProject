@@ -11,15 +11,15 @@
 class CameraDrift : public Component
 {
 public:
-    CameraDrift(Entity* host);
+    CameraDrift(Entity* host, float angleCorrectionFactor, float maxAngle);
     ~CameraDrift();
 
     void update(const float& dt);
 
 private:
     // Percentage of forward angle being nullified per second
-    const float angleCorrectionFactor = 3.5f;
-    const float maxAngle = glm::half_pi<float>();
+    float angleCorrectionFactor;
+    float maxAngle;
 
     Camera* camera;
 };

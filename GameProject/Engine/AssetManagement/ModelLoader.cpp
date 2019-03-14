@@ -179,11 +179,19 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
     // Store material constants
     aiColor3D diffuse;
     aiColor3D specular;
-	float shininess = 0.0;
+	float shininess = 0.0f;
+	float glow = 0.0f;
 
     material->Get(AI_MATKEY_COLOR_DIFFUSE, diffuse);
     material->Get(AI_MATKEY_COLOR_SPECULAR, specular);
 	material->Get(AI_MATKEY_SHININESS, shininess);
+	material->Get(AI_MATKEY_OPACITY, glow);  // Opacity is used to tell if material should glow, can be changed in blender.
+
+	//Any value over 0 tells that the material should glow
+	if (glow > 0.0f)
+		newMaterial.glow = true;
+	else
+		newMaterial.glow = false;
 
     newMaterial.Kd.r = diffuse.r;
     newMaterial.Kd.g = diffuse.g;

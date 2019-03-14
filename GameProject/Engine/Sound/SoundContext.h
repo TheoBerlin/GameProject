@@ -3,14 +3,12 @@
 #include "../../../include/OpenAL/al.h"
 #include "../../../include/OpenAL/alc.h"
 
-class SoundContext {
-private:
-
-public:
-	SoundContext();
-	~SoundContext();
-
+struct SoundContext {
 	//Initialize sound
 	static void initSoundContext();
 
+	// Cleanup sound
+	static void deleteContext();
+private:
+	static ALCcontext* context;
 };

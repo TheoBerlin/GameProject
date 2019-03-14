@@ -6,6 +6,8 @@
 #include "../../Config.h"
 
 struct Level;
+#define MAX_POINT_LIGHT 10
+
 class LightManager
 {
 public:
@@ -49,6 +51,10 @@ public:
 #else
 	void drawDebugBox() {}
 #endif
+
+	unsigned int getNrOfPointLights() const;
+	void removePointLight(int index);
+	void updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 
 private:
 	void calcShadowProjection(float width, float height, float near=5.0f, float far = 50.0f);

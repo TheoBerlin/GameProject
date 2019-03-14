@@ -29,7 +29,7 @@ struct Utils
 	/*
 	Converting from Euler angles to quaternion.
 	Atrugments:
-		yaw: Angle in radians of a rotation around the y-axis. 
+		yaw: Angle in radians of a rotation around the y-axis.
 		pitch: Angle in radians of a rotation around the x-axis.
 		roll: Angle in radians of a rotation around the z-axis.
 	*/

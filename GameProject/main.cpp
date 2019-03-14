@@ -14,6 +14,7 @@
 
 #include "Engine/Sound/SoundContext.h"
 #include "Engine/Sound/Sound.h"
+#include "Engine/Sound/SoundManager.h"
 #include "Utils/Settings.h"
 
 int main() {
@@ -23,17 +24,18 @@ int main() {
 
 	ran.seed(std::random_device()());
 
-	//Sound sound;
-	//sound.loadSound("Game/assets/sound/dream_catcher.wav");
-	//sound.setLoopState(true);
-	//sound.setPitch(10.0f);
-	//sound.setVolume(0.1f);
-	//sound.playSound();
+	Sound sound;
+	sound.loadSound("Game/assets/sound/dream_catcherMono.wav");
+	sound.setLoopState(true);
+	sound.setPitch(1.25f);
+	sound.playSound();
+	SoundManager::get().addSound(&sound, SOUND_MUSIC);
 
 	Game game;
 	game.start();
 
 	TextureManager::unloadAllTextures();
 
+	SoundContext::deleteContext();
 	return 0;
 }

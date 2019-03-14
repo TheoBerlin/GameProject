@@ -46,6 +46,7 @@ void Panel::setBackgroundTexture(Texture * texture)
 {
 	this->backgroundTexture = texture;
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 Texture * Panel::getBackgroundTexture()
@@ -83,6 +84,7 @@ void Panel::setSize(glm::uvec2 size)
 {
 	this->size = size;
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 glm::uvec2 Panel::getSize() const
@@ -107,6 +109,7 @@ void Panel::addText(const std::string & str, int x, int y, const std::string& fo
 	this->textList.push_back(std::pair<Text*, glm::ivec2>(text, relativePos));
 
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 void Panel::updateText(unsigned int index, const std::string & str, int x, int y)
@@ -115,6 +118,7 @@ void Panel::updateText(unsigned int index, const std::string & str, int x, int y
 		this->textList[index].first->updateText(str);
 		this->textList[index].second = glm::ivec2(x, y);
 		this->shouldUpdate = true;
+		this->shouldUpdateOptions = true;
 	}
 	else
 	{
@@ -128,6 +132,7 @@ void Panel::updateText(unsigned int index, int x, int y)
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].second = glm::ivec2(x, y);
 		this->shouldUpdate = true;
+		this->shouldUpdateOptions = true;
 	}
 	else
 	{
@@ -141,6 +146,7 @@ void Panel::updateText(unsigned int index, const std::string & str)
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].first->updateText(str);
 		this->shouldUpdate = true;
+		this->shouldUpdateOptions = true;
 	}
 	else
 	{
@@ -171,12 +177,17 @@ void Panel::addChild(Panel * panel)
 
 void Panel::rebake()
 {
+	if (this->shouldUpdateOptions && this->shown)
+	{
+		processOptions();
+		this->shouldUpdateOptions = false;
+	}
+
 	if (hasUpdated())
 	{
 		if (this->shown)
 		{
-			processOptions();
-
+			updateGlobalPosition();
 			Display& display = Display::get();
 			GUIRenderer& guiRenderer = display.getGUIRenderer();
 			guiRenderer.prepareTextRendering();
@@ -224,25 +235,46 @@ void Panel::removeOption(GUI::OPTION option)
 	this->options[option].first = false;
 }
 
-void Panel::setOption(GUI::OPTION option)
+void Panel::setOption(GUI::OPTION option, int value)
 {
+	bool update = false;
 	GUI::OPTION_VALUE v;
-	v.i = 0;
+	v.i = value;
 	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);
+	if (shouldUpdate)
+		update = true;
+	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 	switch (option)
 	{
 	case GUI::OPTION::FLOAT_LEFT:
+	{
 		this->options[GUI::OPTION::FLOAT_RIGHT].first = false;
+		if (!this->parent)
+			this->shouldUpdate = false;
 		break;
+	}
 	case GUI::OPTION::FLOAT_RIGHT:
+	{
 		this->options[GUI::OPTION::FLOAT_LEFT].first = false;
+		if (!this->parent)
+			this->shouldUpdate = false;
 		break;
+	}
 	case GUI::OPTION::FLOAT_UP:
+	{
 		this->options[GUI::OPTION::FLOAT_DOWN].first = false;
+		if (!this->parent)
+			this->shouldUpdate = false;
 		break;
+	}
 	case GUI::OPTION::FLOAT_DOWN:
+	{
 		this->options[GUI::OPTION::FLOAT_UP].first = false;
+		if (!this->parent)
+			this->shouldUpdate = false;
 		break;
+	}
 
 	case GUI::OPTION::TEXT_FLOAT_LEFT:
 		this->options[GUI::OPTION::TEXT_FLOAT_RIGHT].first = false;
@@ -256,9 +288,23 @@ void Panel::setOption(GUI::OPTION option)
 	case GUI::OPTION::TEXT_FLOAT_DOWN:
 		this->options[GUI::OPTION::TEXT_FLOAT_UP].first = false;
 		break;
+
+	case GUI::OPTION::CENTER_X:
+	{
+		if (!this->parent)
+			this->shouldUpdate = false;
+		break;
 	}
-	
-	this->shouldUpdate = true;
+	case GUI::OPTION::CENTER_Y:
+	{
+		if (!this->parent)
+			this->shouldUpdate = false;
+		break;
+	}
+	}
+
+	if (update)
+		this->shouldUpdate = true;
 }
 
 bool Panel::hasUpdated() const
@@ -310,6 +356,7 @@ void Panel::show()
 	this->shown = true;
 	this->active = true;
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 bool Panel::isShown() const
@@ -323,6 +370,7 @@ void Panel::init()
 	this->size = { 100, 100 };
 	this->color = { 1.0f, 1.0f, 1.0f, 1.0f };
 	this->shouldUpdate = false;
+	this->shouldUpdateOptions = false;
 	this->parent = nullptr;
 	this->active = true;
 	this->shown = true;
@@ -340,11 +388,6 @@ void Panel::processOptions()
 		if (option.first)
 			processOption(option, i);
 	}
-
-	if (this->parent != nullptr)
-		this->globalPos = this->parent->getGlobalPosition() + this->pos;
-	else
-		this->globalPos = this->pos;
 }
 
 void Panel::processOption(std::pair<bool, GUI::OPTION_VALUE>& option, unsigned int index)
@@ -568,4 +611,12 @@ void Panel::resizeCallback(WindowResizeEvent * evnt)
 {
 	this->shouldUpdate = true;
 	rebake();
+}
+
+void Panel::updateGlobalPosition()
+{
+	if (this->parent != nullptr)
+		this->globalPos = this->parent->getGlobalPosition() + this->pos;
+	else
+		this->globalPos = this->pos;
 }

@@ -4,6 +4,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+class Entity;
+
 class Hover : public Component
 {
 public:

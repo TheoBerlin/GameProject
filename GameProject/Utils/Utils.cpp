@@ -48,7 +48,7 @@ std::pair<glm::vec3, glm::mat3> Utils::jacobiMethod(const glm::mat3 & mat, unsig
 		float inside = b * b + ((a - d)*.5f)*((a - d)*.5f);
 		float alpha = 0.f;
 		// If 'inside' is 0 the eigenvalues are the same. 
-		if(inside > 0.000001f)
+		if (inside > 0.000001f)
 			alpha = sqrt(inside);
 
 		// If 'inside' is less than zero, then there is no solution to the problem.
@@ -71,13 +71,13 @@ std::pair<glm::vec3, glm::mat3> Utils::jacobiMethod(const glm::mat3 & mat, unsig
 		// First eigenvector.
 		result[0][0] = vx;
 		result[0][1] = vy;
-		
+
 		// Second eigenvector.
 		result[1][0] = -vy;
 		result[1][1] = vx;
 
 		// Normalize the vectors.
-		result *= 1.f / sqrt(b*b + vy*vy);
+		result *= 1.f / sqrt(b*b + vy * vy);
 
 		return result;
 	};
@@ -99,12 +99,14 @@ std::pair<glm::vec3, glm::mat3> Utils::jacobiMethod(const glm::mat3 & mat, unsig
 			result[1][1] = m[1][1];
 			result[1][0] = m[1][0];
 			result[0][1] = m[0][1];
-		} else if (i == 2 && j == 0) {
+		}
+		else if (i == 2 && j == 0) {
 			result[0][0] = m[0][0];
 			result[2][2] = m[1][1];
 			result[2][0] = m[1][0];
 			result[0][2] = m[0][1];
-		} else {
+		}
+		else {
 			result[1][1] = m[0][0];
 			result[2][2] = m[1][1];
 			result[2][1] = m[1][0];
@@ -136,12 +138,12 @@ std::pair<glm::vec3, glm::mat3> Utils::jacobiMethod(const glm::mat3 & mat, unsig
 
 		// Calculate the rotation matrix.
 		glm::mat3 r = G(smallEigen, index.x, index.y);
-		
+
 		// Rotate the accumulated matrix.
 		e = glm::transpose(r)*e*r;
 
 		// Save the rotation chain.
-		v = v*r;
+		v = v * r;
 
 		// Get newest off-diagonal element.
 		index = findMax(e);
