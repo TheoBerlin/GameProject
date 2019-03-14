@@ -28,8 +28,10 @@ LevelStructure::~LevelStructure()
 void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3>>& points)
 {
 	this->quad = createQuad();
-	this->infPlane = createInfPlane();
-	this->roofPlane = createRoofPlane();
+	if (!level.isEditor) {
+		this->infPlane = createInfPlane();
+		this->roofPlane = createRoofPlane();
+	}
 	// Create a wall group for each set
 	for (unsigned i = wallGroupsIndex.size(); i < points.size(); i++)
 	{
