@@ -68,8 +68,21 @@ void Sound::loadSound(std::string fileName)
 	}
 	else if (channels == 1 && bitsPerSample == 16) {
 		AL_CALL(alBufferData(buffer, AL_FORMAT_MONO16, buf, size, freq));
-	} else if (channels == 2)
-		LOG_ERROR("OpenAL can't play stereo sound, convert it to Mono");
+	}
+	else if (channels == 2 && bitsPerSample == 8) {
+		LOG_ERROR("OpenAL can't play stereo 16 bit, convert it to Mono");
+	}
+	else if (channels == 2 && bitsPerSample == 16) {
+		unsigned int newSize = size / 2;
+		for (unsigned i = 0; i < size; i += 4) {
+			short left = *(short*)&buf[i];
+			short right = *(short*)&buf[i + 2];
+			short monoSample = (int(left) + right) / 2;
+			buf[i / 2] = (char)monoSample;
+			buf[i / 2 + 1] = (char)(monoSample >> 8);
+		}
+		AL_CALL(alBufferData(buffer, AL_FORMAT_MONO16, buf, newSize, freq));
+	}
 
 	AL_CALL(alSourcei(source, AL_BUFFER, buffer));
 

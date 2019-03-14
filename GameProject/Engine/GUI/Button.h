@@ -3,6 +3,7 @@
 #include "Panel.h"
 #include "../Events/EventBus.h"
 #include <functional>
+#include "../Sound/Sound.h"
 
 class Button : public Panel
 {
@@ -87,6 +88,7 @@ private:
 	void init();
 
 private:
+	bool firstPressed;
 	bool isHovering;
 	bool pressed;
 
@@ -98,4 +100,6 @@ private:
 	glm::vec4 pressedColor;
 
 	std::function<void(void)> func;
+
+	Sound sound;
 };
