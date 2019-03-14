@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -72,6 +72,7 @@
     <ClCompile Include="Engine\Sound\Sound.cpp" />
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
+    <ClCompile Include="Engine\Sound\SoundManager.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
@@ -180,7 +181,9 @@
     <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\RoofShader.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
+    <ClInclude Include="Engine\Sound\SoundConfig.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
+    <ClInclude Include="Engine\Sound\SoundManager.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
