@@ -16,10 +16,10 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     :Phase((Phase*)guidingPhase),
     replayTime(0.0f)
 {
+    flightTime = guidingPhase->getFlightTime();
+
     // Create replay time bar
     setupGUI();
-
-    flightTime = guidingPhase->getFlightTime();
 
     // Create results window and minimize it
     // Lambda function which executes when retry is pressed
@@ -282,6 +282,27 @@ void ReplayPhase::setupGUI()
 
 	// Add the parent panel to level GUI
 	level.gui->addPanel(backPanel);
+
+	// Add collision marks to bar
+	addCollisionMarks();
+}
+
+void ReplayPhase::addCollisionMarks()
+{
+	std::vector<CollisionReplay> v = level.replaySystem->getCollisionReplays();
+
+	for (auto t : v)
+	{
+		float replayProgress = t.time / this->flightTime;
+		int width = this->backPanel->getSize().x * replayProgress;
+		Panel* p = new Panel();
+		//p->setSize({ 10, this->backPanel->getSize().y });
+		p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
+		p->setColor({ 1.f, 1.f, 1.f, 1.f });
+		p->setBackgroundTexture(TextureManager::getTexture("./Game/Assets/droneIcon.png"));
+		p->setOption(GUI::FLOAT_LEFT, width);
+		this->backPanel->addChild(p);
+	}
 }
 
 void ReplayPhase::handleTimeBarClick()

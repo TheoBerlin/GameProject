@@ -30,6 +30,7 @@ private:
     void finishAimTransition(CameraTransitionEvent* event);
 
     void setupGUI();
+	void addCollisionMarks();
 
     void handleTimeBarClick();
 
