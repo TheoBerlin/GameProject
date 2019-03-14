@@ -46,6 +46,7 @@ void Panel::setBackgroundTexture(Texture * texture)
 {
 	this->backgroundTexture = texture;
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 Texture * Panel::getBackgroundTexture()
@@ -83,6 +84,7 @@ void Panel::setSize(glm::uvec2 size)
 {
 	this->size = size;
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 glm::uvec2 Panel::getSize() const
@@ -107,6 +109,7 @@ void Panel::addText(const std::string & str, int x, int y, const std::string& fo
 	this->textList.push_back(std::pair<Text*, glm::ivec2>(text, relativePos));
 
 	this->shouldUpdate = true;
+	this->shouldUpdateOptions = true;
 }
 
 void Panel::updateText(unsigned int index, const std::string & str, int x, int y)
@@ -115,6 +118,7 @@ void Panel::updateText(unsigned int index, const std::string & str, int x, int y
 		this->textList[index].first->updateText(str);
 		this->textList[index].second = glm::ivec2(x, y);
 		this->shouldUpdate = true;
+		this->shouldUpdateOptions = true;
 	}
 	else
 	{
@@ -128,6 +132,7 @@ void Panel::updateText(unsigned int index, int x, int y)
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].second = glm::ivec2(x, y);
 		this->shouldUpdate = true;
+		this->shouldUpdateOptions = true;
 	}
 	else
 	{
@@ -141,6 +146,7 @@ void Panel::updateText(unsigned int index, const std::string & str)
 	if (index >= 0 && index < this->textList.size()) {
 		this->textList[index].first->updateText(str);
 		this->shouldUpdate = true;
+		this->shouldUpdateOptions = true;
 	}
 	else
 	{

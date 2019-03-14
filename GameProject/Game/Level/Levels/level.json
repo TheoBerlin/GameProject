@@ -1,347 +1,352 @@
 {
-  "Boxes": [
-    {
-      "Name": "Box1",
-      "Position": [
-        -5,
-        0.25,
-        -5
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box2",
-      "Position": [
-        -5,
-        0.25,
-        5
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box3",
-      "Position": [
-        5,
-        0.25,
-        -5
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box4",
-      "Position": [
-        5,
-        0.25,
-        5
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box5",
-      "Position": [
-        0,
-        -0.25,
-        0
-      ],
-      "Scale": null
-    }
-  ],
-  "DirectionalLight": {
-    "Direction": [
-      0.0,
-      -2.0,
-      1.0,
-      1.0
-    ],
-    "Intensity": [
-      1.0,
-      1.0,
-      1.0,
-      1.0
-    ]
-  },
-  "Floor": {
-    "Position": [
-      0,
-      0,
-      0
-    ]
-  },
-  "Metadata": {
-    "Highscore": 0,
-    "OptimalTime": 20.0
-  },
-  "Player": {
-    "ArrowCamera": {
-      "Direction": [
-        0.0,
-        0.0,
-        -1.0
-      ],
-      "FOV": 75.0,
-      "Offset": [
-        0.0,
-        0.2,
-        -0.75
-      ],
-      "Position": [
-        1.0,
-        1.0,
-        12.0
-      ]
-    },
-    "OversightCamera": {
-      "Direction": [
-        0.442396,
-        -0.715689,
-        -0.54044
-      ],
-      "FOV": 75.0,
-      "Offset": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "Position": [
-        -10.0,
-        20.0,
-        10.0
-      ]
-    }
-  },
-  "PointLights": [
-    {
-      "Color": [
-        1.0,
-        0.0,
-        0.0,
-        1.0
-      ],
-      "Distance": 13,
-      "Position": [
-        -4.0,
-        0.25,
-        -4.0,
-        1.0
-      ]
-    },
-    {
-      "Color": [
-        0.0,
-        1.0,
-        0.0,
-        1.0
-      ],
-      "Distance": 13,
-      "Position": [
-        -4.0,
-        0.25,
-        4.0,
-        1.0
-      ]
-    },
-    {
-      "Color": [
-        0.0,
-        0.0,
-        1.0,
-        1.0
-      ],
-      "Distance": 13,
-      "Position": [
-        4.0,
-        0.25,
-        -4.0,
-        1.0
-      ]
-    },
-    {
-      "Color": [
-        1.0,
-        0.0,
-        1.0,
-        1.0
-      ],
-      "Distance": 13,
-      "Position": [
-        4.0,
-        0.25,
-        4.0,
-        1.0
-      ]
-    },
-    {
-      "Color": [
-        1.0,
-        1.0,
-        0.0,
-        1.0
-      ],
-      "Distance": 32,
-      "Position": [
-        -1.0,
-        0.25,
-        -1.0,
-        1.0
-      ]
-    }
-  ],
-  "Target": [
-    {
-      "Name": "Target1",
-      "Position": [
-        -5,
-        1,
-        -5
-      ]
-    },
-    {
-      "Name": "Target2",
-      "Position": [
-        -5,
-        1,
-        5
-      ]
-    },
-    {
-      "Name": "Target3",
-      "Position": [
-        5,
-        1,
-        -5
-      ]
-    },
-    {
-      "Name": "Target4",
-      "Position": [
-        5,
-        1,
-        5
-      ]
-    },
-    {
-      "Name": "Target5",
-      "Position": [
-        0,
-        1,
-        0
-      ]
-    },
-    {
-      "Name": "Target6",
-      "Path": [
+    "Boxes": [
         {
-          "Position": [
-            0,
-            3,
-            -5
-          ],
-          "Time": 0
+            "Name": "Box1",
+            "Position": [
+                -5,
+                0.25,
+                -5
+            ],
+            "Rotation": null,
+            "Scale": null
         },
         {
-          "Position": [
-            5,
-            5,
-            0
-          ],
-          "Time": 3
+            "Name": "Box2",
+            "Position": [
+                -5,
+                0.25,
+                5
+            ],
+            "Rotation": null,
+            "Scale": null
         },
         {
-          "Position": [
-            0,
-            2,
-            5
-          ],
-          "Time": 6
+            "Name": "Box3",
+            "Position": [
+                5,
+                0.25,
+                -5
+            ],
+            "Rotation": null,
+            "Scale": null
         },
         {
-          "Position": [
-            -5,
-            4,
-            0
-          ],
-          "Time": 9
+            "Name": "Box4",
+            "Position": [
+                5,
+                0.25,
+                5
+            ],
+            "Rotation": null,
+            "Scale": null
         },
         {
-          "Position": [
-            0,
-            3,
-            -5
-          ],
-          "Time": 13
+            "Name": "Box5",
+            "Position": [
+                0,
+                -0.25,
+                0
+            ],
+            "Rotation": null,
+            "Scale": null
         }
-      ],
-      "Position": null
-    }
-  ],
-  "Walls": [
-    [
-      [
-        -5.0,
-        -5.0
-      ],
-      [
-        5.0,
-        -5.0
-      ],
-      [
-        5.0,
-        5.0
-      ],
-      [
-        3.0,
-        5.0
-      ],
-      [
-        3.0,
-        20.0
-      ],
-      [
-        5.0,
-        20.0
-      ],
-      [
-        5.0,
-        25.0
-      ],
-      [
-        -5.0,
-        25.0
-      ],
-      [
-        -5.0,
-        20.0
-      ],
-      [
-        -3.0,
-        20.0
-      ],
-      [
-        -3.0,
-        5.0
-      ],
-      [
-        -5.0,
-        5.0
-      ]
     ],
-    [
-      [
-        2.0,
-        2.0
-      ],
-      [
-        2.0,
-        0.0
-      ],
-      [
-        0.0,
-        0.0
-      ],
-      [
-        0.0,
-        2.0
-      ]
+    "DirectionalLight": {
+        "Direction": [
+            0.0,
+            -2.0,
+            1.0,
+            1.0
+        ],
+        "Intensity": [
+            1.0,
+            1.0,
+            1.0,
+            1.0
+        ]
+    },
+    "Floor": {
+        "Position": [
+            0,
+            0,
+            0
+        ]
+    },
+    "Metadata": {
+        "Highscore": 0,
+        "OptimalTime": 20.0
+    },
+    "Player": {
+        "ArrowCamera": {
+            "Direction": [
+                0.0,
+                0.0,
+                -1.0
+            ],
+            "FOV": 75.0,
+            "Offset": [
+                0.0,
+                0.2,
+                -0.75
+            ],
+            "Position": [
+                1.0,
+                1.0,
+                12.0
+            ]
+        },
+        "OversightCamera": {
+            "Direction": [
+                0.442396,
+                -0.715689,
+                -0.54044
+            ],
+            "FOV": 75.0,
+            "Offset": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Position": [
+                -10.0,
+                20.0,
+                10.0
+            ]
+        }
+    },
+    "PointLights": [
+        {
+            "Color": [
+                1.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "Distance": 13,
+            "Position": [
+                -4.0,
+                0.25,
+                -4.0,
+                1.0
+            ]
+        },
+        {
+            "Color": [
+                0.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "Distance": 13,
+            "Position": [
+                -4.0,
+                0.25,
+                4.0,
+                1.0
+            ]
+        },
+        {
+            "Color": [
+                0.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "Distance": 13,
+            "Position": [
+                4.0,
+                0.25,
+                -4.0,
+                1.0
+            ]
+        },
+        {
+            "Color": [
+                1.0,
+                0.0,
+                1.0,
+                1.0
+            ],
+            "Distance": 13,
+            "Position": [
+                4.0,
+                0.25,
+                4.0,
+                1.0
+            ]
+        },
+        {
+            "Color": [
+                1.0,
+                1.0,
+                0.0,
+                1.0
+            ],
+            "Distance": 32,
+            "Position": [
+                -1.0,
+                0.25,
+                -1.0,
+                1.0
+            ]
+        }
+    ],
+    "Target": [
+        {
+            "Name": "Target1",
+            "Position": [
+                -5,
+                1,
+                -5
+            ]
+        },
+        {
+            "Name": "Target2",
+            "Position": [
+                -5,
+                1,
+                5
+            ]
+        },
+        {
+            "Name": "Target3",
+            "Position": [
+                5,
+                1,
+                -5
+            ]
+        },
+        {
+            "Name": "Target4",
+            "Position": [
+                5,
+                1,
+                5
+            ]
+        },
+        {
+            "Name": "Target5",
+            "Position": [
+                0,
+                1,
+                0
+            ]
+        },
+        {
+            "Name": "Target6",
+            "Path": [
+                {
+                    "Position": [
+                        0,
+                        3,
+                        -5
+                    ],
+                    "Time": 0
+                },
+                {
+                    "Position": [
+                        5,
+                        5,
+                        0
+                    ],
+                    "Time": 3
+                },
+                {
+                    "Position": [
+                        0,
+                        2,
+                        5
+                    ],
+                    "Time": 6
+                },
+                {
+                    "Position": [
+                        -5,
+                        4,
+                        0
+                    ],
+                    "Time": 9
+                },
+                {
+                    "Position": [
+                        0,
+                        3,
+                        -5
+                    ],
+                    "Time": 13
+                }
+            ],
+            "Position": null
+        }
+    ],
+    "Walls": [
+        [
+            [
+                -5.0,
+                -5.0
+            ],
+            [
+                5.0,
+                -5.0
+            ],
+            [
+                5.0,
+                5.0
+            ],
+            [
+                3.0,
+                5.0
+            ],
+            [
+                3.0,
+                20.0
+            ],
+            [
+                5.0,
+                20.0
+            ],
+            [
+                5.0,
+                25.0
+            ],
+            [
+                -5.0,
+                25.0
+            ],
+            [
+                -5.0,
+                20.0
+            ],
+            [
+                -3.0,
+                20.0
+            ],
+            [
+                -3.0,
+                5.0
+            ],
+            [
+                -5.0,
+                5.0
+            ]
+        ],
+        [
+            [
+                2.0,
+                2.0
+            ],
+            [
+                2.0,
+                0.0
+            ],
+            [
+                0.0,
+                0.0
+            ],
+            [
+                0.0,
+                2.0
+            ]
+        ]
     ]
-  ]
 }
