@@ -101,10 +101,14 @@ void AimPhase::commonSetup()
 	glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
-    new CameraDrift(playerArrow);
-
 	arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
+
+    // Smoothen the forward redirects
+    float maxAngle = glm::quarter_pi<float>() / 3.5f;
+    float angleCorrectionFactor = 4.5f;
+
+    new CameraDrift(playerArrow, angleCorrectionFactor, maxAngle);
 
 	Display::get().getRenderer().setActiveCamera(arrowCam);
 
