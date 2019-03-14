@@ -390,7 +390,7 @@ void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info
 		// Read target size
 		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
 		// Read optimal time
-		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+		info.push_back("OPTIMAL TIME: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
 	}
 	else
 	{

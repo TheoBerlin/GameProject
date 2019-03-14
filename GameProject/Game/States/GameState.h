@@ -25,7 +25,7 @@ private:
 	void pauseGame(PauseEvent * ev);
 	void exitGame(ExitEvent* ev);
 
-	bool hasSubscribedToPause;
+	bool hasSubscribedToPause, hasSubscribedToExit;
 
 	LevelParser levelParser;
 	TargetManager* targetManager;

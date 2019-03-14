@@ -105,7 +105,7 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	smallPanel->setOption(GUI::SCALE_TO_TEXT_Y, 20);
 	smallPanel->setOption(GUI::TEXT_CENTER_X);
 	smallPanel->setOption(GUI::TEXT_CENTER_Y);
-	smallPanel->addText("SHOW SCORE", "aldo", textColor);
+	smallPanel->addText("MENU", "aldo", textColor);
 	smallPanel->setNormalColor(backgroundColor);
 	smallPanel->setHoverColor(hoverColor);
 	smallPanel->setPressedColor(pressColor);
