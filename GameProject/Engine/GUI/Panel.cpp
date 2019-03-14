@@ -231,9 +231,12 @@ void Panel::removeOption(GUI::OPTION option)
 
 void Panel::setOption(GUI::OPTION option, int value)
 {
+	bool update = false;
 	GUI::OPTION_VALUE v;
 	v.i = value;
 	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);
+	if (shouldUpdate)
+		update = true;
 	this->shouldUpdate = true;
 	this->shouldUpdateOptions = true;
 	switch (option)
@@ -293,6 +296,9 @@ void Panel::setOption(GUI::OPTION option, int value)
 		break;
 	}
 	}
+
+	if (update)
+		this->shouldUpdate = true;
 }
 
 bool Panel::hasUpdated() const
