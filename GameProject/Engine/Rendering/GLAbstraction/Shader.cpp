@@ -46,9 +46,12 @@ void Shader::setTexture2D(const std::string & name, unsigned int unit, const Tex
 
 void Shader::setTexture2D(const std::string & name, unsigned int unit, GLuint textureID)
 {
-	setUniform1i(name, unit);
-	glActiveTexture(GL_TEXTURE0 + unit);
-	glBindTexture(GL_TEXTURE_2D, textureID);
+	GLint location = addUniform(name);
+	if (location != -1) {
+		glUniform1i(location, unit);
+		glActiveTexture(GL_TEXTURE0 + unit);
+		glBindTexture(GL_TEXTURE_2D, textureID);
+	}
 }
 
 void Shader::setUniform1b(const std::string & name, bool value)
