@@ -27,7 +27,11 @@ private:
 	void pauseGame(PauseEvent * ev);
 	void exitGame(ExitEvent* ev);
 
-	bool hasSubscribedToPause;
+	bool hasSubscribedToPause, hasSubscribedToExit;
+
+	std::string levelJSON;
+
+	Level level;
 
 	LevelParser levelParser;
 	TargetManager* targetManager;

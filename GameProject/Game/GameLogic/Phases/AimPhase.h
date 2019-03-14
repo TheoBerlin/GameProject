@@ -31,12 +31,4 @@ private:
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
     Camera* arrowCam;
-
-#ifdef IMGUI
-	float arrowSpeed;
-	float maxTurnSpeed;
-
-	bool configureData;
-
-#endif
 };

@@ -1,80 +1,188 @@
 {
-    "Target": [
-      {
-        "Name": "Target1",
-        "Position": [ 0, 1, -5 ]
-      },
-      {
-        "Name": "Target2",
-        "Position": [ 2, 1, -10 ]
-      },
-      {
-        "Name": "Target3",
-        "Position": [ -2, 1, -13 ]
-      },
-      {
-        "Name": "Target4",
-        "Position": [ -1, 1, -12 ]
-      },
-      {
-        "Name": "Target5",
-        "Position": [ -3, 1, -10 ]
-      }
-    ],
     "Boxes": [
         {
-          "Name": "Box1",
-          "Position": [ 0, 0, 0 ],
-          "Scale": [10, 0.1, 35]
+            "Name": "Box1",
+            "Position": [
+                0,
+                0,
+                0
+            ],
+            "Scale": [
+                10,
+                0.1,
+                35
+            ]
         },
         {
             "Name": "Box2",
-            "Position": [0, 4, -4.5],
-            "Scale": [0.5, 1, 1.5]
+            "Position": [
+                0,
+                4,
+                -4.5
+            ],
+            "Scale": [
+                0.5,
+                1,
+                1.5
+            ]
         }
     ],
-    "Player": {
-      "OversightCamera": {
-        "Position": [ -10.0, 20.0, 10.0 ],
-        "Direction": [ 0.442396, -0.715689, -0.540440 ],
-        "Offset": [ 0.0, 0.0, 0.0 ],
-        "FOV": 75.0
-      },
-      "ArrowCamera": {
-        "Position": [ 1.0, 1.0, 0.0 ],
-        "Direction": [ 0.0, 0.0, -1.0 ],
-        "Offset": [ 0.0, 0.3, -1.0 ],
-        "FOV": 75.0
-      },
-      "ReplayCamera": {
-        "Position": [ 0.0, 3.0, 4.0 ],
-        "Direction": [ 0.0, -0.7, -0.7 ],
-        "Offset": [ 0.0, 0.0, 0.0 ],
-        "FOV": 75.0
-      }
+    "DirectionalLight": {
+        "Direction": [
+            null,
+            null,
+            null,
+            null
+        ],
+        "Intensity": [
+            null,
+            null,
+            null,
+            null
+        ]
     },
-    "Walls": [
-      [
-        [ -5.0, 2.0 ],
-        [ -5.0, -15.0 ],
-        [ 5.0, -15.0 ],
-        [ 5.0, 2.0 ]
-      ],
-      [
-        [-3, -3],
-        [-3, -2],
-        [5, -2],
-        [5, -3]
-      ],
-      [
-          [-5, -7],
-          [-5, -6],
-          [3, -6],
-          [3, -7]
-      ]
-    ],
+    "Floor": {
+        "Position": null
+    },
     "Metadata": {
-      "OptimalTime": 20.0
-    }
-  }
-  
+        "Highscore": 0,
+        "OptimalTime": 20.0
+    },
+    "Player": {
+        "ArrowCamera": {
+            "Direction": [
+                0.0,
+                0.0,
+                -1.0
+            ],
+            "FOV": 75.0,
+            "Offset": [
+                0.0,
+                0.3,
+                -1.0
+            ],
+            "Position": [
+                1.0,
+                1.0,
+                0.0
+            ]
+        },
+        "OversightCamera": {
+            "Direction": [
+                0.442396,
+                -0.715689,
+                -0.54044
+            ],
+            "FOV": 75.0,
+            "Offset": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Position": [
+                -10.0,
+                20.0,
+                10.0
+            ]
+        }
+    },
+    "PointLights": null,
+    "Target": [
+        {
+            "Name": "Target1",
+            "Position": [
+                0,
+                1,
+                -5
+            ]
+        },
+        {
+            "Name": "Target2",
+            "Position": [
+                2,
+                1,
+                -10
+            ]
+        },
+        {
+            "Name": "Target3",
+            "Position": [
+                -2,
+                1,
+                -13
+            ]
+        },
+        {
+            "Name": "Target4",
+            "Position": [
+                -1,
+                1,
+                -12
+            ]
+        },
+        {
+            "Name": "Target5",
+            "Position": [
+                -3,
+                1,
+                -10
+            ]
+        }
+    ],
+    "Walls": [
+        [
+            [
+                -5.0,
+                2.0
+            ],
+            [
+                -5.0,
+                -15.0
+            ],
+            [
+                5.0,
+                -15.0
+            ],
+            [
+                5.0,
+                2.0
+            ]
+        ],
+        [
+            [
+                -3,
+                -3
+            ],
+            [
+                -3,
+                -2
+            ],
+            [
+                5,
+                -2
+            ],
+            [
+                5,
+                -3
+            ]
+        ],
+        [
+            [
+                -5,
+                -7
+            ],
+            [
+                -5,
+                -6
+            ],
+            [
+                3,
+                -6
+            ],
+            [
+                3,
+                -7
+            ]
+        ]
+    ]
+}

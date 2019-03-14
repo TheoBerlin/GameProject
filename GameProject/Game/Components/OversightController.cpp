@@ -51,7 +51,7 @@ void OversightController::update(const float& dt)
 		moveFactors.x = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_S])
 		moveFactors.z = -1.0f;
-	if (this->pressedKeys[GLFW_KEY_SPACE])
+	if (this->pressedKeys[GLFW_KEY_LEFT_SHIFT])
 		moveFactors.y = 1.0f;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
 		moveFactors.y = -1.0f;

@@ -13,6 +13,14 @@ struct PlayerCollisionEvent : public Event
 	Entity* entity2;
 	const reactphysics3d::ProxyShape* shape1;
 	const reactphysics3d::ProxyShape* shape2;
+
+	enum PHASE
+	{
+		GUIDING_PHASE,
+		REPLAY_PHASE
+	};
+
+	PHASE phase;
 };
 
 class Phase;
@@ -38,4 +46,10 @@ struct PauseEvent : public Event
 // Signals to exit game state
 struct ExitEvent : public Event
 {
+};
+
+struct UpdateScoreEvent : public Event
+{
+	UpdateScoreEvent(int highscore) : highscore{ highscore } {};
+	int highscore;
 };

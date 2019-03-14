@@ -36,11 +36,20 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	replayArrow->setModel(ModelLoader::loadModel("./Game/assets/Arrow.fbx"));
 
-    replayArrow->getTransform()->setPosition(level.player.arrowCamera.position);
+    Transform* arrowTransform = replayArrow->getTransform();
 
-	// Copy arrow path from arrow guider to path treader
+    arrowTransform->setPosition(level.player.arrowCamera.position);
+
+    // Set the arrow's forward to point to the second keypoint in the path
     ArrowGuider* oldArrowGuider = guidingPhase->getArrowGuider();
 
+    if (oldArrowGuider->getPath().size() > 1) {
+        arrowTransform->setForward(glm::normalize(oldArrowGuider->getPath()[1].Position - oldArrowGuider->getPath()[0].Position));
+
+        arrowTransform->resetRoll();
+    }
+
+	// Copy arrow path from arrow guider to path treader
     pathTreader = new PathTreader(replayArrow, oldArrowGuider->getPath());
     pathTreader->startTreading();
 
@@ -55,23 +64,17 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     level.entityManager->removeTracedEntity(oldArrow->getName());
 
     // Set up the player camera
-    freeCam = level.entityManager->addTracedEntity("FreeCam");
+	this->camera = new Camera(replayArrow, "Camera");
+    this->camera->setFOV(level.player.arrowCamera.FOV);
+	this->camera->init();
 
-    Transform* camTransform = freeCam->getTransform();
-
-	camTransform->setPosition(level.player.replayCamera.position);
-	camTransform->setForward(level.player.replayCamera.direction);
-    camTransform->resetRoll();
-
-	Camera* camera = new Camera(freeCam, "Camera");
-    camera->setFOV(level.player.replayCamera.FOV);
-	camera->init();
+	this->camera->setPosition(transitionCam->getPosition());
+	this->camera->setForward(transitionCam->getForward());
 
     // Create freemove and lock cursor
-	freeMove = new FreeMove(freeCam);
-    freeMove->enableMouse();
+    this->thirdPersonController = new ThirdPersonController(replayArrow);
 
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     // Reset targets
 	level.targetManager->resetTargets();
@@ -82,12 +85,14 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
+    EventBus::get().subscribe(this, &ReplayPhase::handleMouseClick);
 }
 
 ReplayPhase::~ReplayPhase()
 {
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
+    EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
 }
 
 void ReplayPhase::update(const float& dt)
@@ -111,11 +116,6 @@ void ReplayPhase::update(const float& dt)
     }
 }
 
-Entity* ReplayPhase::getFreeCam() const
-{
-    return freeCam;
-}
-
 Entity* ReplayPhase::getReplayArrow() const
 {
     return replayArrow;
@@ -137,19 +137,31 @@ void ReplayPhase::handleKeyInput(KeyEvent* event)
         level.scoreManager->toggleGuiMinimize();
     }
 
-    else if (event->key == GLFW_KEY_2) {
-        beginAimTransition();
+    else if (event->key == GLFW_KEY_SPACE) {
+        this->switchCamera();
     }
+}
 
-	else if (event->key == GLFW_KEY_C) {
-        // Toggle mouse lock
-        if (freeMove->mouseIsEnabled()) {
-            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        } else {
+void ReplayPhase::handleMouseClick(MouseClickEvent* event)
+{
+    if (event->button == GLFW_MOUSE_BUTTON_RIGHT) {
+        if (event->action == GLFW_PRESS) {
             glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        }
 
-        freeMove->toggleMouse();
+            if (thirdPersonController) {
+                thirdPersonController->enableMouse();
+            } else {
+                freeMove->enableMouse();
+            }
+        } else {
+            glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+            if (thirdPersonController) {
+                thirdPersonController->disableMouse();
+            } else {
+                freeMove->disableMouse();
+            }
+        }
     }
 }
 
@@ -158,6 +170,7 @@ void ReplayPhase::beginAimTransition()
 	this->timebarExists = false;
 
     EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
+    EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
 
 	// Remove results GUI if visible
 	if (level.scoreManager->resultsVisible()) {
@@ -166,9 +179,6 @@ void ReplayPhase::beginAimTransition()
 
 	// Reset score
 	level.scoreManager->resetScore();
-
-    // Remove freecam
-    freeCam->removeComponent(freeMove->getName());
 
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -182,16 +192,21 @@ void ReplayPhase::beginAimTransition()
     // Begin camera transition to the arrow
     CameraSetting currentCamSettings;
 
-    Transform* camTransform = freeCam->getTransform();
-
-    currentCamSettings.position = camTransform->getPosition();
-    currentCamSettings.direction = camTransform->getForward();
-    currentCamSettings.offset = level.player.replayCamera.offset;
-    currentCamSettings.FOV = level.player.replayCamera.FOV;
+    currentCamSettings.position = camera->getPosition();
+    currentCamSettings.direction = camera->getForward();
+    currentCamSettings.offset = {0.0f, 0.0f, 0.0f};
+    currentCamSettings.FOV = level.player.arrowCamera.FOV;
 
     CameraSetting newCamSettings = level.player.arrowCamera;
 
-    this->setupTransition(currentCamSettings, newCamSettings);
+    this->transitionStraightPath(currentCamSettings, newCamSettings);
+
+    // Remove camera controller
+    if (freeCam) {
+        level.entityManager->removeTracedEntity(freeCam->getName());
+    } else {
+        replayArrow->removeComponent(thirdPersonController->getName());
+    }
 
     EventBus::get().subscribe(this, &ReplayPhase::finishAimTransition);
 }
@@ -287,4 +302,40 @@ void ReplayPhase::handleTimeBarClick()
     level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
     replayTime = desiredTime;
+}
+
+void ReplayPhase::switchCamera()
+{
+    if (freeCam) {
+        // Switch to third person camera
+        this->camera->setHost(replayArrow);
+
+        this->thirdPersonController = new ThirdPersonController(replayArrow);
+
+        level.entityManager->removeTracedEntity(freeCam->getName());
+
+        freeCam = nullptr;
+    } else {
+        // Switch to freecam
+        this->freeCam = level.entityManager->addTracedEntity("FreeCam");
+
+        // Set freecam's position and forward
+        Transform* transform = freeCam->getTransform();
+
+        transform->setPosition(camera->getPosition());
+        transform->setForward(camera->getForward());
+        transform->resetRoll();
+
+        glm::vec3 r = transform->getRight();
+
+        this->freeMove = new FreeMove(freeCam);
+        this->freeMove->disableMouse();
+
+        this->camera->setHost(freeCam);
+        this->camera->couple();
+
+        this->replayArrow->removeComponent(this->thirdPersonController->getName());
+
+        this->thirdPersonController = nullptr;
+    }
 }

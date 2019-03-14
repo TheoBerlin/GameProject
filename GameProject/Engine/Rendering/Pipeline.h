@@ -29,7 +29,8 @@ enum SHADERS {
 	DRONE_SHADER = 1,	// Requires a third vbo with colors bound to location 7.
 	WALL = 2,			//  Requires a third vbo with scale bound to location 7.
 	INFINITY_PLANE = 3,
-	INFINITY_PLANE_PREPASS = 4	//Used for cutout in depthbuffer 
+	INFINITY_PLANE_PREPASS = 4,	//Used for cutout in depthbuffer 
+	ROOF_PLANE = 5
 };
 
 enum SHADERS_POST_PROCESS {
@@ -51,19 +52,16 @@ public:
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
-	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false); // Old rendering
 	void prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen = false);
 
 	/*
 		Draw directly to the screen
 	*/
-	void drawToScreen(const std::vector<Entity*>& renderingList); // Old rendering
 	void drawModelToScreen(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	/*
 		Draw to framebuffer color texture, nothing will be visible on screen unless you draw the texture to a quad
 	*/
-	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
 	Texture* drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	Texture* combineTextures(Texture* sceen, Texture* particles);
@@ -81,7 +79,6 @@ public:
 	/*
 		Generates depth texture for shadows, input entities who should give away shadows
 	*/
-	void calcDirLightDepth(const std::vector<Entity*>& renderingList); // Old rendering
 	void calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	/*
@@ -110,12 +107,6 @@ private:
 	Framebuffer shadowFbo;
 	glm::mat4 lightSpaceMatrix;
 
-	// Old rendering draw functions
-	void draw(const std::vector<Entity*>& renderingList);					// Old rendering
-	void draw(const std::vector<Entity*>& renderingList, Shader* shader);	// Old rendering
-	void drawModel(Model * model, Shader* shader);							// Old rendering
-	void drawModelPrePass(Model * model);									// Old rendering
-
 	// New rendering draw functions
 	void drawModelPrePassInstanced(Model * model);
 	void updateFramebufferDimension(WindowResizeEvent* event);
@@ -123,8 +114,6 @@ private:
 	void prePassDepthOn();
 	void prePassDepthOff();
 
-	Shader* ZprePassShader;				// Old rendering
-	Shader* testShader;					// Old rendering
 	Shader* ZprePassShaderInstanced;
 	Shader* quadShader;
 	Shader* particleShader;

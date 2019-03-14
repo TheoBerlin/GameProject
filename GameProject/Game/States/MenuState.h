@@ -7,6 +7,8 @@
 
 #include <filesystem>
 
+#include "Game/Level/LevelParser.h"
+
 class MenuState : public State
 {
 public:
@@ -20,11 +22,22 @@ public:
 	void render() override;
 
 private:
-	void initPanelLayout();
+	// Loads levels name from folder to show in scroll panel
 	void loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths);
+	// Callback for scroll panel button press to update info panel
+	void updateLevelInfoPanel();
+	// Update score when event is published
+	void updateScore(UpdateScoreEvent * evnt);
+	// Init main menu GUI panels
+	void initMainMenu();
+	// Init level select GUI panels
+	void initLevelSelect();
 
 	std::string selectedLevel;
 
-	Panel* panel;
-	Button* button;
+	LevelParser levelParser;
+	std::vector<std::string> levelInfo;
+	std::vector<std::vector<Panel*>> panelGroups;
+
+	Panel* previewPnl;
 };

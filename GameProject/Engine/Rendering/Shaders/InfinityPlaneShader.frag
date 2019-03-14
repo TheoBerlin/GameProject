@@ -59,8 +59,8 @@ bool InRoom(vec3 p, int size, int index)
         // Check if the horizontal line, which p.z spans, is intersecting the line between w1 and w2.
         if((w2.z < p.z && w1.z >= p.z) || (w1.z < p.z && w2.z >= p.z)) {
             // Check if the point is not the left or the right side of the line.
-            if(w2.x + (w1.x-w2.x)*(p.z + w2.z)/(w1.z-w2.z) < p.x) {
-                isOdd = !isOdd;
+            if(((w1.x-w2.x)/(w1.z-w2.z)) * (p.z - w1.z) + w1.x > p.x) {
+				isOdd = !isOdd;
             }
         }
         j = i;
@@ -166,5 +166,5 @@ void main()
 	float shadow = ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular)+ result) * texColor;
 
-    finalColor = vec4(0.6, 0.6, 0.6, 1.0 - smoothstep(0.0, 75.0, length(fragPos)));
+    finalColor = vec4(lighting, 1.0 - smoothstep(0.0, 75.0, length(fragPos)));
 }

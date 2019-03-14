@@ -115,7 +115,7 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
 
         newCamSettings.direction = playerArrow->getTransform()->getForward();
 
-        this->setupTransition(currentCamSettings, newCamSettings);
+        this->transitionAboveWalls(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &OverviewPhase::transitionToAim);
     }
