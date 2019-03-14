@@ -21,6 +21,9 @@ public:
     float getFlightTime();
 
 private:
+	// True if arrow has collided
+	bool hasCollided;
+	
 	// Key event callback
     void handleKeyInput(KeyEvent* event);
 
