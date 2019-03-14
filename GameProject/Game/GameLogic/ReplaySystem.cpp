@@ -126,6 +126,11 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
     }
 }
 
+std::vector<CollisionReplay>& ReplaySystem::getCollisionReplays()
+{
+	return this->collisions;
+}
+
 void ReplaySystem::handlePlayerCollision(PlayerCollisionEvent* event)
 {
     recordingTimer.update();
