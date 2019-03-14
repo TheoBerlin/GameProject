@@ -13,7 +13,6 @@
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Utils/Settings.h>
 
-
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
@@ -133,7 +132,7 @@ void ReplayPhase::update(const float& dt)
         thirdPersonController->update(cameraUpdateTime);
 
         camera->update(cameraUpdateTime);
-    } else {
+    } else if (freeCam) {
         freeCam->update(cameraUpdateTime);
     }
 
@@ -230,6 +229,10 @@ void ReplayPhase::beginAimTransition()
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
 
+	// Reset time speed
+	this->isPausing = false;
+	this->replaySpeedFactor = 1.0f;
+
 	// Remove results GUI if visible
 	if (level.scoreManager->resultsVisible()) {
 		level.scoreManager->removeResultsGUI(level);
@@ -276,9 +279,10 @@ void ReplayPhase::beginAimTransition()
 	// Remove camera controller
 	if (freeCam) {
 		level.entityManager->removeTracedEntity(freeCam->getName());
-	}
-	else {
+		freeCam = nullptr;
+	} else {
 		replayArrow->removeComponent(thirdPersonController->getName());
+		thirdPersonController = nullptr;
 	}
 
 	EventBus::get().subscribe(this, &ReplayPhase::finishAimTransition);
