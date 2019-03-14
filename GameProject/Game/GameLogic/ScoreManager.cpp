@@ -40,6 +40,11 @@ void ScoreManager::stop()
 	float inv = (1.0f / this->totalTime) * 100;
 	LOG_INFO("Time: %f Inverse time: %f Optimal time: %f", this->totalTime, inv, this->optimalTime);
 	this->totalScore += (unsigned)inv;
+
+	if (this->totalScore > this->highscore) {
+		this->highscore = this->totalScore;
+		EventBus::get().publish(&UpdateScoreEvent(highscore));
+	}
 }
 
 unsigned ScoreManager::getScore() const
@@ -62,6 +67,16 @@ void ScoreManager::scoreBonus()
 void ScoreManager::setOptimalTime(const float & time)
 {
 	this->optimalTime = time;
+}
+
+void ScoreManager::setHighscore(const unsigned highscore)
+{
+	this->highscore = highscore;
+}
+
+int ScoreManager::getHighscore() const
+{
+	return this->highscore;
 }
 
 float ScoreManager::getTotalTime() const
@@ -99,7 +114,6 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 
 	// Create minimized panel/button
 	Button* smallPanel = new Button();
-	smallPanel->setSize({ 70, 50 });
 	smallPanel->setOption(GUI::FLOAT_LEFT);
 	smallPanel->setOption(GUI::FLOAT_UP);
 	smallPanel->setOption(GUI::SCALE_TO_TEXT_X, 20);

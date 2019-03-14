@@ -341,7 +341,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 	if (ImGui::Button("Load")) {
 		entityManager.removeEntities();
 
-		levelParser.readLevel(std::string("./Game/Level/Levels/") + "level"/*levelName.c_str()*/ + ".json", level);
+		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
 		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 		Display::get().getRenderer().initInstancing();
 	}
