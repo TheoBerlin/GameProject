@@ -26,6 +26,12 @@ private:
 	void readMetadata(Level& level);
 	void readLights(Level& level);
 
+	void writeEntityBoxes(Level& level);
+	void writeEntityTargets(Level& level);
+	void writePlayer(Level& level);
+	void writeWalls(Level& level);
+	void writeLight(Level& level);
+
 	void readVec4(json::json& file, glm::vec4& vec);
 	void readVec3(json::json& file, glm::vec3& vec);
 	void readVec2(json::json& file, glm::vec2& vec);
@@ -41,6 +47,7 @@ private:
 public:
 	void readLevel(std::string file, Level& level);
 	void readLevelInfo(std::string file, std::vector<std::string>& info);
+	void writeLevel(std::string file, Level& level);
 	void writeScore(std::string file, Level& level);
 };
 

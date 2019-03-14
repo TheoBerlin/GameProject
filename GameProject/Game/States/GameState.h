@@ -41,4 +41,5 @@ private:
 	ScoreManager scoreManager;
 	LevelStructure levelStructure;
 	LightManager lightManager;
+	HelpGUI helpGUI;
 };

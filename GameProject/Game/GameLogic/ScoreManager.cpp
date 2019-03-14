@@ -14,6 +14,7 @@ ScoreManager::ScoreManager()
 	this->totalScore = 0;
 	this->optimalTime = 0.0f;
 	this->timer = new Timer();
+	this->newHighscore = false;
 }
 
 
@@ -40,11 +41,6 @@ void ScoreManager::stop()
 	float inv = (1.0f / this->totalTime) * 100;
 	LOG_INFO("Time: %f Inverse time: %f Optimal time: %f", this->totalTime, inv, this->optimalTime);
 	this->totalScore += (unsigned)inv;
-
-	if (this->totalScore > this->highscore) {
-		this->highscore = this->totalScore;
-		EventBus::get().publish(&UpdateScoreEvent(highscore));
-	}
 }
 
 unsigned ScoreManager::getScore() const
@@ -77,6 +73,11 @@ void ScoreManager::setHighscore(const unsigned highscore)
 int ScoreManager::getHighscore() const
 {
 	return this->highscore;
+}
+
+float ScoreManager::getOptimalTime() const
+{
+	return optimalTime;
 }
 
 float ScoreManager::getTotalTime() const
@@ -144,19 +145,75 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	smallPanel->setCallback(callback);
 	bigPanel->addChild(miniBtn);
 
-	// Add text - Title
-	bigPanel->addText("Score", "aldo", textColor);
-	unsigned width = bigPanel->getText(0)->getWidth();
-	bigPanel->updateText(0, panelSize.x / 2 - width / 2, panelSize.y - 60);
+	if (level.targetManager->getTargetCount() == this->targetsHit) {
 
-	// Add text - Score
-	bigPanel->addText("Score: " + std::to_string(level.scoreManager->getScore()), "aldo", textColor);
-	bigPanel->updateText(1, 20, panelSize.y - 140);
+		if (this->totalScore > this->highscore) {
+			this->highscore = this->totalScore;
+			EventBus::get().publish(&UpdateScoreEvent(highscore));
+			this->newHighscore = true;
+		}
+		// Add text - Title
+		bigPanel->addText("SCORE", "aldo", textColor);
+		unsigned width = bigPanel->getText(0)->getWidth();
+		bigPanel->updateText(0, panelSize.x / 2 - width / 2, panelSize.y - 60);
 
-	// Add text - Targets
-	std::string t = "Targets: " + std::to_string(level.scoreManager->getTargetsHit()) + "/" + std::to_string(level.targetManager->getTargetCount());
-	bigPanel->addText(t, "aldo", textColor);
-	bigPanel->updateText(2, 20, panelSize.y - 200);
+		// Add text - Score
+		bigPanel->addText("SCORE: " + std::to_string(level.scoreManager->getScore()), "aldo", textColor);
+		bigPanel->updateText(1, 20, panelSize.y - 140);
+
+
+		// Add text - Highscore
+		bigPanel->addText("HIGHSCORE: " + std::to_string(level.scoreManager->getHighscore()), "aldo", textColor);
+		bigPanel->updateText(2, 20, panelSize.y - 200);
+
+		// Add text - Targets
+		std::string t = "TARGETS: " + std::to_string(level.scoreManager->getTargetsHit()) + "/" + std::to_string(level.targetManager->getTargetCount());
+		bigPanel->addText(t, "aldo", textColor);
+		bigPanel->updateText(3, 20, panelSize.y - 260);
+
+		// Add text - "Not all targets hit"
+		bigPanel->addText("LEVEL COMPLETE", "aldo", textColor);
+		width = bigPanel->getText(4)->getWidth();
+		bigPanel->updateText(4, panelSize.x / 2 - width / 2, panelSize.y - 320);
+
+		if (this->newHighscore) {
+			// Add text - "New Highscore"
+			bigPanel->addText("NEW HIGHSCORE", "aldo", textColor);
+			width = bigPanel->getText(5)->getWidth();
+			bigPanel->updateText(5, panelSize.x / 2 - width / 2, panelSize.y - 380);
+			this->newHighscore = false;
+		}
+
+	}
+	else {
+		// Add text - Title
+		bigPanel->addText("SCORE", "aldo", textColor);
+		unsigned width = bigPanel->getText(0)->getWidth();
+		bigPanel->updateText(0, panelSize.x / 2 - width / 2, panelSize.y - 60);
+
+		// Add text - Score
+		bigPanel->addText("SCORE: " + std::to_string(0), "aldo", textColor);
+		bigPanel->updateText(1, 20, panelSize.y - 140);
+
+		// Add text - Highscore
+		bigPanel->addText("HIGHSCORE: " + std::to_string(level.scoreManager->getHighscore()), "aldo", textColor);
+		bigPanel->updateText(2, 20, panelSize.y - 200);
+
+		// Add text - Targets
+		std::string t = "TARGETS: " + std::to_string(level.scoreManager->getTargetsHit()) + "/" + std::to_string(level.targetManager->getTargetCount());
+		bigPanel->addText(t, "aldo", textColor);
+		bigPanel->updateText(3, 20, panelSize.y - 260);
+
+		// Add text - "Not all targets hit"
+		bigPanel->addText("NOT ALL TARGETS HIT", "aldo", textColor);
+		width = bigPanel->getText(4)->getWidth();
+		bigPanel->updateText(4, panelSize.x / 2 - width / 2, panelSize.y - 320);
+
+		// Add text - "Try again"
+		bigPanel->addText("TRY AGAIN", "aldo", textColor);
+		width = bigPanel->getText(5)->getWidth();
+		bigPanel->updateText(5, panelSize.x / 2 - width / 2, panelSize.y - 380);
+	}
 
 	// Add exit button
 	Button* exitBtn = new Button();

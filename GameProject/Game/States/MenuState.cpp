@@ -12,6 +12,7 @@
 #include "Engine/GUI/Button.h"
 #include "Engine/GUI/ScrollPanel/ScrollPanel.h"
 #include "Engine/GUI/GUIColors.h"
+#include "Game/States/EditorState.h"
 
 
 MenuState::MenuState() : State()
@@ -28,6 +29,7 @@ MenuState::MenuState() : State()
 	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 22);
 	FontManager::addFont("arialBig", "./Game/assets/fonts/arial/arialbd.ttf", 36);
 	FontManager::addFont("aldo", "./Game/assets/fonts/aldo/aldo.ttf", 40);
+	FontManager::addFont("aldoSmall", "./Game/assets/fonts/aldo/aldo.ttf", 20);
 	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
 
 	this->initMainMenu();
@@ -63,10 +65,10 @@ void MenuState::updateLogic(const float dt)
 void MenuState::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	
+
 	glDisable(GL_DEPTH_TEST);
 	Display& display = Display::get();
-	
+
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.draw(this->getGUI());
@@ -159,7 +161,7 @@ void MenuState::initLevelSelect()
 	previewPnl->setColor(PANEL_BACKGROUND_COLOR);
 	this->panelGroups[1].push_back(previewPnl);
 	this->getGUI().addPanel(previewPnl);
-	
+
 	// Create name for map panel
 	Panel* namePnl = new Panel();
 	namePnl->setColor({ 0.f, 0.f, 0.f, 0.f });
@@ -262,4 +264,21 @@ void MenuState::initMainMenu()
 	});
 	this->panelGroups[0].push_back(playBtn);
 	gui.addPanel(playBtn);
+
+	Button* editorBtn = new Button();
+	editorBtn->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	editorBtn->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	editorBtn->setOption(GUI::CENTER_X);
+	editorBtn->setOption(GUI::CENTER_Y, -100);
+	editorBtn->setOption(GUI::TEXT_CENTER_X);
+	editorBtn->setOption(GUI::TEXT_CENTER_Y);
+	editorBtn->setHoverColor(BUTTON_HOVER_COLOR);
+	editorBtn->setNormalColor(BUTTON_NORMAL_COLOR);
+	editorBtn->setPressedColor(BUTTON_PRESS_COLOR);
+	editorBtn->addText("Level Editor", "aldo", glm::vec4(1.0f));
+	editorBtn->setCallback([this](void) {
+		this->pushState(new EditorState());
+	});
+	this->panelGroups[0].push_back(editorBtn);
+	gui.addPanel(editorBtn);
 }

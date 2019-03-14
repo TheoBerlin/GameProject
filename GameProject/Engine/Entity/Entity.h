@@ -45,7 +45,7 @@ public:
 		Detaches entity from model, entity keeps models but stops being drawn
 	*/
 	void detachFromModel();
-	
+
 	void setRenderingGroupIndex(unsigned index);
 	unsigned getRenderingGroupIndex();
 
@@ -53,7 +53,7 @@ public:
 	const std::string getName();
 	Transform* getTransform();
 	Transform* getPausedTransform();
-	
+
 	void pauseModelTransform();
 	void unpauseModelTransform();
 

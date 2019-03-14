@@ -28,6 +28,8 @@ public:
 	void setHighscore(const unsigned highscore);
 	// Get highest score for level
 	int getHighscore() const;
+	//Get the optimal time for the level
+	float getOptimalTime() const;
 	// Get total time
 	float getTotalTime() const;
 	// Get targets hit
@@ -47,6 +49,7 @@ public:
 
 private:
 	bool counting;
+	bool newHighscore;
 	unsigned totalScore;
 	unsigned highscore;
 	unsigned targetsHit;
@@ -63,4 +66,3 @@ private:
 	Panel* bigPanel;
 
 };
-

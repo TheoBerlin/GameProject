@@ -4,8 +4,9 @@
 
 struct KeyPoint {
     KeyPoint() {};
-    KeyPoint(glm::vec3 Position, float time) : Position(Position), t(time) {};
+    KeyPoint(glm::vec3 Position, glm::vec3 UpVector, float time) : Position(Position), UpVector(UpVector), t(time) {};
 
     glm::vec3 Position;
+	glm::vec3 UpVector;
     float t;
 };

@@ -50,6 +50,11 @@ void PathTreader::setPath(const std::vector<KeyPoint>& path, bool loop)
 	this->isLooping = loop;
 }
 
+std::vector<KeyPoint>& PathTreader::getPath()
+{
+    return this->path;
+}
+
 KeyPoint & PathTreader::getKeyPoint(unsigned int index)
 {
 	return path.at(index);
@@ -71,6 +76,11 @@ void PathTreader::startTreading()
 void PathTreader::stopTreading()
 {
     isTreading = false;
+}
+
+unsigned int PathTreader::getCurrentPointIndex() const
+{
+    return this->currentPointIndex;
 }
 
 void PathTreader::catmullRomTread()

@@ -11,5 +11,7 @@ void main()
 {    
 	vec4 fragColor = texture2D(tex, fragUV);
 	vec4 particleColor = texture2D(particles, fragUV);
-    finalColor = vec4(fragColor.rgb * (1 - particleColor.a) + particleColor.rgb * particleColor.a, 1.0f);
+
+	vec4 combineColor = min(fragColor + particleColor, 1.0);
+    finalColor = vec4(combineColor.rgb, 1.0f);
 }

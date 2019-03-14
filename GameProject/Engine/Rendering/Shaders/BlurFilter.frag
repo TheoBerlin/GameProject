@@ -1,6 +1,7 @@
 #version 420
 
-out vec4 finalColor;
+layout (location = 0) out vec4 colorAttachment0;
+
 
 uniform sampler2D tex;
 
@@ -30,5 +31,6 @@ void main()
             result += texture(tex, fragUV - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
         }
     }
-    finalColor = vec4(result, 1.0);
+    
+    colorAttachment0 = vec4(result, 1.0);
 }

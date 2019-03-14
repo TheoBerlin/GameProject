@@ -61,9 +61,14 @@ class Model
         // Returns pointer to indexed mesh
         Mesh* getMesh(size_t index);
 
+		void setName(std::string name);
+
+		std::string getName() const;
+
     private:
         std::vector<Mesh*> meshes;
         std::vector<Material> materials;
+		std::string name;
 		/*
 			Contains entities using this model
 		*/

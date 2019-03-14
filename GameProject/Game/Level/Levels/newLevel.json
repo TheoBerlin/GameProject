@@ -7,6 +7,7 @@
                 -1,
                 -5
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -16,6 +17,7 @@
                 -1,
                 -6
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -25,6 +27,7 @@
                 -1,
                 -7
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -34,6 +37,7 @@
                 -1,
                 -8
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -43,6 +47,7 @@
                 -1,
                 -9
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -52,6 +57,7 @@
                 -1,
                 -10
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -61,6 +67,7 @@
                 -1,
                 -11
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -70,6 +77,7 @@
                 -1,
                 -12
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -79,6 +87,7 @@
                 -1,
                 -13
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -88,6 +97,7 @@
                 -1,
                 -14
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -97,6 +107,7 @@
                 -1,
                 -15
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -106,6 +117,7 @@
                 -1,
                 -16
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -115,6 +127,7 @@
                 -1,
                 -17
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -124,6 +137,7 @@
                 -1,
                 -18
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -133,6 +147,7 @@
                 -1,
                 -19
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -142,6 +157,7 @@
                 -1,
                 -20
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -151,6 +167,7 @@
                 -1,
                 -21
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -160,6 +177,7 @@
                 -1,
                 -22
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -169,6 +187,7 @@
                 -1,
                 -23
             ],
+            "Rotation": null,
             "Scale": null
         },
         {
@@ -178,6 +197,7 @@
                 -1,
                 -24
             ],
+            "Rotation": null,
             "Scale": null
         }
     ],
@@ -203,7 +223,7 @@
         ]
     },
     "Metadata": {
-        "Highscore": 0,
+        "Highscore": 215,
         "OptimalTime": 20.0
     },
     "Player": {
