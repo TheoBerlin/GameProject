@@ -24,6 +24,12 @@ public:
 	void scoreBonus();
 	// Set optimal time for level
 	void setOptimalTime(const float& time);
+	// Set heighest score for level
+	void setHighscore(const unsigned highscore);
+	// Get highest score for level
+	int getHighscore() const;
+	//Get the optimal time for the level
+	float getOptimalTime() const;
 	// Get total time
 	float getTotalTime() const;
 	// Get targets hit
@@ -43,7 +49,9 @@ public:
 
 private:
 	bool counting;
+	bool newHighscore;
 	unsigned totalScore;
+	unsigned highscore;
 	unsigned targetsHit;
 	float totalTime;
 	float optimalTime;
@@ -58,4 +66,3 @@ private:
 	Panel* bigPanel;
 
 };
-

@@ -12,9 +12,10 @@
 #include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
 #include "Lighting/LightManager.h"
 
-
+class TrailShader;
 class Entity;
 class PostProcessShader;
+struct TrailPointData;
 
 struct RenderingTarget {
 	bool prePass;
@@ -29,12 +30,15 @@ enum SHADERS {
 	DRONE_SHADER = 1,	// Requires a third vbo with colors bound to location 7.
 	WALL = 2,			//  Requires a third vbo with scale bound to location 7.
 	INFINITY_PLANE = 3,
-	INFINITY_PLANE_PREPASS = 4	//Used for cutout in depthbuffer 
+	INFINITY_PLANE_PREPASS = 4,	//Used for cutout in depthbuffer 
+	ROOF_PLANE = 5
 };
 
 enum SHADERS_POST_PROCESS {
 	NO_FILTER = 0,
-	BLUR_FILTER = 1, 
+	BLUR_FILTER = 1,
+	REWIND_FILTER = 2,
+	SIZE
 };
 
 class Pipeline
@@ -51,19 +55,16 @@ public:
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
-	void prePassDepth(const std::vector<Entity*>& renderingList, bool toScreen = false); // Old rendering
 	void prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen = false);
 
 	/*
 		Draw directly to the screen
 	*/
-	void drawToScreen(const std::vector<Entity*>& renderingList); // Old rendering
 	void drawModelToScreen(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	/*
 		Draw to framebuffer color texture, nothing will be visible on screen unless you draw the texture to a quad
 	*/
-	Texture* drawToTexture(const std::vector<Entity*>& renderingList); // Old rendering
 	Texture* drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	Texture* combineTextures(Texture* sceen, Texture* particles);
@@ -81,13 +82,22 @@ public:
 	/*
 		Generates depth texture for shadows, input entities who should give away shadows
 	*/
-	void calcDirLightDepth(const std::vector<Entity*>& renderingList); // Old rendering
 	void calcDirLightDepthInstanced(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
 
 	/*
 		Generates uniform buffer with shaders uniform blocks size and data specified, bound to bindingpoint specified.
 	*/
 	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
+
+	/*
+		Draw trail
+	*/
+	void drawTrail();
+
+	/*
+		Draw everything that should glow and blurs it
+	*/
+	void glowPass();
 
 	/*
 		Updates shaders
@@ -98,9 +108,14 @@ public:
 		Functions for updating bufferdata for the light	
 	*/
 	void addCurrentLightManager(LightManager * lm);
+	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
 	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 	void removeLight(int index);
-	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
+
+	/*
+		Updates trail shader
+	*/
+	void updateTrail(const std::vector<TrailPointData>& pointData, const glm::vec3& color = glm::vec3(1.0f, 0.0f, 0.0f));
 
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
@@ -109,19 +124,15 @@ public:
 
 	Framebuffer* getFbo();
 	Framebuffer* getShadowFbo();
+	Framebuffer* getPostProcessFbo();
 
 private:
 	Camera * camera;
 	unsigned int width, height;
 	Framebuffer fbo;
+	Framebuffer postProcessFbo;
 	Framebuffer shadowFbo;
 	glm::mat4 lightSpaceMatrix;
-
-	// Old rendering draw functions
-	void draw(const std::vector<Entity*>& renderingList);					// Old rendering
-	void draw(const std::vector<Entity*>& renderingList, Shader* shader);	// Old rendering
-	void drawModel(Model * model, Shader* shader);							// Old rendering
-	void drawModelPrePass(Model * model);									// Old rendering
 
 	// New rendering draw functions
 	void drawModelPrePassInstanced(Model * model);
@@ -130,11 +141,10 @@ private:
 	void prePassDepthOn();
 	void prePassDepthOff();
 
-	Shader* ZprePassShader;				// Old rendering
-	Shader* testShader;					// Old rendering
 	Shader* ZprePassShaderInstanced;
 	Shader* quadShader;
 	Shader* particleShader;
+	TrailShader* trailShader;
 	Shader* combineShader;
 
 	std::vector<EntityShader*> entityShaders;
@@ -153,4 +163,3 @@ private:
 		glm::vec3 padding;
 	} lightBuffer;
 };
-

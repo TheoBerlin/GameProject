@@ -3,7 +3,6 @@
 #include <Engine/Components/Component.h>
 #include <Engine/Entity/Transform.h>
 #include <Game/components/ComponentResources.h>
-#include <glm/gtx/spline.hpp>
 #include <vector>
 
 class Entity;
@@ -18,11 +17,16 @@ public:
     void update(const float& dt);
 
     void setPath(const std::vector<KeyPoint>& path, bool loop = false);
+
+    std::vector<KeyPoint>& getPath();
+
 	KeyPoint& getKeyPoint(unsigned int index);
 
     // Start or restart path treading from the beginning
     void startTreading();
     void stopTreading();
+
+    unsigned int getCurrentPointIndex() const;
 
 private:
     bool isTreading;

@@ -1,5 +1,8 @@
 #version 420
 
+layout (location = 0) out vec4 colorAttachment0;
+layout (location = 1) out vec4 colorAttachment1;
+
 in vec3 fragNormal;
 in vec2 fragUv;
 in vec3 fragPos;
@@ -35,11 +38,10 @@ layout(std140) uniform LightBuffer
     vec3 padding;
 } lightBuffer;
 
-layout(location = 0) out vec4 finalColor;
-
 uniform sampler2D tex;
 uniform sampler2D shadowTex;
 uniform vec3 camPos;
+uniform bool isGlowing;
 
 float ShadowCalculation(vec4 fragLightSpace)
 {
@@ -130,5 +132,11 @@ void main()
 	float shadow = ShadowCalculation(fragLightPos);
     vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular) + result) * texColor;
 
-    finalColor = vec4(lighting, 1.0);
+    colorAttachment0 = vec4(lighting, 1.0);
+    
+    if(isGlowing) {
+        colorAttachment1 = vec4(texColor, 1.0);
+        return;
+     }
+     colorAttachment1 = vec4(0.0, 0.0, 0.0, 0.0);
 }

@@ -13,6 +13,7 @@
 class EntityShader : public Shader
 {
 public:
+	EntityShader(const std::string & vertex, const std::string & fragment);
 	EntityShader(const std::string & vertex, const std::string & fragment, Framebuffer* shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix);
 	virtual ~EntityShader();
 
@@ -24,6 +25,7 @@ public:
 	void setShadowBufferUniform(const std::string& uniformName = "shadowTex");
 	void setLightSpaceMatrixUniform(const std::string& uniformName = "lightMatrix");
 	void setCamPosUniform(const std::string& uniformName = "camPos");
+	void setGlowUniform(bool shouldGlow = false);
 
 	virtual void update(const float& dt);
 

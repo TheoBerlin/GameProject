@@ -15,6 +15,8 @@ OverviewPhase::OverviewPhase(AimPhase* aimPhase)
 
     playerArrow->removeAllComponents();
 
+	level.helpGUI->switchPhase(PHASE::OVERVIEW);
+
     commonSetup();
 }
 
@@ -37,6 +39,8 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
 	playerArrow->setModel(model);
 
 	new PlayerCollision(playerArrow);
+
+	level.helpGUI->switchPhase(PHASE::OVERVIEW);
 
     commonSetup();
 }
@@ -115,7 +119,7 @@ void OverviewPhase::handleKeyInput(KeyEvent* event)
 
         newCamSettings.direction = playerArrow->getTransform()->getForward();
 
-        this->setupTransition(currentCamSettings, newCamSettings);
+        this->transitionAboveWalls(currentCamSettings, newCamSettings);
 
         EventBus::get().subscribe(this, &OverviewPhase::transitionToAim);
     }

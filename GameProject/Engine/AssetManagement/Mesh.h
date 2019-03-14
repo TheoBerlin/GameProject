@@ -21,12 +21,12 @@ public:
     void bindMaterial(UniformBuffer* uniformBuffer);
     unsigned short getMaterialIndex();
 
-	void addBuffer(const void * data, size_t dataSize, const AttributeLayout& layout);
+	void addBuffer(const void * data, size_t dataSize, const AttributeLayout& layout, GLenum usage = GL_STATIC_DRAW);
 
 	void initInstancing(const void * data, size_t dataSize);
 	void initInstancing(const void * data, size_t dataSize, const AttributeLayout& attributeLayout);
 
-	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0, unsigned buffer = 1);
+	void updateInstancingData(const void* data, size_t dataSize, unsigned offset = 0, unsigned buffer = 1, GLenum usage = GL_DYNAMIC_DRAW);
 
 	// Get verticies
 	std::vector<Vertex>& getVerticies() const;

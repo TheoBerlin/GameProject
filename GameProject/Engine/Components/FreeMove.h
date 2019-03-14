@@ -12,11 +12,15 @@ public:
 
 	void update(const float& dt);
 
+	void setSpeed(const float speed);
+	float getSpeed() const;
+
 	void toggleMouse();
 	void enableMouse();
 	void disableMouse();
 
 	bool mouseIsEnabled() const;
+
 
 private:
 	float dt;

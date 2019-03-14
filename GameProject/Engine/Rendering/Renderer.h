@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "../Components/Camera.h"
 #include "GLAbstraction/UniformBuffer.h"
 #include "GLAbstraction/Shader.h"
 #include "Pipeline.h"
-
 #include "Engine/Particle/ParticleManager.h"
 
 class Model;
@@ -23,17 +24,6 @@ public:
 	void setActiveCamera(Camera* camera);
 
 	Camera* getActiveCamera();
-	/*
-	Push entity to the rendering list.
-	Arguments:
-		entity: The entity to be rendered.
-	*/
-	void push(Entity* entity);
-
-	/*
-	Draw all entites in the rendering list and clear it.
-	*/
-	void drawAll();
 
 	/*
 		inits vertex buffer for meshes rendering groups transforms and create renderingTargets list
@@ -64,7 +54,7 @@ public:
 		Draw texture to screen using a post process  shader
 	*/
 	void drawTextureToScreen(Texture * texture, SHADERS_POST_PROCESS shader);
-	
+
 	/*
 		Draw texture to fbo color attachment 0 using a post process  shader
 	*/
@@ -80,6 +70,11 @@ public:
 	*/
 	void addRenderingTarget(Model* model, SHADERS shader = SHADERS::DEFAULT, bool castShadow = true, bool prePass = true, bool visible = true);
 
+	// Activate post process filter
+	void activatePostFilter(SHADERS_POST_PROCESS shader);
+	// Deactivate post process filter
+	void deactivatePostFilter(SHADERS_POST_PROCESS shader);
+
 private:
 	Pipeline pipeline;
 
@@ -87,7 +82,8 @@ private:
 	Texture* postProcessTexture;
 	Texture* tex;
 
-	std::vector<Entity*> renderingList;
 	std::vector<std::pair<RenderingTarget, SHADERS>> renderingTargets;
 
+	// Contains active post process filters
+	std::vector<bool> activePostFilters;
 };

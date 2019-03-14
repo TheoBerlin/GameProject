@@ -1,8 +1,9 @@
 #include "PathTreader.h"
 
 #include <Engine/Entity/Entity.h>
-#include "Utils/Logger.h"
-#include "Utils/Utils.h"
+#include <Utils/Logger.h>
+#include <Utils/Utils.h>
+#include <glm/gtx/spline.hpp>
 
 PathTreader::PathTreader(Entity* host)
     :Component(host, "PathTreader")
@@ -49,6 +50,11 @@ void PathTreader::setPath(const std::vector<KeyPoint>& path, bool loop)
 	this->isLooping = loop;
 }
 
+std::vector<KeyPoint>& PathTreader::getPath()
+{
+    return this->path;
+}
+
 KeyPoint & PathTreader::getKeyPoint(unsigned int index)
 {
 	return path.at(index);
@@ -70,6 +76,11 @@ void PathTreader::startTreading()
 void PathTreader::stopTreading()
 {
     isTreading = false;
+}
+
+unsigned int PathTreader::getCurrentPointIndex() const
+{
+    return this->currentPointIndex;
 }
 
 void PathTreader::catmullRomTread()

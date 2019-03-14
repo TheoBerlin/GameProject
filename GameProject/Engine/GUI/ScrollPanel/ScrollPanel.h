@@ -31,11 +31,10 @@ public:
 private:
 	void MouseScrollCallback(MouseScrollEvent* evnt);
 	void MouseClickCallback(MouseClickEvent* evnt);
-	
+
 	int scrollSpeed;
 
 	List* list;
 	Button* activeButton;
 	unsigned activeButtonIndex;
 };
-

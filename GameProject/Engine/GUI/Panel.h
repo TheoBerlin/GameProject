@@ -143,11 +143,11 @@ public:
 	*/
 	std::vector<std::pair<Text*, glm::ivec2>>& getTextList();
 
-		/*
-	Get a list of the current text elements.
-	Return:
-		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
-	*/
+	/*
+Get a list of the current text elements.
+Return:
+	A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
+*/
 	Text * getText(const unsigned& index);
 
 	/*
@@ -173,8 +173,7 @@ public:
 		option: A enum for how to position or scale the panel and its text.
 		value: Depends on the option. It is often an offset in pixels
 	*/
-	template<typename T>
-	void setOption(GUI::OPTION option, T value);
+	void setOption(GUI::OPTION option, int value = 0);
 
 	/*
 	Remove all options.
@@ -185,13 +184,6 @@ public:
 	Remove specific option.
 	*/
 	void removeOption(GUI::OPTION option);
-
-	/*
-	Set an option to use. The list of options can be found in the GUI::OPTION enum.
-	Arguments:
-		option: A enum for how to position or scale the panel and its text.
-	*/
-	void setOption(GUI::OPTION option);
 
 	/*
 	Returns true if some data has been changed, otherwise false.
@@ -276,12 +268,26 @@ private:
 	void processScaleToTextOption(unsigned int index, int v);
 
 	/*
+	Process the options related to scaling the panel to match the texture.
+	Arguments:
+		index: The index of the option. This corresponds directly to the option. A index of 0 is the first enum value.
+		v: The value of the option.
+	*/
+	void processScaleToTextureOption(unsigned int index, int v);
+
+	/*
 	A callback for when the window is resized. This will updated all the option and rebaked the panel.
 	*/
 	void resizeCallback(WindowResizeEvent* evnt);
 
+	/*
+	Update global position
+	*/
+	void updateGlobalPosition();
+
 protected:
 	bool shouldUpdate;
+	bool shouldUpdateOptions;
 	bool active;
 	bool shown;
 
@@ -300,13 +306,3 @@ protected:
 
 	std::vector<std::pair<bool, GUI::OPTION_VALUE>> options;
 };
-
-template<typename T>
-inline void Panel::setOption(GUI::OPTION option, T value)
-{
-	GUI::OPTION_VALUE v;
-	if (typeid(T) == typeid(int))
-		v.i = (int)value;
-	this->options[option] = std::pair<bool, GUI::OPTION_VALUE>(true, v);
-	this->shouldUpdate = true;
-}

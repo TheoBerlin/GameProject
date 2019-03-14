@@ -57,7 +57,7 @@ bool DeathAnimation::shake(float dt)
 
 		float frequency = Utils::map(0.f, shakeTime, shakeTimer, 30.f, 60.f);
 		float amplitude = Utils::map(0.f, shakeTime, shakeTimer, 3.f, 5.f);
-		
+
 		float x = cos(shakeTimer*frequency)*amplitude*dt;
 		float z = sin(shakeTimer*frequency)*amplitude*dt;
 		transform->rotate(x, 0.f, z);
