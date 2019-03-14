@@ -15,6 +15,7 @@
 
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/QuadShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/PostProcess/BlurShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/PostProcess/RewindShader.h"
 
 
 
@@ -42,6 +43,7 @@ Pipeline::Pipeline()
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
+	this->postProcessShaders.push_back(new RewindShader());
 
 	this->trailShader = new TrailShader(&this->camera);
 	this->particleShader = new Shader("./Engine/Particle/Particle.vert", "./Engine/Particle/Particle.frag");
@@ -59,7 +61,7 @@ Pipeline::Pipeline()
 	float shadowResScale = 4.0f;
 	this->shadowFbo.attachTexture(Display::get().getWidth() * 4, Display::get().getHeight() * 4, AttachmentType::DEPTH);
 
-	this->postProcessFbo.attachTexture(Display::get().getWidth() * 0.5f, Display::get().getHeight() * 0.5f, AttachmentType::COLOR);
+	this->postProcessFbo.attachTexture((GLuint)(Display::get().getWidth()), (GLuint)(Display::get().getHeight()), AttachmentType::COLOR);
 
 	//Particle init
 	ParticleManager::get().init();
@@ -304,26 +306,28 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 	ib.bind();
 
 	if (shader != SHADERS_POST_PROCESS::BLUR_FILTER) {
+		if (drawToFBO)
+			this->postProcessFbo.bind();
+
 		glDisable(GL_DEPTH_TEST);
 
-		if (drawToFBO)
-			this->fbo.bind();
 		ppShader->bind(tex);
 
 		glDrawElements(GL_TRIANGLES, ib.getCount(), GL_UNSIGNED_INT, 0);
 
 		ppShader->unbind();
+
 		if (drawToFBO)
-			this->fbo.unbind();
+			this->postProcessFbo.unbind();
 	}
 	else {
 		BlurShader * blurShader = dynamic_cast<BlurShader*>(ppShader);
-		glDisable(GL_DEPTH_TEST);
 
 		this->postProcessFbo.bind();
+
+		glDisable(GL_DEPTH_TEST);
+
 		Texture* t = this->postProcessFbo.getColorTexture(0);
-	
-		glViewport(0, 0, t->getWidth(), t->getHeight());
 
 		blurShader->bind(tex, true);
 
@@ -338,13 +342,8 @@ void Pipeline::drawTextureToQuad(Texture * tex, SHADERS_POST_PROCESS shader, boo
 		
 		blurShader->unbind();
 
-		if (drawToFBO) {
+		if (drawToFBO)
 			this->postProcessFbo.unbind();
-		
-		}
-		int displayWidth = Display::get().getWidth();
-		int displayHeight = Display::get().getHeight();
-		glViewport(0, 0, displayWidth, displayHeight);
 	}
 }
 
@@ -514,18 +513,6 @@ Framebuffer * Pipeline::getFbo()
 Framebuffer * Pipeline::getShadowFbo()
 {
 	return &this->shadowFbo;
-}
-
-void Pipeline::activatePostFilter(SHADERS_POST_PROCESS shader)
-{
-	activePostFilters.remove(shader);
-
-	activePostFilters.push_back(shader);
-}
-
-void Pipeline::deactivatePostFilter(SHADERS_POST_PROCESS shader)
-{
-	activePostFilters.remove(shader);
 }
 
 Framebuffer * Pipeline::getPostProcessFbo()

@@ -1,10 +1,11 @@
 #pragma once
 
+#include <vector>
+
 #include "../Components/Camera.h"
 #include "GLAbstraction/UniformBuffer.h"
 #include "GLAbstraction/Shader.h"
 #include "Pipeline.h"
-
 #include "Engine/Particle/ParticleManager.h"
 
 class Model;
@@ -82,4 +83,7 @@ private:
 	Texture* tex;
 
 	std::vector<std::pair<RenderingTarget, SHADERS>> renderingTargets;
+
+	// Contains active post process filters
+	std::vector<bool> activePostFilters;
 };

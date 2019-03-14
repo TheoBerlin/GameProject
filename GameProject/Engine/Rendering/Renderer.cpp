@@ -12,6 +12,9 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	this->activePostFilters.resize(SHADERS_POST_PROCESS::SIZE);
+
 }
 
 Renderer::~Renderer()
@@ -83,23 +86,54 @@ void Renderer::drawAllInstanced()
 	*/
 	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets);
 
+	/*
+		Draw trail
+	*/
 	this->pipeline.drawTrail();
 
+	/*
+		Draw Particle
+	*/
 	pipeline.drawParticle();
 
+	this->postProcessTexture = pipeline.getFbo()->getColorTexture(0);
 	tex = pipeline.getFbo()->getColorTexture(1);
+
 	/*
 		Apply blur to glow texture
 	*/
 	this->pipeline.drawTextureToQuad(tex, SHADERS_POST_PROCESS::BLUR_FILTER, true);
 	Texture* blurTexture = this->getPipeline()->getPostProcessFbo()->getColorTexture(0);
 	
+	/*
+		Combine scene texture with glow texture
+	*/
 	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, blurTexture);
 
+
+
 	/*
-		Draw texture of scene to quad for postprocessing
+		Go through post process effects then draw texture to screen
 	*/
-	this->pipeline.drawTextureToQuad(combinedTex);
+	this->postProcessTexture = this->getPipeline()->getPostProcessFbo()->getColorTexture(0);
+	bool firstPostProcess = true;
+	for (unsigned i = 1; i < this->activePostFilters.size(); i++) {
+		if (this->activePostFilters[i]) {
+			if (firstPostProcess) {
+				this->pipeline.drawTextureToQuad(combinedTex, static_cast<SHADERS_POST_PROCESS>(i), true);
+				firstPostProcess = false;
+			}
+			else {
+				this->pipeline.drawTextureToQuad(this->postProcessTexture, static_cast<SHADERS_POST_PROCESS>(i), true);
+			}
+		}
+	}
+
+	if(firstPostProcess)
+		this->pipeline.drawTextureToQuad(combinedTex);
+	else
+		this->pipeline.drawTextureToQuad(this->postProcessTexture);
+	
 }
 
 void Renderer::updateShaders(const float & dt)
@@ -152,7 +186,8 @@ void Renderer::activatePostFilter(SHADERS_POST_PROCESS shader)
 		return;
 	}
 
-	this->pipeline.activatePostFilter(shader);
+	if (shader > (unsigned)0 && shader < this->activePostFilters.size())
+		activePostFilters[shader] = true;
 }
 
 void Renderer::deactivatePostFilter(SHADERS_POST_PROCESS shader)
@@ -162,5 +197,6 @@ void Renderer::deactivatePostFilter(SHADERS_POST_PROCESS shader)
 		return;
 	}
 
-	this->pipeline.deactivatePostFilter(shader);
+	if(shader > (unsigned)0 && shader < this->activePostFilters.size())
+		activePostFilters[shader] = false;
 }

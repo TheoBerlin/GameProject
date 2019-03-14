@@ -35,7 +35,9 @@ enum SHADERS {
 
 enum SHADERS_POST_PROCESS {
 	NO_FILTER = 0,
-	BLUR_FILTER = 1
+	BLUR_FILTER = 1,
+	REWIND_FILTER = 2,
+	SIZE
 };
 
 class Pipeline
@@ -116,11 +118,6 @@ public:
 	Framebuffer* getShadowFbo();
 	Framebuffer* getPostProcessFbo();
 
-	// Activate post process filter
-	void activatePostFilter(SHADERS_POST_PROCESS shader);
-	// Deactivate post process filter
-	void deactivatePostFilter(SHADERS_POST_PROCESS shader);
-
 private:
 	Camera * camera;
 	unsigned int width, height;
@@ -151,7 +148,4 @@ private:
 	LightManager * lightManager;
 
 	std::vector<UniformBuffer*> uniformBuffers;
-
-	// Contains active post process filters
-	std::list<SHADERS_POST_PROCESS> activePostFilters;
 };
