@@ -4,6 +4,8 @@
 #include "Utils/Settings.h"
 #include <vector>
 
+#define MAX_POINT_LIGHT 10
+
 class LightManager
 {
 public:

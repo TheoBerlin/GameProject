@@ -41,7 +41,7 @@ float LightManager::getShadowWidthScaled() const
 
 PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
 {
-	if (pointLights.size() < 10) {
+	if (pointLights.size() < MAX_POINT_LIGHT) {
 		PointLight *  pointLight = new PointLight(position, intensity, distance);
 		pointLights.push_back(pointLight);
 		return pointLight;
