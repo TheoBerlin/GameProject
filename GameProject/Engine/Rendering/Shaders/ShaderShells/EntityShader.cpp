@@ -1,6 +1,8 @@
 #include "EntityShader.h"
 #include <math.h>
 
+float EntityShader::time = 0.0f;
+
 EntityShader::EntityShader(const std::string & vertex, const std::string & fragment) : Shader(vertex, fragment)
 {
 	this->camera = nullptr;
@@ -72,12 +74,12 @@ void EntityShader::setGlowUniform(bool shouldGlow)
 
 void EntityShader::update(const float & dt)
 {
-	this->time += dt;
-	this->time = fmod(this->time, 20000.0f);
+	time += dt;
+	time = fmod(time, 20000.0f);
 }
 
 float EntityShader::getTime()
 {
-	return this->time;
+	return time;
 }
 

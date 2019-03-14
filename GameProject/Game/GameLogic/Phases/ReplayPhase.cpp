@@ -18,6 +18,9 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
+	//Remove Post process effect to transition
+	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
+
     flightTime = guidingPhase->getFlightTime();
 
     // Create replay time bar
