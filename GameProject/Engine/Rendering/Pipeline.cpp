@@ -466,31 +466,6 @@ void Pipeline::removeLight(int index)
 	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 }
 
-void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance)
-{
-	lightManager->createPointLight(position, intensity, distance);
-
-	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
-
-	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
-		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
-	}
-
-	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
-}
-
-void Pipeline::removeLight(int index)
-{
-	lightManager->removePointLight(index);
-	lightBuffer.nrOfPointLights = lightManager->getNrOfPointLights();
-
-	for (int i = 0; i < lightManager->getNrOfPointLights(); i++) {
-		lightBuffer.pointLights[i] = *lightManager->getPointLights()->at(i);
-	}
-
-	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
-}
-
 void Pipeline::drawTrail()
 {
 	this->fbo.bind();
