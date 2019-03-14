@@ -12,19 +12,19 @@
 #include <Engine/GUI/Panel.h>
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
-    :Phase((Phase*)aimPhase),
-    flightTimer(0.0f),
-    flightTime(0.0f)
+	:Phase((Phase*)aimPhase),
+	flightTimer(0.0f),
+	flightTime(0.0f)
 {
 	this->playerArrow = aimPhase->getPlayerArrow();
 
-    arrowCam = aimPhase->getArrowCam();
+	arrowCam = aimPhase->getArrowCam();
 
-    // Start guiding the arrow
-    arrowGuider = aimPhase->getArrowGuider();
-    arrowGuider->startGuiding();
+	// Start guiding the arrow
+	arrowGuider = aimPhase->getArrowGuider();
+	arrowGuider->startGuiding();
 
-    level.targetManager->resetTargets();
+	level.targetManager->resetTargets();
 	level.targetManager->pauseMovingTargets();
 
 	/*
@@ -42,12 +42,12 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	initTargetPanel();
 
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
-    EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
+	EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
 
 void GuidingPhase::update(const float& dt)
 {
-    flightTimer += dt;
+	flightTimer += dt;
 }
 
 GuidingPhase::~GuidingPhase()
@@ -59,106 +59,113 @@ GuidingPhase::~GuidingPhase()
 
 Entity* GuidingPhase::getPlayerArrow() const
 {
-    return playerArrow;
+	return playerArrow;
 }
 
 ArrowGuider* GuidingPhase::getArrowGuider() const
 {
-    return arrowGuider;
+	return arrowGuider;
 }
 
 float GuidingPhase::getFlightTime()
 {
-    return flightTime;
+	return flightTime;
 }
 
 void GuidingPhase::handleKeyInput(KeyEvent* event)
 {
-    if (event->action != GLFW_PRESS) {
-        return;
-    }
+	if (event->action != GLFW_PRESS) {
+		return;
+	}
 
-    if (event->key == GLFW_KEY_ESCAPE) {
-        EventBus::get().publish(&PauseEvent());
-    }
+	if (event->key == GLFW_KEY_ESCAPE) {
+		EventBus::get().publish(&PauseEvent());
+	}
 
-    else if (event->key == GLFW_KEY_3) {
-        beginReplayTransition();
-    }
+	else if (event->key == GLFW_KEY_3) {
+		beginReplayTransition();
+	}
 }
 
 void GuidingPhase::beginReplayTransition()
 {
-    EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
+	EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
 
-    level.replaySystem->stopRecording();
+	level.replaySystem->stopRecording();
 
 	level.scoreManager->stop();
 
 	level.gui->removePanel(this->targetPnl);
 
-    // Get flight time
-    flightTime = flightTimer;
+	// Get flight time
+	flightTime = flightTimer;
 
-    arrowGuider->stopGuiding(flightTime);
+	arrowGuider->stopGuiding(flightTime);
 
-    // Begin camera transition to the replay freecam
-    CameraSetting currentCamSettings;
+	// Begin camera transition to the replay freecam
+	CameraSetting currentCamSettings;
 
-    Transform* arrowTransform = playerArrow->getTransform();
+	Transform* arrowTransform = playerArrow->getTransform();
 
-    currentCamSettings.position = arrowCam->getPosition();
-    currentCamSettings.direction = arrowCam->getForward();
-    currentCamSettings.offset = {0.0f, 0.0f, 0.0f};
-    currentCamSettings.FOV = arrowCam->getFOV();
+	currentCamSettings.position = arrowCam->getPosition();
+	currentCamSettings.direction = arrowCam->getForward();
+	currentCamSettings.offset = { 0.0f, 0.0f, 0.0f };
+	currentCamSettings.FOV = arrowCam->getFOV();
 
-    CameraSetting newCamSettings = level.player.replayCamera;
+	CameraSetting newCamSettings = level.player.arrowCamera;
 
-    this->transitionStraightPath(currentCamSettings, newCamSettings);
+	// Set the destination's forward to point to the second keypoint in the path
+	if (arrowGuider->getPath().size() > 1) {
+		newCamSettings.direction = glm::normalize(arrowGuider->getPath()[1].Position - arrowGuider->getPath()[0].Position);
+	}
 
-    EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
+	newCamSettings.offset = { 0.0f, 0.0f, -1.6f };
+
+	this->transitionStraightPath(currentCamSettings, newCamSettings);
+
+	EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }
 
 void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 {
-    EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
+	EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
 
 	level.collisionHandler->removeCollisionBody(this->playerArrow);
 	level.targetManager->unpauseMovingTargets();
 
-    Phase* guidingPhase = new ReplayPhase(this);
-    changePhase(guidingPhase);
+	Phase* guidingPhase = new ReplayPhase(this);
+	changePhase(guidingPhase);
 }
 
 void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 {
 	// Save keypoint for collision so that the collision is visible during replay
-    flightTime = flightTimer;
+	flightTime = flightTimer;
 
-    arrowGuider->saveKeyPoint(flightTime);
+	arrowGuider->saveKeyPoint(flightTime);
 	// Check if the arrow hit static geometry
-    unsigned int category = ev->shape2->getCollisionCategoryBits();
+	unsigned int category = ev->shape2->getCollisionCategoryBits();
 
 	switch (category)
 	{
-		case CATEGORY::STATIC:
-		{
-			beginReplayTransition();
-			break;
-		}
-		case CATEGORY::DRONE_BODY:
-		{
-			level.scoreManager->score();
-			updateTargetPanel();
-			break;
-		}
-		case CATEGORY::DRONE_EYE:
-		{
-			level.scoreManager->scoreBonus();
-			updateTargetPanel();
-			break;
-		}
+	case CATEGORY::STATIC:
+	{
+		beginReplayTransition();
+		break;
+	}
+	case CATEGORY::DRONE_BODY:
+	{
+		level.scoreManager->score();
+		updateTargetPanel();
+		break;
+	}
+	case CATEGORY::DRONE_EYE:
+	{
+		level.scoreManager->scoreBonus();
+		updateTargetPanel();
+		break;
+	}
 	}
 }
 
@@ -189,7 +196,7 @@ void GuidingPhase::initTargetPanel()
 	textPnl->setOption(GUI::TEXT_CENTER_Y);
 	textPnl->setOption(GUI::SCALE_TO_TEXT_X, 20);
 	textPnl->setOption(GUI::SCALE_TO_TEXT_Y);
-	textPnl->setPosition({ (unsigned)40*ratio, 0 });
+	textPnl->setPosition({ (unsigned)40 * ratio, 0 });
 	textPnl->setColor({ 0.1f, 0.1f, 0.1f, 0.0f });
 	textPnl->addText("0/" + std::to_string(level.targetManager->getTargetCount()), "aldo", { 1.f, 1.f, 1.f, .97f });
 	this->targetPnl->addChild(textPnl);

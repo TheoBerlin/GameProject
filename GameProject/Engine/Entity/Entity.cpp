@@ -57,7 +57,6 @@ bool Entity::addComponent(Component * component)
 
 	if (ite == this->components.end()) {
 		this->components[component->getName()] = component;
-		component->setHost(this);
 		return true;
 	}
 
@@ -87,6 +86,18 @@ void Entity::removeAllComponents()
 	this->components.clear();
 }
 
+bool Entity::detachComponent(const std::string& componentName)
+{
+	auto ite = this->components.find(componentName);
+
+	if (ite != this->components.end()) {
+		this->components.erase(ite);
+		return true;
+	}
+
+	return false;
+}
+
 Component* Entity::getComponent(const std::string& componentName)
 {
 	// Returns nullptr if component is not found
@@ -94,7 +105,8 @@ Component* Entity::getComponent(const std::string& componentName)
 
 	if (elem != this->components.end()) {
 		return elem->second;
-	} else {
+	}
+	else {
 		return nullptr;
 	}
 }

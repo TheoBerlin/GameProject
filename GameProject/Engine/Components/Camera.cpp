@@ -10,7 +10,7 @@ Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec
 	this->zNear = ZNEAR;
 	this->zFar = ZFAR;
 	this->offset = offset;
-    this->decoupled = false;
+	this->decoupled = false;
 
 	// Set subscribe to resize event to update camera
 	EventBus::get().subscribe(this, &Camera::updateProj);
@@ -23,9 +23,9 @@ Camera::~Camera()
 
 void Camera::update(const float & dt)
 {
-    if (!decoupled) {
-	    updateTransform();
-    }
+	if (!decoupled) {
+		updateTransform();
+	}
 
 	updateView();
 }
@@ -108,7 +108,12 @@ void Camera::setOffset(const glm::vec3& offset)
 
 void Camera::decouple()
 {
-    this->decoupled = true;
+	this->decoupled = true;
+}
+
+void Camera::couple()
+{
+	this->decoupled = false;
 }
 
 bool Camera::isDecoupled() const
@@ -132,8 +137,8 @@ void Camera::updateTransform()
 
 	glm::vec3 hostPos = transform->getPosition();
 
-    this->f = transform->getForward();
-    this->r = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
+	this->f = transform->getForward();
+	this->r = glm::normalize(glm::cross(this->f, GLOBAL_UP_VECTOR));
 	this->u = glm::cross(this->r, this->f);
 
 	this->pos = hostPos + (this->r * this->offset.x + transform->getUp() * this->offset.y + this->f * this->offset.z);

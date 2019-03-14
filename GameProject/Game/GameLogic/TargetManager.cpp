@@ -5,6 +5,7 @@
 #include <Game/Components/Explosion.h>
 #include <Game/Components/PathTreader.h>
 #include <Game/Components/RollNullifier.h>
+#include <Game/Components/DeathAnimation.h>
 #include <Engine/Components/MovingTargetCollision.h>
 #include <Engine/Components/StaticTargetCollision.h>
 #include <reactphysics3d/reactphysics3d.h>
@@ -18,44 +19,50 @@ TargetManager::~TargetManager()
 {
 }
 
-void TargetManager::addStaticTarget(Entity* host)
+void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 {
-    // Set position and forward
-    Transform* transform = host->getTransform();
+	// Set position and forward
+	Transform* transform = host->getTransform();
 
-    // Generic setup for all targets
-    setupTargetGeneric(host);
+	transform->setPosition(position);
+	transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
-    // Add component pointers to vector
-    StaticTarget staticTarget;
+	// Generic setup for all targets
+	setupTargetGeneric(host);
 
-    staticTarget.hoverAnimation = new Hover(host);
+	// Add component pointers to vector
+	StaticTarget staticTarget;
+
+	staticTarget.hoverAnimation = new Hover(host);
 	staticTarget.explosion = new Explosion(host);
+	staticTarget.deathAnimation = new DeathAnimation(host);
 
 	new StaticTargetCollision(host);
 
-    staticTargets.push_back(staticTarget);
+	staticTargets.push_back(staticTarget);
 }
 
 void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& path)
 {
-    // Set position and forward
-    Transform* transform = host->getTransform();
+	// Set position and forward
+	Transform* transform = host->getTransform();
 
-    transform->setPosition(path[0].Position);
-    transform->setForward(glm::normalize(path[1].Position - path[0].Position));
+	transform->setPosition(path[0].Position);
+	transform->setForward(glm::normalize(path[1].Position - path[0].Position));
 
-    // Generic setup for all targets
+	// Generic setup for all targets
 	setupTargetGeneric(host);
 
-    // Add component pointers to vector
-    MovingTarget movingTarget;
+	// Add component pointers to vector
+	MovingTarget movingTarget;
 
-    movingTarget.pathTreader = new PathTreader(host, path, true);
-    movingTarget.rollNullifier = new RollNullifier(host);
+	movingTarget.pathTreader = new PathTreader(host, path, true);
+	movingTarget.rollNullifier = new RollNullifier(host);
+	movingTarget.explosion = new Explosion(host);
+	movingTarget.deathAnimation = new DeathAnimation(host);
 	new MovingTargetCollision(host);
 
-    movingTargets.push_back(movingTarget);
+	movingTargets.push_back(movingTarget);
 }
 
 void TargetManager::addKeyPoint(Entity * host, const KeyPoint point)
@@ -109,7 +116,7 @@ void TargetManager::pauseMovingTargets()
 
 		glm::vec3 p1 = t.pathTreader->getKeyPoint(0).Position;
 		glm::vec3 p2 = t.pathTreader->getKeyPoint(1).Position;
-		
+
 		transform->setForward(glm::normalize(p2 - p1));
 		transform->setPosition(p1);
 		transform->resetRoll();
@@ -126,10 +133,10 @@ void TargetManager::unpauseMovingTargets()
 void TargetManager::resetTargets()
 {
 	// Moving targets
-    resetMovingTargets();
+	resetMovingTargets();
 
 	// Static targets
-    resetStaticTargets();
+	resetStaticTargets();
 }
 
 unsigned TargetManager::getTargetCount()
@@ -139,7 +146,7 @@ unsigned TargetManager::getTargetCount()
 
 void TargetManager::setupTargetGeneric(Entity* host)
 {
-    host->getTransform()->setScale(0.25f);
+	host->getTransform()->setScale(0.25f);
 }
 
 void TargetManager::resetStaticTargets()
@@ -164,28 +171,39 @@ void TargetManager::resetStaticAnimations()
 {
 	unsigned int staticTargetCount = staticTargets.size();
 
-    for (unsigned int i = 0; i != staticTargetCount; i += 1) {
-        staticTargets.at(i).hoverAnimation->reset();
+	for (unsigned int i = 0; i != staticTargetCount; i += 1) {
+		Entity* targetHost = staticTargets.at(i).hoverAnimation->getHost();
+		targetHost->unpauseModelTransform();
+		staticTargets.at(i).hoverAnimation->reset();
 		staticTargets.at(i).explosion->reset();
-		
+		staticTargets.at(i).deathAnimation->reset();
+
 		//Reset color on entity
-		Entity* host = staticTargets.at(i).hoverAnimation->getHost();
-		int attachmentIndex = host->getRenderingGroupIndex();
-		if(attachmentIndex != -1)
-			host->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
-				attachmentIndex *sizeof(glm::vec3), 0, 2);
-    }
+		int attachmentIndex = targetHost->getRenderingGroupIndex();
+		if (attachmentIndex != -1)
+			targetHost->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
+				attachmentIndex * sizeof(glm::vec3), 0, 2);
+	}
 }
 
 void TargetManager::resetMovingAnimations()
 {
 	unsigned int movingTargetCount = movingTargets.size();
 
-    for (unsigned int i = 0; i != movingTargetCount; i += 1) {
+	for (unsigned int i = 0; i != movingTargetCount; i += 1) {
 		Entity* targetHost = movingTargets.at(i).pathTreader->getHost();
-        movingTargets.at(i).pathTreader->startTreading();
+		targetHost->unpauseModelTransform();
+		movingTargets.at(i).pathTreader->startTreading();
 		targetHost->getTransform()->resetRoll();
-    }
+		movingTargets.at(i).explosion->reset();
+		movingTargets.at(i).deathAnimation->reset();
+
+		//Reset color on entity
+		int attachmentIndex = targetHost->getRenderingGroupIndex();
+		if (attachmentIndex != -1)
+			targetHost->getModel()->updateInstancingSpecificData(&glm::vec3(0.0, 0.0, 0.0)[0], sizeof(glm::vec3),
+				attachmentIndex * sizeof(glm::vec3), 0, 2);
+	}
 }
 
 void TargetManager::resetStaticCollisions()

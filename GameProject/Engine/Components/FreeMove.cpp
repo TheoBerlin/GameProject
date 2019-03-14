@@ -32,6 +32,16 @@ FreeMove::~FreeMove()
 	EventBus::get().unsubscribe(this, &FreeMove::moveMouse);
 }
 
+void FreeMove::setSpeed(const float speed)
+{
+	this->speed = speed;
+}
+
+float FreeMove::getSpeed() const
+{
+	return speed;
+}
+
 void FreeMove::update(const float & dt)
 {
 	Transform * mat = host->getTransform();
@@ -49,7 +59,7 @@ void FreeMove::update(const float & dt)
 		newPosition += this->dt * mat->getRight() * this->speed;
 	if (this->pressedKeys[GLFW_KEY_S])
 		newPosition += this->dt * -mat->getForward() * this->speed;
-	if (this->pressedKeys[GLFW_KEY_SPACE])
+	if (this->pressedKeys[GLFW_KEY_LEFT_SHIFT])
 		newPosition += this->dt * GLOBAL_UP_VECTOR * this->speed;
 	if (this->pressedKeys[GLFW_KEY_LEFT_CONTROL])
 		newPosition += this->dt * -GLOBAL_UP_VECTOR * this->speed;
@@ -66,7 +76,8 @@ void FreeMove::update(const float & dt)
 
 		if (newPitch > maxPitch) {
 			pitch = maxPitch - currentPitch;
-		} else if (newPitch < -maxPitch) {
+		}
+		else if (newPitch < -maxPitch) {
 			pitch = -maxPitch - currentPitch;
 		}
 
@@ -79,21 +90,12 @@ void FreeMove::update(const float & dt)
 	}
 }
 
-void FreeMove::setSpeed(const float speed)
-{
-	this->speed = speed;
-}
-
-float FreeMove::getSpeed() const
-{
-	return speed;
-}
-
 void FreeMove::toggleMouse()
 {
 	if (this->mouseEnabled) {
 		disableMouse();
-	} else {
+	}
+	else {
 		enableMouse();
 	}
 }

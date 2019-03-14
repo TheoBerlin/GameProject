@@ -39,10 +39,12 @@ void LevelStructure::createWalls(Level& level, std::vector<std::vector<glm::vec3
 	// Create wall buffer
 	createWallBuffers();
 
-	// Create infinity plane entity
-	createInfinityPlane(level);
-	// Create roof entity
-	createRoof(level);
+	if (!level.isEditor) {
+		// Create infinity plane entity
+		createInfinityPlane(level);
+		// Create roof entity
+		createRoof(level);
+	}
 }
 
 void LevelStructure::createWallGroup(Level & level, std::vector<glm::vec3>& points, bool invertNormal)

@@ -93,7 +93,6 @@ float Transform::getYaw() const
 	return glm::orientedAngle(defaultForward, temp, GLOBAL_UP_VECTOR);
 }
 
-
 float Transform::getPitch() const
 {
 	// Calculate pitch
@@ -115,7 +114,7 @@ float Transform::getRoll() const
 
 glm::vec3 Transform::getYawPitchRoll() const
 {
-	return {this->getYaw(), this->getPitch(), this->getRoll()};
+	return { this->getYaw(), this->getPitch(), this->getRoll() };
 }
 
 glm::vec3 Transform::getDefaultForward() const
@@ -294,7 +293,7 @@ void Transform::resetRoll()
 {
 	float roll = getRoll();
 
-	glm::quat rollQuat = glm::angleAxis(roll, this->f);
+	glm::quat rollQuat = glm::angleAxis(-roll, this->f);
 
 	this->r = glm::normalize(rollQuat * this->r);
 	this->u = glm::normalize(rollQuat * this->u);

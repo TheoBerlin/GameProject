@@ -88,6 +88,7 @@
     <ClCompile Include="Game\Components\PathTreader.cpp" />
     <ClCompile Include="Game\Components\PathVisualizer.cpp" />
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
+    <ClCompile Include="Game\components\ThirdPersonController.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\AimPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\GuidingPhase.cpp" />
@@ -189,6 +190,7 @@
     <ClInclude Include="Game\Components\OversightController.h" />
     <ClInclude Include="Game\Components\PathVisualizer.h" />
     <ClInclude Include="Game\Components\RollNullifier.h" />
+    <ClInclude Include="Game\components\ThirdPersonController.h" />
     <ClInclude Include="Game\GameLogic.h" />
     <ClInclude Include="Game\GameLogic\GameEvents.h" />
     <ClInclude Include="Game\GameLogic\Phases\AimPhase.h" />

@@ -1,411 +1,431 @@
 {
-  "Boxes": [
-    {
-      "Name": "Box1",
-      "Position": [
-        0,
-        -1,
-        -5
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box2",
-      "Position": [
-        0,
-        -1,
-        -6
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box3",
-      "Position": [
-        0,
-        -1,
-        -7
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box4",
-      "Position": [
-        0,
-        -1,
-        -8
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box5",
-      "Position": [
-        0,
-        -1,
-        -9
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box6",
-      "Position": [
-        0,
-        -1,
-        -10
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box7",
-      "Position": [
-        0,
-        -1,
-        -11
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box8",
-      "Position": [
-        0,
-        -1,
-        -12
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box9",
-      "Position": [
-        0,
-        -1,
-        -13
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box10",
-      "Position": [
-        0,
-        -1,
-        -14
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box11",
-      "Position": [
-        0,
-        -1,
-        -15
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box12",
-      "Position": [
-        0,
-        -1,
-        -16
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box13",
-      "Position": [
-        0,
-        -1,
-        -17
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box14",
-      "Position": [
-        0,
-        -1,
-        -18
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box15",
-      "Position": [
-        0,
-        -1,
-        -19
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box16",
-      "Position": [
-        0,
-        -1,
-        -20
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box17",
-      "Position": [
-        0,
-        -1,
-        -21
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box18",
-      "Position": [
-        0,
-        -1,
-        -22
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box19",
-      "Position": [
-        0,
-        -1,
-        -23
-      ],
-      "Scale": null
-    },
-    {
-      "Name": "Box20",
-      "Position": [
-        0,
-        -1,
-        -24
-      ],
-      "Scale": null
-    }
-  ],
-  "DirectionalLight": {
-    "Direction": [
-      null,
-      null,
-      null,
-      null
+    "Boxes": [
+        {
+            "Name": "Box1",
+            "Position": [
+                0,
+                -1,
+                -5
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box2",
+            "Position": [
+                0,
+                -1,
+                -6
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box3",
+            "Position": [
+                0,
+                -1,
+                -7
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box4",
+            "Position": [
+                0,
+                -1,
+                -8
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box5",
+            "Position": [
+                0,
+                -1,
+                -9
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box6",
+            "Position": [
+                0,
+                -1,
+                -10
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box7",
+            "Position": [
+                0,
+                -1,
+                -11
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box8",
+            "Position": [
+                0,
+                -1,
+                -12
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box9",
+            "Position": [
+                0,
+                -1,
+                -13
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box10",
+            "Position": [
+                0,
+                -1,
+                -14
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box11",
+            "Position": [
+                0,
+                -1,
+                -15
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box12",
+            "Position": [
+                0,
+                -1,
+                -16
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box13",
+            "Position": [
+                0,
+                -1,
+                -17
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box14",
+            "Position": [
+                0,
+                -1,
+                -18
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box15",
+            "Position": [
+                0,
+                -1,
+                -19
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box16",
+            "Position": [
+                0,
+                -1,
+                -20
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box17",
+            "Position": [
+                0,
+                -1,
+                -21
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box18",
+            "Position": [
+                0,
+                -1,
+                -22
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box19",
+            "Position": [
+                0,
+                -1,
+                -23
+            ],
+            "Rotation": null,
+            "Scale": null
+        },
+        {
+            "Name": "Box20",
+            "Position": [
+                0,
+                -1,
+                -24
+            ],
+            "Rotation": null,
+            "Scale": null
+        }
     ],
-    "Intensity": [
-      null,
-      null,
-      null,
-      null
-    ]
-  },
-  "Floor": {
-    "Position": [
-      0,
-      0,
-      0
-    ]
-  },
-  "Metadata": {
-    "Highscore": 0,
-    "OptimalTime": 20.0
-  },
-  "Player": {
-    "ArrowCamera": {
-      "Direction": [
-        0.0,
-        0.0,
-        -1.0
-      ],
-      "FOV": 75.0,
-      "Offset": [
-        0.0,
-        0.3,
-        -1.0
-      ],
-      "Position": [
-        1.0,
-        1.0,
-        12.0
-      ]
+    "DirectionalLight": {
+        "Direction": [
+            null,
+            null,
+            null,
+            null
+        ],
+        "Intensity": [
+            null,
+            null,
+            null,
+            null
+        ]
     },
-    "OversightCamera": {
-      "Direction": [
-        0.442396,
-        -0.715689,
-        -0.54044
-      ],
-      "FOV": 75.0,
-      "Offset": [
-        0.0,
-        0.0,
-        0.0
-      ],
-      "Position": [
-        -10.0,
-        20.0,
-        10.0
-      ]
-    }
-  },
-  "PointLights": null,
-  "Target": [
-    {
-      "Name": "Target1",
-      "Position": [
-        0,
-        0,
-        -5
-      ]
+    "Floor": {
+        "Position": [
+            0,
+            0,
+            0
+        ]
     },
-    {
-      "Name": "Target2",
-      "Position": [
-        0,
-        0,
-        -6
-      ]
+    "Metadata": {
+        "Highscore": 215,
+        "OptimalTime": 20.0
     },
-    {
-      "Name": "Target3",
-      "Position": [
-        0,
-        0,
-        -7
-      ]
+    "Player": {
+        "ArrowCamera": {
+            "Direction": [
+                0.0,
+                0.0,
+                -1.0
+            ],
+            "FOV": 75.0,
+            "Offset": [
+                0.0,
+                0.3,
+                -1.0
+            ],
+            "Position": [
+                1.0,
+                1.0,
+                12.0
+            ]
+        },
+        "OversightCamera": {
+            "Direction": [
+                0.442396,
+                -0.715689,
+                -0.54044
+            ],
+            "FOV": 75.0,
+            "Offset": [
+                0.0,
+                0.0,
+                0.0
+            ],
+            "Position": [
+                -10.0,
+                20.0,
+                10.0
+            ]
+        }
     },
-    {
-      "Name": "Target4",
-      "Position": [
-        0,
-        0,
-        -8
-      ]
-    },
-    {
-      "Name": "Target5",
-      "Position": [
-        0,
-        0,
-        -9
-      ]
-    },
-    {
-      "Name": "Target6",
-      "Position": [
-        0,
-        0,
-        -10
-      ]
-    },
-    {
-      "Name": "Target7",
-      "Position": [
-        0,
-        0,
-        -11
-      ]
-    },
-    {
-      "Name": "Target8",
-      "Position": [
-        0,
-        0,
-        -12
-      ]
-    },
-    {
-      "Name": "Target9",
-      "Position": [
-        0,
-        0,
-        -13
-      ]
-    },
-    {
-      "Name": "Target10",
-      "Position": [
-        0,
-        0,
-        -14
-      ]
-    },
-    {
-      "Name": "Target11",
-      "Position": [
-        0,
-        0,
-        -15
-      ]
-    },
-    {
-      "Name": "Target12",
-      "Position": [
-        0,
-        0,
-        -16
-      ]
-    },
-    {
-      "Name": "Target13",
-      "Position": [
-        0,
-        0,
-        -17
-      ]
-    },
-    {
-      "Name": "Target14",
-      "Position": [
-        0,
-        0,
-        -18
-      ]
-    },
-    {
-      "Name": "Target15",
-      "Position": [
-        0,
-        0,
-        -19
-      ]
-    },
-    {
-      "Name": "Target16",
-      "Position": [
-        0,
-        0,
-        -20
-      ]
-    },
-    {
-      "Name": "Target17",
-      "Position": [
-        0,
-        0,
-        -21
-      ]
-    },
-    {
-      "Name": "Target18",
-      "Position": [
-        0,
-        0,
-        -22
-      ]
-    },
-    {
-      "Name": "Target19",
-      "Position": [
-        0,
-        0,
-        -23
-      ]
-    },
-    {
-      "Name": "Target20",
-      "Position": [
-        0,
-        0,
-        -24
-      ]
-    }
-  ],
-  "Walls": null
+    "PointLights": null,
+    "Target": [
+        {
+            "Name": "Target1",
+            "Position": [
+                0,
+                0,
+                -5
+            ]
+        },
+        {
+            "Name": "Target2",
+            "Position": [
+                0,
+                0,
+                -6
+            ]
+        },
+        {
+            "Name": "Target3",
+            "Position": [
+                0,
+                0,
+                -7
+            ]
+        },
+        {
+            "Name": "Target4",
+            "Position": [
+                0,
+                0,
+                -8
+            ]
+        },
+        {
+            "Name": "Target5",
+            "Position": [
+                0,
+                0,
+                -9
+            ]
+        },
+        {
+            "Name": "Target6",
+            "Position": [
+                0,
+                0,
+                -10
+            ]
+        },
+        {
+            "Name": "Target7",
+            "Position": [
+                0,
+                0,
+                -11
+            ]
+        },
+        {
+            "Name": "Target8",
+            "Position": [
+                0,
+                0,
+                -12
+            ]
+        },
+        {
+            "Name": "Target9",
+            "Position": [
+                0,
+                0,
+                -13
+            ]
+        },
+        {
+            "Name": "Target10",
+            "Position": [
+                0,
+                0,
+                -14
+            ]
+        },
+        {
+            "Name": "Target11",
+            "Position": [
+                0,
+                0,
+                -15
+            ]
+        },
+        {
+            "Name": "Target12",
+            "Position": [
+                0,
+                0,
+                -16
+            ]
+        },
+        {
+            "Name": "Target13",
+            "Position": [
+                0,
+                0,
+                -17
+            ]
+        },
+        {
+            "Name": "Target14",
+            "Position": [
+                0,
+                0,
+                -18
+            ]
+        },
+        {
+            "Name": "Target15",
+            "Position": [
+                0,
+                0,
+                -19
+            ]
+        },
+        {
+            "Name": "Target16",
+            "Position": [
+                0,
+                0,
+                -20
+            ]
+        },
+        {
+            "Name": "Target17",
+            "Position": [
+                0,
+                0,
+                -21
+            ]
+        },
+        {
+            "Name": "Target18",
+            "Position": [
+                0,
+                0,
+                -22
+            ]
+        },
+        {
+            "Name": "Target19",
+            "Position": [
+                0,
+                0,
+                -23
+            ]
+        },
+        {
+            "Name": "Target20",
+            "Position": [
+                0,
+                0,
+                -24
+            ]
+        }
+    ],
+    "Walls": null
 }

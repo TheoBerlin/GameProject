@@ -19,7 +19,6 @@ void LevelParser::readEntityTargets(Level& level)
 
 	if (targetSize != 0) {
 		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
-		model->setName("droneTarget");
 		Display::get().getRenderer().addRenderingTarget(model, SHADERS::DRONE_SHADER);
 	}
 
@@ -27,8 +26,7 @@ void LevelParser::readEntityTargets(Level& level)
 	{
 		json::json& target = jsonFile["Target"][i];
 		Entity* entity;
-		glm::vec3 position = glm::vec3(0.0f);
-		glm::vec3 rotation = glm::vec3(0.0f);
+		glm::vec3 position;
 		std::vector<KeyPoint> path;
 
 		//Every object requires a name
@@ -39,13 +37,11 @@ void LevelParser::readEntityTargets(Level& level)
 			if (!target["Position"].empty()) {
 				readVec3(target["Position"], position);
 			}
-			if (!target["Rotation"].empty()) {
-				readVec3(target["Rotation"], rotation);
-			}
-			if (!target["Path"].empty()) {
+			else if (!target["Path"].empty()) {
 				readPath(target, entity, path);
 			}
-		} else {
+		}
+		else {
 			LOG_ERROR("An object is missing a name or name is not a string");
 			break;
 		}
@@ -53,13 +49,12 @@ void LevelParser::readEntityTargets(Level& level)
 		if (!path.empty()) {
 			// The target is mobile
 			level.targetManager->addMovingTarget(entity, path);
-		} else {
+		}
+		else {
 			// The target is static
-			level.targetManager->addStaticTarget(entity);
+			level.targetManager->addStaticTarget(entity, position);
 		}
 
-		entity->getTransform()->setPosition(position);
-		entity->getTransform()->setRotation(rotation);
 		entity->setModel(model);
 		std::vector<CollisionHandler::ShapeData> shapeData;
 
@@ -77,7 +72,7 @@ void LevelParser::readEntityTargets(Level& level)
 		droneEyeData.localScale = glm::vec3(0.8f);
 		droneEyeData.name = "Eye";
 		shapeData.push_back(droneEyeData);
-		
+
 		level.collisionHandler->addCollisionToEntity(entity, shapeData, false);
 	}
 }
@@ -196,7 +191,6 @@ void LevelParser::readPlayer(Level& level)
 
 	readCameraSetting(player["OversightCamera"], level.player.oversightCamera);
 	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
-	readCameraSetting(player["ReplayCamera"], level.player.replayCamera);
 }
 
 void LevelParser::writeEntityBoxes(Level & level)
@@ -297,6 +291,8 @@ void LevelParser::writePlayer(Level & level)
 	jsonFile["Player"]["ArrowCamera"]["Direction"] = { level.player.arrowCamera.direction.x, level.player.arrowCamera.direction.y, level.player.arrowCamera.direction.z };
 	jsonFile["Player"]["ArrowCamera"]["Offset"] = { level.player.arrowCamera.offset.x, level.player.arrowCamera.offset.y, level.player.arrowCamera.offset.z };
 	jsonFile["Player"]["ArrowCamera"]["FOV"] = level.player.arrowCamera.FOV;
+
+	jsonFile["Metadata"]["OptimalTime"] = level.scoreManager->getOptimalTime();
 }
 
 void LevelParser::writeWalls(Level & level)

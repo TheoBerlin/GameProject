@@ -79,6 +79,11 @@ int ScoreManager::getHighscore() const
 	return this->highscore;
 }
 
+float ScoreManager::getOptimalTime() const
+{
+	return optimalTime;
+}
+
 float ScoreManager::getTotalTime() const
 {
 	return this->totalTime;

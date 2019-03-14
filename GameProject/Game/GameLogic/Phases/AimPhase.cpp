@@ -12,56 +12,51 @@
 #include <GLFW/glfw3.h>
 
 AimPhase::AimPhase(OverviewPhase* overviewPhase)
-    :Phase((Phase*)overviewPhase)
+	:Phase((Phase*)overviewPhase)
 {
-    // Get player arrow
-    playerArrow = overviewPhase->getPlayerArrow();
+	// Get player arrow
+	playerArrow = overviewPhase->getPlayerArrow();
 
-    // Remove overview camera
-    Entity* overviewCamera = overviewPhase->getOverviewCamera();
-    level.entityManager->removeTracedEntity(overviewCamera->getName());
+	// Remove overview camera
+	Entity* overviewCamera = overviewPhase->getOverviewCamera();
+	level.entityManager->removeTracedEntity(overviewCamera->getName());
 
-    commonSetup();
+	commonSetup();
 }
 
 AimPhase::AimPhase(ReplayPhase* replayPhase)
-    :Phase((Phase*)replayPhase)
+	:Phase((Phase*)replayPhase)
 {
-    // Remove path visualizers
-    PathVisualizer* pathVisualizer = replayPhase->getPathVisualizer();
+	// Remove path visualizers
+	PathVisualizer* pathVisualizer = replayPhase->getPathVisualizer();
 
-    if (pathVisualizer) {
-        replayPhase->getPathVisualizer()->removeVisualizers();
-    }
+	if (pathVisualizer) {
+		replayPhase->getPathVisualizer()->removeVisualizers();
+	}
 
-    // Remove replay arrow
-    Entity* replayArrow = replayPhase->getReplayArrow();
+	// Remove replay arrow
+	Entity* replayArrow = replayPhase->getReplayArrow();
 
-    level.entityManager->removeTracedEntity(replayArrow->getName());
+	level.entityManager->removeTracedEntity(replayArrow->getName());
 
-    // Remove freecam
-    Entity* freeCam = replayPhase->getFreeCam();
-
-    level.entityManager->removeTracedEntity(freeCam->getName());
-
-    /*
+	/*
 		Create arrow entity
 	*/
 	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
 
-    playerArrow = level.entityManager->addTracedEntity("PlayerArrow");
+	playerArrow = level.entityManager->addTracedEntity("PlayerArrow");
 
-    Transform* playerTransform = playerArrow->getTransform();
+	Transform* playerTransform = playerArrow->getTransform();
 
-    playerTransform->setForward(level.player.arrowCamera.direction);
-    playerTransform->resetRoll();
+	playerTransform->setForward(level.player.arrowCamera.direction);
+	playerTransform->resetRoll();
 	playerTransform->setPosition(level.player.arrowCamera.position);
 
 	playerArrow->setModel(model);
 
 	new PlayerCollision(playerArrow);
 
-    commonSetup();
+	commonSetup();
 }
 
 AimPhase::~AimPhase()
@@ -78,22 +73,22 @@ void AimPhase::update(const float & dt)
 
 Entity* AimPhase::getPlayerArrow() const
 {
-    return playerArrow;
+	return playerArrow;
 }
 
 ArrowGuider* AimPhase::getArrowGuider() const
 {
-    return arrowGuider;
+	return arrowGuider;
 }
 
 Camera* AimPhase::getArrowCam() const
 {
-    return arrowCam;
+	return arrowCam;
 }
 
 void AimPhase::commonSetup()
 {
-    CameraSetting arrowCamSettings = level.player.arrowCamera;
+	CameraSetting arrowCamSettings = level.player.arrowCamera;
 
 	/*
 		Add arrowguider to entity
@@ -106,7 +101,7 @@ void AimPhase::commonSetup()
 	glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
-    new CameraDrift(playerArrow);
+	new CameraDrift(playerArrow);
 
 	arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
@@ -118,19 +113,19 @@ void AimPhase::commonSetup()
 	// Reset targets
 	level.targetManager->resetTargets();
 
-    EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
-    EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
+	EventBus::get().subscribe(this, &AimPhase::handleKeyInput);
+	EventBus::get().subscribe(this, &AimPhase::handleMouseClick);
 
-    // Lock cursor
-    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// Lock cursor
+	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void AimPhase::handleMouseClick(MouseClickEvent* event)
 {
-    // Change phase to guiding phase when the left mouse button has been released
-    if (event->action == GLFW_RELEASE && event->button == GLFW_MOUSE_BUTTON_LEFT) {
-        EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
-        EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
+	// Change phase to guiding phase when the left mouse button has been released
+	if (event->action == GLFW_RELEASE && event->button == GLFW_MOUSE_BUTTON_LEFT) {
+		EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
+		EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
 		Phase* newPhase = new GuidingPhase(this);
 
@@ -140,40 +135,40 @@ void AimPhase::handleMouseClick(MouseClickEvent* event)
 
 void AimPhase::handleKeyInput(KeyEvent* event)
 {
-    if (event->action != GLFW_PRESS) {
-        return;
-    }
+	if (event->action != GLFW_PRESS) {
+		return;
+	}
 
-    if (event->key == GLFW_KEY_ESCAPE) {
-        EventBus::get().publish(&PauseEvent());
-    }
+	if (event->key == GLFW_KEY_ESCAPE) {
+		EventBus::get().publish(&PauseEvent());
+	}
 
-    else if (event->key == GLFW_KEY_1) {
-        EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
-        EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
+	else if (event->key == GLFW_KEY_1) {
+		EventBus::get().unsubscribe(this, &AimPhase::handleKeyInput);
+		EventBus::get().unsubscribe(this, &AimPhase::handleMouseClick);
 
-        arrowGuider->stopAiming();
+		arrowGuider->stopAiming();
 
-        // Begin camera transition to the oversight camera
-        CameraSetting currentCamSettings = level.player.arrowCamera;
+		// Begin camera transition to the oversight camera
+		CameraSetting currentCamSettings = level.player.arrowCamera;
 
-        Transform* arrowTransform = playerArrow->getTransform();
+		Transform* arrowTransform = playerArrow->getTransform();
 
-        currentCamSettings.position = arrowTransform->getPosition();
-        currentCamSettings.direction = arrowTransform->getForward();
+		currentCamSettings.position = arrowTransform->getPosition();
+		currentCamSettings.direction = arrowTransform->getForward();
 
-        CameraSetting newCamSettings = level.player.oversightCamera;
+		CameraSetting newCamSettings = level.player.oversightCamera;
 
-        this->transitionAboveWalls(currentCamSettings, newCamSettings);
+		this->transitionAboveWalls(currentCamSettings, newCamSettings);
 
-        EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
-    }
+		EventBus::get().subscribe(this, &AimPhase::transitionToOverview);
+	}
 }
 
 void AimPhase::transitionToOverview(CameraTransitionEvent* event)
 {
-    EventBus::get().unsubscribe(this, &AimPhase::transitionToOverview);
+	EventBus::get().unsubscribe(this, &AimPhase::transitionToOverview);
 
-    Phase* overviewPhase = new OverviewPhase(this);
-    changePhase(overviewPhase);
+	Phase* overviewPhase = new OverviewPhase(this);
+	changePhase(overviewPhase);
 }

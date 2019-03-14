@@ -8,27 +8,31 @@ class PathTreader;
 class RollNullifier;
 class Hover;
 class Explosion;
+class DeathAnimation;
 struct KeyPoint;
 
 struct MovingTarget {
-    PathTreader* pathTreader;
-    RollNullifier* rollNullifier;
+	PathTreader* pathTreader;
+	RollNullifier* rollNullifier;
+	Explosion* explosion;
+	DeathAnimation* deathAnimation;
 };
 
 struct StaticTarget {
-    Hover* hoverAnimation;
+	Hover* hoverAnimation;
 	Explosion* explosion;
+	DeathAnimation* deathAnimation;
 };
 
 class TargetManager
 {
 public:
-    TargetManager();
-    ~TargetManager();
+	TargetManager();
+	~TargetManager();
 
-    // Add target entity
-    void addStaticTarget(Entity* host);
-    void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
+	// Add target entity
+	void addStaticTarget(Entity* host, const glm::vec3& position);
+	void addMovingTarget(Entity* host, const std::vector<KeyPoint>& path);
 	void addKeyPoint(Entity* host, const KeyPoint path);
 
 	//Remove an entity as target
@@ -38,30 +42,31 @@ public:
 	std::vector<MovingTarget> getMovingTargets() const;
 	std::vector<StaticTarget> getStaticTargets() const;
 
+
 	// Separate the transform from the model. (Pause the model)
 	void pauseMovingTargets();
 	void unpauseMovingTargets();
 
-    // Reset target components such as the path treader
-    void resetTargets();
+	// Reset target components such as the path treader
+	void resetTargets();
 
 	// Returns the number of targets in target manager
 	unsigned getTargetCount();
 
 private:
-    // Common setup for targets
-    void setupTargetGeneric(Entity* host);
+	// Common setup for targets
+	void setupTargetGeneric(Entity* host);
 
-    // Resets animations and collision states
-    void resetStaticTargets();
-    void resetMovingTargets();
+	// Resets animations and collision states
+	void resetStaticTargets();
+	void resetMovingTargets();
 
-    void resetStaticAnimations();
-    void resetMovingAnimations();
+	void resetStaticAnimations();
+	void resetMovingAnimations();
 
 	void resetStaticCollisions();
 	void resetMovingCollisions();
 
-    std::vector<MovingTarget> movingTargets;
-    std::vector<StaticTarget> staticTargets;
+	std::vector<MovingTarget> movingTargets;
+	std::vector<StaticTarget> staticTargets;
 };

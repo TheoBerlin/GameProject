@@ -146,7 +146,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 #ifdef IMGUI
 	ImGui::Begin("Main Window");
 	ImGui::SetWindowPos({0, 0});
-	ImGui::SetWindowSize({ 110, 150 });
+	ImGui::SetWindowSize({ 110, 180 });
 
 	if (ImGui::Button("Level"))
 		activeWindow[0] = !activeWindow[0];
@@ -158,7 +158,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 		activeWindow[3] = !activeWindow[3];
 	if (ImGui::Button("Player"))
 		activeWindow[4] = !activeWindow[3];
-	if (ImGui::Button("Editor"))
+	if (ImGui::Button("Editor/Help"))
 		activeWindow[5] = !activeWindow[4];
 	ImGui::NewLine();
 
@@ -292,7 +292,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 							path.pop_back();
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 							if (level.targetManager->getMovingTargets()[i].pathTreader->getPath().size() == 0) {
-								level.targetManager->addStaticTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost());
+								level.targetManager->addStaticTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost(), glm::vec3(0.0f));
 								level.targetManager->removeTarget(level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName());
 							}
 						}
@@ -340,6 +340,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 	ImGui::SameLine();
 	if (ImGui::Button("Load")) {
 		entityManager.removeEntities();
+		freeMove->disableMouse();
 
 		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
 		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
@@ -363,6 +364,10 @@ void EditorState::playerWindow(EntityManager & entityManager)
 	ImGui::InputFloat3("Arrow Direction", &level.player.arrowCamera.direction[0], 2);
 	ImGui::InputFloat3("Arrow Offset", &level.player.arrowCamera.offset[0], 2);
 	ImGui::InputFloat("Arrow FOV", &level.player.arrowCamera.FOV, 1);
+
+	float optimalTime = level.scoreManager->getOptimalTime();
+	if (ImGui::InputFloat("Optimal Time", &optimalTime, 1, 1, 2))
+		level.scoreManager->setOptimalTime(optimalTime);
 
 	ImGui::End();
 #endif
@@ -464,6 +469,9 @@ void EditorState::editorWindow()
 	ImGui::Begin("Editor Window");
 	if (ImGui::SliderFloat("Camera Speed", &camSpeed, 1.0f, 10.0f))
 		freeMove->setSpeed(camSpeed);
+	ImGui::Text("Press 'F2' to switch camera mode");
+	ImGui::NewLine();
+	ImGui::Text("Don't load a level twice.\nIf you want to load a new level exit and enter the editor again.");
 	ImGui::End();
 #endif
 }
@@ -477,9 +485,11 @@ void EditorState::pauseGame(KeyEvent * ev)
 	if (ev->key == GLFW_KEY_F2 && ev->action == GLFW_PRESS) {
 		if (freeMove->mouseIsEnabled()) {
 			freeMove->disableMouse();
+			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 		else {
 			freeMove->enableMouse();
+			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
 	if (ev->key == GLFW_KEY_BACKSPACE) {
