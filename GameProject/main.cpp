@@ -36,5 +36,6 @@ int main() {
 
 	TextureManager::unloadAllTextures();
 
+	SoundContext::deleteContext();
 	return 0;
 }

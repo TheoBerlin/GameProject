@@ -1,51 +1,32 @@
 #include "Sound.h"
 
 #include <Windows.h>
+#include <Utils/Logger.h>
 
 #include "Utils/Logger.h"
 #include "Engine/Sound/SoundManager.h"
-
-bool Sound::errorCheck()
-{
-	bool error = true;
-	ALCenum e;
-
-	e = alGetError();
-	if (e != AL_NO_ERROR) {
-		LOG_ERROR("OpenAL error with error code: %s", alGetString(e));
-		error = false;
-	}
-
-	return error;
-}
+#include "SoundConfig.h"
 
 Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, bool loop)
 {
-	alGenSources((ALuint)1, &source);
-	errorCheck();
+	AL_CALL(alGenSources((ALsizei)1, &source));
 
-	alSourcef(source, AL_PITCH, pitch);
-	errorCheck();
 	this->volume = volume;
-	alSourcef(source, AL_GAIN, volume);
-	errorCheck();
-	alSource3f(source, AL_POSITION, position.x, position.y, position.z);
-	errorCheck();
-	alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z);
-	errorCheck();
-	alSourcei(source, AL_LOOPING, loop);
-	errorCheck();
-	alDistanceModel(AL_LINEAR_DISTANCE);
-	errorCheck();
+	AL_CALL(alSourcef(source, AL_GAIN, volume));
+	AL_CALL(alSourcef(source, AL_PITCH, pitch));
+	AL_CALL(alSource3f(source, AL_POSITION, position.x, position.y, position.z));
+	AL_CALL(alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z));
+	AL_CALL(alSourcei(source, AL_LOOPING, loop));
+	AL_CALL(alDistanceModel(AL_LINEAR_DISTANCE));
 
-	alGenBuffers((ALuint)1, &buffer);
-	errorCheck();
+	AL_CALL(alGenBuffers((ALuint)1, &buffer));
 }
 
 Sound::~Sound()
 {
-	alDeleteBuffers(1, &buffer);
-	alDeleteSources(1, &source);
+	stopSound();
+	AL_CALL(alDeleteSources((ALsizei)1, &source));
+	AL_CALL(alDeleteBuffers((ALsizei)1, &buffer));
 }
 
 void Sound::loadSound(std::string fileName)
@@ -83,17 +64,14 @@ void Sound::loadSound(std::string fileName)
 
 	//Read data to buffer, (-44) is sice of wav header.
 	if (channels == 1 && bitsPerSample == 8) {
-		alBufferData(buffer, AL_FORMAT_MONO8, buf, size, freq);
+		AL_CALL(alBufferData(buffer, AL_FORMAT_MONO8, buf, size, freq));
 	}
 	else if (channels == 1 && bitsPerSample == 16) {
-		alBufferData(buffer, AL_FORMAT_MONO16, buf, size, freq);
+		AL_CALL(alBufferData(buffer, AL_FORMAT_MONO16, buf, size, freq));
 	} else if (channels == 2)
 		LOG_ERROR("OpenAL can't play stereo sound, convert it to Mono");
 
-	errorCheck();
-
-	alSourcei(source, AL_BUFFER, buffer);
-	errorCheck();
+	AL_CALL(alSourcei(source, AL_BUFFER, buffer));
 
 	delete buf;
 }
@@ -101,24 +79,30 @@ void Sound::loadSound(std::string fileName)
 void Sound::playSound()
 {
 	ALint playing = 0;
-	alGetSourcei(source, AL_SOURCE_STATE, &playing);
-	errorCheck();
+	AL_CALL(alGetSourcei(source, AL_SOURCE_STATE, &playing));
+	
+	if (playing == AL_INITIAL || playing == AL_STOPPED || playing == AL_PAUSED) {
+		AL_CALL(alSourcePlay(source));
+	}
+}
 
-	if (playing == 4113) {
-		alSourcePlay(source);
-		errorCheck();
+void Sound::pauseSound()
+{
+	ALint playing = 0;
+	AL_CALL(alGetSourcei(source, AL_SOURCE_STATE, &playing));
+
+	if (playing == AL_PLAYING) {
+		AL_CALL(alSourceStop(source));
 	}
 }
 
 void Sound::stopSound()
 {
 	ALint playing = 0;
-	alGetSourcei(source, AL_SOURCE_STATE, &playing);
-	errorCheck();
+	AL_CALL(alGetSourcei(source, AL_SOURCE_STATE, &playing));
 
-	if (playing == 4114) {
-		alSourceStop(source);
-		errorCheck();
+	if (playing == AL_PLAYING || playing == AL_PAUSED) {
+		AL_CALL(alSourceStop(source));
 	}
 }
 
@@ -133,14 +117,13 @@ SoundType Sound::getSoundType() const
 }
 void Sound::setPitch(const float pitch)
 {
-	alSourcef(source, AL_PITCH, pitch);
-	errorCheck();
+	AL_CALL(alSourcef(source, AL_PITCH, pitch));
 }
 
 float Sound::getPitch() const
 {
 	float ret;
-	alGetSourcef(source, AL_PITCH, &ret);
+	AL_CALL(alGetSourcef(source, AL_PITCH, &ret));
 	return ret;
 }
 
@@ -159,53 +142,48 @@ void Sound::setVolume(const float volume)
 	else if (type == SOUND_MUSIC) {
 		updateSound(SoundManager::get().getMusicVolume() * SoundManager::get().getMasterVolume());
 	}
-
-	errorCheck();
 }
 
 float Sound::getVolume() const
 {
 	float ret;
-	alGetSourcef(source, AL_GAIN, &ret);
+	AL_CALL(alGetSourcef(source, AL_GAIN, &ret));
 	return ret;
 }
 
 void Sound::setPosition(const glm::vec3 position)
 {
-	alSource3f(source, AL_POSITION, position.x, position.y, position.z);
-	errorCheck();
+	AL_CALL(alSource3f(source, AL_POSITION, position.x, position.y, position.z));
 }
 
 glm::vec3 Sound::getPosition() const
 {
 	glm::vec3 ret;
-	alGetSource3f(source, AL_POSITION, &ret.x, &ret.y, &ret.z);
+	AL_CALL(alGetSource3f(source, AL_POSITION, &ret.x, &ret.y, &ret.z));
 	return ret;
 }
 
 void Sound::setVelocity(const glm::vec3 position)
 {
-	alSource3f(source, AL_VELOCITY, position.x, position.y, position.z);
-	errorCheck();
+	AL_CALL(alSource3f(source, AL_VELOCITY, position.x, position.y, position.z));
 }
 
 glm::vec3 Sound::getVelocity() const
 {
 	glm::vec3 ret;
-	alGetSource3f(source, AL_VELOCITY, &ret.x, &ret.y, &ret.z);
+	AL_CALL(alGetSource3f(source, AL_VELOCITY, &ret.x, &ret.y, &ret.z));
 	return ret;
 }
 
 void Sound::setLoopState(const bool loop)
 {
-	alSourcei(source, AL_LOOPING, loop);
-	errorCheck();
+	AL_CALL(alSourcei(source, AL_LOOPING, loop));
 }
 
 bool Sound::getLoopState() const
 {
 	ALint ret;
-	alGetSourcei(source, AL_LOOPING, &ret);
+	AL_CALL(alGetSourcei(source, AL_LOOPING, &ret));
 	if (ret == 1)
 		return true;
 	if (ret == 0)
@@ -215,14 +193,13 @@ bool Sound::getLoopState() const
 
 void Sound::setSourceRelative(const bool relative)
 {
-	alSourcei(source, AL_SOURCE_RELATIVE, relative);
-	errorCheck();
+	AL_CALL(alSourcei(source, AL_SOURCE_RELATIVE, relative));
 }
 
 bool Sound::getSourceRelative() const
 {
 	ALint ret;
-	alGetSourcei(source, AL_SOURCE_RELATIVE, &ret);
+	AL_CALL(alGetSourcei(source, AL_SOURCE_RELATIVE, &ret));
 	if (ret == 1)
 		return true;
 	if (ret == 0)
@@ -232,6 +209,5 @@ bool Sound::getSourceRelative() const
 
 void Sound::updateSound(float volume)
 {
-	alSourcef(source, AL_GAIN, this->volume * volume);
-	errorCheck();
+	AL_CALL(alSourcef(source, AL_GAIN, this->volume * volume));
 }

@@ -13,8 +13,6 @@ private:
 	float ambientVolume = 1.0f;
 	float miscVolume = 1.0f;
 
-	bool errorCheck();
-
 	SoundManager() = default;
 	SoundManager(const SoundManager& other) = delete;
 public:

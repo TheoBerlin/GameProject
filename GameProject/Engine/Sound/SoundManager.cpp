@@ -1,18 +1,6 @@
 #include "SoundManager.h"
-
-bool SoundManager::errorCheck()
-{
-	bool error = true;
-	ALCenum e;
-
-	e = alGetError();
-	if (e != AL_NO_ERROR) {
-		LOG_ERROR("OpenAL error with error code: %s", e);
-		error = false;
-	}
-
-	return error;
-}
+#include <Utils/Logger.h>
+#include "SoundConfig.h"
 
 SoundManager & SoundManager::get()
 {
@@ -48,28 +36,26 @@ std::vector<Sound*>* SoundManager::getSoundsVector()
 
 void SoundManager::setListenerPosition(glm::vec3 position)
 {
-	alListener3f(AL_POSITION, position.x, position.y, position.z);
-	errorCheck();
+	AL_CALL(alListener3f(AL_POSITION, position.x, position.y, position.z));
 }
 
 glm::vec3 SoundManager::getListenerPosition() const
 {
 	glm::vec3 position;
-	alGetListener3f(AL_POSITION, &position.x, &position.y, &position.z);
+	AL_CALL(alGetListener3f(AL_POSITION, &position.x, &position.y, &position.z));
 	return position;
 }
 
 void SoundManager::setListenerOrientation(glm::vec3 at, glm::vec3 up)
 {
 	ALfloat orientation[6] = { at.x, at.y, at.z, up.x, up.y, up.z };
-	alListenerfv(AL_ORIENTATION, orientation);
-	errorCheck();
+	AL_CALL(alListenerfv(AL_ORIENTATION, orientation));
 }
 
 glm::vec3 SoundManager::getListenerOrientation() const
 {
 	glm::vec3 orientation;
-	alGetListener3f(AL_ORIENTATION, &orientation.x, &orientation.y, &orientation.z);
+	AL_CALL(alGetListener3f(AL_ORIENTATION, &orientation.x, &orientation.y, &orientation.z));
 	return orientation;
 }
 

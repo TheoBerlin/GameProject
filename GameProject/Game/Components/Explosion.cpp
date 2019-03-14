@@ -32,8 +32,6 @@ void Explosion::update(const float & dt)
 		this->removeDebris();
 		this->timer = 0.0f;
 	}
-		
-		
 }
 
 void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDebris, float speed, float grav)
