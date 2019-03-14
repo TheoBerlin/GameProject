@@ -43,6 +43,8 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	// Create target panel
 	initTargetPanel();
 
+	level.helpGUI->switchPhase(PHASE::GUIDING);
+
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
     EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }

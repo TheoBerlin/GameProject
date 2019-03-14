@@ -22,6 +22,8 @@ AimPhase::AimPhase(OverviewPhase* overviewPhase)
     Entity* overviewCamera = overviewPhase->getOverviewCamera();
     level.entityManager->removeTracedEntity(overviewCamera->getName());
 
+	level.helpGUI->switchPhase(PHASE::AIM);
+
     commonSetup();
 }
 
@@ -56,6 +58,8 @@ AimPhase::AimPhase(ReplayPhase* replayPhase)
 	playerArrow->setModel(model);
 
 	new PlayerCollision(playerArrow);
+
+	level.helpGUI->switchPhase(PHASE::AIM);
 
     commonSetup();
 }

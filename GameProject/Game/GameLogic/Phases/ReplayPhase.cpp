@@ -96,6 +96,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     // Begin replaying playthrough
     level.replaySystem->startReplaying();
 
+	level.helpGUI->switchPhase(PHASE::REPLAY);
+
 	Display::get().getRenderer().setActiveCamera(camera);
 
     EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
@@ -193,6 +195,9 @@ void ReplayPhase::beginAimTransition()
 
 	// Reset score
 	level.scoreManager->resetScore();
+
+	// Set helpGUI for next phase
+	level.helpGUI->switchPhase(PHASE::AIM);
 
     // Lock cursor
     glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
