@@ -329,7 +329,6 @@ void ReplayPhase::addCollisionMarks()
 		float replayProgress = t.time / this->flightTime;
 		int width = this->backPanel->getSize().x * replayProgress;
 		Panel* p = new Panel();
-		//p->setSize({ 10, this->backPanel->getSize().y });
 		p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
 		p->setColor({ 1.f, 1.f, 1.f, 1.f });
 		p->setBackgroundTexture(TextureManager::getTexture("./Game/Assets/droneIcon.png"));
