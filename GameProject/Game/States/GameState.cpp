@@ -30,6 +30,9 @@ GameState::GameState(const std::string& levelJSON)
 	level.scoreManager = &this->scoreManager;
 	level.levelStructure = &this->levelStructure;
 	level.lightManager = &this->lightManager;
+	level.helpGUI = &this->helpGUI;
+
+	this->helpGUI.init(&this->getGUI());
 
 	levelParser.readLevel(this->levelJSON, level);
 
@@ -97,6 +100,9 @@ void GameState::end()
 
 void GameState::update(const float dt)
 {
+	// Update time for helpGUI for animations
+	this->helpGUI.update(dt);
+
 	if (!this->hasSubscribedToPause) {
 		//Pause game event
 		EventBus::get().subscribe(this, &GameState::pauseGame);
@@ -132,10 +138,6 @@ void GameState::updateLogic(const float dt)
 
 void GameState::render()
 {
-	/*
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
-	*/
 	Display& display = Display::get();
 	Renderer& renderer = display.getRenderer();
 

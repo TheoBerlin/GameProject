@@ -11,10 +11,13 @@
 #include <Engine/GUI/GUI.h>
 #include <Engine/GUI/Panel.h>
 
+#include "Game/Components/TrailEmitter.h"
+
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	:Phase((Phase*)aimPhase),
 	flightTimer(0.0f),
-	flightTime(0.0f)
+	flightTime(0.0f),
+	hasCollided(false)
 {
 	this->playerArrow = aimPhase->getPlayerArrow();
 
@@ -41,13 +44,18 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	// Create target panel
 	initTargetPanel();
 
+	level.helpGUI->switchPhase(PHASE::GUIDING);
+
 	EventBus::get().subscribe(this, &GuidingPhase::playerCollisionCallback);
 	EventBus::get().subscribe(this, &GuidingPhase::handleKeyInput);
 }
 
 void GuidingPhase::update(const float& dt)
 {
-	flightTimer += dt;
+    flightTimer += dt;
+
+	if (this->playerArrow->getTransform()->getPosition().y > level.levelStructure->getWallHeight() && !this->hasCollided)
+		beginReplayTransition();
 }
 
 GuidingPhase::~GuidingPhase()
@@ -65,6 +73,11 @@ Entity* GuidingPhase::getPlayerArrow() const
 ArrowGuider* GuidingPhase::getArrowGuider() const
 {
 	return arrowGuider;
+}
+
+TrailEmitter * GuidingPhase::getTrailEmitter() const
+{
+	return this->trailEmitter;
 }
 
 float GuidingPhase::getFlightTime()
@@ -89,7 +102,9 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 
 void GuidingPhase::beginReplayTransition()
 {
-	EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
+	this->hasCollided = true;
+
+    EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &GuidingPhase::playerCollisionCallback);
 
 	level.replaySystem->stopRecording();

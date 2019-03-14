@@ -29,6 +29,7 @@ MenuState::MenuState() : State()
 	FontManager::addFont("arial", "./Game/assets/fonts/arial/arialbd.ttf", 22);
 	FontManager::addFont("arialBig", "./Game/assets/fonts/arial/arialbd.ttf", 36);
 	FontManager::addFont("aldo", "./Game/assets/fonts/aldo/aldo.ttf", 40);
+	FontManager::addFont("aldoSmall", "./Game/assets/fonts/aldo/aldo.ttf", 20);
 	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
 
 	this->initMainMenu();

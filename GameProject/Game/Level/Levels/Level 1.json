@@ -38,7 +38,8 @@
         }
     ],
     "Metadata": {
-        "OptimalTime": 10.0
+        "OptimalTime": 10.0,
+        "Highscore": 0
     },
     "Player": {
         "ArrowCamera": {

@@ -7,6 +7,7 @@ const glm::vec4 TEXT_COLOR = { 0.9f, 0.9f, 0.9f, 1.0f };
 
 // Panel colors
 const glm::vec4 PANEL_BACKGROUND_COLOR = { 0.1f, 0.1f, 0.1f, 0.99f };
+const glm::vec4 PANEL_BACKGROUND_COLOR_TRANSPARENT = { 0.1f, 0.1f, 0.1f, 0.9f };
 
 // Button colors
 const glm::vec4 BUTTON_NORMAL_COLOR = { 0.1f, 0.1f, 0.1f, 1.f };

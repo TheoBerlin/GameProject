@@ -3,6 +3,7 @@
 #include "../Entity/Entity.h"
 #include "../AssetManagement/Mesh.h"
 #include "GLAbstraction/Texture.h"
+#include <Utils/Logger.h>
 
 Renderer::Renderer()
 {
@@ -11,6 +12,9 @@ Renderer::Renderer()
 	glCullFace(GL_BACK);
 
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+
+	this->activePostFilters.resize(SHADERS_POST_PROCESS::SIZE);
+
 }
 
 Renderer::~Renderer()
@@ -80,19 +84,56 @@ void Renderer::drawAllInstanced()
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	Texture* postProcess = this->pipeline.drawModelToTexture(this->renderingTargets);
-
-	pipeline.drawParticle();
-	
-	postProcessTexture = pipeline.getFbo()->getColorTexture(0);
-	tex = pipeline.getFbo()->getColorTexture(1);
-
-	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, tex);
+	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets);
 
 	/*
-		Draw texture of scene to quad for postprocessing
+		Draw trail
 	*/
-	this->pipeline.drawTextureToQuad(combinedTex);
+	this->pipeline.drawTrail();
+
+	/*
+		Draw Particle
+	*/
+	pipeline.drawParticle();
+
+	this->postProcessTexture = pipeline.getFbo()->getColorTexture(0);
+	tex = pipeline.getFbo()->getColorTexture(1);
+
+	/*
+		Apply blur to glow texture
+	*/
+	this->pipeline.drawTextureToQuad(tex, SHADERS_POST_PROCESS::BLUR_FILTER, true);
+	Texture* blurTexture = this->getPipeline()->getPostProcessFbo()->getColorTexture(0);
+	
+	/*
+		Combine scene texture with glow texture
+	*/
+	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, blurTexture);
+
+
+
+	/*
+		Go through post process effects then draw texture to screen
+	*/
+	this->postProcessTexture = this->getPipeline()->getPostProcessFbo()->getColorTexture(0);
+	bool firstPostProcess = true;
+	for (unsigned i = 1; i < this->activePostFilters.size(); i++) {
+		if (this->activePostFilters[i]) {
+			if (firstPostProcess) {
+				this->pipeline.drawTextureToQuad(combinedTex, static_cast<SHADERS_POST_PROCESS>(i), true);
+				firstPostProcess = false;
+			}
+			else {
+				this->pipeline.drawTextureToQuad(this->postProcessTexture, static_cast<SHADERS_POST_PROCESS>(i), true);
+			}
+		}
+	}
+
+	if(firstPostProcess)
+		this->pipeline.drawTextureToQuad(combinedTex);
+	else
+		this->pipeline.drawTextureToQuad(this->postProcessTexture);
+	
 }
 
 void Renderer::updateShaders(const float & dt)
@@ -115,7 +156,7 @@ Texture* Renderer::drawTextureToFbo(Texture * texture, SHADERS_POST_PROCESS shad
 	*/
 	this->pipeline.drawTextureToQuad(texture, shader, true);
 
-	return this->pipeline.getFbo()->getColorTexture(0);
+	return this->pipeline.getPostProcessFbo()->getColorTexture(0);
 }
 
 Pipeline * Renderer::getPipeline()
@@ -138,5 +179,24 @@ void Renderer::addRenderingTarget(Model * model, SHADERS shader, bool castShadow
 	}
 }
 
+void Renderer::activatePostFilter(SHADERS_POST_PROCESS shader)
+{
+	if (shader == SHADERS_POST_PROCESS::NO_FILTER) {
+		LOG_WARNING("Illegal post process shader attempted to be activated (NO_FILTER)");
+		return;
+	}
 
+	if (shader > (unsigned)0 && shader < this->activePostFilters.size())
+		activePostFilters[shader] = true;
+}
 
+void Renderer::deactivatePostFilter(SHADERS_POST_PROCESS shader)
+{
+	if (shader == SHADERS_POST_PROCESS::NO_FILTER) {
+		LOG_WARNING("Illegal post process shader attempted to be deactivated (NO_FILTER)");
+		return;
+	}
+
+	if(shader > (unsigned)0 && shader < this->activePostFilters.size())
+		activePostFilters[shader] = false;
+}

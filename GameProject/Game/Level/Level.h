@@ -9,6 +9,7 @@
 #include <Game/GameLogic/ScoreManager.h>
 #include <Game/Level/LevelStructure.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
+#include <Game/HelpGUI.h>
 #include <glm/glm.hpp>
 
 struct CameraSetting {
@@ -34,4 +35,5 @@ struct Level {
 	ScoreManager* scoreManager;
 	LevelStructure* levelStructure;
 	LightManager* lightManager;
+	HelpGUI* helpGUI;
 };

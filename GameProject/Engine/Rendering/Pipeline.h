@@ -12,9 +12,10 @@
 #include "Engine/Rendering/GLAbstraction/VertexBuffer.h"
 #include "Lighting/LightManager.h"
 
-
+class TrailShader;
 class Entity;
 class PostProcessShader;
+struct TrailPointData;
 
 struct RenderingTarget {
 	bool prePass;
@@ -35,7 +36,9 @@ enum SHADERS {
 
 enum SHADERS_POST_PROCESS {
 	NO_FILTER = 0,
-	BLUR_FILTER = 1, 
+	BLUR_FILTER = 1,
+	REWIND_FILTER = 2,
+	SIZE
 };
 
 class Pipeline
@@ -87,6 +90,16 @@ public:
 	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
 
 	/*
+		Draw trail
+	*/
+	void drawTrail();
+
+	/*
+		Draw everything that should glow and blurs it
+	*/
+	void glowPass();
+
+	/*
 		Updates shaders
 	*/
 	void updateShaders(const float& dt);
@@ -95,6 +108,11 @@ public:
 	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
 	void removeLight(int index);
 
+	/*
+		Updates trail shader
+	*/
+	void updateTrail(const std::vector<TrailPointData>& pointData, const glm::vec3& color = glm::vec3(1.0f, 0.0f, 0.0f));
+
 	void setActiveCamera(Camera* camera);
 	Camera* getActiveCamera();
 
@@ -102,11 +120,13 @@ public:
 
 	Framebuffer* getFbo();
 	Framebuffer* getShadowFbo();
+	Framebuffer* getPostProcessFbo();
 
 private:
 	Camera * camera;
 	unsigned int width, height;
 	Framebuffer fbo;
+	Framebuffer postProcessFbo;
 	Framebuffer shadowFbo;
 	glm::mat4 lightSpaceMatrix;
 
@@ -120,6 +140,7 @@ private:
 	Shader* ZprePassShaderInstanced;
 	Shader* quadShader;
 	Shader* particleShader;
+	TrailShader* trailShader;
 	Shader* combineShader;
 
 	std::vector<EntityShader*> entityShaders;
@@ -138,4 +159,3 @@ private:
 		glm::vec3 padding;
 	} lightBuffer;
 };
-

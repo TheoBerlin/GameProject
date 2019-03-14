@@ -26,6 +26,11 @@ Entity * Component::getHost()
 
 void Component::setHost(Entity* entity)
 {
+	if (entity == nullptr) {
+		this->host = nullptr;
+		return;
+	}
+
 	// Detach component from old host
 	if (this->host != nullptr) {
 		this->host->detachComponent(this->tagName);

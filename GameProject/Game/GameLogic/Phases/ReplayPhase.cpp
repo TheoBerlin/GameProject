@@ -8,22 +8,24 @@
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
+#include <Game/Components/TrailEmitter.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Utils/Settings.h>
+
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
-	// Create replay time bar
-	setupGUI();
+    flightTime = guidingPhase->getFlightTime();
 
-	flightTime = guidingPhase->getFlightTime();
+    // Create replay time bar
+    setupGUI();
 
-	// Create results window and minimize it
-	// Lambda function which executes when retry is pressed
-	std::function<void()> retry = [this]() {beginAimTransition(); };
+    // Create results window and minimize it
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
 
 	level.scoreManager->showResults(level, retry);
 
@@ -59,9 +61,21 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 		pathVisualizer->addPath(oldArrowGuider->getPath());
 	}
 
-	// Remove old arrow entity
+	//Retrieve trail emitter from playerArrow
 	Entity* oldArrow = guidingPhase->getPlayerArrow();
-	level.entityManager->removeTracedEntity(oldArrow->getName());
+	if (oldArrow) {
+		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(oldArrow->getComponent("TrailEmitter"));
+		// Detach trail emitter from player arrow
+		oldArrow->detachComponent("TrailEmitter");
+
+		// Attach component to replay arrow
+		trailEmitter->setHost(this->replayArrow);
+
+		trailEmitter->resetTrailTimer();
+	}
+
+    // Remove old arrow entity
+    level.entityManager->removeTracedEntity(oldArrow->getName());
 
 	// Set up the player camera
 	this->camera = new Camera(replayArrow, "Camera");
@@ -81,6 +95,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	// Begin replaying playthrough
 	level.replaySystem->startReplaying();
+
+	level.helpGUI->switchPhase(PHASE::REPLAY);
 
 	Display::get().getRenderer().setActiveCamera(camera);
 
@@ -183,8 +199,11 @@ void ReplayPhase::beginAimTransition()
 	// Reset score
 	level.scoreManager->resetScore();
 
-	// Lock cursor
-	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	// Set helpGUI for next phase
+	level.helpGUI->switchPhase(PHASE::AIM);
+
+    // Lock cursor
+    glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// Stop replaying playthrough
 	level.replaySystem->stopReplaying();
@@ -296,6 +315,27 @@ void ReplayPhase::setupGUI()
 
 	// Add the parent panel to level GUI
 	level.gui->addPanel(backPanel);
+
+	// Add collision marks to bar
+	addCollisionMarks();
+}
+
+void ReplayPhase::addCollisionMarks()
+{
+	std::vector<CollisionReplay> v = level.replaySystem->getCollisionReplays();
+
+	for (auto t : v)
+	{
+		float replayProgress = t.time / this->flightTime;
+		int width = this->backPanel->getSize().x * replayProgress;
+		Panel* p = new Panel();
+		//p->setSize({ 10, this->backPanel->getSize().y });
+		p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
+		p->setColor({ 1.f, 1.f, 1.f, 1.f });
+		p->setBackgroundTexture(TextureManager::getTexture("./Game/Assets/droneIcon.png"));
+		p->setOption(GUI::FLOAT_LEFT, width);
+		this->backPanel->addChild(p);
+	}
 }
 
 void ReplayPhase::handleTimeBarClick()
@@ -315,8 +355,14 @@ void ReplayPhase::handleTimeBarClick()
 
 	level.replaySystem->setReplayTime(level, pathTreader, freeCam, desiredTime);
 
-	replayTime = desiredTime;
-}
+    replayTime = desiredTime;
+
+	//Update trail emitter timer
+	TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(replayArrow->getComponent("TrailEmitter"));
+
+	if (trailEmitter)
+		trailEmitter->setTrailTimer(this->replayTime);
+}	
 
 void ReplayPhase::switchCamera()
 {

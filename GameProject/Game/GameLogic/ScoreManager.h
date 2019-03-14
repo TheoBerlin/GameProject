@@ -49,6 +49,7 @@ public:
 
 private:
 	bool counting;
+	bool newHighscore;
 	unsigned totalScore;
 	unsigned highscore;
 	unsigned targetsHit;

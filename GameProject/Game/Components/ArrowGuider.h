@@ -27,6 +27,7 @@ public:
 
     // Enables both aim and movement
     void startGuiding();
+
     // Disables both aim and movement
     void stopGuiding(float flightTime);
 
