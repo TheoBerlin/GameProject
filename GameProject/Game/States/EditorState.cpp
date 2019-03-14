@@ -227,12 +227,12 @@ void EditorState::entityWindow(EntityManager& entityManager)
 	if (ImGui::Button("Remove Entity")) {
 		if (currentIsTarget) {
 			for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
-				if (level.targetManager->getMovingTargets()[i].pathTreader->getName() == entityManager.getEntity(currentEntity)->getName()) {
+				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
 					level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 				}
 			}
 			for (unsigned int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
-				if (level.targetManager->getStaticTargets()[i].hoverAnimation->getName() == entityManager.getEntity(currentEntity)->getName()) {
+				if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
 					level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 				}
 			}
@@ -251,11 +251,11 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		ImGui::Text("Entity Info");
 		if (ImGui::InputText("Name", &name[0], 64))
 			curEntity->setName(name.c_str());
-		if(ImGui::InputFloat3("Position", &position[0], 2))
+		if(ImGui::DragFloat3("Position", &position[0], 0.1))
 			curEntity->getTransform()->setPosition(position);
-		if (ImGui::InputFloat3("Scale", &scale[0], 2))
+		if (ImGui::DragFloat3("Scale", &scale[0], 0.1))
 			curEntity->getTransform()->setScale(scale);
-		if (ImGui::InputFloat3("Rotation", &rotation[0], 2))
+		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1))
 			curEntity->getTransform()->setRotation(rotation);
 		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
 			currentIsTarget = !currentIsTarget;
