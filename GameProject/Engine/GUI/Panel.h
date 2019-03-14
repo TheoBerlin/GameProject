@@ -143,11 +143,11 @@ public:
 	*/
 	std::vector<std::pair<Text*, glm::ivec2>>& getTextList();
 
-		/*
-	Get a list of the current text elements.
-	Return:
-		A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
-	*/
+	/*
+Get a list of the current text elements.
+Return:
+	A list of pairs. Each pair contain a pointer to the text and its relative position in pixels.
+*/
 	Text * getText(const unsigned& index);
 
 	/*
@@ -207,6 +207,21 @@ public:
 	Get if the panel is active.
 	*/
 	virtual bool isActive() const;
+
+	/*
+	Hide the panel
+	*/
+	virtual void hide();
+
+	/*
+	Show the panel
+	*/
+	virtual void show();
+
+	/*
+	Get if the panel is shown or not
+	*/
+	virtual bool isShown() const;
 
 private:
 
@@ -276,6 +291,7 @@ private:
 protected:
 	bool shouldUpdate;
 	bool active;
+	bool shown;
 
 	Panel* parent;
 	std::vector<Panel*> children;

@@ -115,6 +115,7 @@
     <ClCompile Include="Utils\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine\GUI\GUIColors.h" />
     <ClInclude Include="Engine\Rendering\Lighting\DirectionalLight.h" />
     <ClInclude Include="Engine\Rendering\Lighting\LightManager.h" />
     <ClInclude Include="Engine\Rendering\Lighting\PointLight.h" />

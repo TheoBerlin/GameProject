@@ -173,12 +173,15 @@ void Panel::rebake()
 {
 	if (hasUpdated())
 	{
-		processOptions();
+		if (this->shown)
+		{
+			processOptions();
 
-		Display& display = Display::get();
-		GUIRenderer& guiRenderer = display.getGUIRenderer();
-		guiRenderer.prepareTextRendering();
-		guiRenderer.bakePanel(this);
+			Display& display = Display::get();
+			GUIRenderer& guiRenderer = display.getGUIRenderer();
+			guiRenderer.prepareTextRendering();
+			guiRenderer.bakePanel(this);
+		}
 		this->shouldUpdate = false;
 	}
 }
@@ -254,7 +257,7 @@ void Panel::setOption(GUI::OPTION option)
 		this->options[GUI::OPTION::TEXT_FLOAT_UP].first = false;
 		break;
 	}
-	
+
 	this->shouldUpdate = true;
 }
 
@@ -287,6 +290,33 @@ bool Panel::isActive() const
 	return this->active;
 }
 
+void Panel::hide()
+{
+	this->shown = false;
+	this->active = false;
+	this->shouldUpdate = true;
+
+	unsigned char data[4];
+	memset(data, 0, 4);
+
+	if (!this->bakedTexture)
+		this->bakedTexture = new Texture(data, 1, 1);
+	else
+		this->bakedTexture->update(data, 1, 1);
+}
+
+void Panel::show()
+{
+	this->shown = true;
+	this->active = true;
+	this->shouldUpdate = true;
+}
+
+bool Panel::isShown() const
+{
+	return this->shown;
+}
+
 void Panel::init()
 {
 	this->pos = { 0, 0 };
@@ -295,6 +325,7 @@ void Panel::init()
 	this->shouldUpdate = false;
 	this->parent = nullptr;
 	this->active = true;
+	this->shown = true;
 
 	this->options.resize(GUI::OPTION::OPTIONS_MAX);
 
@@ -388,9 +419,9 @@ void Panel::processOption(std::pair<bool, GUI::OPTION_VALUE>& option, unsigned i
 void Panel::processPositionOption(unsigned int index, int v)
 {
 	if (index == GUI::FLOAT_LEFT)
-		this->pos.x = (unsigned int)v;
+		this->pos.x = v;
 	if (index == GUI::FLOAT_DOWN)
-		this->pos.y = (unsigned int)v;
+		this->pos.y = v;
 
 	Display& display = Display::get();
 	unsigned int w = (unsigned int)display.getWidth();
@@ -438,6 +469,7 @@ void Panel::processTextPositionOption(unsigned int index, int v)
 			t.second.x = v;
 		if (horizontal == 2)
 			t.second.x = (int)this->getSize().x - (int)text->getWidth() - v;
+
 		if (vertical == 1)
 			t.second.y = (unsigned int)v;
 		if (vertical == 2)
