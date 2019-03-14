@@ -9,6 +9,7 @@
 #include <Game/Components/ThirdPersonController.h>
 
 class GuidingPhase;
+class TrailEmitter;
 class AimPhase;
 
 class ReplayPhase : public Phase
@@ -30,6 +31,7 @@ private:
     void finishAimTransition(CameraTransitionEvent* event);
 
     void setupGUI();
+	void addCollisionMarks();
 
     void handleTimeBarClick();
 

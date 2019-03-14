@@ -68,6 +68,7 @@
     <ClCompile Include="Engine\AssetManagement\Model.cpp" />
     <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\RoofShader.cpp" />
     <ClCompile Include="Engine\Sound\Sound.cpp" />
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
@@ -107,6 +108,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Engine\Components\MovingTargetCollision.cpp" />
     <ClCompile Include="Game\States\PauseState.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\TrailShader.cpp" />
+    <ClCompile Include="Game\Components\TrailEmitter.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\RewindShader.cpp" />
     <ClCompile Include="Utils\TimeProfiler.cpp" />
     <ClCompile Include="Utils\Logger.cpp" />
     <ClCompile Include="Utils\Settings.cpp" />
@@ -174,6 +178,7 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
     <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\RoofShader.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
     <ClInclude Include="Engine\States\State.h" />
@@ -217,6 +222,9 @@
     <ClInclude Include="Game\Level\LevelStructure.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlanePrePassShader.h" />
     <ClInclude Include="Game\HelpGUI.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\TrailShader.h" />
+    <ClInclude Include="Game\Components\TrailEmitter.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\RewindShader.h" />
     <ClInclude Include="Utils\TimeProfiler.h" />
     <ClInclude Include="Utils\Settings.h" />
     <ClInclude Include="Utils\Logger.h" />

@@ -4,6 +4,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Renderer.h>
 #include <Game/Components/ArrowGuider.h>
+#include <Game/Components/TrailEmitter.h>
 #include <Game/Components/CameraDrift.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/OverviewPhase.h>
@@ -98,6 +99,7 @@ void AimPhase::commonSetup()
 		Add arrowguider to entity
 	*/
 	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
+	new TrailEmitter(playerArrow);
 
 	/*
 		Add camera to arrow entity
@@ -105,10 +107,14 @@ void AimPhase::commonSetup()
 	glm::vec3 camOffset = arrowCamSettings.offset;
 	arrowCam = new Camera(playerArrow, "Camera", camOffset);
 
-    new CameraDrift(playerArrow);
-
 	arrowCam->setFOV(arrowCamSettings.FOV);
 	arrowCam->init();
+
+    // Smoothen the forward redirects
+    float maxAngle = glm::quarter_pi<float>() / 3.5f;
+    float angleCorrectionFactor = 4.5f;
+
+    new CameraDrift(playerArrow, angleCorrectionFactor, maxAngle);
 
 	Display::get().getRenderer().setActiveCamera(arrowCam);
 

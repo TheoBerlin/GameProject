@@ -11,6 +11,8 @@
 #include <Engine/GUI/GUI.h>
 #include <Engine/GUI/Panel.h>
 
+#include "Game/Components/TrailEmitter.h"
+
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase),
     flightTimer(0.0f),
@@ -69,6 +71,11 @@ ArrowGuider* GuidingPhase::getArrowGuider() const
     return arrowGuider;
 }
 
+TrailEmitter * GuidingPhase::getTrailEmitter() const
+{
+	return this->trailEmitter;
+}
+
 float GuidingPhase::getFlightTime()
 {
     return flightTime;
@@ -124,7 +131,7 @@ void GuidingPhase::beginReplayTransition()
 
     newCamSettings.offset = {0.0f, 0.0f, -1.6f};
 
-    this->transitionStraightPath(currentCamSettings, newCamSettings);
+    this->transitionBackwards(currentCamSettings, newCamSettings, arrowGuider->getPath());
 
     EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }

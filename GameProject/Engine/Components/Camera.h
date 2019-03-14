@@ -23,6 +23,9 @@ public:
 	void setForward(const glm::vec3 & forward);
 
 	// Returns the cameras right-vector
+	glm::vec3 getUp() const;
+
+	// Returns the cameras right-vector
 	glm::vec3 getRight() const;
 
 	// Returns the View-Projection matrix
@@ -34,6 +37,7 @@ public:
 	glm::mat4 getProj() const;
 	// Returns the position of the camera in world. This is its parent pos with the added offset.
 	glm::vec3 getPosition() const;
+
 	void setPosition(const glm::vec3& position);
 
 	float getFOV() const;

@@ -5,6 +5,7 @@
 
 // Phases GuidingPhase can transition from
 class AimPhase;
+class TrailEmitter;
 
 class Panel;
 
@@ -18,6 +19,7 @@ public:
 
     Entity* getPlayerArrow() const;
     ArrowGuider* getArrowGuider() const;
+    TrailEmitter* getTrailEmitter() const;
     float getFlightTime();
 
 private:
@@ -38,6 +40,7 @@ private:
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
+	TrailEmitter* trailEmitter;
     Camera* arrowCam;
 
 	Panel* targetPnl;
