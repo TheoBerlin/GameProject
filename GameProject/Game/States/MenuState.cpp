@@ -34,6 +34,7 @@ MenuState::MenuState() : State()
 	this->initLevelSelect();
 
 	InputHandler ih(Display::get().getWindowPtr());
+	EventBus::get().subscribe(this, &MenuState::updateScore);;
 }
 
 MenuState::~MenuState()
@@ -190,6 +191,15 @@ void MenuState::initLevelSelect()
 	timePnl->setOption(GUI::FLOAT_UP, 140);
 	previewPnl->addChild(timePnl);
 
+	Panel* hiScorePnl = new Panel();
+	hiScorePnl->setColor({ 0.f, 0.f, 0.f, 0.f });
+	hiScorePnl->addText(this->levelInfo[2], "aldo", TEXT_COLOR);
+	hiScorePnl->setOption(GUI::SCALE_TO_TEXT_X);
+	hiScorePnl->setOption(GUI::SCALE_TO_TEXT_Y);
+	hiScorePnl->setOption(GUI::FLOAT_LEFT, 20);
+	hiScorePnl->setOption(GUI::FLOAT_UP, 200);
+	previewPnl->addChild(hiScorePnl);
+
 	// Hide these panels in the beginning
 	for (auto p : this->panelGroups[1])
 		p->hide();
@@ -208,6 +218,13 @@ void MenuState::updateLevelInfoPanel()
 	children[0]->updateText(0, this->selectedLevel.substr(this->selectedLevel.rfind("\\") + 1, this->selectedLevel.rfind(".") - this->selectedLevel.rfind("\\") - 1));
 	children[1]->updateText(0, this->levelInfo[0]);
 	children[2]->updateText(0, this->levelInfo[1]);
+	children[3]->updateText(0, this->levelInfo[2]);
+}
+
+void MenuState::updateScore(UpdateScoreEvent * evnt)
+{
+	std::vector<Panel*> children = this->previewPnl->getChildren();
+	children[3]->updateText(0, "Highscore:" + std::to_string(evnt->highscore));
 }
 
 void MenuState::initMainMenu()

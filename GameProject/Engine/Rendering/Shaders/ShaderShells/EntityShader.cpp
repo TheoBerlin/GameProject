@@ -1,6 +1,13 @@
 #include "EntityShader.h"
 #include <math.h>
 
+EntityShader::EntityShader(const std::string & vertex, const std::string & fragment) : Shader(vertex, fragment)
+{
+	this->camera = nullptr;
+	this->shadowBuffer = nullptr;
+	this->lightSpaceMatrix = nullptr;
+}
+
 EntityShader::EntityShader(const std::string & vertex, const std::string & fragment, Framebuffer * shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix) : Shader(vertex, fragment)
 {
 	this->camera = camera;
@@ -34,23 +41,28 @@ void EntityShader::updateLightMatrixData(glm::mat4 * lightSpaceMatrix)
 
 void EntityShader::setCameraUniform(const std::string& uniformName)
 {
-	Shader::setUniformMatrix4fv(uniformName, 1, false, &((*this->camera)->getVP()[0][0]));
+	if(this->camera != nullptr)
+		Shader::setUniformMatrix4fv(uniformName, 1, false, &((*this->camera)->getVP()[0][0]));
 }
 
 void EntityShader::setShadowBufferUniform(const std::string& uniformName)
 {
-	Texture * shadowTex = this->shadowBuffer->getDepthTexture();
-	Shader::setTexture2D(uniformName, 1, shadowTex->getID());
+	if (this->shadowBuffer != nullptr) {
+		Texture * shadowTex = this->shadowBuffer->getDepthTexture();
+		Shader::setTexture2D(uniformName, 1, shadowTex->getID());
+	}
 }
 
 void EntityShader::setLightSpaceMatrixUniform(const std::string& uniformName)
 {
-	Shader::setUniformMatrix4fv(uniformName, 1, false, &((*this->lightSpaceMatrix)[0][0]));
+	if (this->lightSpaceMatrix != nullptr)
+		Shader::setUniformMatrix4fv(uniformName, 1, false, &((*this->lightSpaceMatrix)[0][0]));
 }
 
 void EntityShader::setCamPosUniform(const std::string & uniformName)
 {
-	Shader::setUniform3fv("camPos", 1, &(*this->camera)->getPosition()[0]);
+	if (this->camera != nullptr)
+		Shader::setUniform3fv("camPos", 1, &(*this->camera)->getPosition()[0]);
 }
 
 void EntityShader::setGlowUniform(bool shouldGlow)

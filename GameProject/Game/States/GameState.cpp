@@ -17,7 +17,7 @@
 
 GameState::GameState(const std::string& levelJSON)
 {
-	Level level;
+	this->levelJSON = levelJSON;
 
 	targetManager = new TargetManager();
 
@@ -31,18 +31,18 @@ GameState::GameState(const std::string& levelJSON)
 	level.levelStructure = &this->levelStructure;
 	level.lightManager = &this->lightManager;
 
-	levelParser.readLevel(levelJSON, level);
-
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	levelParser.readLevel(this->levelJSON, level);
 
 	gameLogic.init(level);
-
+	
 	Display::get().getRenderer().initInstancing();
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
 	InputHandler ih(Display::get().getWindowPtr());
 
 	EventBus::get().subscribe(this, &GameState::exitGame);
+	this->hasSubscribedToExit = true;
 
 	//For pause event
 	this->hasSubscribedToPause = false;
@@ -50,6 +50,7 @@ GameState::GameState(const std::string& levelJSON)
 
 GameState::~GameState()
 {
+
 	delete targetManager;
 
 	Display::get().getRenderer().clearRenderingTargets();
@@ -67,10 +68,18 @@ void GameState::start()
 	std::vector<Entity*>& entities = entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->attachToModel();
+
+	if (!hasSubscribedToExit) {
+		EventBus::get().subscribe(this, &GameState::exitGame);
+
+		this->hasSubscribedToExit = true;
+	}
 }
 
 void GameState::end()
 {
+	levelParser.writeScore(this->levelJSON, level);
+
 	/*
 		All entities removes themselves from the rendering group of their model
 	*/
@@ -81,6 +90,8 @@ void GameState::end()
 
 	EventBus::get().unsubscribe(this, &GameState::pauseGame);
 	EventBus::get().unsubscribe(this, &GameState::exitGame);
+
+	this->hasSubscribedToExit = false;
 	this->hasSubscribedToPause = false;
 }
 

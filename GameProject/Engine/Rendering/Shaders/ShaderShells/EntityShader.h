@@ -13,6 +13,7 @@
 class EntityShader : public Shader
 {
 public:
+	EntityShader(const std::string & vertex, const std::string & fragment);
 	EntityShader(const std::string & vertex, const std::string & fragment, Framebuffer* shadowBuffer, Camera ** camera, glm::mat4 * lightSpaceMatrix);
 	virtual ~EntityShader();
 
