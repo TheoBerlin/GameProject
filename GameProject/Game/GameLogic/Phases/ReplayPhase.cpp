@@ -197,7 +197,7 @@ void ReplayPhase::beginAimTransition()
 
     CameraSetting newCamSettings = level.player.arrowCamera;
 
-    this->setupTransition(currentCamSettings, newCamSettings);
+    this->transitionStraightPath(currentCamSettings, newCamSettings);
 
     EventBus::get().subscribe(this, &ReplayPhase::finishAimTransition);
 }

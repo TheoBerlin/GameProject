@@ -28,36 +28,6 @@ Camera * Renderer::getActiveCamera()
 	return this->pipeline.getActiveCamera();
 }
 
-void Renderer::push(Entity * entity)
-{
-	this->renderingList.push_back(entity);
-}
-
-void Renderer::drawAll()
-{
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	this->pipeline.calcDirLightDepth(this->renderingList);
-
-	/*
-		Z-prepass stage
-	*/
-	this->pipeline.prePassDepth(this->renderingList);
-
-	/*
-		Drawing stage with pre existing depth buffer to texture
-	*/
-	postProcessTexture = this->pipeline.drawToTexture(this->renderingList);
-
-	tex = this->pipeline.drawParticle();
-	/*
-		Draw texture of scene to quad for postprocessing
-	*/
-	this->pipeline.drawTextureToQuad(postProcessTexture);
-
-	this->renderingList.clear();
-}
-
 void Renderer::initInstancing()
 {
 	std::vector<Model*> models = ModelLoader::getModels();

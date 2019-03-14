@@ -68,6 +68,7 @@
     <ClCompile Include="Engine\AssetManagement\Model.cpp" />
     <ClCompile Include="Engine\AssetManagement\ModelLoader.cpp" />
     <ClCompile Include="Engine\AssetManagement\TextureManager.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\RoofShader.cpp" />
     <ClCompile Include="Engine\Sound\Sound.cpp" />
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
@@ -77,6 +78,8 @@
     <ClCompile Include="Engine\States\StateManager.cpp" />
     <ClCompile Include="Engine\IGame.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.cpp" />
+    <ClCompile Include="Game\Components\CameraDrift.cpp" />
+    <ClCompile Include="Game\Components\DeathAnimation.cpp" />
     <ClCompile Include="Game\Components\Explosion.cpp" />
     <ClCompile Include="Game\Components\ArrowGuider.cpp" />
     <ClCompile Include="Game\Components\CameraTransition.cpp" />
@@ -169,6 +172,7 @@
     <ClInclude Include="Engine\Rendering\GLAbstraction\Shader.h" />
     <ClInclude Include="Engine\Rendering\GLAbstraction\GLFormats.h" />
     <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\RoofShader.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
     <ClInclude Include="Engine\States\State.h" />
@@ -176,6 +180,8 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
+    <ClInclude Include="Game\Components\CameraDrift.h" />
+    <ClInclude Include="Game\Components\DeathAnimation.h" />
     <ClInclude Include="Game\Components\Explosion.h" />
     <ClInclude Include="Game\Components\CameraTransition.h" />
     <ClInclude Include="Game\Components\Hover.h" />

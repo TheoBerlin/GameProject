@@ -102,8 +102,14 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	smallPanel->setSize({ 70, 50 });
 	smallPanel->setOption(GUI::FLOAT_LEFT);
 	smallPanel->setOption(GUI::FLOAT_UP);
-	smallPanel->addText("Show", "aldo", textColor);
-	smallPanel->setColor(backgroundColor);
+	smallPanel->setOption(GUI::SCALE_TO_TEXT_X, 20);
+	smallPanel->setOption(GUI::SCALE_TO_TEXT_Y, 20);
+	smallPanel->setOption(GUI::TEXT_CENTER_X);
+	smallPanel->setOption(GUI::TEXT_CENTER_Y);
+	smallPanel->addText("MENU", "aldo", textColor);
+	smallPanel->setNormalColor(backgroundColor);
+	smallPanel->setHoverColor(hoverColor);
+	smallPanel->setPressedColor(pressColor);
 	this->smallPanel = smallPanel;
 	level.gui->addPanel(smallPanel);
 

@@ -1,8 +1,9 @@
 #include "PathTreader.h"
 
 #include <Engine/Entity/Entity.h>
-#include "Utils/Logger.h"
-#include "Utils/Utils.h"
+#include <Utils/Logger.h>
+#include <Utils/Utils.h>
+#include <glm/gtx/spline.hpp>
 
 PathTreader::PathTreader(Entity* host)
     :Component(host, "PathTreader")

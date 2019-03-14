@@ -6,6 +6,8 @@
 // Phases GuidingPhase can transition from
 class AimPhase;
 
+class Panel;
+
 class GuidingPhase : public Phase
 {
 public:
@@ -19,16 +21,26 @@ public:
     float getFlightTime();
 
 private:
+	// Key event callback
     void handleKeyInput(KeyEvent* event);
 
+	// Handle transition
     void beginReplayTransition();
     void finishReplayTransition(CameraTransitionEvent* event);
 
+	// Callback for playercollision for score and GUI use
 	void playerCollisionCallback(PlayerCollisionEvent * ev);
+
+	// Create target panel 
+	void initTargetPanel();
+	// Update target panel
+	void updateTargetPanel();
 
     Entity* playerArrow;
     ArrowGuider* arrowGuider;
     Camera* arrowCam;
+
+	Panel* targetPnl;
 
     // Updated each update
     float flightTimer;

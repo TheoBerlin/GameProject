@@ -327,6 +327,13 @@ void Panel::processOption(std::pair<bool, GUI::OPTION_VALUE>& option, unsigned i
 	case GUI::OPTION::SCALE_TO_TEXT_Y:
 		processScaleToTextOption(GUI::OPTION::SCALE_TO_TEXT_Y, option.second.i);
 		break;
+	case GUI::OPTION::SCALE_TEXTURE_TO_WIDTH:
+		processScaleToTextureOption(GUI::OPTION::SCALE_TEXTURE_TO_WIDTH, option.second.i);
+		break;
+	case GUI::OPTION::SCALE_TEXTURE_TO_HEIGHT:
+		processScaleToTextureOption(GUI::OPTION::SCALE_TEXTURE_TO_HEIGHT, option.second.i);
+		break;
+
 
 		// -------------- Position related -----------------
 	case GUI::OPTION::FLOAT_LEFT:
@@ -486,6 +493,42 @@ void Panel::processScaleToTextOption(unsigned int index, int v)
 		}
 		this->size.y = (unsigned int)((int)maxY + v);
 		//this->pos.y = 0;
+	}
+}
+
+void Panel::processScaleToTextureOption(unsigned int index, int v)
+{
+	if (!this->backgroundTexture)
+		return;
+
+	if (index == GUI::SCALE_TEXTURE_TO_WIDTH)
+	{
+		float ratio = (float)this->backgroundTexture->getHeight() / (float)this->backgroundTexture->getWidth();
+		if (v == 0)
+		{
+			this->size.x = this->backgroundTexture->getWidth();
+			this->size.y = (unsigned)(size.x * ratio);
+		}
+		else
+		{
+			this->size.x = v;
+			this->size.y = (unsigned)(v * ratio);
+		}
+	}
+
+	if (index == GUI::SCALE_TEXTURE_TO_HEIGHT)
+	{
+		float ratio = (float)this->backgroundTexture->getWidth() / (float)this->backgroundTexture->getHeight();
+		if (v == 0)
+		{
+			this->size.y = this->backgroundTexture->getHeight();
+			this->size.x = (unsigned)(size.y * ratio);
+		}
+		else
+		{
+			this->size.y = v;
+			this->size.x = (unsigned)(v * ratio);
+		}
 	}
 }
 

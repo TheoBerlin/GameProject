@@ -530,3 +530,46 @@ void LevelParser::writeLevel(std::string file, Level & level)
 	oFile.open(file);
 	oFile << std::setw(4) << jsonFile << std::endl;
 }
+
+void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info)
+{
+	std::ifstream iFile;
+	iFile.open(file);
+
+	if (iFile.is_open())
+	{
+		try {
+			iFile >> jsonFile;
+		}
+		catch (const std::exception e) {
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
+			return;
+		}
+
+		// Reset vector for new level
+		info.clear();
+
+		// Read needed info
+		// Read target size
+		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
+		// Read optimal time
+		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+		// Read highscore
+		info.push_back("Highscore: " + std::to_string(readValue<unsigned>(jsonFile["Metadata"], "Highscore")));
+	}
+	else
+	{
+		LOG_ERROR("Can not open file: %s", file.c_str());
+	}
+}
+
+void LevelParser::writeScore(std::string file, Level & level)
+{
+	json::json& score = jsonFile["Metadata"]["Highscore"];
+
+	score = level.scoreManager->getHighscore();
+
+	std::ofstream oFile;
+	oFile.open(file);
+	oFile << std::setw(4) << jsonFile << std::endl;
+}
