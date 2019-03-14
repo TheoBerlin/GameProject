@@ -541,7 +541,7 @@ void Pipeline::drawInstanced(Model * model, SHADERS shader)
 
 		this->uniformBuffers[0]->setSubData((void*)&material, sizeof(material.Kd) + sizeof(material.Ks_factor), 0);
 
-		if (shader != SHADERS::INFINITY_PLANE && shader != SHADERS::WALL) {
+		if (shader != SHADERS::INFINITY_PLANE && shader != SHADERS::WALL && shader != SHADERS::ROOF_PLANE) {
 			if (material.glow)
 				eShader->setGlowUniform(true);
 			else
@@ -565,6 +565,8 @@ void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 {
 	this->fbo.updateDimensions(0, event->width, event->height);
 	this->fbo.updateDimensions(1, event->width, event->height);
+
+	this->postProcessFbo.updateDimensions(0, event->width, event->height);
 }
 
 Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)
