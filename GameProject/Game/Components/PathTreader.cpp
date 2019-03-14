@@ -60,11 +60,6 @@ KeyPoint & PathTreader::getKeyPoint(unsigned int index)
 	return path.at(index);
 }
 
-const std::vector<KeyPoint>& PathTreader::getPath()
-{
-	return path;
-}
-
 void PathTreader::startTreading()
 {
     if (path.size() < 2) {
