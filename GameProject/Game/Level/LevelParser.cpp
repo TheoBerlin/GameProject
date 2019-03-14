@@ -316,6 +316,12 @@ void LevelParser::writeLight(Level & level)
 		light[i]["Color"] = { level.lightManager->getPointLights()->at(i)->getIntensity().x, level.lightManager->getPointLights()->at(i)->getIntensity().y, level.lightManager->getPointLights()->at(i)->getIntensity().z, level.lightManager->getPointLights()->at(i)->getIntensity().w };
 		light[i]["Distance"] = level.lightManager->getPointLights()->at(i)->getDistance();
 	}
+
+	glm::vec4 direction = level.lightManager->getDirectionalLight()->getDirection();
+	glm::vec4 intesity = level.lightManager->getDirectionalLight()->getIntensity();
+
+	jsonFile["DirectionalLight"]["Direction"] = { direction.x, direction.y, direction.z, direction.w };
+	jsonFile["DirectionalLight"]["Intensity"] = { intesity.x, intesity.y, intesity.z, intesity.w };
 }
 
 void LevelParser::readMetadata(Level& level)
