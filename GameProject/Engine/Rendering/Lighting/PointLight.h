@@ -19,6 +19,6 @@ private:
 	float constant;
 	float linear;
 	float quadratic;
-	float distance;
+	int distance;
 };
 

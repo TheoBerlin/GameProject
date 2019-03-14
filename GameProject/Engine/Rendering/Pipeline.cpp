@@ -362,6 +362,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 
 	this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &lightManager->getLightMatrix()[0][0]);
 
+	glCullFace(GL_FRONT);
 	//Draw renderingList
 	glCullFace(GL_FRONT);
 	for (auto pair : renderingTargets) {
@@ -405,8 +406,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	/*
 		Set up Directional Light
 	*/
-	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
-
+	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), sizeof(DirectionalLight), 0);
 	/*
 		Set up Point Light
 	*/
@@ -577,7 +577,7 @@ void Pipeline::drawInstanced(Model * model, SHADERS shader)
 
 		this->uniformBuffers[0]->setSubData((void*)&material, sizeof(material.Kd) + sizeof(material.Ks_factor), 0);
 
-		if (shader != SHADERS::INFINITY_PLANE && shader != SHADERS::WALL) {
+		if (shader != SHADERS::INFINITY_PLANE && shader != SHADERS::WALL && shader != SHADERS::ROOF_PLANE) {
 			if (material.glow)
 				eShader->setGlowUniform(true);
 			else
@@ -601,6 +601,8 @@ void Pipeline::updateFramebufferDimension(WindowResizeEvent * event)
 {
 	this->fbo.updateDimensions(0, event->width, event->height);
 	this->fbo.updateDimensions(1, event->width, event->height);
+
+	this->postProcessFbo.updateDimensions(0, event->width, event->height);
 }
 
 Texture* Pipeline::combineTextures(Texture * sceen, Texture * particles)
