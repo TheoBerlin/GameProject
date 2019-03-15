@@ -11,7 +11,6 @@ GameLogic::GameLogic()
 
 void GameLogic::init(Level& level)
 {
-	this->previousPhase = nullptr;
 	this->level = level;
 
 	// Set up phase transition camera entity
@@ -45,7 +44,7 @@ void GameLogic::update(const float & dt)
 
 void GameLogic::changePhaseCallback(PhaseChangeEvent * event)
 {
-	this->previousPhase = phase;
+	Phase* previousPhase = phase;
 
 	phase = event->newPhase;
 

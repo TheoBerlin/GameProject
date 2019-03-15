@@ -173,7 +173,9 @@ void TargetManager::resetStaticAnimations()
 
 	for (unsigned int i = 0; i != staticTargetCount; i += 1) {
 		Entity* targetHost = staticTargets.at(i).hoverAnimation->getHost();
+
 		targetHost->unpauseModelTransform();
+
 		staticTargets.at(i).hoverAnimation->reset();
 		staticTargets.at(i).explosion->reset();
 		staticTargets.at(i).deathAnimation->reset();
@@ -192,7 +194,9 @@ void TargetManager::resetMovingAnimations()
 
 	for (unsigned int i = 0; i != movingTargetCount; i += 1) {
 		Entity* targetHost = movingTargets.at(i).pathTreader->getHost();
+
 		targetHost->unpauseModelTransform();
+
 		movingTargets.at(i).pathTreader->startTreading();
 		targetHost->getTransform()->resetRoll();
 		movingTargets.at(i).explosion->reset();
@@ -210,6 +214,7 @@ void TargetManager::resetStaticCollisions()
 {
 	rp3d::CollisionBody* body;
 	Entity* host;
+
 	for (auto target : this->staticTargets)
 	{
 		host = target.hoverAnimation->getHost();

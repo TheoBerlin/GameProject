@@ -137,26 +137,38 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
     // Fast forward level, update every entity except the player entity
     std::vector<Entity*> entities = level.entityManager->getAll();
 
+	ParticleManager& particleManager = ParticleManager::get();
+
     while (replayTime < time && isReplaying) {
         timeStep = this->collisions[collisionIndex].time - replayTime + 0.001f;
 
         timeStep = (replayTime + timeStep > time) ? time - replayTime + 0.001f : timeStep;
 
-        this->update(timeStep);
+		particleManager.update(timeStep);
 
         for (auto& entity : entities) {
             if (entity != playerEntity) {
                 entity->update(timeStep);
             }
         }
+
+        this->update(timeStep);
     }
 
     // All collisions have been replayed, time-step one last time
-    for (auto& entity : entities) {
-        if (entity != playerEntity) {
-            entity->update(time - replayTime);
-        }
-    }
+	timeStep = time - replayTime;
+
+	if (timeStep > 0.0f) {
+		particleManager.update(timeStep);
+
+		for (auto& entity : entities) {
+			if (entity != playerEntity) {
+				entity->update(time - replayTime);
+			}
+		}
+	}
+
+	replayTime = time;
 
     // Set the arrow's expected forward
     arrowTransform->setForward(arrowForward);
