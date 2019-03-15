@@ -25,7 +25,6 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 	Transform* transform = host->getTransform();
 
 	transform->setPosition(position);
-	transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Generic setup for all targets
 	setupTargetGeneric(host);

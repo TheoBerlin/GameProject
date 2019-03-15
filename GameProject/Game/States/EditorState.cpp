@@ -159,7 +159,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (ImGui::Button("Player"))
 		activeWindow[4] = !activeWindow[3];
 	if (ImGui::Button("Editor/Help"))
-		activeWindow[5] = !activeWindow[4];
+		activeWindow[5] = !activeWindow[5];
 	ImGui::NewLine();
 
 	ImGui::End();
@@ -317,9 +317,17 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		ImGui::Text("Model Info");
 		ImGui::InputText("Model Name", &currentModel[0], 64);
 		if (ImGui::Button("Load Model")) {
-			model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
-			curEntity->setModel(model);
-			curEntity->getModel()->setName(currentModel);
+			if (!ModelLoader::getModel("./Game/assets/" + currentModel + ".fbx")) {
+				model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
+				Display::get().getRenderer().addRenderingTarget(model);
+				curEntity->setModel(model);
+				curEntity->getModel()->setName(currentModel);
+			}
+			else {
+				model = ModelLoader::getModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
+				curEntity->setModel(model);
+				curEntity->getModel()->setName(currentModel);
+			}
 		}
 		ImGui::NewLine();
 

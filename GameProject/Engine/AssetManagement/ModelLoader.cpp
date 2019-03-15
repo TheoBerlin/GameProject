@@ -121,13 +121,18 @@ std::vector<Model*> ModelLoader::getModels()
 
 Model * ModelLoader::getModel(const std::string & name)
 {
-	Model* model = loadedModels[name];
-
-	if (!model) {
+	auto it = loadedModels.find(name);
+	
+	if (it == loadedModels.end()) {
 		LOG_INFO("Model [%s] dosen't exist", name.c_str());
 	}
+	else {
+		Model* model = loadedModels[name];
 
-	return model;
+		return model;
+	}
+
+	return nullptr;
 }
 
 void ModelLoader::unloadAllModels()

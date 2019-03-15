@@ -27,6 +27,7 @@ void LevelParser::readEntityTargets(Level& level)
 		json::json& target = jsonFile["Target"][i];
 		Entity* entity;
 		glm::vec3 position;
+		glm::vec3 rotation;
 		std::vector<KeyPoint> path;
 
 		//Every object requires a name
@@ -36,6 +37,9 @@ void LevelParser::readEntityTargets(Level& level)
 
 			if (!target["Position"].empty()) {
 				readVec3(target["Position"], position);
+			}
+			if (!target["Rotation"].empty()) {
+				readVec3(target["Rotation"], rotation);
 			}
 			else if (!target["Path"].empty()) {
 				readPath(target, entity, path);
@@ -52,6 +56,7 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 		else {
 			// The target is static
+			entity->getTransform()->setRotation(rotation);
 			level.targetManager->addStaticTarget(entity, position);
 		}
 
@@ -79,19 +84,29 @@ void LevelParser::readEntityTargets(Level& level)
 
 void LevelParser::readEntityBoxes(Level& level)
 {
-	Model *model = nullptr;
 	//Get the size of the target entities
-	int targetSize = jsonFile["Boxes"].size();
+	int targetSize = jsonFile["Props"].size();
+
+	std::vector<Model*> model;
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/Cube.fbx", level.collisionHandler);
-		model->setName("Cube");
-		Display::get().getRenderer().addRenderingTarget(model);
+		for (unsigned int i = 0; i < targetSize; i++) {
+			std::string name = jsonFile["Props"][i]["Model"];
+			if (!ModelLoader::getModel(std::string("./Game/assets/") + name + std::string(".fbx"))) {
+				model.push_back(ModelLoader::loadModel(std::string("./Game/assets/") + name + std::string(".fbx"), level.collisionHandler));
+				model[i]->setName(name);
+				Display::get().getRenderer().addRenderingTarget(model[i]);
+			}
+			else {
+				model.push_back(ModelLoader::getModel(std::string("./Game/assets/") + name + std::string(".fbx")));
+				model[i]->setName(name);
+			}
+		}
 	}
 
 	for (int i = 0; i < targetSize; i++)
 	{
-		json::json& box = jsonFile["Boxes"][i];
+		json::json& box = jsonFile["Props"][i];
 		Entity* entity;
 		glm::vec3 position;
 
@@ -124,7 +139,7 @@ void LevelParser::readEntityBoxes(Level& level)
 			break;
 		}
 
-		entity->setModel(model);
+		entity->setModel(model[i]);
 		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
 	}
 }
@@ -210,16 +225,17 @@ void LevelParser::writeEntityBoxes(Level & level)
 			Entity* entity = level.entityManager->getEntity(i);
 			Transform* transform = entity->getTransform();
 
-			jsonFile["Boxes"][nrOfBoxes]["Name"] = entity->getName();
+			jsonFile["Props"][nrOfBoxes]["Name"] = entity->getName();
+			jsonFile["Props"][nrOfBoxes]["Model"] = entity->getModel()->getName();
 
 			glm::vec3 position = transform->getPosition();
-			jsonFile["Boxes"][nrOfBoxes]["Position"] = { position.x, position.y, position.z };
+			jsonFile["Props"][nrOfBoxes]["Position"] = { position.x, position.y, position.z };
 
 			glm::vec3 scale = transform->getScale();
-			jsonFile["Boxes"][nrOfBoxes]["Scale"] = { scale.x, scale.y, scale.z };
+			jsonFile["Props"][nrOfBoxes]["Scale"] = { scale.x, scale.y, scale.z };
 
 			glm::vec3 orientation = transform->getYawPitchRoll();
-			jsonFile["Boxes"][nrOfBoxes]["Rotation"] = { orientation.x, orientation.y, orientation.z };
+			jsonFile["Props"][nrOfBoxes]["Rotation"] = { orientation.x, orientation.y, orientation.z };
 
 			nrOfBoxes++;
 		}
@@ -473,7 +489,7 @@ void LevelParser::createCollisionBodies(Level& level)
 	bodiesNeeded += 1;
 	// Targets
 	bodiesNeeded += jsonFile["Target"].size();
-	bodiesNeeded += jsonFile["Boxes"].size();
+	bodiesNeeded += jsonFile["Props"].size();
 	// Walls
 	json::json& walls = jsonFile["Walls"];
 	for (unsigned group = 0; group < walls.size(); group++)
