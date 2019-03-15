@@ -150,10 +150,13 @@ void main()
     projCoords = projCoords * 0.5 + 0.5;
     //vec3 normalView = normalize(fragNormalView.xyz);
     //vec3 screenColor = texture(screenTex, projCoords.xy).rgb;
+
+    float viewLength = length(camPos - fragPos.xyz);
+    float opacity = smoothstep(5.0, 7.0, viewLength);
     vec4 preColor = texture(screenTex, projCoords.xy/* + distortionStrength*normalView.xy*texelSize*/);
     preColor.rgb = preColor.rgb;
 
-    colorAttachment0 = vec4(preColor.rgb, 1.0-a);
+    colorAttachment0 = vec4(preColor.rgb, (1.0-a)*opacity);
     
     if(isGlowing) {
         colorAttachment1 = vec4(texColor, 1.0);
