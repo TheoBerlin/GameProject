@@ -4,7 +4,7 @@
 
 std::map<std::string, Texture*> TextureManager::loadedTextures = std::map<std::string, Texture*>();
 
-Texture* TextureManager::loadTexture(const std::string& fileName, TextureType type)
+Texture* TextureManager::loadTexture(const std::string& fileName)
 {
     std::map<std::string, Texture*>::iterator textureIterator;
 
@@ -18,7 +18,7 @@ Texture* TextureManager::loadTexture(const std::string& fileName, TextureType ty
     }
 
 	// Load texture from disc and stor the data with openGL.
-	Texture* newTexture = new Texture(fileName, type);
+	Texture* newTexture = new Texture(fileName);
 
 	// Check if texture was loaded.
 	if (newTexture->hasLoadedData() == false)

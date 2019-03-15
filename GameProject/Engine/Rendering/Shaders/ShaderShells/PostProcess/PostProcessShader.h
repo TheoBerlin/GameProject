@@ -9,5 +9,12 @@ public:
 	~PostProcessShader();
 
 	virtual void bind(Texture* texture);
+
+	virtual void update(const float& dt);
+
+	static float getTime();
+
+private:
+	static float time;
 };
 

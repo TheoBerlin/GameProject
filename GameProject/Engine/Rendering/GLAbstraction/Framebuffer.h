@@ -14,7 +14,7 @@ public:
 	/*
 		Used to attach texture attachment on framebuffer, creates buffer with requested dimensions and type and leaves it empty.
 	*/
-	Texture* attachTexture(const GLuint& width, const GLuint& height, const AttachmentType& type = AttachmentType::COLOR, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA);
+	Texture* attachTexture(const GLuint& width, const GLuint& height, const AttachmentType& atype = AttachmentType::COLOR, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 	/*
 		Explicitly used as depth attachment replaces current depth attachment(Texture or RBO) with renderbuffer depth attachment
 	*/
@@ -23,7 +23,7 @@ public:
 	/*
 		Updates the width and height of color attachment and depth attachments if it exists.
 	*/
-	void updateDimensions(unsigned index, const GLuint& width, const GLuint& height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA);
+	void updateDimensions(unsigned index, const GLuint& width, const GLuint& height, unsigned internalFormat = GL_RGBA, unsigned format = GL_RGBA, GLenum type = GL_UNSIGNED_BYTE);
 
 	/*
 		Get Color Texture attachment from index, in order of attachment.

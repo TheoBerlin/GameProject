@@ -213,11 +213,11 @@ void LevelParser::writeEntityBoxes(Level & level)
 	int nrOfBoxes = 0;
 	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
 		bool found = false;
-		for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
+		for (unsigned int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
 			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == level.entityManager->getEntity(i))
 				found = true;
 		}
-		for (int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
+		for (unsigned int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
 			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == level.entityManager->getEntity(i))
 				found = true;
 		}
@@ -248,7 +248,7 @@ void LevelParser::writeEntityTargets(Level & level)
 	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
 		Entity* entity = level.entityManager->getEntity(i);
 		bool found = false;
-		for (int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
+		for (unsigned int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
 			if (level.targetManager->getMovingTargets()[j].pathTreader->getHost() == entity) {
 				// Write moving target
 				Transform* transform = entity->getTransform();
@@ -265,7 +265,7 @@ void LevelParser::writeEntityTargets(Level & level)
 				jsonFile["Target"][nrOfTargets]["Rotation"] = { orientation.x, orientation.y, orientation.z };
 
 				// Write moving target's path
-				for (int k = 0; k < level.targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++) {
+				for (unsigned int k = 0; k < level.targetManager->getMovingTargets()[j].pathTreader->getPath().size(); k++) {
 					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[j].pathTreader->getPath();
 
 					jsonFile["Target"][nrOfTargets]["Path"][k]["Position"] = { path[k].Position.x, path[k].Position.y, path[k].Position.z };
@@ -274,7 +274,7 @@ void LevelParser::writeEntityTargets(Level & level)
 				nrOfTargets++;
 			}
 		}
-		for (int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
+		for (unsigned int j = 0; j < level.targetManager->getStaticTargets().size(); j++) {
 			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == entity) {
 				// Write static target
 				Transform* transform = entity->getTransform();
@@ -314,7 +314,7 @@ void LevelParser::writePlayer(Level & level)
 void LevelParser::writeWalls(Level & level)
 {
 	int wallPointsOffset = 0;
-	for (int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
+	for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
 		for (int j = 0; j < level.levelStructure->getWallGroupsIndex()[i]; j++) {
 			glm::vec2 wallPoint = glm::vec2(level.levelStructure->getWallPoints()[wallPointsOffset + j].x, level.levelStructure->getWallPoints()[wallPointsOffset + j].z);
 			jsonFile["Walls"][i][j] = { wallPoint.x, wallPoint.y };
@@ -369,7 +369,7 @@ void LevelParser::readLights(Level & level)
 	readVec4(dLight["Direction"], direction);
 	readVec4(dLight["Intensity"], intensity);
 
-	level.lightManager->createDirectionalLight(direction, intensity);
+	level.lightManager->createDirectionalLight(direction, intensity, &level);
 }
 
 void LevelParser::readVec4(json::json & file, glm::vec4 & vec)
@@ -572,9 +572,9 @@ void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info
 		// Read target size
 		info.push_back("Targets: " + std::to_string(jsonFile["Target"].size()));
 		// Read optimal time
-		info.push_back("Optimal Time: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
+		info.push_back("OPTIMAL TIME: " + std::to_string((unsigned)readValue<float>(jsonFile["Metadata"], "OptimalTime")));
 		// Read highscore
-		info.push_back("Highscore: " + std::to_string(readValue<unsigned>(jsonFile["Metadata"], "Highscore")));
+		info.push_back("HIGHSCORE: " + std::to_string(readValue<unsigned>(jsonFile["Metadata"], "Highscore")));
 	}
 	else
 	{

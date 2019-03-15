@@ -139,6 +139,9 @@ void GuidingPhase::beginReplayTransition()
 
     this->transitionBackwards(currentCamSettings, newCamSettings, arrowGuider->getPath());
 
+	//add Post process effect to transition
+	Display::get().getRenderer().activatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
+
 
 	EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }

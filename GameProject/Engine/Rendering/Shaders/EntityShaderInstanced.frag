@@ -52,6 +52,7 @@ float ShadowCalculation(vec4 fragLightSpace)
     projCoords = projCoords * 0.5 + 0.5;
     // get closest depth value from light's perspective (using [0,1] range fragPosLight as coords)
     float closestDepth = texture(shadowTex, projCoords.xy).r; 
+    
     // get depth of current fragment from light's perspective
     float currentDepth = projCoords.z;
     // check whether current frag pos is in shadow and add PCF
@@ -63,12 +64,11 @@ float ShadowCalculation(vec4 fragLightSpace)
             shadow += currentDepth - bias > pcfDepth ? 1.0 : 0.0;
         }
     }
-    //shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
 
     if(projCoords.z > 1.0)
         shadow = 0.0;
 
-    return shadow / 15.0;
+    return shadow / 9.0;
 }  
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
@@ -130,7 +130,7 @@ void main()
 		Shadow
 	*/
 	float shadow = ShadowCalculation(fragLightPos);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular) + result) * texColor;
+    vec3 lighting  = (ambient + (1.0 - shadow) * (diffuse + specular) + result) * texColor;
 
     colorAttachment0 = vec4(lighting, 1.0);
     

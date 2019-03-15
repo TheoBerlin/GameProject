@@ -1,9 +1,11 @@
 #pragma once
 
 #include <utility>
+#include <vector>
 #include "glm/glm.hpp"
 #include "glm/gtc/quaternion.hpp"
 
+struct Vertex;
 struct Utils
 {
 	/*
@@ -46,4 +48,38 @@ struct Utils
 		A value within the new interval.
 	*/
 	static float map(float min, float max, float x, float newMin, float newMax);
+
+	struct AABB
+	{
+		glm::vec3 size;
+		glm::vec3 pos;
+	};
+
+	/*
+	Create an AABB from a set of vertices. The user can specify the axis of which the bounding box will use.
+	Arguments:
+		vertices:		The vertices used when computing.
+		numVertices:	The number of vertices used.
+		e1:				The x-axis.
+		e2:				The y-axis.
+		e3:				The z-axis.
+	*/
+	static AABB getAABB(Vertex* vertices, unsigned int numVertices, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
+	static AABB getAABB(std::vector<glm::vec3> points, glm::vec3 e1 = { 1.f, 0.f, 0.f }, glm::vec3 e2 = { 0.f, 1.f, 0.f }, glm::vec3 e3 = { 0.f, 0.f, 1.f });
+	
+	struct OBB
+	{
+		glm::vec3 size;
+		glm::vec3 pos;
+		glm::quat rot;
+	};
+
+	/*
+	Create a OBB from a set of vertices.
+	Arguments:
+		ptr:			A pointer to the model.
+		vertices:		The vertices used when computing.
+		numVertices:	The number of vertices used.
+	*/
+	static OBB getOBB(Vertex* vertices, unsigned int numVertices);
 };

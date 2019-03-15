@@ -7,7 +7,6 @@ IndexBuffer::IndexBuffer(const void* const data, const size_t& count, GLenum usa
 
 	bind();
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->count * sizeof(unsigned int), data, usage);
-	unbind();
 }
 
 IndexBuffer::~IndexBuffer()

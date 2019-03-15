@@ -12,6 +12,8 @@
 #include <Engine/Entity/Entity.h>
 #include <Engine/Entity/Transform.h>
 
+#include <Utils/Utils.h>
+
 #include <Utils/Logger.h>
 
 LevelStructure::LevelStructure()
@@ -560,4 +562,15 @@ bool LevelStructure::isClockwise(std::vector<glm::vec3>& points)
 	if (cross.y > 0)
 		return true;
 	return true;
+}
+
+Utils::AABB LevelStructure::createBoundingBox(const glm::vec3 & e1, const glm::vec3 & e2, const glm::vec3 & e3)
+{
+	size_t size = this->wallPoints.size()*2;
+	std::vector<glm::vec3> totalWallPoints(size);
+	for (unsigned int i = 0; i < size; i+=2) {
+		totalWallPoints[i] = this->wallPoints[i / 2];
+		totalWallPoints[i+1] = this->wallPoints[i / 2]-glm::vec3(0.0f, this->height, 0.0f);
+	}
+	return Utils::getAABB(totalWallPoints, e1, e2, e3);
 }

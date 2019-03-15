@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -22,6 +22,7 @@
     <ClCompile Include="Engine\Rendering\Lighting\DirectionalLight.cpp" />
     <ClCompile Include="Engine\Rendering\Lighting\LightManager.cpp" />
     <ClCompile Include="Engine\Rendering\Lighting\PointLight.cpp" />
+    <ClCompile Include="Engine\Rendering\LineRenderer.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
@@ -72,6 +73,7 @@
     <ClCompile Include="Engine\Sound\Sound.cpp" />
     <ClCompile Include="Engine\Sound\SoundContext.cpp" />
     <ClCompile Include="Engine\Rendering\Renderer.cpp" />
+    <ClCompile Include="Engine\Sound\SoundManager.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\QuadShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\PostProcessShader.cpp" />
     <ClCompile Include="Engine\States\State.cpp" />
@@ -124,6 +126,8 @@
     <ClInclude Include="Engine\Rendering\Lighting\DirectionalLight.h" />
     <ClInclude Include="Engine\Rendering\Lighting\LightManager.h" />
     <ClInclude Include="Engine\Rendering\Lighting\PointLight.h" />
+    <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
+    <ClInclude Include="Engine\Rendering\LineRenderer.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
@@ -180,7 +184,9 @@
     <ClInclude Include="Engine\Rendering\GUIRenderer.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\RoofShader.h" />
     <ClInclude Include="Engine\Sound\Sound.h" />
+    <ClInclude Include="Engine\Sound\SoundConfig.h" />
     <ClInclude Include="Engine\Sound\SoundContext.h" />
+    <ClInclude Include="Engine\Sound\SoundManager.h" />
     <ClInclude Include="Engine\States\State.h" />
     <ClInclude Include="Engine\States\StateManager.h" />
     <ClInclude Include="Engine\Entity\Entity.h" />
@@ -237,6 +243,8 @@
   <ItemGroup>
     <None Include="Engine\Rendering\Shaders\CombineShader.frag" />
     <None Include="Engine\Rendering\Shaders\CombineShader.vert" />
+    <None Include="Engine\Rendering\Shaders\Debug\LineShader.frag" />
+    <None Include="Engine\Rendering\Shaders\Debug\LineShader.vert" />
     <None Include="Engine\Rendering\Shaders\EntityShader.frag" />
     <None Include="Engine\Rendering\Shaders\EntityShader.vert" />
     <None Include="Game\Level\exampleLevel.json" />

@@ -203,16 +203,16 @@
     ],
     "DirectionalLight": {
         "Direction": [
-            null,
-            null,
-            null,
-            null
+            0.0,
+            -0.6030226349830627,
+            0.30151131749153137,
+            0.7385489344596863
         ],
         "Intensity": [
-            null,
-            null,
-            null,
-            null
+            1.0,
+            1.0,
+            1.0,
+            1.0
         ]
     },
     "Floor": {

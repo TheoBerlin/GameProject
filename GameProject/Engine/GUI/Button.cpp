@@ -1,6 +1,7 @@
 #include "Button.h"
 
 #include "../Rendering/Display.h"
+#include "../Sound/SoundManager.h"
 
 Button::Button() : Panel()
 {
@@ -67,14 +68,20 @@ void Button::mouseClickCallback(MouseClickEvent * evnt)
 		if (evnt->action == GLFW_PRESS)
 		{
 			this->pressed = true;
-			if (this->isHovering)
-				toPressedStyle();
+			if (this->isHovering) {
+				if (!this->firstPressed) {
+					this->sound.playSound();
+					toPressedStyle();
+					this->firstPressed = true;
+				}
+			}
 		}
 		else if (this->isHovering && evnt->action == GLFW_RELEASE)
 		{
 			if (this->func)
 				this->func();
 			toNormalStyle();
+			this->firstPressed = false;
 		}
 	}
 }
@@ -128,5 +135,10 @@ void Button::init()
 	this->hoverColor = { 0.8f, 0.8f, 0.8f, 1.0f };
 	this->pressedColor = { 0.3f, 0.3f, 0.3f, 1.0f };
 
+	this->firstPressed = false;
 	this->active = true;
+
+	this->sound.loadSound("Game/Assets/sound/button.wav");
+	this->sound.setLoopState(false);
+	SoundManager::get().addSound(&this->sound, SoundType::SOUND_MISC);
 }
