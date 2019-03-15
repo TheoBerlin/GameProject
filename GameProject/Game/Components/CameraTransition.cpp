@@ -37,6 +37,8 @@ void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& 
 
 void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
+	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+
     if (!this->commonSetup(path, newFOV)) {
         return;
     }
@@ -65,6 +67,11 @@ void CameraTransition::setBackwardsPath(const std::vector<KeyPoint>& path, const
     this->commonSetup(path, newFOV);
 }
 
+void CameraTransition::skipTransition()
+{
+	this->transitionTime = path.back().t - 0.15f;
+}
+
 void CameraTransition::update(const float& dt)
 {
     if (!isTransitioning) {
@@ -78,8 +85,6 @@ void CameraTransition::update(const float& dt)
     if (transitionTime > path.back().t) {
         // Transition is finished
         isTransitioning = false;
-
-        glm::vec3 forward = transform->getForward();
 
         // Publish camera transition event
         EventBus::get().publish(&CameraTransitionEvent(host));
@@ -165,7 +170,8 @@ void CameraTransition::handleKey(KeyEvent * ev)
 	if (ev->action == GLFW_PRESS && ev->key == GLFW_KEY_SPACE) {
 		// Publish camera transition event
 		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
-		EventBus::get().publish(&CameraTransitionEvent(host));
+
+		this->skipTransition();
 	}
 }
 

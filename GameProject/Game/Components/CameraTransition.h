@@ -22,6 +22,8 @@ public:
     // Transition whilst facing backwards along a path. Couples camera at the end of the transition.
     void setBackwardsPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV);
 
+	void skipTransition();
+
     void update(const float& dt);
 private:
     bool commonSetup(const std::vector<KeyPoint>& path, float newFOV);
