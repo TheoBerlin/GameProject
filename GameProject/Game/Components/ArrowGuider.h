@@ -9,6 +9,7 @@
 #include <vector>
 #include <cmath>
 #include <glm/gtc/quaternion.hpp>
+#include <Engine/Sound/SoundManager.h>
 
 class Entity;
 
@@ -97,6 +98,8 @@ private:
 
     // The pointer is retrieved when startGuiding() is called
     Camera* arrowCamera;
+
+	Sound sound;
 
     // Camera settings
     glm::vec3 minCamOffset;

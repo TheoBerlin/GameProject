@@ -31,6 +31,11 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float min
 	this->minSpeedDecrease = movementSpeed;
 	this->maxSpeedOffset = 1.0f;
 	this->isAccelerating = false;
+
+	sound.loadSound("./Game/assets/sound/Wind.wav");
+	sound.setVolume(0.5);
+	sound.setLoopState(true);
+	SoundManager::get().addSound(&sound, SOUND_EFFECT);
 }
 
 ArrowGuider::~ArrowGuider()
@@ -56,6 +61,9 @@ void ArrowGuider::update(const float& dt)
     float turnFactorsLength = glm::length(turnFactors);
 
     if (isGuiding) {
+		sound.playSound();
+		sound.setVolume(movementSpeed / 10);
+
         // Update position storage
         float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * (turnFactorsLength * 3.0f) * this->movementSpeed;
 
