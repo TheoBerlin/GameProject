@@ -6,12 +6,14 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/Sound/SoundManager.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Components/TrailEmitter.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Utils/Settings.h>
+#include <Utils/Utils.h>
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
@@ -120,10 +122,13 @@ void ReplayPhase::update(const float& dt)
     if (isPausing) {
         // Slow down time if pausing
         replaySpeedFactor = glm::max(replaySpeedFactor - dt * (1.0f / timeToPause), 0.0f);
+
     } else {
         // Increase speed factor back to 1.0f
         replaySpeedFactor = glm::min(replaySpeedFactor + dt * (1.0f / timeToPause), 1.0f);
     }
+
+	SoundManager::get().setEffectPitch(replaySpeedFactor);
 
     // Make sure the player camera is always updated with dt, regardless of replay speed factor
     float cameraUpdateTime = dt + dt * (1.0f - replaySpeedFactor);

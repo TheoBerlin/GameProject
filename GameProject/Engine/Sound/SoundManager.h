@@ -31,12 +31,20 @@ public:
 
 	void setMasterVolume(float volume);
 	float getMasterVolume() const;
+
 	void setMusicVolume(float volume);
 	float getMusicVolume() const;
+
 	void setEffectVolume(float volume);
 	float getEffectVolume() const;
+	void setEffectPitch(float pitch);
+
+	// Fast forward or rewind sound effects
+	void offsetEffects(float seconds);
+
 	void setAmbientVolume(float volume);
 	float getAmbientVolume() const;
+
 	void setMiscVolume(float volume);
 	float getMiscVolume() const;
 };

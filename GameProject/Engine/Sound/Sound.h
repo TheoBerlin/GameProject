@@ -3,8 +3,8 @@
 #include <fstream>
 
 #include "glm/glm.hpp"
-#include "../../../include/OpenAL/al.h"
-#include "../../../include/OpenAL/alc.h"
+#include <OpenAL/al.h>
+#include <OpenAL/alc.h>
 
 #pragma warning(disable:4996)
 enum SoundType {SOUND_MUSIC = 0, SOUND_EFFECT = 1, SOUND_AMBIENT = 2, SOUND_MISC = 4};
@@ -36,12 +36,16 @@ public:
 	// Stop the sound. If playSound is called after stopping it, the sound will start from the begining again.
 	void stopSound();
 
+	// Fast forward or rewind the time
+	void offsetPlayTime(float seconds);
+
 	void setSoundType(SoundType type);
 	SoundType getSoundType() const;
 
 	//Pitch multiplier should always positive value
 	void setPitch(const float pitch);
 	float getPitch() const;
+
 	//Volume is between 0.0 and 1.0
 	void setVolume(const float volume);
 	float getVolume() const;

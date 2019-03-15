@@ -67,6 +67,8 @@ void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDeb
 void Explosion::reset()
 {
 	this->removeDebris();
+
+	sound.stopSound();
 }
 
 void Explosion::createDebri(const glm::vec3& pos, const glm::vec3& startVelocity, const glm::vec3& startAcceleration, const glm::vec3& color,

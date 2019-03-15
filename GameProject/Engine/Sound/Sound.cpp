@@ -119,6 +119,40 @@ void Sound::stopSound()
 	}
 }
 
+void Sound::offsetPlayTime(float seconds)
+{
+	ALint isPlaying = 0;
+	AL_CALL(alGetSourcei(source, AL_SOURCE_STATE, &isPlaying));
+
+	if (isPlaying != AL_PLAYING) {
+		return;
+	}
+
+	// Get the current play time
+	float currentTime;
+
+	alGetSourcef(source, AL_SEC_OFFSET, &currentTime);
+
+	float newTime = seconds + currentTime;
+
+	// Check if the new time is larger than the length of the sound
+	int byteSize;
+
+	alGetBufferi(buffer, AL_SIZE, &byteSize);
+
+	unsigned int sampleLength = byteSize * 8 / (channels * bitsPerSample);
+
+	float secondLength = (float)sampleLength / (float)freq;
+
+	if (secondLength < newTime) {
+		this->stopSound();
+	}
+
+	else {
+		alSourcef(source, AL_SEC_OFFSET, newTime);
+	}
+}
+
 void Sound::setSoundType(SoundType type)
 {
 	this->type = type;
@@ -128,6 +162,7 @@ SoundType Sound::getSoundType() const
 {
 	return type;
 }
+
 void Sound::setPitch(const float pitch)
 {
 	AL_CALL(alSourcef(source, AL_PITCH, pitch));
@@ -161,6 +196,7 @@ float Sound::getVolume() const
 {
 	float ret;
 	AL_CALL(alGetSourcef(source, AL_GAIN, &ret));
+
 	return ret;
 }
 
