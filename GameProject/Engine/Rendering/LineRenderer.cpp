@@ -6,7 +6,7 @@
 
 LineRenderer::LineRenderer()
 {
-	this->lineShader = new Shader("./Engine/Rendering/Shaders/Debug/LineShader.vert", "./Engine/Rendering/Shaders/Debug/LineShader.frag");
+	this->lineShader = new Shader("./Engine/Rendering/Shaders/DebugShaders/LineShader.vert", "./Engine/Rendering/Shaders/DebugShaders/LineShader.frag");
 	this->va = nullptr;
 	this->vb = nullptr;
 	this->ib = nullptr;
