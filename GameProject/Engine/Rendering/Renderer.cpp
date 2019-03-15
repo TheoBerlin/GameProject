@@ -55,6 +55,13 @@ void Renderer::initInstancing()
 
 	if(colors.size() > 0)
 		model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
+
+	/*
+		Initilize colors vertexBuffer for collision color changing
+	*/
+	model = ModelLoader::loadModel("./Game/assets/droneTargetMoving.fbx");
+	if (colors.size() > 0)
+		model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
 }
 
 void Renderer::clearRenderingTargets()
@@ -72,19 +79,24 @@ void Renderer::drawAllInstanced()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/*
-	Calulate shadow depth
+		Calulate shadow depth
 	*/
 	this->pipeline.calcDirLightDepthInstanced(this->renderingTargets);
 
 	/*
 		Z-prepass stage
 	*/
-	this->pipeline.prePassDepthModel(this->renderingTargets);
+	this->pipeline.prePassDepthModel(this->renderingTargets, false, SHADERS::DRONE_GHOST);
 
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets);
+	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets, SHADERS::DRONE_GHOST);
+
+	/*
+		Draw drones
+	*/
+	this->pipeline.drawModelsWithShader(this->postProcessTexture, this->renderingTargets, SHADERS::DRONE_GHOST);
 
 	/*
 		Draw trail

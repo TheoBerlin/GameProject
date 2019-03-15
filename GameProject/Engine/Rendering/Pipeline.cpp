@@ -8,6 +8,7 @@
 #include "../Config.h"
 #include <Engine/Imgui/imgui.h>
 #include "Engine/Rendering/Shaders/ShaderShells/DroneShader.h"
+#include "Engine/Rendering/Shaders/ShaderShells/DroneGhostShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/WallShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlaneShader.h"
 #include "Engine/Rendering/Shaders/ShaderShells/InfinityPlanePrePassShader.h"
@@ -40,6 +41,7 @@ Pipeline::Pipeline()
 	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new RoofShader(&this->camera));
+	this->entityShaders.push_back(new DroneGhostShader(&this->shadowFbo, &this->camera, identityMatrix));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -137,7 +139,7 @@ Texture* Pipeline::drawParticle()
 	return fbo.getColorTexture(1);
 }
 
-void Pipeline::prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen)
+void Pipeline::prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen, SHADERS skip)
 {
 	if (!toScreen)
 		this->fbo.bind();
@@ -147,19 +149,21 @@ void Pipeline::prePassDepthModel(const std::vector<std::pair<RenderingTarget, SH
 
 	for (auto pair : renderingTargets) {
 		if (pair.first.prePass) {
-			if (pair.second == SHADERS::INFINITY_PLANE) {
-				this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->bind();
+			if (pair.second != skip) {
+				if (pair.second == SHADERS::INFINITY_PLANE) {
+					this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->bind();
 
-				drawModelPrePassInstanced(pair.first.model);
+					drawModelPrePassInstanced(pair.first.model);
 
-				this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->unbind();
-				this->ZprePassShaderInstanced->bind();
-			}
-			else {
+					this->entityShaders[SHADERS::INFINITY_PLANE_PREPASS]->unbind();
+					this->ZprePassShaderInstanced->bind();
+				}
+				else {
 
-				//Draw renderingList
-				this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
-				drawModelPrePassInstanced(pair.first.model);	
+					//Draw renderingList
+					this->ZprePassShaderInstanced->setUniformMatrix4fv("vp", 1, false, &(this->camera->getVP()[0][0]));
+					drawModelPrePassInstanced(pair.first.model);
+				}
 			}
 		}
 			
@@ -255,6 +259,25 @@ void Pipeline::addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, 
 	}
 }
 
+void Pipeline::drawModelsWithShader(Texture* preTexture, const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, SHADERS source, SHADERS target)
+{
+	this->fbo.bind();
+	SHADERS newTarget = (target == SHADERS::NO_SHADER) ? source : target;
+	EntityShader* shader = this->entityShaders[newTarget];
+	shader->bind();
+	if (preTexture != nullptr)
+		shader->setTexture2D("screenTex", 3, preTexture->getID());
+	for (auto pair : renderingTargets) {
+		if (pair.first.visible) {
+			if (pair.second == source) {
+				drawInstanced(pair.first.model, newTarget);
+			}
+		}
+	}
+	shader->unbind();
+	this->fbo.unbind();
+}
+
 void Pipeline::drawModelToScreen(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
 {
 	glEnable(GL_DEPTH_TEST);
@@ -269,7 +292,7 @@ void Pipeline::drawModelToScreen(const std::vector<std::pair<RenderingTarget, SH
 }
 
 
-Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets)
+Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, SHADERS skip)
 {
 
 	this->fbo.bind();
@@ -277,8 +300,7 @@ Texture * Pipeline::drawModelToTexture(const std::vector<std::pair<RenderingTarg
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	for (auto pair : renderingTargets) {
-
-		if (pair.first.visible) {
+		if (pair.first.visible && pair.second != skip) {
 			EntityShader* shader = this->entityShaders[pair.second];
 			shader->bind();
 
@@ -418,6 +440,7 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
+	this->entityShaders[DRONE_GHOST]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
@@ -477,10 +500,6 @@ void Pipeline::drawTrail()
 
 	this->trailShader->unbind();
 	this->fbo.unbind();
-}
-
-void Pipeline::glowPass()
-{
 }
 
 void Pipeline::updateShaders(const float & dt)
