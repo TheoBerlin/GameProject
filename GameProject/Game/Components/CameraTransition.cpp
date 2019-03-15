@@ -56,6 +56,8 @@ void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec
 
 void CameraTransition::setBackwardsPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
+	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+
     this->interpForward = false;
 
     this->endForward = newForward;
@@ -156,6 +158,15 @@ bool CameraTransition::commonSetup(const std::vector<KeyPoint>& path, float newF
     }
 
     return true;
+}
+
+void CameraTransition::handleKey(KeyEvent * ev)
+{
+	if (ev->action == GLFW_PRESS && ev->key == GLFW_KEY_SPACE) {
+		// Publish camera transition event
+		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
+		EventBus::get().publish(&CameraTransitionEvent(host));
+	}
 }
 
 void CameraTransition::catmullRomMove()

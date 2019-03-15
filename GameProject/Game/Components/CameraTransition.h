@@ -6,6 +6,8 @@
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
 
+#include "Engine/Events/Events.h"
+
 class Camera;
 
 class CameraTransition : public Component
@@ -24,6 +26,7 @@ public:
 private:
     bool commonSetup(const std::vector<KeyPoint>& path, float newFOV);
 
+	void handleKey(KeyEvent* ev);
     void catmullRomMove();
 
     // Quaternions for the default forward and final forward directions
