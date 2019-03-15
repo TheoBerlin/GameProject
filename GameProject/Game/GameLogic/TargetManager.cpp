@@ -23,6 +23,7 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 {
 	// Set position and forward
 	Transform* transform = host->getTransform();
+	transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	transform->setPosition(position);
 

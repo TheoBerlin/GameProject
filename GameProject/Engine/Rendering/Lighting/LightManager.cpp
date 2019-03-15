@@ -9,8 +9,8 @@
 LightManager::LightManager()
 {
 	this->shadowResolutionFactor = Settings::get().getShadowResolutionFactor();
-	this->orthoWidth = 0.f;
-	this->orthoHeight = 0.f;
+	this->orthoWidth = 1.f;
+	this->orthoHeight = 1.f;
 	this->shadowWidth = Settings::get().getScreenWidth()*this->shadowResolutionFactor;
 
 #ifdef ENABLE_SHADOW_BOX

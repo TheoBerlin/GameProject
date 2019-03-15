@@ -23,6 +23,9 @@ public:
 	void editPoint(Level& level, int wallGroupIndex, int point, glm::vec3 newPoint);
 	void addWall(Level& level);
 
+	void setTexture(std::string fileName);
+	std::string getTexture() const;
+
 	void removePoint(Level& level, int pointIndex);
 
 	// Update buffers
@@ -55,6 +58,7 @@ private:
 	// Check if the points are expressed in clockwise or anticlockwise order
 	bool isClockwise(std::vector<glm::vec3>& points);
 
+	std::string textureFile;
 	std::vector<Entity*> wallEntites;
 	std::vector<glm::vec2> scales;
 	Model* quad;

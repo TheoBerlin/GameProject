@@ -56,8 +56,8 @@ void LevelParser::readEntityTargets(Level& level)
 		}
 		else {
 			// The target is static
-			entity->getTransform()->setRotation(rotation);
 			level.targetManager->addStaticTarget(entity, position);
+			entity->getTransform()->setRotation(rotation);
 		}
 
 		entity->setModel(model);
@@ -152,13 +152,15 @@ void LevelParser::readEntityWalls(Level& level)
 	json::json& file = jsonFile["Walls"];
 	std::vector<std::vector<glm::vec3>> points;
 	glm::vec2 point(0.0f);
+	if (!file["WallInfo"]["Texture"].empty())
+		level.levelStructure->setTexture(file["WallInfo"]["Texture"]);
 	if (!file.empty()) {
-		for (unsigned group = 0; group < file.size(); group++)
+		for (unsigned group = 0; group < file["WallPoints"].size(); group++)
 		{
 			points.push_back(std::vector<glm::vec3>());
-			for (unsigned i = 0; i < file[group].size(); i++)
+			for (unsigned i = 0; i < file["WallPoints"][group].size(); i++)
 			{
-				readVec2(file[group][i], point);
+				readVec2(file["WallPoints"][group][i], point);
 				points[group].push_back({ point.x, 0.0f, point.y });
 			}
 		}
@@ -226,7 +228,7 @@ void LevelParser::writeEntityBoxes(Level & level)
 			Transform* transform = entity->getTransform();
 
 			jsonFile["Props"][nrOfBoxes]["Name"] = entity->getName();
-			jsonFile["Props"][nrOfBoxes]["Model"] = entity->getModel()->getName();
+			jsonFile["Props"][nrOfBoxes]["Model"] = entity->getModel()->getName().c_str();
 
 			glm::vec3 position = transform->getPosition();
 			jsonFile["Props"][nrOfBoxes]["Position"] = { position.x, position.y, position.z };
@@ -317,10 +319,11 @@ void LevelParser::writeWalls(Level & level)
 	for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
 		for (int j = 0; j < level.levelStructure->getWallGroupsIndex()[i]; j++) {
 			glm::vec2 wallPoint = glm::vec2(level.levelStructure->getWallPoints()[wallPointsOffset + j].x, level.levelStructure->getWallPoints()[wallPointsOffset + j].z);
-			jsonFile["Walls"][i][j] = { wallPoint.x, wallPoint.y };
+			jsonFile["Walls"]["WallPoints"][i][j] = { wallPoint.x, wallPoint.y };
 		}
 		wallPointsOffset += level.levelStructure->getWallGroupsIndex()[i];
 	}
+	jsonFile["Walls"]["WallInfo"]["Texture"] = level.levelStructure->getTexture();
 }
 
 void LevelParser::writeLight(Level & level)
@@ -491,7 +494,7 @@ void LevelParser::createCollisionBodies(Level& level)
 	bodiesNeeded += jsonFile["Target"].size();
 	bodiesNeeded += jsonFile["Props"].size();
 	// Walls
-	json::json& walls = jsonFile["Walls"];
+	json::json& walls = jsonFile["Walls"]["WallPoints"];
 	for (unsigned group = 0; group < walls.size(); group++)
 		bodiesNeeded += walls[group].size();
 

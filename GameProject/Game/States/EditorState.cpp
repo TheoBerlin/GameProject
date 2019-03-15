@@ -47,6 +47,8 @@ EditorState::EditorState()
 	level.gui = &this->getGUI();
 	level.isEditor = true;
 
+	//lightManager.createDirectionalLight();
+
 	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
@@ -387,6 +389,10 @@ void EditorState::wallWindow(EntityManager & entityManager)
 	ImGui::Begin("Wall Window");
 	if (ImGui::Button("Add Wall")) {
 		level.levelStructure->addWall(level);
+	}
+	std::string wallTex = level.levelStructure->getTexture();
+	if (ImGui::InputText("Wall Texture", (char*)wallTex.c_str(), wallTex.capacity())) {
+		level.levelStructure->setTexture(wallTex.c_str());
 	}
 	if (ImGui::BeginCombo("Wall Group", currentWall.c_str())) {
 		for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {

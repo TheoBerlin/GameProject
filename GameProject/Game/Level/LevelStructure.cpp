@@ -20,6 +20,7 @@ LevelStructure::LevelStructure()
 {
 	this->height = 5.f;
 	spawnedPoints = 0;
+	textureFile = "wallTex";
 }
 
 
@@ -124,6 +125,15 @@ void LevelStructure::addWall(Level & level) {
 
 	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, 3);
 }
+
+void LevelStructure::setTexture(std::string fileName) {
+	textureFile = fileName;
+}
+
+std::string LevelStructure::getTexture() const {
+	return textureFile;
+}
+
 
 void LevelStructure::removePoint(Level & level, int wallGroupIndex)
 {
@@ -385,7 +395,7 @@ Model * LevelStructure::createQuad()
 
 	Material mat;
 	float f = 0.5f;
-	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
+	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/" + textureFile + ".png");
 	mat.textures.push_back(tex);
 	mat.Kd = glm::vec4(0.7f, 0.7f, 0.6f, 1.0f);
 	mat.Ks_factor = glm::vec4(1.0f, 1.0f, 1.0f, 10.0f);
