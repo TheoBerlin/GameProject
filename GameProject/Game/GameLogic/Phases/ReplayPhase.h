@@ -35,6 +35,7 @@ private:
 
     void handleTimeBarClick();
     void handlePlayPause();
+	void handleSlowMotion();
 
 	void switchCamera();
 
@@ -61,8 +62,12 @@ private:
 
     // [0,1], determines the update rate of the replay
     float replaySpeedFactor;
+	float desiredSpeedFactor;
 
+	// Used to determine desired replay speed
     bool isPausing;
+	bool isSlowMotion;
+
     // When pausing, slow down time gradually rather than instantly stopping time
     const float timeToPause = 0.8f;
 
@@ -76,6 +81,7 @@ private:
 	Panel* backPanel;
 
     Button* playPauseButton;
+	Button* slowMotionButton;
 
     // Relative to screen height
     const float playPauseSizeFactor = 1.0f / 16.0f;
