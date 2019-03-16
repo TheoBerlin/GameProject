@@ -105,6 +105,10 @@ Model * ModelLoader::loadModel(std::string fileName, CollisionHandler * ch)
 	// Save the model's pointer to avoid duplicate model data
 	loadedModels[fileName] = loadedModel;
 
+	// set model name for editor..
+	std::string modelName = fileName.erase(fileName.size() - 4, 4).substr(14);
+	loadedModel->setName(modelName);
+
 	return loadedModel;
 }
 
