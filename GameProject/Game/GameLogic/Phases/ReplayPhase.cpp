@@ -128,7 +128,7 @@ void ReplayPhase::update(const float& dt)
         replaySpeedFactor = glm::min(replaySpeedFactor + dt * (1.0f / timeToPause), 1.0f);
     }
 
-	SoundManager::get().setEffectPitch(replaySpeedFactor);
+	SoundManager::get().setEffectsMasterPitch(replaySpeedFactor);
 
     // Make sure the player camera is always updated with dt, regardless of replay speed factor
     float cameraUpdateTime = dt + dt * (1.0f - replaySpeedFactor);

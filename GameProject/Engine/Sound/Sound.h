@@ -17,7 +17,10 @@ private:
 	std::string fileName;
 
 	SoundType type;
+
 	float volume;
+	// pitch = localPitch * masterPitch
+	float localPitch;
 
 	unsigned int freq;
 	unsigned short int channels;
@@ -42,8 +45,9 @@ public:
 	void setSoundType(SoundType type);
 	SoundType getSoundType() const;
 
-	//Pitch multiplier should always positive value
+	//Pitch multiplier should always be a positive value
 	void setPitch(const float pitch);
+	// Returns local pitch multiplier
 	float getPitch() const;
 
 	//Volume is between 0.0 and 1.0

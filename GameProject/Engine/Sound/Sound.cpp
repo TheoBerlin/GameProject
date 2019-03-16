@@ -13,7 +13,10 @@ Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, 
 
 	this->volume = volume;
 	AL_CALL(alSourcef(source, AL_GAIN, volume));
+
+	this->localPitch = pitch;
 	AL_CALL(alSourcef(source, AL_PITCH, pitch));
+
 	AL_CALL(alSource3f(source, AL_POSITION, position.x, position.y, position.z));
 	AL_CALL(alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z));
 	AL_CALL(alSourcei(source, AL_LOOPING, loop));
@@ -165,14 +168,15 @@ SoundType Sound::getSoundType() const
 
 void Sound::setPitch(const float pitch)
 {
-	AL_CALL(alSourcef(source, AL_PITCH, pitch));
+	float masterPitch = SoundManager::get().getEffectsMasterPitch();
+	this->localPitch = pitch;
+
+	AL_CALL(alSourcef(source, AL_PITCH, this->localPitch * masterPitch));
 }
 
 float Sound::getPitch() const
 {
-	float ret;
-	AL_CALL(alGetSourcef(source, AL_PITCH, &ret));
-	return ret;
+	return this->localPitch;
 }
 
 void Sound::setVolume(const float volume)
@@ -182,7 +186,7 @@ void Sound::setVolume(const float volume)
 		updateSound(SoundManager::get().getAmbientVolume() * SoundManager::get().getMasterVolume());
 	}
 	else if (type == SOUND_EFFECT) {
-		updateSound(SoundManager::get().getEffectVolume() * SoundManager::get().getMasterVolume());
+		updateSound(SoundManager::get().getEffectsVolume() * SoundManager::get().getMasterVolume());
 	}
 	else if (type == SOUND_MISC) {
 		updateSound(SoundManager::get().getMiscVolume() * SoundManager::get().getMasterVolume());

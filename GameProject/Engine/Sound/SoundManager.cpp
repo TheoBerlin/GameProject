@@ -93,7 +93,7 @@ float SoundManager::getMusicVolume() const
 	return musicVolume;
 }
 
-void SoundManager::setEffectVolume(float volume)
+void SoundManager::setEffectsVolume(float volume)
 {
 	effectVolume = glm::clamp(volume, 0.0f, 1.0f);
 
@@ -103,19 +103,28 @@ void SoundManager::setEffectVolume(float volume)
 	}
 }
 
-float SoundManager::getEffectVolume() const
+float SoundManager::getEffectsVolume() const
 {
 	return effectVolume;
 }
 
-void SoundManager::setEffectPitch(float pitch)
+void SoundManager::setEffectsMasterPitch(float pitch)
 {
-	pitch = glm::max(pitch, 0.0f);
+	effectsMasterPitch = glm::max(pitch, 0.0f);
 
 	for (unsigned int i = 0; i < sounds.size(); i++) {
-		if (sounds[i]->getSoundType() == SOUND_EFFECT)
-			sounds[i]->setPitch(pitch);
+		if (sounds[i]->getSoundType() == SOUND_EFFECT) {
+			float localPitch = sounds[i]->getPitch();
+
+			// Sound::setPitch has the sound update itself with the master pitch
+			sounds[i]->setPitch(localPitch);
+		}
 	}
+}
+
+float SoundManager::getEffectsMasterPitch() const
+{
+	return this->effectsMasterPitch;
 }
 
 void SoundManager::offsetEffects(float seconds)
