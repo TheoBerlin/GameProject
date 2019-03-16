@@ -55,6 +55,12 @@ EditorState::EditorState()
 	InputHandler ih(Display::get().getWindowPtr());
 
 	ImGui::GetIO().KeyMap[ImGuiKey_Backspace] = ImGuiKey_Backspace;
+
+	freeMove->disableMouse();
+
+	levelParser.readLevel(std::string("./Game/Level/Levels/") + "level 2" + ".json", level);
+	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	Display::get().getRenderer().initInstancing();
 }
 
 EditorState::~EditorState()
@@ -305,10 +311,10 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
 					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
 					for (unsigned int j = 0; j < level.targetManager->getMovingTargets()[i].pathTreader->getPath().size(); j++) {
-						if (ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 2))
+						if (ImGui::DragFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 						ImGui::SameLine();
-						if(ImGui::InputFloat(std::string("Path Time " + std::to_string(j)).c_str(), &path[j].t))
+						if(ImGui::DragFloat(std::string("Path Time " + std::to_string(j)).c_str(), &path[j].t, 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 					}
 				}
@@ -406,26 +412,32 @@ void EditorState::wallWindow(EntityManager & entityManager)
 		ImGui::EndCombo();
 	}
 	if (std::stoi(currentWall) != -1) {
+		unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
+		static int InputIndex = 0;
+		int wallCount = level.levelStructure->getWallGroupsIndex()[wallGroupIndex];
+
+		ImGui::InputInt("Input index:", &InputIndex, 1);
+
+		InputIndex = (unsigned)InputIndex % wallCount;
+
 		if (ImGui::Button("Add Point")) {
-			level.levelStructure->addPoint(level, std::stoi(currentWall), glm::vec3(1.0f, 0.0f, 3.0f));
+			level.levelStructure->addPoint(level, std::stoi(currentWall), (unsigned)InputIndex);
 		}
 		if (ImGui::Button("Remove Point")) {
 			int prevSize = level.levelStructure->getWallGroupsIndex().size();
-			level.levelStructure->removePoint(level, std::stoi(currentWall));
+			level.levelStructure->removePoint(level, wallGroupIndex, InputIndex);
 			if (level.levelStructure->getWallGroupsIndex().size() != prevSize)
 				currentWall = "-1";
 		}
 		else {
-
-			unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
 			unsigned offset = 0;
-			std::vector<int> getWallGroupsIndex = level.levelStructure->getWallGroupsIndex();
-			for (unsigned int i = 0; i < wallGroupIndex; i++)
-				offset += getWallGroupsIndex[i];
 
-			for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
+			std::vector<int>& wallGroupsIndex = level.levelStructure->getWallGroupsIndex();
+			for (unsigned int i = 0; i < wallGroupIndex; i++)
+				offset += wallGroupsIndex[i];
+			for (unsigned int i = 0; i < wallCount; i++) {
 				glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
-				if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
+				if (ImGui::DragFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 0.1f)) {
 					level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));
 				}
 			}
@@ -463,11 +475,11 @@ void EditorState::lightWindow()
 			glm::vec4 colour = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getIntensity();
 			int distance = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getDistance();
 			bool change = false;
-			if (ImGui::InputFloat3("Position", &position[0], 2))
+			if (ImGui::DragFloat3("Position", &position[0], 0.1f))
 				change = true;
-			if (ImGui::InputFloat4("Color + Intensity", &colour[0], 2))
+			if (ImGui::DragFloat4("Color + Intensity", &colour[0], 0.1f))
 				change = true;
-			if (ImGui::InputInt("Distance", &distance, 0))
+			if (ImGui::DragInt("Distance", &distance, 1))
 				change = true;
 			if(change)
 				Display::get().getRenderer().getPipeline()->updateLight(std::stoi(currentLight), glm::vec4(position, 1.0f), colour, distance);

@@ -6,6 +6,8 @@
 
 class Model;
 class Entity;
+class Transform;
+class CollisionHandler;
 struct Level;
 
 class LevelStructure
@@ -19,14 +21,18 @@ public:
 	// Create wall group
 	void createWallGroup(Level& level, std::vector<glm::vec3>& points, bool invertNormals = false);
 
-	void addPoint(Level& level, int wallGroupIndex, glm::vec3 point);
+	void addPoint(Level& level, int wallGroupIndex, unsigned pointIndex);
 	void editPoint(Level& level, int wallGroupIndex, int point, glm::vec3 newPoint);
 	void addWall(Level& level);
+
+	glm::vec2 calcWallTransform(const glm::vec3& p1, const glm::vec3& p2, Transform* trans);
+
+	void addWallCollision(Entity * entity, CollisionHandler* ch);
 
 	void setTexture(std::string fileName);
 	std::string getTexture() const;
 
-	void removePoint(Level& level, int pointIndex);
+	void removePoint(Level& level, int wallGroupIndex, unsigned pointIndex);
 
 	// Update buffers
 	void updateBuffers();
