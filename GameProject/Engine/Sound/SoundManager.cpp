@@ -110,7 +110,7 @@ float SoundManager::getEffectVolume() const
 
 void SoundManager::setEffectPitch(float pitch)
 {
-	pitch = glm::min(pitch, 0.0f);
+	pitch = glm::max(pitch, 0.0f);
 
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_EFFECT)
