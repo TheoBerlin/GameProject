@@ -149,30 +149,41 @@ void LevelParser::readEntityWalls(Level& level)
 	// Load points from level file
 	if (jsonFile.find("Walls") == jsonFile.end())
 		return;
-	json::json& file = jsonFile["Walls"];
-	std::vector<std::vector<glm::vec3>> points;
-	glm::vec2 point(0.0f);
-	if (!file["WallInfo"]["Texture"].empty())
-		level.levelStructure->setTexture(file["WallInfo"]["Texture"]);
-	
-	if(!file["WallInfo"]["Height"].empty())
-		level.levelStructure->setWallHeight(file["WallInfo"]["Height"]);
+	try {
+		json::json& file = jsonFile["Walls"];
+		std::vector<std::vector<glm::vec3>> points;
+		glm::vec2 point(0.0f);
 
-	if (!file.empty()) {
-		for (unsigned group = 0; group < file["WallPoints"].size(); group++)
-		{
-			points.push_back(std::vector<glm::vec3>());
-			for (unsigned i = 0; i < file["WallPoints"][group].size(); i++)
-			{
-				readVec2(file["WallPoints"][group][i], point);
-				points[group].push_back({ point.x, 0.0f, point.y });
-			}
+		try {
+			if (!file["WallInfo"]["Texture"].empty())
+				level.levelStructure->setTexture(file["WallInfo"]["Texture"]);
+
+			if (!file["WallInfo"]["Height"].empty())
+				level.levelStructure->setWallHeight(file["WallInfo"]["Height"]);
 		}
-		level.levelStructure->createWalls(level, points);
+		catch (const std::exception& e) {
+			LOG_ERROR("No Walls info found: %s", e.what());
+		}
+
+		if (!file.empty()) {
+			for (unsigned group = 0; group < file["WallPoints"].size(); group++)
+			{
+				points.push_back(std::vector<glm::vec3>());
+				for (unsigned i = 0; i < file["WallPoints"][group].size(); i++)
+				{
+					readVec2(file["WallPoints"][group][i], point);
+					points[group].push_back({ point.x, 0.0f, point.y });
+				}
+			}
+			level.levelStructure->createWalls(level, points);
+		}
+		else {
+			LOG_WARNING("No walls found, walls will not be created.");
+			return;
+		}
 	}
-	else {
-		LOG_WARNING("No walls found, walls will not be created.");
-		return;
+	catch (const std::exception& e) {
+		LOG_ERROR("Walls is outdated can't read walls: %s", e.what());
 	}
 }
 
@@ -490,21 +501,29 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 
 void LevelParser::createCollisionBodies(Level& level)
 {
-	int bodiesNeeded = 0;
-	// Player
-	bodiesNeeded += 1;
-	// Floor (expected only one in this version)
-	bodiesNeeded += 1;
-	// Targets
-	bodiesNeeded += jsonFile["Target"].size();
-	bodiesNeeded += jsonFile["Props"].size();
-	// Walls
-	json::json& walls = jsonFile["Walls"]["WallPoints"];
-	for (unsigned group = 0; group < walls.size(); group++)
-		bodiesNeeded += walls[group].size();
+	try {
+		json::json& walls = jsonFile["Walls"]["WallPoints"];
 
-	// Create bodies in collision handler
-	level.collisionHandler->createCollisionBodies(bodiesNeeded);
+		int bodiesNeeded = 0;
+		// Player
+		bodiesNeeded += 1;
+		// Floor (expected only one in this version)
+		bodiesNeeded += 1;
+		// Targets
+		bodiesNeeded += jsonFile["Target"].size();
+		bodiesNeeded += jsonFile["Props"].size();
+
+		// Walls
+		for (unsigned group = 0; group < walls.size(); group++)
+			bodiesNeeded += walls[group].size();
+
+		// Create bodies in collision handler
+		level.collisionHandler->createCollisionBodies(bodiesNeeded);
+	}
+	catch (const std::exception& e) {
+		LOG_ERROR("No walls found: %s", e.what());
+		return;
+	}
 }
 
 void LevelParser::readLevel(std::string file, Level& level)

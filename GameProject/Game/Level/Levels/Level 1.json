@@ -267,6 +267,7 @@
     ],
     "Walls": {
         "WallInfo": {
+            "Height": null,
             "Texture": "wallTex"
         },
         "WallPoints": [
