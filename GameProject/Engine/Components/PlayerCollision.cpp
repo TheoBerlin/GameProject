@@ -22,5 +22,4 @@ void PlayerCollision::update(const float & dt)
 
 void PlayerCollision::collide(PlayerCollisionEvent * evnt)
 {
-	LOG_INFO("Collision: %d %d", evnt->shape1->getCollisionCategoryBits(), evnt->shape2->getCollisionCategoryBits());
 }
