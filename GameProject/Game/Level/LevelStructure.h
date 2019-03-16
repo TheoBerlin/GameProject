@@ -42,6 +42,7 @@ public:
 	// Get all wall groups index
 	std::vector<int>& getWallGroupsIndex();
 
+	void setWallHeight(float height);
 	float getWallHeight() const;
 
 	// Get a AABB around the outer walls which is oriented to the axis: e1, e2, e3

@@ -19,14 +19,14 @@ private:
 	json::json jsonFile;
 
 	void readEntityTargets(Level& level);
-	void readEntityBoxes(Level& level);
+	void readEntityProps(Level& level);
 	void readEntityWalls(Level& level);
 	void readEntityFloor(Level& level);
 	void readPlayer(Level& level);
 	void readMetadata(Level& level);
 	void readLights(Level& level);
 
-	void writeEntityBoxes(Level& level);
+	void writeEntityProps(Level& level);
 	void writeEntityTargets(Level& level);
 	void writePlayer(Level& level);
 	void writeWalls(Level& level);

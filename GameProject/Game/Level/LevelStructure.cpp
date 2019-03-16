@@ -364,6 +364,11 @@ std::vector<int>& LevelStructure::getWallGroupsIndex()
 	return this->wallGroupsIndex;
 }
 
+void LevelStructure::setWallHeight(float height)
+{
+	this->height = height;
+}
+
 float LevelStructure::getWallHeight() const
 {
 	return this->height;
@@ -544,6 +549,9 @@ void LevelStructure::updateBuffers()
 {
 	std::vector<glm::mat4> mats;
 	for (unsigned i = 0; i < this->wallEntites.size(); i++) {
+		glm::vec3 scale = this->wallEntites[i]->getTransform()->getScale();
+		this->wallEntites[i]->getTransform()->setScale({ scale.x, this->height, scale.z });
+
 		mats.push_back(this->wallEntites[i]->getTransform()->getMatrix());
 	}
 

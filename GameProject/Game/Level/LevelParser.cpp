@@ -82,7 +82,7 @@ void LevelParser::readEntityTargets(Level& level)
 	}
 }
 
-void LevelParser::readEntityBoxes(Level& level)
+void LevelParser::readEntityProps(Level& level)
 {
 	//Get the size of the target entities
 	int targetSize = jsonFile["Props"].size();
@@ -154,6 +154,10 @@ void LevelParser::readEntityWalls(Level& level)
 	glm::vec2 point(0.0f);
 	if (!file["WallInfo"]["Texture"].empty())
 		level.levelStructure->setTexture(file["WallInfo"]["Texture"]);
+	
+	if(!file["WallInfo"]["Height"].empty())
+		level.levelStructure->setWallHeight(file["WallInfo"]["Height"]);
+
 	if (!file.empty()) {
 		for (unsigned group = 0; group < file["WallPoints"].size(); group++)
 		{
@@ -210,9 +214,9 @@ void LevelParser::readPlayer(Level& level)
 	readCameraSetting(player["ArrowCamera"], level.player.arrowCamera);
 }
 
-void LevelParser::writeEntityBoxes(Level & level)
+void LevelParser::writeEntityProps(Level & level)
 {
-	int nrOfBoxes = 0;
+	int nrOfProps = 0;
 	for (int i = 0; i < level.entityManager->getEntitySize(); i++) {
 		bool found = false;
 		for (unsigned int j = 0; j < level.targetManager->getMovingTargets().size(); j++) {
@@ -227,19 +231,19 @@ void LevelParser::writeEntityBoxes(Level & level)
 			Entity* entity = level.entityManager->getEntity(i);
 			Transform* transform = entity->getTransform();
 
-			jsonFile["Props"][nrOfBoxes]["Name"] = entity->getName();
-			jsonFile["Props"][nrOfBoxes]["Model"] = entity->getModel()->getName().c_str();
+			jsonFile["Props"][nrOfProps]["Name"] = entity->getName();
+			jsonFile["Props"][nrOfProps]["Model"] = entity->getModel()->getName().c_str();
 
 			glm::vec3 position = transform->getPosition();
-			jsonFile["Props"][nrOfBoxes]["Position"] = { position.x, position.y, position.z };
+			jsonFile["Props"][nrOfProps]["Position"] = { position.x, position.y, position.z };
 
 			glm::vec3 scale = transform->getScale();
-			jsonFile["Props"][nrOfBoxes]["Scale"] = { scale.x, scale.y, scale.z };
+			jsonFile["Props"][nrOfProps]["Scale"] = { scale.x, scale.y, scale.z };
 
 			glm::vec3 orientation = transform->getYawPitchRoll();
-			jsonFile["Props"][nrOfBoxes]["Rotation"] = { orientation.x, orientation.y, orientation.z };
+			jsonFile["Props"][nrOfProps]["Rotation"] = { orientation.x, orientation.y, orientation.z };
 
-			nrOfBoxes++;
+			nrOfProps++;
 		}
 	}
 }
@@ -324,6 +328,7 @@ void LevelParser::writeWalls(Level & level)
 		wallPointsOffset += level.levelStructure->getWallGroupsIndex()[i];
 	}
 	jsonFile["Walls"]["WallInfo"]["Texture"] = level.levelStructure->getTexture();
+	jsonFile["Walls"]["WallInfo"]["Height"] = level.levelStructure->getWallHeight();
 }
 
 void LevelParser::writeLight(Level & level)
@@ -524,7 +529,7 @@ void LevelParser::readLevel(std::string file, Level& level)
 
 		// Add entites to entityManager
 		readEntityTargets(level);
-		readEntityBoxes(level);
+		readEntityProps(level);
 		readEntityWalls(level);
 		readEntityFloor(level);
 		readPlayer(level);
@@ -542,7 +547,7 @@ void LevelParser::writeLevel(std::string file, Level & level)
 	json::json j;
 	jsonFile = j;
 
-	writeEntityBoxes(level);
+	writeEntityProps(level);
 	writeEntityTargets(level);
 	writePlayer(level);
 	writeWalls(level);
