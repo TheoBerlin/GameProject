@@ -379,7 +379,7 @@ void ReplayPhase::setupGUI()
 
     playPauseButton->setCallback([this](){this->handlePlayPause();});
 
-    Texture* playPauseTx = TextureManager::loadTexture("./Game/Assets/playPause.png");
+    Texture* playPauseTx = TextureManager::loadTexture("./Game/Assets/buttons/playPause.png");
 
     playPauseButton->setBackgroundTexture(playPauseTx);
 
