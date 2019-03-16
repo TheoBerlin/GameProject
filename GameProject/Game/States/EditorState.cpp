@@ -7,6 +7,8 @@
 #include <Engine/GUI/GUI.h>
 #include <Engine/Rendering/GUIRenderer.h>
 
+#include "Engine/Entity/Transform.h"
+
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/components/Hover.h>
@@ -59,6 +61,7 @@ EditorState::EditorState()
 	freeMove->disableMouse();
 
 	levelParser.readLevel(std::string("./Game/Level/Levels/") + "level 2" + ".json", level);
+	this->levelName = "level 2";
 	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 	Display::get().getRenderer().initInstancing();
 }
@@ -232,6 +235,33 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		currentEntity = entityManager.getEntitySize() - 1;
 		currentIsTarget = false;
 	}
+	
+	if (currentEntity != -1) {
+		if (ImGui::Button("Duplicate Entity")) {
+			Entity* dupeEntity = entityManager.getEntity(currentEntity);
+			Entity* newEntity = new Entity();
+
+			Transform* newTrans = newEntity->getTransform();
+			Transform* dupeTransform = dupeEntity->getTransform();
+
+			newTrans->setPosition(dupeTransform->getPosition());
+			newTrans->setScale(dupeTransform->getScale());
+			newTrans->setRotationQuat(dupeTransform->getRotationQuat());
+
+			newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+
+			Model* dupeModel = dupeEntity->getModel();
+			newEntity->setModel(dupeModel);
+			newEntity->getModel()->setName(dupeModel->getName());
+
+			entityManager.addEntity(newEntity);
+
+			currentModel = newEntity->getModel()->getName();
+			currentEntity = entityManager.getEntitySize() - 1;
+			currentIsTarget = false;
+		}
+	}
+
 	if (ImGui::Button("Remove Entity")) {
 		if (currentIsTarget) {
 			for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
@@ -266,6 +296,10 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1))
 			curEntity->getTransform()->setRotation(rotation);
 		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
+			if (!currentIsTarget)
+				level.targetManager->addStaticTarget(curEntity, curEntity->getTransform()->getPosition());
+			else
+				level.targetManager->removeTarget(curEntity->getName());
 			currentIsTarget = !currentIsTarget;
 		}
 		if (currentIsTarget) {
@@ -393,6 +427,16 @@ void EditorState::wallWindow(EntityManager & entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Wall Window");
+	
+	static float wallHeight = level.levelStructure->getWallHeight();
+	
+
+	if (ImGui::DragFloat("Wall Height:", &wallHeight, 0.1f)) {
+		level.levelStructure->setWallHeight(wallHeight);
+		level.levelStructure->updateBuffers();
+	}
+
+
 	if (ImGui::Button("Add Wall")) {
 		level.levelStructure->addWall(level);
 	}
