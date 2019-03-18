@@ -122,8 +122,6 @@ void Renderer::drawAllInstanced()
 	*/
 	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, blurTexture);
 
-
-
 	/*
 		Go through post process effects then draw texture to screen
 	*/

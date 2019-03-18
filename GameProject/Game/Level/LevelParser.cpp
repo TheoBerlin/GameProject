@@ -53,13 +53,13 @@ void LevelParser::readEntityTargets(Level& level)
 		if (!path.empty()) {
 			// The target is mobile
 			level.targetManager->addMovingTarget(entity, path);
-			entity->setModel(modelMoving);
+			//entity->setModel(modelMoving);
 		}
 		else {
 			// The target is static
 			level.targetManager->addStaticTarget(entity, position);
-			entity->setModel(modelStatic);
 		}
+		entity->setModel(modelStatic);
 
 		std::vector<CollisionHandler::ShapeData> shapeData;
 

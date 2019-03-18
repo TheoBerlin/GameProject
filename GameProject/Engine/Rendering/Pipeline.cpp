@@ -41,7 +41,7 @@ Pipeline::Pipeline()
 	this->entityShaders.push_back(new InfinityPlaneShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new InfinityPlanePrePassShader(&this->shadowFbo, &this->camera, identityMatrix));
 	this->entityShaders.push_back(new RoofShader(&this->camera));
-	this->entityShaders.push_back(new DroneGhostShader(&this->shadowFbo, &this->camera, identityMatrix));
+	this->entityShaders.push_back(new DroneGhostShader(nullptr, &this->camera, nullptr));
 
 	this->postProcessShaders.push_back(new QuadShader());
 	this->postProcessShaders.push_back(new BlurShader());
@@ -75,7 +75,7 @@ Pipeline::Pipeline()
 		ubo = nullptr;
 
 	for (size_t i = 0; i < this->entityShaders.size(); i++) {
-		if (i != SHADERS::INFINITY_PLANE_PREPASS && i != SHADERS::ROOF_PLANE) {
+		if (i != SHADERS::INFINITY_PLANE_PREPASS && i != SHADERS::ROOF_PLANE && i != SHADERS::DRONE_GHOST) {
 			this->addUniformBuffer(0, this->entityShaders[i]->getID(), "Material");
 			this->addUniformBuffer(1, this->entityShaders[i]->getID(), "DirectionalLight");
 			this->addUniformBuffer(3, this->entityShaders[i]->getID(), "LightBuffer");
@@ -440,7 +440,6 @@ void Pipeline::addCurrentLightManager(LightManager * lm)
 	this->uniformBuffers[3]->setSubData((void*)(&lightBuffer), sizeof(lightBuffer), 0);
 	this->entityShaders[DEFAULT]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[DRONE_SHADER]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
-	this->entityShaders[DRONE_GHOST]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[WALL]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[INFINITY_PLANE]->updateLightMatrixData(lightManager->getShadowMatrixPointer());
 	this->entityShaders[INFINITY_PLANE_PREPASS]->updateLightMatrixData(lightManager->getShadowMatrixPointer());

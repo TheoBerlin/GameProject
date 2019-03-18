@@ -12,6 +12,7 @@
 #include <Engine/GUI/Panel.h>
 
 #include "Game/Components/TrailEmitter.h"
+#include "Game/Components/RollNullifier.h"
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	:Phase((Phase*)aimPhase),
@@ -26,6 +27,15 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	// Start guiding the arrow
 	arrowGuider = aimPhase->getArrowGuider();
 	arrowGuider->startGuiding();
+
+	// Set moving targets to be transparent.
+	std::vector<MovingTarget> movingTargets = level.targetManager->getMovingTargets();
+	for (MovingTarget& t : movingTargets) {
+		Entity* e = t.rollNullifier->getHost();
+		e->detachFromModel();
+		e->setModel(ModelLoader::getModel("./Game/assets/droneTargetMoving.fbx"));
+		e->attachToModel();
+	}
 
 	level.targetManager->resetTargets();
 
@@ -101,6 +111,15 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 
 void GuidingPhase::beginReplayTransition()
 {
+	// Set moving targets to be opaque.
+	std::vector<MovingTarget> movingTargets = level.targetManager->getMovingTargets();
+	for (MovingTarget& t : movingTargets) {
+		Entity* e = t.rollNullifier->getHost();
+		e->detachFromModel();
+		e->setModel(ModelLoader::getModel("./Game/assets/droneTarget.fbx"));
+		e->attachToModel();
+	}
+
 	this->hasCollided = true;
 
     EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
