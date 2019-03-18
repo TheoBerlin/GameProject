@@ -14,14 +14,17 @@
 
 void LevelParser::readEntityTargets(Level& level)
 {
-	Model *model = nullptr;
-
+	Model *modelStatic = nullptr;
+	Model *modelMoving = nullptr;
 	//Get the size of the target entities
 	unsigned int targetSize = jsonFile["Target"].size();
 
 	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
-		Display::get().getRenderer().addRenderingTarget(model, SHADERS::DRONE_SHADER);
+		modelStatic = ModelLoader::loadModel("./Game/assets/droneTarget.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(modelStatic, SHADERS::DRONE_SHADER);
+
+		modelMoving = ModelLoader::loadModel("./Game/assets/droneTargetMoving.fbx", level.collisionHandler);
+		Display::get().getRenderer().addRenderingTarget(modelMoving, SHADERS::DRONE_GHOST);
 	}
 
 	for (unsigned int i = 0; i < targetSize; i++)
@@ -59,8 +62,8 @@ void LevelParser::readEntityTargets(Level& level)
 			// The target is static
 			level.targetManager->addStaticTarget(entity, position);
 		}
+		entity->setModel(modelStatic);
 
-		entity->setModel(model);
 		std::vector<CollisionHandler::ShapeData> shapeData;
 
 		// If no spcific data then this will be used.
