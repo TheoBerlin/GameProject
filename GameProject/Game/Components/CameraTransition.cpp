@@ -22,6 +22,7 @@ CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const 
 
 CameraTransition::~CameraTransition()
 {
+	EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
 }
 
 void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
@@ -85,6 +86,9 @@ void CameraTransition::update(const float& dt)
     if (transitionTime > path.back().t) {
         // Transition is finished
         isTransitioning = false;
+
+		// Unsubscribe handle key
+		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
 
         // Publish camera transition event
         EventBus::get().publish(&CameraTransitionEvent(host));
@@ -168,7 +172,7 @@ bool CameraTransition::commonSetup(const std::vector<KeyPoint>& path, float newF
 void CameraTransition::handleKey(KeyEvent * ev)
 {
 	if (ev->action == GLFW_PRESS && ev->key == GLFW_KEY_SPACE) {
-		// Publish camera transition event
+		// Unsubscribe event
 		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
 
 		this->skipTransition();
