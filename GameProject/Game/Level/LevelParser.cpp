@@ -41,7 +41,7 @@ void LevelParser::readEntityTargets(Level& level)
 			if (!target["Rotation"].empty()) {
 				readVec3(target["Rotation"], rotation);
 			}
-			else if (!target["Path"].empty()) {
+			if (!target["Path"].empty()) {
 				readPath(target, entity, path);
 			}
 		}
