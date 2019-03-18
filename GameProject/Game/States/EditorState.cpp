@@ -356,9 +356,10 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		if (ImGui::Button("Load Model")) {
 
 			size_t index = currentModel.find('\0');
-			currentModel.erase(index, currentModel.size() - index);
+			if(index != std::string::npos)
+				currentModel.erase(index, currentModel.size() - index);
 
-			std::string path = std::string("./Game/assets/") + currentModel + std::string(".fbx");
+			std::string path = std::string("./Game/assets/") + currentModel + ".fbx";
 			if (!ModelLoader::getModel(path.c_str())) {
 				model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
 				Display::get().getRenderer().addRenderingTarget(model);
@@ -410,10 +411,24 @@ void EditorState::playerWindow(EntityManager & entityManager)
 	ImGui::InputFloat3("Overview Offset", &level.player.oversightCamera.offset[0], 2);
 	ImGui::InputFloat("Overview FOV", &level.player.oversightCamera.FOV, 1);
 
+	if (ImGui::Button("Set Overview settings to current camera settings")) {
+		CameraSetting& oc = level.player.oversightCamera;
+		Transform* cameraTransform = this->camera.getTransform();
+		oc.position = cameraTransform->getPosition();
+		oc.direction = cameraTransform->getForward();
+	}
+
 	ImGui::InputFloat3("Arrow Position", &level.player.arrowCamera.position[0], 2);
 	ImGui::InputFloat3("Arrow Direction", &level.player.arrowCamera.direction[0], 2);
 	ImGui::InputFloat3("Arrow Offset", &level.player.arrowCamera.offset[0], 2);
 	ImGui::InputFloat("Arrow FOV", &level.player.arrowCamera.FOV, 1);
+
+	if (ImGui::Button("Set Arrow settings to current camera settings")) {
+		CameraSetting& ac = level.player.arrowCamera;
+		Transform* cameraTransform = this->camera.getTransform();
+		ac.position = cameraTransform->getPosition();
+		ac.direction = cameraTransform->getForward();
+	}
 
 	float optimalTime = level.scoreManager->getOptimalTime();
 	if (ImGui::InputFloat("Optimal Time", &optimalTime, 1, 1, 2))
