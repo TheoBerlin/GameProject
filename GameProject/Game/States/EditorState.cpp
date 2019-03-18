@@ -59,11 +59,6 @@ EditorState::EditorState()
 	ImGui::GetIO().KeyMap[ImGuiKey_Backspace] = ImGuiKey_Backspace;
 
 	freeMove->disableMouse();
-
-	levelParser.readLevel(std::string("./Game/Level/Levels/") + "level 2" + ".json", level);
-	this->levelName = "level 2";
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
-	Display::get().getRenderer().initInstancing();
 }
 
 EditorState::~EditorState()
