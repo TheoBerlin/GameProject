@@ -98,7 +98,7 @@ void AimPhase::commonSetup()
 	/*
 		Add arrowguider to entity
 	*/
-	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
+	arrowGuider = new ArrowGuider(playerArrow);
 	new TrailEmitter(playerArrow);
 
 	/*
@@ -111,8 +111,8 @@ void AimPhase::commonSetup()
 	arrowCam->init();
 
     // Smoothen the forward redirects
-    float maxAngle = glm::quarter_pi<float>() / 3.5f;
-    float angleCorrectionFactor = 4.5f;
+    float maxAngle = glm::quarter_pi<float>() / 3.9f;
+    float angleCorrectionFactor = 5.5f;
 
     new CameraDrift(playerArrow, angleCorrectionFactor, maxAngle);
 
