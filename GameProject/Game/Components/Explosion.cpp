@@ -7,9 +7,14 @@
 Explosion::Explosion(Entity * host)
 	: Component(host, "Explosion")
 {
-	sound.loadSound("Game/assets/sound/Explosion.wav");
-	sound.setLoopState(false);
-	SoundManager::get().addSound(&sound, SOUND_EFFECT);
+	soundExplosion.loadSound("Game/assets/sound/Explosion.wav");
+	soundExplosion.setLoopState(false);
+	SoundManager::get().addSound(&soundExplosion, SOUND_EFFECT);
+
+	soundEye.loadSound("Game/assets/sound/eyeBreak.wav");
+	soundEye.setLoopState(false);
+	soundEye.setVolume(0.75);
+	SoundManager::get().addSound(&soundEye, SOUND_EFFECT);
 }
 
 Explosion::~Explosion()
@@ -25,7 +30,7 @@ void Explosion::update(const float & dt)
 		debri->emitter->setPosition(debri->position);
 	}
 
-	sound.setPosition(host->getTransform()->getPosition());
+	soundExplosion.setPosition(host->getTransform()->getPosition());
 
 	this->timer += dt;
 	if (this->timer > lifeTime) {
@@ -36,7 +41,7 @@ void Explosion::update(const float & dt)
 
 void Explosion::explode(float lifeTime, float timeElapsed, bool eyeHit, unsigned explosionDebris, float speed, float grav)
 {
-	sound.playSound();
+	soundExplosion.playSound();
 
 	this->lifeTime = lifeTime;
 	if (timeElapsed < this->lifeTime) {
@@ -56,6 +61,7 @@ void Explosion::explode(float lifeTime, float timeElapsed, bool eyeHit, unsigned
 		}
 
 		if (eyeHit) {
+			soundEye.playSound();
 			createEyeDebri(entityPos, this->host->getTransform()->getForward() * 2.0f, glm::vec3(0.0f), glm::vec3(0.8, 0.0, 0.0), 0.05f, 1.5f, 0.5f);
 		}
 

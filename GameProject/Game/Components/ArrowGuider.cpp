@@ -61,8 +61,7 @@ void ArrowGuider::update(const float& dt)
     float turnFactorsLength = glm::length(turnFactors);
 
     if (isGuiding) {
-		sound.playSound();
-		sound.setVolume(movementSpeed / 10);
+		sound.setVolume(movementSpeed / 15);
 
         // Update position storage
         float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * (turnFactorsLength * 3.0f) * this->movementSpeed;
@@ -117,7 +116,7 @@ void ArrowGuider::update(const float& dt)
         glm::vec3 newPos = currentPos + transform->getForward() * movementSpeed * dt;
 
         transform->setPosition(newPos);
-    }
+	}
 
 
 	if (arrowCamera) {
@@ -184,6 +183,8 @@ void ArrowGuider::startGuiding()
 
 	// Subscribe to key events
 	EventBus::get().subscribe(this, &ArrowGuider::handleKeyEvent);
+
+	sound.playSound();
 }
 
 void ArrowGuider::stopGuiding(float flightTime)
@@ -201,6 +202,8 @@ void ArrowGuider::stopGuiding(float flightTime)
     newKeyPoint.t = this->flightTime;
 
     path.back() = newKeyPoint;
+
+	sound.stopSound();
 }
 
 void ArrowGuider::saveKeyPoint(float flightTime)

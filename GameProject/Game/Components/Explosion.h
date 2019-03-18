@@ -34,6 +34,7 @@ private:
 	float timer;
 	unsigned debriAmount;
 	std::vector<Debri*> debris;
-	Sound sound;
+	Sound soundExplosion;
+	Sound soundEye;
 };
 
