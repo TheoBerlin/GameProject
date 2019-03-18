@@ -157,6 +157,7 @@
     "Target": [
         {
             "Name": "Target1",
+            "Path": null,
             "Position": [
                 0.0,
                 1.7409197092056274,
@@ -175,6 +176,7 @@
         },
         {
             "Name": "Target2",
+            "Path": null,
             "Position": [
                 2.0,
                 1.5236172676086426,
@@ -193,6 +195,7 @@
         },
         {
             "Name": "Target3",
+            "Path": null,
             "Position": [
                 -2.0,
                 1.7118120193481445,
@@ -211,6 +214,7 @@
         },
         {
             "Name": "Target4",
+            "Path": null,
             "Position": [
                 -1.0,
                 1.7613084316253662,
@@ -229,6 +233,7 @@
         },
         {
             "Name": "Target5",
+            "Path": null,
             "Position": [
                 4.0,
                 1.634576439857483,
