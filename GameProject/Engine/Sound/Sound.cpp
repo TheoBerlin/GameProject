@@ -148,7 +148,16 @@ void Sound::offsetPlayTime(float seconds)
 	float secondLength = (float)sampleLength / (float)freq;
 
 	if (secondLength < newTime) {
-		this->stopSound();
+		// The new time is larger than the total sound length
+		// Check if the sound if looping, if not, stop playing the sound
+		ALint loopState;
+		AL_CALL(alGetSourcei(source, AL_LOOPING, &loopState));
+
+		if (loopState == AL_LOOPING) {
+			alSourcef(source, AL_SEC_OFFSET, newTime);
+		} else {
+			this->stopSound();
+		}
 	}
 
 	else {
