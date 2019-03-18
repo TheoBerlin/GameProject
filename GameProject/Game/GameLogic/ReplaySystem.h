@@ -9,6 +9,7 @@ struct Level;
 
 struct CollisionReplay {
     CollisionReplay(PlayerCollisionEvent event, float time) : event(event), time(time) {};
+    CollisionReplay() : event(PlayerCollisionEvent(nullptr, nullptr, nullptr, nullptr)), time(0.0f) {};
 
     PlayerCollisionEvent event;
     float time;

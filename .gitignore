@@ -22,3 +22,6 @@ log.txt
 
 desktop.ini
 imgui.ini
+
+# Level replays
+GameProject/Game/Levels/*_Replay.json

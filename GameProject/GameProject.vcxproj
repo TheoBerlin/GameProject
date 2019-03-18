@@ -102,6 +102,7 @@
     <ClCompile Include="Game\GameLogic\ScoreManager.cpp" />
     <ClCompile Include="Game\Level\LevelParser.cpp" />
     <ClCompile Include="Game\Game.cpp" />
+    <ClCompile Include="Game\Level\ReplayParser.cpp" />
     <ClCompile Include="Game\States\EditorState.cpp" />
     <ClCompile Include="Game\States\GameState.cpp" />
     <ClCompile Include="Game\States\MenuState.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="Game\Components\ComponentResources.h" />
     <ClInclude Include="Game\Components\PathTreader.h" />
     <ClInclude Include="Game\Game.h" />
+    <ClInclude Include="Game\Level\ReplayParser.h" />
     <ClInclude Include="Game\States\EditorState.h" />
     <ClInclude Include="Game\States\GameState.h" />
     <ClInclude Include="Game\States\MenuState.h" />

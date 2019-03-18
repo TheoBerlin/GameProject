@@ -27,7 +27,7 @@ private:
 	// Callback for scroll panel button press to update info panel
 	void updateLevelInfoPanel();
 	// Update score when event is published
-	void updateScore(UpdateScoreEvent * evnt);
+	void updateScore(NewHighscoreEvent * evnt);
 	// Init main menu GUI panels
 	void initMainMenu();
 	// Init level select GUI panels

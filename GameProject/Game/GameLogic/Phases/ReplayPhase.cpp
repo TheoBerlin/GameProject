@@ -9,8 +9,9 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Components/TrailEmitter.h>
-#include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/AimPhase.h>
+#include <Game/GameLogic/Phases/GuidingPhase.h>
+#include <Game/Level/ReplayParser.h>
 #include <Utils/Settings.h>
 
 
@@ -18,6 +19,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
+	EventBus::get().subscribe(this, &ReplayPhase::handleHighscoreUpdate);
+
 	//Remove Post process effect to transition
 	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
 
@@ -25,14 +28,6 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
     // Create replay time bar
     setupGUI();
-
-    // Create results window and minimize it
-    // Lambda function which executes when retry is pressed
-    std::function<void()> retry = [this](){beginAimTransition();};
-
-	level.scoreManager->showResults(level, retry);
-
-	level.scoreManager->toggleGuiMinimize();
 
 	/*
 		Create replay arrow
@@ -57,6 +52,14 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	// Copy arrow path from arrow guider to path treader
 	pathTreader = new PathTreader(replayArrow, oldArrowGuider->getPath());
 	pathTreader->startTreading();
+
+    // Create results window and minimize it
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
+
+	level.scoreManager->showResults(level, retry);
+
+	level.scoreManager->toggleGuiMinimize();
 
 	// Add path visualizer for debugging
 	if (ENABLE_PATH_VISUALIZERS) {
@@ -112,6 +115,7 @@ ReplayPhase::~ReplayPhase()
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
+	EventBus::get().unsubscribe(this, &ReplayPhase::handleHighscoreUpdate);
 }
 
 void ReplayPhase::update(const float& dt)
@@ -143,6 +147,12 @@ Entity* ReplayPhase::getReplayArrow() const
 PathVisualizer* ReplayPhase::getPathVisualizer() const
 {
 	return pathVisualizer;
+}
+
+void ReplayPhase::handleHighscoreUpdate(NewHighscoreEvent* event)
+{
+	// Write the replay of the highscore playthrough
+	ReplayParser::writeReplay(level.levelName, level.replaySystem->getCollisionReplays(), pathTreader->getPath());
 }
 
 void ReplayPhase::handleKeyInput(KeyEvent* event)
