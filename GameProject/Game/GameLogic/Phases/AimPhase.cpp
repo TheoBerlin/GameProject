@@ -30,6 +30,9 @@ AimPhase::AimPhase(OverviewPhase* overviewPhase)
 AimPhase::AimPhase(ReplayPhase* replayPhase)
 	:Phase((Phase*)replayPhase)
 {
+	//Turn off post process effect if active
+	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
+
 	// Remove path visualizers
 	PathVisualizer* pathVisualizer = replayPhase->getPathVisualizer();
 
