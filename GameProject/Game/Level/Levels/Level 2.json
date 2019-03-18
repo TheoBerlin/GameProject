@@ -144,11 +144,13 @@
     "Target": [
         {
             "Name": "Target1",
+            "Path": null,
             "Position": [
                 0.0,
                 1.1702547073364258,
                 -5.0
             ],
+            "Rotation": null,
             "Scale": [
                 0.25,
                 0.25,
@@ -158,11 +160,13 @@
         },
         {
             "Name": "Target2",
+            "Path": null,
             "Position": [
                 2.0,
                 1.1704211235046387,
                 -10.0
             ],
+            "Rotation": null,
             "Scale": [
                 0.25,
                 0.25,
@@ -172,11 +176,13 @@
         },
         {
             "Name": "Target3",
+            "Path": null,
             "Position": [
                 -2.0,
                 1.1698567867279053,
                 -13.0
             ],
+            "Rotation": null,
             "Scale": [
                 0.25,
                 0.25,
@@ -186,11 +192,13 @@
         },
         {
             "Name": "Target4",
+            "Path": null,
             "Position": [
                 -1.0,
                 1.1702666282653809,
                 -12.0
             ],
+            "Rotation": null,
             "Scale": [
                 0.25,
                 0.25,
@@ -200,11 +208,13 @@
         },
         {
             "Name": "Target5",
+            "Path": null,
             "Position": [
                 -3.0,
                 1.1700080633163452,
                 -10.0
             ],
+            "Rotation": null,
             "Scale": [
                 0.25,
                 0.25,
