@@ -23,6 +23,7 @@
     <ClCompile Include="Engine\Rendering\Lighting\LightManager.cpp" />
     <ClCompile Include="Engine\Rendering\Lighting\PointLight.cpp" />
     <ClCompile Include="Engine\Rendering\LineRenderer.cpp" />
+    <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneGhostShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.cpp" />
     <ClCompile Include="Engine\Rendering\Shaders\ShaderShells\DroneShader.cpp" />
@@ -128,6 +129,7 @@
     <ClInclude Include="Engine\Rendering\Lighting\PointLight.h" />
     <ClInclude Include="Engine\Components\MovingTargetCollision.h" />
     <ClInclude Include="Engine\Rendering\LineRenderer.h" />
+    <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\DroneGhostShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\InfinityPlaneShader.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\PostProcess\BlurShader.h" />
     <ClInclude Include="Engine\Collision\VarientMap.h" />
@@ -192,6 +194,7 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
+    <ClInclude Include="Game\Components\ArrowConfig.h" />
     <ClInclude Include="Game\Components\CameraDrift.h" />
     <ClInclude Include="Game\Components\DeathAnimation.h" />
     <ClInclude Include="Game\Components\Explosion.h" />

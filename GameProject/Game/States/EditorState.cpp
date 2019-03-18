@@ -253,7 +253,15 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			newTrans->setScale(dupeTransform->getScale());
 			newTrans->setRotationQuat(dupeTransform->getRotationQuat());
 
-			newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+			if (currentIsTarget) {
+				newEntity->setName("Target " + std::to_string(level.targetManager->getTargetCount()));
+				level.targetManager->addStaticTarget(newEntity, newEntity->getTransform()->getPosition());
+			}
+			else {
+				newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+				currentIsTarget = false;
+			}
+				
 
 			Model* dupeModel = dupeEntity->getModel();
 			newEntity->setModel(dupeModel);
@@ -263,7 +271,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 
 			currentModel = newEntity->getModel()->getName();
 			currentEntity = entityManager.getEntitySize() - 1;
-			currentIsTarget = false;
+			
 		}
 	}
 
@@ -294,11 +302,11 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		ImGui::Text("Entity Info");
 		if (ImGui::InputText("Name", &name[0], 64))
 			curEntity->setName(name.c_str());
-		if(ImGui::DragFloat3("Position", &position[0], 0.1))
+		if(ImGui::DragFloat3("Position", &position[0], 0.1f))
 			curEntity->getTransform()->setPosition(position);
-		if (ImGui::DragFloat3("Scale", &scale[0], 0.1))
+		if (ImGui::DragFloat3("Scale", &scale[0], 0.1f))
 			curEntity->getTransform()->setScale(scale);
-		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1))
+		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
 			curEntity->getTransform()->setRotation(rotation);
 		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
 			if (!currentIsTarget)
@@ -313,16 +321,20 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				bool found = false;
 				for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 					if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+						std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
+						Transform * currEntityTransform = entityManager.getEntity(currentEntity)->getTransform();
+						float timeStamp = glm::length(currEntityTransform->getPosition() - path.back().Position) / 3.0f + path.back().t;
+						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(currEntityTransform->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), timeStamp));
 						found = true;
 					}
 				}
 				if (!found) {
 					for (unsigned int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
 						if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+							Transform * currEntityTransform = entityManager.getEntity(currentEntity)->getTransform();
 							std::vector<KeyPoint> path;
-							path.push_back(KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
-							path.push_back(KeyPoint(glm::vec3(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+							path.push_back(KeyPoint(currEntityTransform->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
+							path.push_back(KeyPoint(currEntityTransform->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
 							level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 							level.targetManager->addMovingTarget(entityManager.getEntity(currentEntity), path);
 						}
@@ -348,13 +360,16 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			}
 			for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+
 					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
 					for (unsigned int j = 0; j < level.targetManager->getMovingTargets()[i].pathTreader->getPath().size(); j++) {
 						if (ImGui::DragFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 						ImGui::SameLine();
-						if(ImGui::DragFloat(std::string("Path Time " + std::to_string(j)).c_str(), &path[j].t, 0.1f))
+						ImGui::PushItemWidth(50);
+						if(ImGui::DragFloat(std::string(std::string("Time stamp") + std::to_string(j)).c_str(), &path[j].t, 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
+						ImGui::PopItemWidth();
 					}
 				}
 			}
@@ -431,8 +446,6 @@ void EditorState::playerWindow(EntityManager & entityManager)
 
 	ImGui::InputFloat3("Arrow Position", &level.player.arrowCamera.position[0], 2);
 	ImGui::InputFloat3("Arrow Direction", &level.player.arrowCamera.direction[0], 2);
-	ImGui::InputFloat3("Arrow Offset", &level.player.arrowCamera.offset[0], 2);
-	ImGui::InputFloat("Arrow FOV", &level.player.arrowCamera.FOV, 1);
 
 	if (ImGui::Button("Set Arrow settings to current camera settings")) {
 		CameraSetting& ac = level.player.arrowCamera;

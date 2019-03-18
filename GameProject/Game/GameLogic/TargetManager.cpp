@@ -81,8 +81,9 @@ void TargetManager::removeTarget(std::string name)
 	bool found = false;
 	for (int i = 0; i < movingTargets.size() && !found; i++) {
 		if (movingTargets[i].pathTreader->getHost()->getName() == name) {
+			movingTargets[i].pathTreader->getHost()->removeComponent("MovingTargetCollision");
 			movingTargets[i].pathTreader->getHost()->removeComponent("RollNullifier");
-			movingTargets[i].pathTreader->getHost()->removeComponent("PathThreader");
+			movingTargets[i].pathTreader->getHost()->removeComponent("PathTreader");
 			movingTargets.erase(movingTargets.begin() + i);
 			found = true;
 		}
