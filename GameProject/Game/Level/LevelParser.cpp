@@ -91,7 +91,6 @@ void LevelParser::readEntityTargets(Level& level)
 
 void LevelParser::readEntityProps(Level& level)
 {
-	Model *model = nullptr;
 	//Get the size of the target entities
 	int targetSize = jsonFile["Props"].size();
 
