@@ -23,7 +23,6 @@ private:
 	void readEntityWalls(Level& level);
 	void readEntityFloor(Level& level);
 	void readPlayer(Level& level);
-	void readMetadata(Level& level);
 	void readLights(Level& level);
 
 	void writeEntityBoxes(Level& level);
@@ -49,6 +48,8 @@ public:
 	void readLevelInfo(std::string file, std::vector<std::string>& info);
 	void writeLevel(std::string file, Level& level);
 	void writeScore(std::string file, Level& level);
+
+	void readMetadata(Level& level);
 };
 
 template<class T>

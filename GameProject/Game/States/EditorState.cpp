@@ -47,7 +47,7 @@ EditorState::EditorState()
 	level.gui = &this->getGUI();
 	level.isEditor = true;
 
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	Display::get().getRenderer().getPipeline()->setLightManager(level.lightManager);
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
 	InputHandler ih(Display::get().getWindowPtr());
@@ -343,7 +343,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 		freeMove->disableMouse();
 
 		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
-		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+		Display::get().getRenderer().getPipeline()->setLightManager(level.lightManager);
 		Display::get().getRenderer().initInstancing();
 	}
 	ImGui::End();

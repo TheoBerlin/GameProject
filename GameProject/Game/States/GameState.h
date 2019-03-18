@@ -15,7 +15,7 @@
 class GameState : public State
 {
 public:
-	GameState(const std::string& levelJSON);
+	GameState(const Level& level);
 	virtual ~GameState();
 
 	void start() override;
@@ -23,6 +23,7 @@ public:
 	void update(const float dt) override;
 	void updateLogic(const float dt) override;
 	void render() override;
+
 private:
 	void pauseGame(PauseEvent * ev);
 	void exitGame(ExitEvent* ev);
@@ -36,10 +37,10 @@ private:
 	LevelParser levelParser;
 	TargetManager* targetManager;
 	GameLogic gameLogic;
-	CollisionHandler collisionHandler;
+	CollisionHandler* collisionHandler;
 	ReplaySystem replaySystem;
 	ScoreManager scoreManager;
-	LevelStructure levelStructure;
-	LightManager lightManager;
+	LevelStructure* levelStructure;
+	LightManager* lightManager;
 	HelpGUI helpGUI;
 };

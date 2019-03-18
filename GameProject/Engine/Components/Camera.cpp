@@ -3,6 +3,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include  "../Entity/Entity.h"
 
+#include <Utils/Logger.h>
+
 Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec3& offset) : Component(parentEntity, tagName)
 {
 	// Set the standard values
@@ -38,6 +40,8 @@ void Camera::init()
 
 	updateProj(&WindowResizeEvent(DEFAULT_WIDTH, DEFAULT_HEIGHT));
 	updateView();
+
+	LOG_INFO("f: (%f,%f,%f)", f.x, f.y, f.z);
 }
 
 glm::vec3 Camera::getForward() const

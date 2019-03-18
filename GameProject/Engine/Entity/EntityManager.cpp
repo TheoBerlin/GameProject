@@ -3,8 +3,6 @@
 #include "Utils/Logger.h"
 #include "Entity.h"
 
-
-
 EntityManager::EntityManager()
 	: reservedEntities(20)
 {

@@ -16,31 +16,28 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/States/PauseState.h>
 
-GameState::GameState(const std::string& levelJSON)
+GameState::GameState(const Level& level)
 {
-	this->levelJSON = levelJSON;
-
-	targetManager = new TargetManager();
+	this->level = level;
 
 	EntityManager* entityManager = &this->getEntityManager();
-	level.entityManager = entityManager;
-	level.targetManager = targetManager;
-	level.collisionHandler = &this->collisionHandler;
-	level.gui = &this->getGUI();
-	level.replaySystem = &this->replaySystem;
-	level.scoreManager = &this->scoreManager;
-	level.levelStructure = &this->levelStructure;
-	level.lightManager = &this->lightManager;
-	level.helpGUI = &this->helpGUI;
+	this->level.gui = &this->getGUI();
+	this->targetManager = this->level.targetManager;
+	this->collisionHandler = this->level.collisionHandler;
+	this->level.replaySystem = &this->replaySystem;
+	this->level.scoreManager = &this->scoreManager;
+	this->levelStructure = this->level.levelStructure;
+	this->lightManager = this->level.lightManager;
+	this->level.helpGUI = &this->helpGUI;
 
 	this->helpGUI.init(&this->getGUI());
 
-	levelParser.readLevel(this->levelJSON, level);
+	levelParser.readMetadata(this->level);
 
-	gameLogic.init(level);
-	
+	gameLogic.init(this->level);
+
 	Display::get().getRenderer().initInstancing();
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	Display::get().getRenderer().getPipeline()->setLightManager(level.lightManager);
 	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -54,13 +51,6 @@ GameState::GameState(const std::string& levelJSON)
 
 GameState::~GameState()
 {
-
-	delete targetManager;
-
-	Display::get().getRenderer().clearRenderingTargets();
-
-	// Delete all loaded models
-	ModelLoader::unloadAllModels();
 }
 
 void GameState::start()
@@ -134,7 +124,7 @@ void GameState::update(const float dt)
 
 void GameState::updateLogic(const float dt)
 {
-	this->collisionHandler.checkCollision();
+	this->collisionHandler->checkCollision();
 }
 
 void GameState::render()
@@ -148,12 +138,12 @@ void GameState::render()
 	renderer.drawAllInstanced();
 
 #ifdef ENABLE_COLLISION_DEBUG_DRAW
-	this->collisionHandler.updateDrawingData();
-	this->collisionHandler.drawCollisionBoxes();
+	this->collisionHandler->updateDrawingData();
+	this->collisionHandler->drawCollisionBoxes();
 #endif
 
 #ifdef ENABLE_SHADOW_BOX
-	lightManager.drawDebugBox();
+	lightManager->drawDebugBox();
 #endif
 
 	// Draw gui elements.
@@ -171,4 +161,3 @@ void GameState::exitGame(ExitEvent* ev)
 {
 	this->popState();
 }
-

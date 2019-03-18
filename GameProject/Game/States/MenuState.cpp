@@ -14,8 +14,9 @@
 #include "Engine/GUI/GUIColors.h"
 #include "Game/States/EditorState.h"
 
-
-MenuState::MenuState() : State()
+MenuState::MenuState()
+	:State(),
+	levelPreviewer(new LevelPreviewer())
 {
 	// Create panel groups [0] is main menu, [1] is level select
 	this->panelGroups.push_back(std::vector<Panel*>());
@@ -41,13 +42,17 @@ MenuState::MenuState() : State()
 
 MenuState::~MenuState()
 {
+	if (levelPreviewer) {
+		delete levelPreviewer;
+
+		levelPreviewer = nullptr;
+	}
 }
 
 void MenuState::start()
 {
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
 }
 
 void MenuState::end()
@@ -56,6 +61,7 @@ void MenuState::end()
 
 void MenuState::update(const float dt)
 {
+	levelPreviewer->update(dt);
 }
 
 void MenuState::updateLogic(const float dt)
@@ -66,12 +72,30 @@ void MenuState::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	levelPreviewer->render();
+
 	glDisable(GL_DEPTH_TEST);
 	Display& display = Display::get();
 
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.draw(this->getGUI());
+}
+
+void MenuState::updateLevelPreview(const std::string& levelName)
+{
+	if (this->levelPreviewer) {
+		delete levelPreviewer;
+	}
+
+	this->levelPreviewer = new LevelPreviewer();
+
+	this->levelPreviewer->setLevel(levelName);
+}
+
+const Level& MenuState::getLevel() const
+{
+	return this->levelPreviewer->getLevel();
 }
 
 void MenuState::initLevelSelect()
@@ -102,6 +126,7 @@ void MenuState::initLevelSelect()
 		scrollPanel->addItem([this, entry](void) {
 			this->selectedLevel = entry.string();
 			this->updateLevelInfoPanel();
+			this->updateLevelPreview(this->selectedLevel);
 		}, entry.filename().replace_extension("").string());
 	}
 
@@ -110,6 +135,7 @@ void MenuState::initLevelSelect()
 	{
 		scrollPanel->setActiveButton(0);
 		this->selectedLevel = levels[0].string();
+		levelPreviewer->setLevel(levels[0].string());
 	}
 
 	selectPnl->addChild(scrollPanel);
@@ -127,7 +153,7 @@ void MenuState::initLevelSelect()
 	playBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	playBtn->addText("Play", "aldo", glm::vec4(1.0f));
 	playBtn->setCallback([this](void) {
-		this->pushState(new GameState(this->selectedLevel));
+		this->pushState(new GameState(this->getLevel()));
 	});
 	selectPnl->addChild(playBtn);
 

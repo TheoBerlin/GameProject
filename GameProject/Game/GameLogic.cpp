@@ -1,5 +1,7 @@
 #include "GameLogic.h"
 
+//#include <Engine/Rendering/Display.h>
+//#include <Engine/Rendering/Renderer.h>
 #include <Engine/Components/Camera.h>
 #include <Engine/Events/EventBus.h>
 #include <Game/GameLogic/Phases/OverviewPhase.h>
@@ -13,12 +15,15 @@ void GameLogic::init(Level& level)
 {
 	this->level = level;
 
+	// Get preview camera component
+	//Camera* previewCamera = Display::get().getRenderer().getActiveCamera();
+
 	// Set up phase transition camera entity
 	phaseTransitionEntity = level.entityManager->addTracedEntity("PhaseTransition");
 
 	new CameraTransition(phaseTransitionEntity);
 
-	Camera* camera = new Camera(phaseTransitionEntity, "Camera", { 0.0f, 0.5f, -2.0f });
+	Camera* camera = new Camera(phaseTransitionEntity);
 	camera->init();
 
 	/*
