@@ -238,7 +238,7 @@ void LevelParser::writeEntityProps(Level & level)
 			if (level.targetManager->getStaticTargets()[j].hoverAnimation->getHost() == level.entityManager->getEntity(i))
 				found = true;
 		}
-		if (!found && level.entityManager->getEntity(i)->getName().substr(0, 9) != "WallPoint") {
+		if (!found && level.entityManager->getEntity(i)->getName().substr(0, 9) != "WallPoint" && level.entityManager->getEntity(i)->getName().substr(0, 11) != "Placeholder") {
 			Entity* entity = level.entityManager->getEntity(i);
 			Transform* transform = entity->getTransform();
 

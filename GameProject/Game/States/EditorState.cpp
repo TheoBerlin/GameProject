@@ -59,6 +59,16 @@ EditorState::EditorState()
 	ImGui::GetIO().KeyMap[ImGuiKey_Backspace] = ImGuiKey_Backspace;
 
 	freeMove->disableMouse();
+
+	Model* model;
+	model = ModelLoader::loadModel("./Game/assets/lampPlaceholder.fbx");
+	model->setName("lampPlaceholder");
+	Display::get().getRenderer().addRenderingTarget(model);
+
+	lampPlacerholder = new Entity();
+	lampPlacerholder->setModel(model);
+	lampPlacerholder->getTransform()->setScale(0.0f);
+	lampPlacerholder->setName("Placeholder");
 }
 
 EditorState::~EditorState()
@@ -178,7 +188,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (activeWindow[2])
 		wallWindow(entityManager);
 	if (activeWindow[3])
-		lightWindow();
+		lightWindow(entityManager);
 	if (activeWindow[4])
 		playerWindow(entityManager);
 	if (activeWindow[5])
@@ -194,7 +204,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 	if (ImGui::BeginCombo("Entities", currentItem.c_str())) {
 		for (int i = 0; i < entityManager.getEntitySize(); i++) {
 			bool is_selected = (currentItem == entityManager.getEntity(i)->getName()); // You can store your selection however you want, outside or inside your objects
-			if (entityManager.getEntity(i)->getName().substr(0, 9) != "WallPoint") {
+			if (entityManager.getEntity(i)->getName().substr(0, 9) != "WallPoint" && entityManager.getEntity(i)->getName().substr(0, 11) != "Placeholder") {
 				if (ImGui::Selectable(entityManager.getEntity(i)->getName().c_str(), is_selected)) {
 					currentItem = entityManager.getEntity(i)->getName();
 					currentModel = entityManager.getEntity(i)->getModel()->getName();
@@ -396,6 +406,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
 		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 		Display::get().getRenderer().initInstancing();
+		entityManager.addEntity(lampPlacerholder);
 	}
 	ImGui::End();
 #endif
@@ -506,7 +517,7 @@ void EditorState::wallWindow(EntityManager & entityManager)
 #endif
 }
 
-void EditorState::lightWindow()
+void EditorState::lightWindow(EntityManager & entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Light Window");
@@ -533,6 +544,14 @@ void EditorState::lightWindow()
 			glm::vec3 position = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getPosition();
 			glm::vec4 colour = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getIntensity();
 			int distance = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getDistance();
+
+			for (unsigned int i = 0; i < entityManager.getEntitySize(); i++) {
+				if (entityManager.getEntity(i)->getName().substr(0, 11) == "Placeholder") {
+					entityManager.getEntity(i)->getTransform()->setPosition(position);
+					entityManager.getEntity(i)->getTransform()->setScale(0.1f);
+				}
+			}
+
 			bool change = false;
 			if (ImGui::DragFloat3("Position", &position[0], 0.1f))
 				change = true;
