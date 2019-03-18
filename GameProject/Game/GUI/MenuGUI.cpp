@@ -7,6 +7,8 @@
 
 #include "Engine/Sound/SoundManager.h"
 #include "Utils/Settings.h"
+#include "Engine/States/StateManager.h"
+#include "Game/States/EditorState.h"
 
 MenuGUI::MenuGUI()
 {
@@ -18,9 +20,10 @@ MenuGUI::~MenuGUI()
 {
 }
 
-void MenuGUI::init(GUI * gui)
+void MenuGUI::init(GUI * gui, StateManager* stateManager)
 {
 	this->gui = gui;
+	this->stateManager = stateManager;
 
 	createMainMenuGUI();
 	createLevelSelectGUI();
@@ -64,6 +67,11 @@ void MenuGUI::changePanelPointer(MENU menu, Panel * newPanel)
 	newPanel->hide();
 }
 
+void MenuGUI::setStateManager(StateManager * stateManager)
+{
+	this->stateManager = stateManager;
+}
+
 void MenuGUI::activateGUI(Panel * p)
 {
 	if (this->currentGUI)
@@ -92,7 +100,7 @@ void MenuGUI::createMainMenuGUI()
 
 	addMainMenuButton(this->mainMenuGUI, "SELECT LEVEL", 0, [this]() { this->activateGUI(this->levelSelectGUI); });
 	addMainMenuButton(this->mainMenuGUI, "SETTINGS", -100, [this]() { this->activateGUI(this->settingsGUI); });
-	addMainMenuButton(this->mainMenuGUI, "EDITOR", -200, []() {});
+	addMainMenuButton(this->mainMenuGUI, "EDITOR", -200, [this]() { this->stateManager->push(new EditorState()); });
 
 	this->mainMenuGUI->hide();
 }

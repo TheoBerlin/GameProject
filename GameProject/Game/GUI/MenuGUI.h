@@ -5,6 +5,7 @@
 
 class GUI;
 class Panel;
+class StateManager;
 
 enum MENU
 {
@@ -19,12 +20,14 @@ public:
 	MenuGUI();
 	~MenuGUI();
 
-	void init(GUI* gui);
+	void init(GUI* gui, StateManager* stateManager);
 
 	void switchGUI(MENU option);
 
 	// Change panel pointer of a menu, can therefore add existing panels instead of creating new
 	void changePanelPointer(MENU menu, Panel* newPanel);
+
+	void setStateManager(StateManager* stateManager);
 
 private:
 	void activateGUI(Panel* p);
@@ -49,6 +52,7 @@ private:
 	void saveSoundSettings();
 
 	GUI* gui;
+	StateManager* stateManager;
 
 	Panel* currentGUI;
 	Panel* mainMenuGUI;

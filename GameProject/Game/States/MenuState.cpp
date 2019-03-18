@@ -34,7 +34,7 @@ MenuState::MenuState() : State()
 	FontManager::addFont("aldoSmall", "./Game/assets/fonts/aldo/aldo.ttf", 20);
 	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
 
-	menuGUI.init(&this->getGUI());
+	menuGUI.init(&this->getGUI(), &this->getStateManager());
 	this->initLevelSelect();
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -47,6 +47,7 @@ MenuState::~MenuState()
 
 void MenuState::start()
 {
+	menuGUI.setStateManager(&this->getStateManager());
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
