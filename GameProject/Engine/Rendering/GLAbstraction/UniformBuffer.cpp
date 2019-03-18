@@ -6,7 +6,8 @@
 
 UniformBuffer::UniformBuffer()
 {
-	
+	this->bindingPoint = 0;
+	this->currentSize = 0;
 	glGenBuffers(1, &this->id);
 }
 

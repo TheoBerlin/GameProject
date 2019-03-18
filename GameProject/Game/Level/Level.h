@@ -26,14 +26,14 @@ struct Player {
 
 struct Level {
 	bool isEditor = false;
-	EntityManager* entityManager;
-	TargetManager* targetManager;
+	EntityManager* entityManager = nullptr;
+	TargetManager* targetManager = nullptr;
 	Player player;
-	GUI* gui;
-	CollisionHandler* collisionHandler;
-	ReplaySystem* replaySystem;
-	ScoreManager* scoreManager;
-	LevelStructure* levelStructure;
-	LightManager* lightManager;
-	HelpGUI* helpGUI;
+	GUI* gui = nullptr;
+	CollisionHandler* collisionHandler = nullptr;
+	ReplaySystem* replaySystem = nullptr;
+	ScoreManager* scoreManager = nullptr;
+	LevelStructure* levelStructure = nullptr;
+	LightManager* lightManager = nullptr;
+	HelpGUI* helpGUI = nullptr;
 };

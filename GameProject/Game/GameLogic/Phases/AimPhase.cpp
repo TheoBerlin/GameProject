@@ -15,6 +15,8 @@
 AimPhase::AimPhase(OverviewPhase* overviewPhase)
 	:Phase((Phase*)overviewPhase)
 {
+	this->arrowGuider = nullptr;
+	this->arrowCam = nullptr;
 	// Get player arrow
 	playerArrow = overviewPhase->getPlayerArrow();
 
@@ -30,6 +32,8 @@ AimPhase::AimPhase(OverviewPhase* overviewPhase)
 AimPhase::AimPhase(ReplayPhase* replayPhase)
 	:Phase((Phase*)replayPhase)
 {
+	this->arrowGuider = nullptr;
+	this->arrowCam = nullptr;
 	//Turn off post process effect if active
 	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
 

@@ -10,11 +10,13 @@
 
 ScoreManager::ScoreManager()
 {
+	this->highscore = 0;
 	this->totalTime = 0.0f;
 	this->totalScore = 0;
 	this->optimalTime = 0.0f;
 	this->timer = new Timer();
 	this->newHighscore = false;
+	this->minimized = true;
 }
 
 

@@ -5,23 +5,24 @@
 #include <Utils/Logger.h>
 
 ArrowGuider::ArrowGuider(Entity* parentEntity)
-    :Component(parentEntity, "ArrowGuider"),
-    isGuiding(false),
-    isAiming(false),
-    minCamOffset(Arrow::minCamOffset),
-    maxCamOffset(Arrow::maxCamOffset),
-    movementSpeed(Arrow::minSpeed),
-    minSpeed(Arrow::minSpeed),
-    maxSpeed(Arrow::maxSpeed),
-    minFOV(Arrow::minFOV),
-    maxFOV(Arrow::maxFOV),
-    turnSpeed(Arrow::minTurnSpeed),
-    minTurnSpeed(Arrow::minTurnSpeed),
-    maxTurnSpeed(Arrow::maxTurnSpeed),
-    turnFactors(glm::vec2(0.0f,0.0f)),
-    posStoreTimer(0.0f),
-    arrowCamera(nullptr),
-    flightTime(0.0f)
+	:Component(parentEntity, "ArrowGuider"),
+	isGuiding(false),
+	isAiming(false),
+	minCamOffset(Arrow::minCamOffset),
+	maxCamOffset(Arrow::maxCamOffset),
+	movementSpeed(Arrow::minSpeed),
+	minSpeed(Arrow::minSpeed),
+	maxSpeed(Arrow::maxSpeed),
+	minFOV(Arrow::minFOV),
+	maxFOV(Arrow::maxFOV),
+	turnSpeed(Arrow::minTurnSpeed),
+	minTurnSpeed(Arrow::minTurnSpeed),
+	maxTurnSpeed(Arrow::maxTurnSpeed),
+	turnFactors(glm::vec2(0.0f, 0.0f)),
+	posStoreTimer(0.0f),
+	arrowCamera(nullptr),
+	flightTime(0.0f),
+	direction(glm::vec3(1.f))
 {
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution

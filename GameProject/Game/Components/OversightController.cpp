@@ -7,6 +7,7 @@
 OversightController::OversightController(Entity* host)
 	:Component(host, "OverviewCamera")
 {
+	this->moveFactors = glm::vec3(1.f);
 	prevMousePosX = 0;
 	mouseMoveX = 0;
 

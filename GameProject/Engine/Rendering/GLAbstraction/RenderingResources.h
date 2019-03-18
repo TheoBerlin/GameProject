@@ -61,8 +61,8 @@ enum TextureType {
 
 class Texture;
 struct Material {
-	glm::vec4 Kd;
-	glm::vec4 Ks_factor;
-	std::vector<Texture*> textures;
-	bool glow;
+	glm::vec4 Kd = glm::vec4(1.f);
+	glm::vec4 Ks_factor = glm::vec4(1.f);
+	std::vector<Texture*> textures = std::vector<Texture*>();
+	bool glow = false;
 };

@@ -6,12 +6,14 @@ std::unique_ptr<Shader> Font::shader;
 
 Font::Font()
 {
+	this->face = nullptr;
 	if (!shader)
 		shader = std::move(std::unique_ptr<Shader>(new Shader("./Engine/Rendering/Shaders/Font.vert", "./Engine/Rendering/Shaders/Font.frag")));
 }
 
 Font::Font(const std::string & pathName, unsigned int size)
 {
+	this->face = nullptr;
 	if (!shader)
 		shader = std::move(std::unique_ptr<Shader>(new Shader("./Engine/Rendering/Shaders/Font.vert", "./Engine/Rendering/Shaders/Font.frag")));
 	load(pathName, size);

@@ -14,10 +14,10 @@ class Settings
 {
 private:
 	bool changed = false;
-	int screenWidth;
-	int screenHeight;
-	float mouseSensitivity;
-	float shadowResolutionFactor;
+	int screenWidth = 0;
+	int screenHeight = 0;
+	float mouseSensitivity = 0.5f;
+	float shadowResolutionFactor = 1.f;
 
 	bool readFile(std::string fileName = "./Utils/Settings.json");
 

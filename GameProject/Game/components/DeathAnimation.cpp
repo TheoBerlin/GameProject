@@ -6,6 +6,13 @@
 DeathAnimation::DeathAnimation(Entity * host) : Component(host, "DeathAnimation")
 {
 	this->totalTime = 0.f;
+	this->pushDir = glm::vec3(0.f, 1.f, 0.f);
+	this->totalTime = 0.f;
+	this->currentTime = 0.f;
+	this->shakeTimer = 0.f;
+	this->pushSpeed = 0.f;
+	this->gravity = 0.f;
+	this->totalAngle = 0.f;
 }
 
 DeathAnimation::~DeathAnimation()

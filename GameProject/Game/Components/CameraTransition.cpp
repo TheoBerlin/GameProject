@@ -12,11 +12,13 @@ CameraTransition::CameraTransition(Entity* host)
     :Component(host, "CameraTransition"),
     isTransitioning(false)
 {
+	this->beginQuat = glm::quat(1.f, 1.f, 1.f, 1.f);
 }
 
 CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
     :Component(host, "CameraTransition")
 {
+	this->beginQuat = glm::quat(1.f, 1.f, 1.f, 1.f);
     setDestination(newPos, newForward, newFOV, transitionLength);
 }
 

@@ -20,7 +20,7 @@ struct PlayerCollisionEvent : public Event
 		REPLAY_PHASE
 	};
 
-	PHASE phase;
+	PHASE phase = PHASE::GUIDING_PHASE;
 };
 
 class Phase;

@@ -14,6 +14,12 @@ MenuGUI::MenuGUI()
 {
 	this->currentGUI = nullptr;
 	this->muteSound = false;
+	this->gui = nullptr;
+	this->stateManager = nullptr;
+
+	this->mainMenuGUI = nullptr;
+	this->settingsGUI = nullptr;
+	this->levelSelectGUI = nullptr;
 }
 
 MenuGUI::~MenuGUI()

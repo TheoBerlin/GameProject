@@ -50,14 +50,14 @@ private:
 	static void resizeCallback(GLFWwindow* window, int width, int height);
 	static void APIENTRY glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, const void *userParam);
 
-	GLFWwindow* window;
+	GLFWwindow* window = nullptr;
 	std::string title;
-	int width;
-	int height;
+	int width = 0;
+	int height = 0;
 
-	FT_Library ftLibrary;
+	FT_Library ftLibrary{ nullptr };
 
-	Renderer* renderer;
-	GUIRenderer* guiRenderer;
-	LineRenderer* lineRenderer;
+	Renderer* renderer = nullptr;
+	GUIRenderer* guiRenderer = nullptr;
+	LineRenderer* lineRenderer = nullptr;
 };

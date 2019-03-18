@@ -19,6 +19,9 @@
 
 EditorState::EditorState()
 {
+	for (size_t i = 0; i < NR_OF_WINDOWS; i++)
+		this->activeWindow[i] = false;
+
 	targetManager = new TargetManager();
 
 	EntityManager* entityManager = &this->getEntityManager();
@@ -407,7 +410,7 @@ void EditorState::wallWindow(EntityManager & entityManager)
 			for (unsigned int i = 0; i < wallGroupIndex; i++)
 				offset += getWallGroupsIndex[i];
 
-			for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
+			for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
 				glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
 				if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
 					level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));

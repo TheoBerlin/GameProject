@@ -18,6 +18,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
+	this->freeMove = nullptr;
+	this->freeCam = nullptr;
 	//Remove Post process effect to transition
 	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
 
@@ -335,7 +337,7 @@ void ReplayPhase::addCollisionMarks()
 	{
 		if (t.event.shape2->getCollisionCategoryBits() != CATEGORY::STATIC) {
 			float replayProgress = t.time / this->flightTime;
-			int width = this->backPanel->getSize().x * replayProgress;
+			int width = (int)(this->backPanel->getSize().x * replayProgress);
 			Panel* p = new Panel();
 			p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
 			p->setColor({ 1.f, 1.f, 1.f, 1.f });

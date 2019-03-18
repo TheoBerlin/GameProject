@@ -6,6 +6,11 @@
 
 SliderPanel::SliderPanel() : Panel()
 {
+	this->slider = nullptr;
+	this->text = nullptr;
+	this->background = nullptr;
+	this->btn = nullptr;
+
 	this->offset = 0;
 	this->size = { 280, 30 };
 	this->sliderSize = { 200, 30 };

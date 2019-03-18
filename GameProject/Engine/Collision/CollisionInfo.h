@@ -22,13 +22,13 @@ enum CATEGORY
 #include <reactphysics3d/reactphysics3d.h>
 
 struct CollisionShapeDrawingData {
-	glm::vec3 color;
+	glm::vec3 color = glm::vec3(1.f);
 
-	glm::vec3 scale;
-	glm::vec3 size;
-	glm::vec3 pos;
-	glm::quat rot;
-	std::string name;
-	unsigned short category;
-	rp3d::CollisionShape * shape;
+	glm::vec3 scale = glm::vec3(1.f);
+	glm::vec3 size = glm::vec3(1.f);
+	glm::vec3 pos = glm::vec3(1.f);
+	glm::quat rot = glm::quat(1.f, 1.f, 1.f, 1.f);
+	std::string name = "";
+	unsigned short category = 0;
+	rp3d::CollisionShape * shape = nullptr;
 };

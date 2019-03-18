@@ -19,6 +19,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	flightTime(0.0f),
 	hasCollided(false)
 {
+	this->trailEmitter = nullptr;
 	this->playerArrow = aimPhase->getPlayerArrow();
 
 	arrowCam = aimPhase->getArrowCam();

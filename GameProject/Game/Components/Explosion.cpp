@@ -7,6 +7,7 @@
 Explosion::Explosion(Entity * host)
 	: Component(host, "Explosion")
 {
+	this->lifeTime = 0.f;
 	sound.loadSound("Game/assets/sound/Explosion.wav");
 	sound.setLoopState(false);
 	SoundManager::get().addSound(&sound, SOUND_EFFECT);

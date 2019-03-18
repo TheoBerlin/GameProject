@@ -47,7 +47,7 @@ public:
 
 	struct ShapeData
 	{
-		CATEGORY category;
+		CATEGORY category = CATEGORY::STATIC;
 		glm::vec3 scale = glm::vec3(1.f);
 		glm::vec3 localScale = glm::vec3(1.f);
 		glm::vec3 offset = glm::vec3(0.f);

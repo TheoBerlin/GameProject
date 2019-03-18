@@ -7,6 +7,8 @@
 
 GameLogic::GameLogic()
 {
+	this->phaseTransitionEntity = nullptr;
+	this->phase = nullptr;
 }
 
 void GameLogic::init(Level& level)

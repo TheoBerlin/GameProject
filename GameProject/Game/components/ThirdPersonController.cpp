@@ -9,6 +9,7 @@
 ThirdPersonController::ThirdPersonController(Entity* host)
 	:Component(host, "ThirdPersonController")
 {
+	this->camera = nullptr;
 	this->windowHeight = Settings::get().getScreenHeight();
 	this->mouseSens = Settings::get().getMouseSensitivity();
 

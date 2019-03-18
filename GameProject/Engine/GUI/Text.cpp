@@ -6,10 +6,14 @@
 Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 {
 	this->font = nullptr;
+	this->width = 0;
+	this->height = 0;
+	this->line = 0;
 }
 
 Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 {
+	this->line = 0;
 	setText(str, font);
 }
 

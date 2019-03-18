@@ -18,6 +18,8 @@
 
 MenuState::MenuState() : State()
 {
+	this->previewPnl = nullptr;
+
 	// Create panel groups [0] is main menu, [1] is level select, [2] is settings menu
 	this->panelGroups.push_back(std::vector<Panel*>());
 	this->panelGroups.push_back(std::vector<Panel*>());

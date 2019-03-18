@@ -2,6 +2,7 @@
 
 ParticleEmitter::ParticleEmitter()
 {
+	this->acceleration = glm::vec3(1.f);
 	this->emitterVectorIndex = 0;
 	this->position = glm::vec3(0.0f);
 	this->prevPosition = glm::vec3(0.0f);
@@ -13,6 +14,7 @@ ParticleEmitter::ParticleEmitter()
 	this->endColour = glm::vec4(1.0f);
 	this->startScale = 1.0f;
 	this->lifeTime = 10.0f;
+	this->scaleChange = 0.f;
 	this->allParticlesDead = true;
 
 	particles.reserve(maxParticle);

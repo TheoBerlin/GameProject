@@ -9,6 +9,7 @@
 MovingTargetCollision::MovingTargetCollision(Entity * parentEntity, const std::string & tagName) : Component(parentEntity, tagName)
 {
 	this->hit = false;
+	this->shape = nullptr;
 	EventBus::get().subscribe(this, &MovingTargetCollision::collide);
 }
 

@@ -5,6 +5,9 @@
 
 ScrollPanel::ScrollPanel(unsigned width, unsigned height, const std::string& font, int scrollSpeed) : Panel()
 {
+	this->activeButtonIndex = 0;
+	this->activeButton = nullptr;
+
 	this->scrollSpeed = scrollSpeed;
 
 	this->setSize(glm::vec2(width, height));
@@ -76,7 +79,7 @@ void ScrollPanel::MouseClickCallback(MouseClickEvent * evnt)
 		double xpos, ypos;
 		int height = Display::get().getHeight();
 		glfwGetCursorPos(Display::get().getWindowPtr(), &xpos, &ypos);
-		glm::ivec2 gPos = this->list->getGlobalPosition();
+		glm::uvec2 gPos = this->list->getGlobalPosition();
 		// If inside the list
 		if (xpos > gPos.x && xpos < gPos.x + this->list->getSize().x
 			&& height - ypos > gPos.y && height - ypos < gPos.y + this->list->getSize().y)

@@ -19,9 +19,9 @@ private:
 	SoundType type;
 	float volume;
 
-	unsigned int freq;
-	unsigned short int channels;
-	unsigned short int bitsPerSample;
+	unsigned int freq{ 0 };
+	unsigned short int channels{ 0 };
+	unsigned short int bitsPerSample{ 0 };
 
 public:
 	//Default pitch = 1, volume = 1, position = (0, 0, 0), velocity = (0, 0, 0), loop = false

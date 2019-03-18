@@ -7,6 +7,7 @@ Component::Component(Entity* parentEntity, const std::string & tagName)
 {
 	this->tagName = tagName;
 
+	this->host = nullptr;
 	this->setHost(parentEntity);
 }
 
