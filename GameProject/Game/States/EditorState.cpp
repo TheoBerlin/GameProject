@@ -311,17 +311,20 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				bool found = false;
 				for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 					if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+						std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
+						Transform * currEntityTransform = entityManager.getEntity(currentEntity)->getTransform();
+						float timeStamp = glm::length(currEntityTransform->getPosition() - path.back().Position) / 3.0f + path.back().t;
+						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(currEntityTransform->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), timeStamp));
 						found = true;
 					}
 				}
 				if (!found) {
 					for (unsigned int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
 						if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-							Transform * currEntity = entityManager.getEntity(currentEntity)->getTransform();
+							Transform * currEntityTransform = entityManager.getEntity(currentEntity)->getTransform();
 							std::vector<KeyPoint> path;
-							path.push_back(KeyPoint(currEntity->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
-							path.push_back(KeyPoint(currEntity->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+							path.push_back(KeyPoint(currEntityTransform->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
+							path.push_back(KeyPoint(currEntityTransform->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
 							level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 							level.targetManager->addMovingTarget(entityManager.getEntity(currentEntity), path);
 						}
@@ -347,6 +350,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			}
 			for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+
 					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
 					for (unsigned int j = 0; j < level.targetManager->getMovingTargets()[i].pathTreader->getPath().size(); j++) {
 						if (ImGui::DragFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 0.1f))
