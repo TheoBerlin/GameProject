@@ -17,8 +17,8 @@ private:
 	//Values to change particle structs values for every particle.
 	//Structs are seperated to not buffer this data for shader
 	struct ParticleUpdateInfo {
-		glm::vec3 velocity;
-		float life;
+		glm::vec3 velocity = glm::vec3(1.f);
+		float life = 0;
 		glm::vec3 spread = glm::vec3(0.0f);
 	};
 

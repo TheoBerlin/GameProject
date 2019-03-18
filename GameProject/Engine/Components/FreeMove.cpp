@@ -8,8 +8,10 @@
 
 FreeMove::FreeMove(Entity * parentEntity, const std::string& tagName) : Component(parentEntity, tagName)
 {
+	this->mouseEnabled = false;
 	EventBus::get().subscribe(this, &FreeMove::moveKeyboard);
 
+	this->dt = 0.f;
 	this->speed = 5.0f;
 	this->sensitivity = Settings::get().getMouseSensitivity();
 	this->enableMouse();

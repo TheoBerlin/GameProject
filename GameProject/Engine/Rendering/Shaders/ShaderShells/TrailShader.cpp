@@ -8,6 +8,7 @@ TrailShader::TrailShader(Camera ** camera)
 	: Shader("./Engine/Rendering/Shaders/TrailEffect.vert", "./Engine/Rendering/Shaders/TrailEffect.frag"),
 	trailColor(1.0f, 0.0f, 0.0f)
 {
+	this->horizontal = false;
 	this->camera = camera;
 	this->pointCount = pointCount;
 

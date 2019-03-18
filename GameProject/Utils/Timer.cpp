@@ -2,6 +2,7 @@
 
 Timer::Timer()
 {
+	this->dt = 0.f;
 	this->isRunning = true;
 	restart();
 }

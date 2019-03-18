@@ -7,6 +7,7 @@
 
 Collision::Collision()
 {
+	this->entites = nullptr;
 }
 
 

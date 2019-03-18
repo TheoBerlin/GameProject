@@ -40,8 +40,9 @@ void Settings::writeFile(std::string fileName)
 	jsonFile["MusicVolume"] = SoundManager::get().getMusicVolume();
 	jsonFile["EffectVolume"] = SoundManager::get().getEffectVolume();
 	jsonFile["MiscVolume"] = SoundManager::get().getMiscVolume();
-	jsonFile["ScreenWidth"] = screenWidth;
-	jsonFile["ScreenHeight"] = screenHeight;
+	jsonFile["ScreenWidth"] = this->screenWidth;
+	jsonFile["ScreenHeight"] = this->screenHeight;
+	jsonFile["MouseSensitivity"] = this->mouseSensitivity;
 	std::ofstream oStream(fileName);
 	oStream << std::setw(4) << jsonFile << std::endl;
 }

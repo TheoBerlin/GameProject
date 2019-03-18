@@ -9,6 +9,7 @@
 
 Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, bool loop)
 {
+	this->type = SoundType::SOUND_MISC;
 	AL_CALL(alGenSources((ALsizei)1, &source));
 
 	this->volume = volume;
@@ -53,7 +54,7 @@ void Sound::loadSound(std::string fileName)
 	fread(&bitsPerSample, 2, 1, file);
 
 	//Read bits per sample
-	unsigned int size;
+	unsigned int size = 0;
 	fseek(file, 40, SEEK_SET);
 	fread(&size, 4, 1, file);
 
@@ -86,7 +87,7 @@ void Sound::loadSound(std::string fileName)
 
 	AL_CALL(alSourcei(source, AL_BUFFER, buffer));
 
-	delete buf;
+	delete[] buf;
 }
 
 void Sound::playSound()

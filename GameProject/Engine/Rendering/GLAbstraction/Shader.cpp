@@ -5,11 +5,13 @@
 
 Shader::Shader()
 {
+	this->id = 0;
 	init("", "");
 }
 
 Shader::Shader(const std::string& vertex, const std::string& fragment)
 {
+	this->id = 0;
 	init(vertex, fragment);
 }
 

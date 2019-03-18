@@ -8,6 +8,7 @@
 
 LightManager::LightManager()
 {
+	this->dirLight = nullptr;
 	this->shadowResolutionFactor = Settings::get().getShadowResolutionFactor();
 	this->orthoWidth = 0.f;
 	this->orthoHeight = 0.f;

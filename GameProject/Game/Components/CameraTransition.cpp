@@ -12,11 +12,13 @@ CameraTransition::CameraTransition(Entity* host)
     :Component(host, "CameraTransition"),
     isTransitioning(false)
 {
+	this->beginQuat = glm::quat(1.f, 1.f, 1.f, 1.f);
 }
 
 CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
     :Component(host, "CameraTransition")
 {
+	this->beginQuat = glm::quat(1.f, 1.f, 1.f, 1.f);
     setDestination(newPos, newForward, newFOV, transitionLength);
 }
 
@@ -37,6 +39,8 @@ void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& 
 
 void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
+	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+
     if (!this->commonSetup(path, newFOV)) {
         return;
     }
@@ -56,11 +60,18 @@ void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec
 
 void CameraTransition::setBackwardsPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
+	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+
     this->interpForward = false;
 
     this->endForward = newForward;
 
     this->commonSetup(path, newFOV);
+}
+
+void CameraTransition::skipTransition()
+{
+	this->transitionTime = path.back().t - 0.15f;
 }
 
 void CameraTransition::update(const float& dt)
@@ -76,8 +87,6 @@ void CameraTransition::update(const float& dt)
     if (transitionTime > path.back().t) {
         // Transition is finished
         isTransitioning = false;
-
-        glm::vec3 forward = transform->getForward();
 
         // Publish camera transition event
         EventBus::get().publish(&CameraTransitionEvent(host));
@@ -156,6 +165,16 @@ bool CameraTransition::commonSetup(const std::vector<KeyPoint>& path, float newF
     }
 
     return true;
+}
+
+void CameraTransition::handleKey(KeyEvent * ev)
+{
+	if (ev->action == GLFW_PRESS && ev->key == GLFW_KEY_SPACE) {
+		// Publish camera transition event
+		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
+
+		this->skipTransition();
+	}
 }
 
 void CameraTransition::catmullRomMove()

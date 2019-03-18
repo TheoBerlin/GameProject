@@ -19,6 +19,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	flightTime(0.0f),
 	hasCollided(false)
 {
+	this->trailEmitter = nullptr;
 	this->playerArrow = aimPhase->getPlayerArrow();
 
 	arrowCam = aimPhase->getArrowCam();
@@ -139,9 +140,8 @@ void GuidingPhase::beginReplayTransition()
 
     this->transitionBackwards(currentCamSettings, newCamSettings, arrowGuider->getPath());
 
-	//add Post process effect to transition
+	//Add Post process effect to transition
 	Display::get().getRenderer().activatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
-
 
 	EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }
@@ -177,6 +177,9 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 	{
 		level.scoreManager->score();
 		updateTargetPanel();
+
+		if(level.scoreManager->getTargetsHit() == level.targetManager->getTargetCount())
+			beginReplayTransition();
 		break;
 	}
 	case CATEGORY::DRONE_EYE:

@@ -11,6 +11,7 @@ Camera::Camera(Entity * parentEntity, const std::string& tagName, const glm::vec
 	this->zFar = ZFAR;
 	this->offset = offset;
 	this->decoupled = false;
+	setForward({ 0.f, 0.f, 1.f });
 
 	// Set subscribe to resize event to update camera
 	EventBus::get().subscribe(this, &Camera::updateProj);

@@ -9,6 +9,7 @@
 
 IGame::IGame()
 {
+	this->isRunning = false;
 	Display::get().init(Settings::get().getScreenWidth(), Settings::get().getScreenHeight(), DEFAULT_TITLE);
 }
 

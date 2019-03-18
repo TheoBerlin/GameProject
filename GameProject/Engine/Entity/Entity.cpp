@@ -9,6 +9,7 @@ Entity::Entity(const glm::vec3& forward) : model(nullptr)
 	this->renderingGroupIndex = -1;
 	this->hasSeparatedTransforms = false;
 	this->model = nullptr;
+	this->body = nullptr;
 }
 
 Entity::~Entity()

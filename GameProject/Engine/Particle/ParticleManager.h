@@ -18,12 +18,12 @@ private:
 	ParticleManager() = default;
 	ParticleManager(const ParticleManager& other) = delete;
 
-	bool hasParticlesVisble;
+	bool hasParticlesVisble{ false };
 
 	static const GLfloat g_vertex_buffer_data[16];
 	VertexArray va;
-	VertexBuffer* vbBillboard;
-	VertexBuffer* vbParticle;
+	VertexBuffer* vbBillboard = nullptr;
+	VertexBuffer* vbParticle = nullptr;
 
 public:
 	static ParticleManager& get();

@@ -10,6 +10,7 @@ ReplaySystem::ReplaySystem()
 	isRecording(false),
 	isReplaying(false)
 {
+	this->collisionIndex = 0;
 }
 
 ReplaySystem::~ReplaySystem()

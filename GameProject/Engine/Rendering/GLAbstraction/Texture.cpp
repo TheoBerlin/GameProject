@@ -7,10 +7,21 @@
 
 Texture::Texture() : id(0), loaded(false)
 {
+	this->type = GL_UNSIGNED_BYTE;
+	this->width = 0;
+	this->height = 0;
+	this->format = GL_RGBA;
+	this->internalFormat = GL_RGBA;
+	init(NULL, 2, 2, GL_RGB, GL_RGB, GL_UNSIGNED_BYTE);
 }
 
 Texture::Texture(const Texture & other) : id(0), loaded(false)
 {
+	this->type = GL_UNSIGNED_BYTE;
+	this->width = 0;
+	this->height = 0;
+	this->format = GL_RGBA;
+	this->internalFormat = GL_RGBA;
 	copyData(other);
 }
 
@@ -25,11 +36,23 @@ Texture & Texture::operator=(const Texture & other)
 
 Texture::Texture(const std::string & fileName, unsigned internalFormat, GLenum type)
 {
+	this->id = 0;
+	this->type = type;
+	this->width = 0;
+	this->height = 0;
+	this->format = GL_RGBA;
+	this->internalFormat = internalFormat;
 	loadImage(fileName, internalFormat, type);
 }
 
 Texture::Texture(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type) : id(0)
 {
+	this->loaded = false;
+	this->type = type;
+	this->width = width;
+	this->height = height;
+	this->format = format;
+	this->internalFormat = internalFormat;
 	init(data, width, height, internalFormat, format, type);
 }
 

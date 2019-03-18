@@ -10,6 +10,7 @@ Phase::Phase(const Level& level, Entity* transitionEntity)
     :level(level),
     transitionEntity(transitionEntity)
 {
+	this->transitionCamDrift = nullptr;
     this->transitionComponent = dynamic_cast<CameraTransition*>(transitionEntity->getComponent("CameraTransition"));
     this->transitionCam = dynamic_cast<Camera*>(transitionEntity->getComponent("Camera"));
 }
@@ -20,6 +21,7 @@ Phase::Phase(Phase* other)
     transitionComponent(other->transitionComponent),
     transitionCam(other->transitionCam)
 {
+	this->transitionCamDrift = nullptr;
 }
 
 void Phase::update(const float & dt)

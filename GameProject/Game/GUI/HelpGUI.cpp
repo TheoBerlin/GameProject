@@ -8,11 +8,13 @@
 
 HelpGUI::HelpGUI()
 {
+	this->gui = nullptr;
 	this->currentGUI = nullptr;
 	this->moveIn = false;
 	this->moveOut = false;
 	EventBus::get().subscribe(this, &HelpGUI::toggleGUI);
 	this->in = true;
+	this->totalTime = 0.f;
 }
 
 
@@ -137,8 +139,7 @@ void HelpGUI::createReplayGUI()
 	this->gui->addPanel(this->replayGUI);
 
 	addButton(this->replayGUI, "TOGGLE INFO", "f1.png");
-	addButton(this->replayGUI, "AIM", "2.png");
-	addButton(this->replayGUI, "DETATCH", "space.png");
+	addButton(this->replayGUI, "DETACH", "space.png");
 
 	this->replayGUI->hide();
 }

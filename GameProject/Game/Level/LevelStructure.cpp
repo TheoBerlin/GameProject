@@ -18,8 +18,11 @@
 
 LevelStructure::LevelStructure()
 {
+	this->infPlane = nullptr;
+	this->roofPlane = nullptr;
 	this->height = 5.f;
 	spawnedPoints = 0;
+	this->quad = nullptr;
 }
 
 

@@ -2,12 +2,14 @@
 
 VertexBuffer::VertexBuffer() : dataSize(0)
 {
+	this->attribCount = 0;
 	glGenBuffers(1, &this->id);
 }
 
 VertexBuffer::VertexBuffer(const void* const data, const size_t& dataSize, GLenum usage)
 	:dataSize(dataSize)
 {
+	this->attribCount = 0;
 	glGenBuffers(1, &this->id);
 	make(data, dataSize, usage);
 }

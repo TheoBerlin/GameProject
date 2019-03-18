@@ -5,8 +5,6 @@
 class InputHandler
 {
 private:
-	GLFWwindow* window;
-
 	// Used for mouse travel distance since last callback calculation
 	static int lastPosX, lastPosY;
 

@@ -51,6 +51,7 @@ CollisionRenderer::CollisionRenderer()
 	this->collisionBoxMesh->addBuffer(NULL, 0, matrixLayout);
 
 	this->instanceCountBox = 0;
+	this->instanceCountLine = 0;
 
 	// Line mesh
 	{

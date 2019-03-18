@@ -7,7 +7,8 @@
 CameraDrift::CameraDrift(Entity* host, float angleCorrectionFactor, float maxAngle)
     :Component(host, "CameraDrift"),
     angleCorrectionFactor(angleCorrectionFactor),
-    maxAngle(maxAngle)
+    maxAngle(maxAngle),
+	camera(nullptr)
 {
     Component* tmp = host->getComponent("Camera");
 

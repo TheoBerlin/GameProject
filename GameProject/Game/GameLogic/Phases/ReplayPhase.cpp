@@ -18,6 +18,8 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
+	this->freeMove = nullptr;
+	this->freeCam = nullptr;
 	//Remove Post process effect to transition
 	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
 
@@ -28,7 +30,11 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
     // Create results window and minimize it
     // Lambda function which executes when retry is pressed
-    std::function<void()> retry = [this](){beginAimTransition();};
+    std::function<void()> retry = [this](){
+		//Activate post process effect when retrying
+		Display::get().getRenderer().activatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
+		beginAimTransition();
+	};
 
 	level.scoreManager->showResults(level, retry);
 
@@ -329,14 +335,17 @@ void ReplayPhase::addCollisionMarks()
 
 	for (auto t : v)
 	{
-		float replayProgress = t.time / this->flightTime;
-		int width = this->backPanel->getSize().x * replayProgress;
-		Panel* p = new Panel();
-		p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
-		p->setColor({ 1.f, 1.f, 1.f, 1.f });
-		p->setBackgroundTexture(TextureManager::getTexture("./Game/Assets/droneIcon.png"));
-		p->setOption(GUI::FLOAT_LEFT, width);
-		this->backPanel->addChild(p);
+		if (t.event.shape2->getCollisionCategoryBits() != CATEGORY::STATIC) {
+			float replayProgress = t.time / this->flightTime;
+			int width = (int)(this->backPanel->getSize().x * replayProgress);
+			Panel* p = new Panel();
+			p->setOption(GUI::SCALE_TEXTURE_TO_HEIGHT, (int)this->timeBarSlider->getSize().y);
+			p->setColor({ 1.f, 1.f, 1.f, 1.f });
+			Texture* icon = TextureManager::getTexture("./Game/Assets/droneIcon.png");
+			p->setBackgroundTexture(icon);
+			p->setOption(GUI::FLOAT_LEFT, width - (int)(p->getSize().x / 2));
+			this->backPanel->addChild(p);
+		}
 	}
 }
 

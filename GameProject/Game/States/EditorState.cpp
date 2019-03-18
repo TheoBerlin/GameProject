@@ -19,6 +19,9 @@
 
 EditorState::EditorState()
 {
+	for (size_t i = 0; i < NR_OF_WINDOWS; i++)
+		this->activeWindow[i] = false;
+
 	targetManager = new TargetManager();
 
 	EntityManager* entityManager = &this->getEntityManager();
@@ -251,11 +254,11 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		ImGui::Text("Entity Info");
 		if (ImGui::InputText("Name", &name[0], 64))
 			curEntity->setName(name.c_str());
-		if(ImGui::DragFloat3("Position", &position[0], 0.1))
+		if(ImGui::DragFloat3("Position", &position[0], 0.1f))
 			curEntity->getTransform()->setPosition(position);
-		if (ImGui::DragFloat3("Scale", &scale[0], 0.1))
+		if (ImGui::DragFloat3("Scale", &scale[0], 0.1f))
 			curEntity->getTransform()->setScale(scale);
-		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1))
+		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
 			curEntity->getTransform()->setRotation(rotation);
 		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
 			currentIsTarget = !currentIsTarget;
@@ -362,8 +365,6 @@ void EditorState::playerWindow(EntityManager & entityManager)
 
 	ImGui::InputFloat3("Arrow Position", &level.player.arrowCamera.position[0], 2);
 	ImGui::InputFloat3("Arrow Direction", &level.player.arrowCamera.direction[0], 2);
-	ImGui::InputFloat3("Arrow Offset", &level.player.arrowCamera.offset[0], 2);
-	ImGui::InputFloat("Arrow FOV", &level.player.arrowCamera.FOV, 1);
 
 	float optimalTime = level.scoreManager->getOptimalTime();
 	if (ImGui::InputFloat("Optimal Time", &optimalTime, 1, 1, 2))
@@ -409,7 +410,7 @@ void EditorState::wallWindow(EntityManager & entityManager)
 			for (unsigned int i = 0; i < wallGroupIndex; i++)
 				offset += getWallGroupsIndex[i];
 
-			for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
+			for (int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
 				glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
 				if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
 					level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));

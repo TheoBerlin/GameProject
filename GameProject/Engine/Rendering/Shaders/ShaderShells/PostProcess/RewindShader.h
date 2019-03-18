@@ -13,6 +13,5 @@ public:
 	virtual void bind(Texture* texture);
 
 private:
-	Texture* rewindTexture;
 };
 

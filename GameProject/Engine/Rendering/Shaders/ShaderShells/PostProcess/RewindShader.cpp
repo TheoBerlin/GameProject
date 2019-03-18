@@ -15,5 +15,4 @@ RewindShader::~RewindShader()
 void RewindShader::bind(Texture * texture)
 {
 	PostProcessShader::bind(texture);
-
 }

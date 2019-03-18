@@ -128,7 +128,6 @@ public:
 
 private:
 	Camera * camera;
-	unsigned int width, height;
 	Framebuffer fbo;
 	Framebuffer postProcessFbo;
 	Framebuffer shadowFbo;
@@ -159,7 +158,7 @@ private:
 
 	struct LightBuffer {
 		PointLight pointLights[10];
-		int nrOfPointLights;
-		glm::vec3 padding;
+		int nrOfPointLights = 0;
+		glm::vec3 padding = glm::vec3(1.f);
 	} lightBuffer;
 };
