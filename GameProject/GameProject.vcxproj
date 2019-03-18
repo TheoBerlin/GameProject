@@ -195,6 +195,7 @@
     <ClInclude Include="Engine\Entity\Entity.h" />
     <ClInclude Include="Engine\Entity\EntityManager.h" />
     <ClInclude Include="Engine\Rendering\Shaders\ShaderShells\EntityShader.h" />
+    <ClInclude Include="Game\Components\ArrowConfig.h" />
     <ClInclude Include="Game\Components\CameraDrift.h" />
     <ClInclude Include="Game\Components\DeathAnimation.h" />
     <ClInclude Include="Game\Components\Explosion.h" />

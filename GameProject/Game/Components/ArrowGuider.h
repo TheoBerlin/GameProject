@@ -15,7 +15,7 @@ class Entity;
 class ArrowGuider : public Component
 {
 public:
-    ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float minFOV, float movementSpeed = 3.0f, float maxTurnSpeed = glm::half_pi<float>());
+    ArrowGuider(Entity* parentEntity);
     ~ArrowGuider();
 
     void update(const float& dt);
@@ -57,22 +57,23 @@ private:
 
 	float maxSpeedOffset;
 	float movementSpeed;
-	float maxSpeedIncrease;
-	float minSpeedDecrease;
+	float minSpeed, maxSpeed;
 	float acceleration;
 	float turnSpeedDeceleration;
 	bool isAccelerating;
-	
+
 	int windowHeight;
     void updateCamera(const float& dt, const float& turnFactorsLength);
 
-    // Max turn speed measured in radians
-    float maxTurnSpeed;
+    // Measured in radians
+    float turnSpeed, minTurnSpeed, maxTurnSpeed;
+
     // Mouse movement, relative to window height, required to reach max turn speed
     const float maxMouseMove = 0.5f;
 
     // Used to create prolonged turns, i.e. slowly turning the arrow over time
     glm::vec2 turnFactors;
+
     // Defines how fast turn factors fall off over time (per second)
     const float turnFactorFalloff = 1.0f;
 
@@ -99,14 +100,15 @@ private:
     Camera* arrowCamera;
 
     // Camera settings
-    glm::vec3 minCamOffset;
-    glm::vec3 maxCamOffset;
-    // Max offset change in forward direction per second
+    glm::vec3 minCamOffset, maxCamOffset;
+
+    // Max camera offset change per second
     const float offsetChangeMax = 0.35f;
 
-    float minFOV;
-    // Max FOV and max FOV change per second
-    const float maxFOV = 90.0f, FOVChangeMax = 15.0f;
+    float minFOV, maxFOV;
+
+    // Max FOV change per second (r/s)
+    const float FOVChangeMax = 15.0f;
 
     float currentPitch;
     const float maxPitch = glm::half_pi<float>() - 0.15f;
