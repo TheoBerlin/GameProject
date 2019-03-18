@@ -7,7 +7,6 @@ EntityManager::EntityManager()
 	: reservedEntities(20)
 {
 	this->entities.reserve(this->reservedEntities);
-
 }
 
 

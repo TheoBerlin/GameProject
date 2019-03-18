@@ -20,25 +20,22 @@ GameState::GameState(const Level& level)
 {
 	this->level = level;
 
-	EntityManager* entityManager = &this->getEntityManager();
 	this->level.gui = &this->getGUI();
-	this->targetManager = this->level.targetManager;
-	this->collisionHandler = this->level.collisionHandler;
 	this->level.replaySystem = &this->replaySystem;
 	this->level.scoreManager = &this->scoreManager;
+	this->level.helpGUI = &this->helpGUI;
+
+	this->entityManager = this->level.entityManager;
+	this->targetManager = this->level.targetManager;
+	this->collisionHandler = this->level.collisionHandler;
 	this->levelStructure = this->level.levelStructure;
 	this->lightManager = this->level.lightManager;
-	this->level.helpGUI = &this->helpGUI;
 
 	this->helpGUI.init(&this->getGUI());
 
 	levelParser.readMetadata(this->level);
 
 	gameLogic.init(this->level);
-
-	Display::get().getRenderer().initInstancing();
-	Display::get().getRenderer().getPipeline()->setLightManager(level.lightManager);
-	Display::get().getRenderer().getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
 	InputHandler ih(Display::get().getWindowPtr());
 
@@ -58,10 +55,12 @@ void GameState::start()
 	/*
 		All entities in this state puts themselves in the rendering group of their model
 	*/
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = entityManager->getAll();
+
 	for (Entity* entity : entities)
 		entity->attachToModel();
+
+	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	if (!hasSubscribedToExit) {
 		EventBus::get().subscribe(this, &GameState::exitGame);
@@ -77,8 +76,8 @@ void GameState::end()
 	/*
 		All entities removes themselves from the rendering group of their model
 	*/
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager->getAll();
+
 	for (Entity* entity : entities)
 		entity->detachFromModel();
 
@@ -104,8 +103,7 @@ void GameState::update(const float dt)
 	this->gameLogic.update(dt);
 
 	// Update entities.
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = entityManager->getAll();
 
 	ParticleManager::get().update(dt);
 
@@ -129,27 +127,27 @@ void GameState::updateLogic(const float dt)
 
 void GameState::render()
 {
-	Display& display = Display::get();
-	Renderer& renderer = display.getRenderer();
+ 	Display& display = Display::get();
+ 	Renderer& renderer = display.getRenderer();
 
-	/*
-		New rendering
-	*/
-	renderer.drawAllInstanced();
+ 	/*
+ 		New rendering
+ 	*/
+ 	renderer.drawAllInstanced();
 
-#ifdef ENABLE_COLLISION_DEBUG_DRAW
-	this->collisionHandler->updateDrawingData();
-	this->collisionHandler->drawCollisionBoxes();
-#endif
+ #ifdef ENABLE_COLLISION_DEBUG_DRAW
+ 	this->collisionHandler->updateDrawingData();
+ 	this->collisionHandler->drawCollisionBoxes();
+ #endif
 
-#ifdef ENABLE_SHADOW_BOX
-	lightManager->drawDebugBox();
-#endif
+ #ifdef ENABLE_SHADOW_BOX
+ 	lightManager->drawDebugBox();
+ #endif
 
-	// Draw gui elements.
-	GUIRenderer& guiRenderer = display.getGUIRenderer();
-	GUI& gui = this->getGUI();
-	guiRenderer.draw(gui);
+ 	// Draw gui elements.
+ 	GUIRenderer& guiRenderer = display.getGUIRenderer();
+ 	GUI& gui = this->getGUI();
+ 	guiRenderer.draw(gui);
 }
 
 void GameState::pauseGame(PauseEvent* ev)

@@ -16,7 +16,7 @@
 
 MenuState::MenuState()
 	:State(),
-	levelPreviewer(new LevelPreviewer())
+	levelPreviewer(nullptr)
 {
 	// Create panel groups [0] is main menu, [1] is level select
 	this->panelGroups.push_back(std::vector<Panel*>());
@@ -47,10 +47,14 @@ MenuState::~MenuState()
 
 		levelPreviewer = nullptr;
 	}
+
+	TextureManager::unloadAllTextures();
 }
 
 void MenuState::start()
 {
+	this->updateLevelPreview(this->selectedLevel);
+
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
@@ -88,7 +92,9 @@ void MenuState::updateLevelPreview(const std::string& levelName)
 		delete levelPreviewer;
 	}
 
-	this->levelPreviewer = new LevelPreviewer();
+	this->entityManager.removeEntities();
+
+	this->levelPreviewer = new LevelPreviewer(&this->entityManager);
 
 	this->levelPreviewer->setLevel(levelName);
 }
@@ -135,7 +141,6 @@ void MenuState::initLevelSelect()
 	{
 		scrollPanel->setActiveButton(0);
 		this->selectedLevel = levels[0].string();
-		levelPreviewer->setLevel(levels[0].string());
 	}
 
 	selectPnl->addChild(scrollPanel);
@@ -302,9 +307,18 @@ void MenuState::initMainMenu()
 	editorBtn->setNormalColor(BUTTON_NORMAL_COLOR);
 	editorBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	editorBtn->addText("Level Editor", "aldo", glm::vec4(1.0f));
+
 	editorBtn->setCallback([this](void) {
+		this->entityManager.removeEntities();
+
+		if (this->levelPreviewer) {
+			delete this->levelPreviewer;
+			this->levelPreviewer = nullptr;
+		}
+
 		this->pushState(new EditorState());
 	});
+
 	this->panelGroups[0].push_back(editorBtn);
 	gui.addPanel(editorBtn);
 }

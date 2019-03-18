@@ -4,7 +4,6 @@
 #include <Engine/Components/Camera.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
-#include <Game/GameLogic/ReplaySystem.h>
 #include <Game/GameLogic/TargetManager.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/Level/LevelStructure.h>
@@ -14,7 +13,7 @@
 class LevelPreviewer
 {
 public:
-    LevelPreviewer();
+    LevelPreviewer(EntityManager* entityManager);
     ~LevelPreviewer();
 
     void setLevel(const std::string& levelName);
@@ -32,8 +31,7 @@ private:
     Level level;
 
     // Level systems
-    ReplaySystem replaySystem;
-    EntityManager entityManager;
+    EntityManager* entityManager;
     LevelStructure levelStructure;
     TargetManager* targetManager;
     CollisionHandler collisionHandler;

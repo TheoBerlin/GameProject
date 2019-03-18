@@ -21,8 +21,6 @@ EditorState::EditorState()
 {
 	targetManager = new TargetManager();
 
-	EntityManager* entityManager = &this->getEntityManager();
-
 	// Set up the player camera
 	Transform* camTransform = camera.getTransform();
 
@@ -38,7 +36,7 @@ EditorState::EditorState()
 
 	Display::get().getRenderer().setActiveCamera(c);
 
-	level.entityManager = entityManager;
+	level.entityManager = &this->entityManager;
 	level.targetManager = targetManager;
 	level.scoreManager = &this->scoreManager;
 	level.collisionHandler = &this->collisionHandler;
@@ -71,8 +69,7 @@ void EditorState::start()
 	/*
 	All entities in this state puts themselves in the rendering group of their model
 	*/
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->attachToModel();
 }
@@ -82,8 +79,7 @@ void EditorState::end()
 	/*
 	All entities removes themselves from the rendering group of their model
 	*/
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->detachFromModel();
 }
@@ -94,8 +90,7 @@ void EditorState::update(const float dt)
 	camera.update(dt);
 
 	// Update entities.
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager.getAll();
 
 	for (unsigned int i = 0; i < entities.size(); i++) {
 		entities[i]->update(dt);
@@ -110,7 +105,7 @@ void EditorState::update(const float dt)
 void EditorState::render()
 {
 	/*
-EntityManager& entityManager = this->getEntityManager();
+EntityManager& entityManager = this->entityManager;
 std::vector<Entity*>& entities = entityManager.getAll();
 */
 	Display& display = Display::get();

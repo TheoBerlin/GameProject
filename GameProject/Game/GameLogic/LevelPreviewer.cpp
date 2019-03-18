@@ -4,15 +4,12 @@
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
 
-#include <Utils/Logger.h>
-
-LevelPreviewer::LevelPreviewer()
+LevelPreviewer::LevelPreviewer(EntityManager* entityManager)
     :elapsedTime(0.0f),
     replayLength(0.0f),
     levelParser(),
     level(),
-    replaySystem(),
-    entityManager(),
+    entityManager(entityManager),
     levelStructure(),
     targetManager(),
     collisionHandler()
@@ -20,8 +17,8 @@ LevelPreviewer::LevelPreviewer()
     this->targetManager = new TargetManager();
 
     level.levelName = "";
-    level.replaySystem = &replaySystem;
-    level.entityManager = &entityManager;
+    level.scoreManager = nullptr;
+    level.entityManager = entityManager;
     level.levelStructure = &levelStructure;
     level.targetManager = targetManager;
     level.collisionHandler = &collisionHandler;
@@ -30,8 +27,9 @@ LevelPreviewer::LevelPreviewer()
 
 LevelPreviewer::~LevelPreviewer()
 {
-    LOG_INFO("Deleting level previewer");
-    delete targetManager;
+	if (level.levelName != "") {
+		delete targetManager;
+	}
 
 	Display::get().getRenderer().clearRenderingTargets();
 
@@ -52,15 +50,12 @@ void LevelPreviewer::setLevel(const std::string& levelName)
 	renderer.getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
     // Create camera
-    this->cameraEntity = entityManager.addTracedEntity("PreviewCamera");
+    this->cameraEntity = entityManager->addTracedEntity("PreviewCamera");
 
     this->camera = new Camera(this->cameraEntity);
 
     glm::vec3 pos = level.player.oversightCamera.position;
     glm::vec3 dir = level.player.oversightCamera.direction;
-
-    LOG_INFO("Pos: (%f,%f,%f)", pos.x, pos.y, pos.z);
-    LOG_INFO("Direction: (%f,%f,%f)", dir.x, dir.y, dir.z);
 
     Transform* camTransform = cameraEntity->getTransform();
 

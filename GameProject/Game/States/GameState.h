@@ -11,6 +11,7 @@
 #include <Game/Level/LevelStructure.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
 
+struct Level;
 
 class GameState : public State
 {
@@ -35,6 +36,7 @@ private:
 	Level level;
 
 	LevelParser levelParser;
+	EntityManager* entityManager;
 	TargetManager* targetManager;
 	GameLogic gameLogic;
 	CollisionHandler* collisionHandler;

@@ -38,6 +38,8 @@ private:
 	// Init level select GUI panels
 	void initLevelSelect();
 
+	EntityManager entityManager;
+
 	std::string selectedLevel;
 
 	LevelParser levelParser;
