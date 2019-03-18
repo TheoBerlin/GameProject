@@ -352,18 +352,23 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		//Model Info
 		Model* model = curEntity->getModel();
 		ImGui::Text("Model Info");
-		ImGui::InputText("Model Name", &currentModel[0], 64);
+		ImGui::InputText("Model Name", &currentModel[0], 128);
 		if (ImGui::Button("Load Model")) {
-			if (!ModelLoader::getModel("./Game/assets/" + currentModel + ".fbx")) {
+
+			size_t index = currentModel.find('\0');
+			currentModel.erase(index, currentModel.size() - index);
+
+			std::string path = std::string("./Game/assets/") + currentModel + std::string(".fbx");
+			if (!ModelLoader::getModel(path.c_str())) {
 				model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
 				Display::get().getRenderer().addRenderingTarget(model);
 				curEntity->setModel(model);
-				curEntity->getModel()->setName(currentModel);
+				curEntity->getModel()->setName(currentModel.c_str());
 			}
 			else {
 				model = ModelLoader::getModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
 				curEntity->setModel(model);
-				curEntity->getModel()->setName(currentModel);
+				curEntity->getModel()->setName(currentModel.c_str());
 			}
 		}
 		ImGui::NewLine();
