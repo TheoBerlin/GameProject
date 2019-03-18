@@ -243,7 +243,15 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			newTrans->setScale(dupeTransform->getScale());
 			newTrans->setRotationQuat(dupeTransform->getRotationQuat());
 
-			newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+			if (currentIsTarget) {
+				newEntity->setName("Target " + std::to_string(level.targetManager->getTargetCount()));
+				level.targetManager->addStaticTarget(newEntity, newEntity->getTransform()->getPosition());
+			}
+			else {
+				newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+				currentIsTarget = false;
+			}
+				
 
 			Model* dupeModel = dupeEntity->getModel();
 			newEntity->setModel(dupeModel);
@@ -253,7 +261,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 
 			currentModel = newEntity->getModel()->getName();
 			currentEntity = entityManager.getEntitySize() - 1;
-			currentIsTarget = false;
+			
 		}
 	}
 
@@ -310,9 +318,10 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				if (!found) {
 					for (unsigned int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
 						if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+							Transform * currEntity = entityManager.getEntity(currentEntity)->getTransform();
 							std::vector<KeyPoint> path;
-							path.push_back(KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
-							path.push_back(KeyPoint(glm::vec3(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+							path.push_back(KeyPoint(currEntity->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
+							path.push_back(KeyPoint(currEntity->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
 							level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 							level.targetManager->addMovingTarget(entityManager.getEntity(currentEntity), path);
 						}
@@ -343,8 +352,10 @@ void EditorState::entityWindow(EntityManager& entityManager)
 						if (ImGui::DragFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 						ImGui::SameLine();
-						if(ImGui::DragFloat(std::string("Path Time " + std::to_string(j)).c_str(), &path[j].t, 0.1f))
+						ImGui::PushItemWidth(50);
+						if(ImGui::DragFloat(std::string(std::string("Time stamp") + std::to_string(j)).c_str(), &path[j].t, 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
+						ImGui::PopItemWidth();
 					}
 				}
 			}
