@@ -19,7 +19,7 @@ private:
 	void levelWindow(EntityManager& entityManager);
 	void playerWindow(EntityManager& entityManager);
 	void wallWindow(EntityManager& entityManager);
-	void lightWindow();
+	void lightWindow(EntityManager & entityManager);
 	void editorWindow();
 
 	std::string levelName;
@@ -33,6 +33,11 @@ private:
 	Entity camera;
 	float camSpeed;
 	FreeMove* freeMove;
+
+	glm::vec4 dirLightDirection;
+	glm::vec4 dirLightColorIntesity;
+
+	Entity* lampPlacerholder;
 
 	Level level;
 	LevelParser levelParser;

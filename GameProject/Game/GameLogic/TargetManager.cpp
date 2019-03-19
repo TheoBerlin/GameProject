@@ -23,9 +23,9 @@ void TargetManager::addStaticTarget(Entity* host, const glm::vec3& position)
 {
 	// Set position and forward
 	Transform* transform = host->getTransform();
+	transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	transform->setPosition(position);
-	transform->setForward(glm::vec3(0.0f, 0.0f, 1.0f));
 
 	// Generic setup for all targets
 	setupTargetGeneric(host);
@@ -83,7 +83,7 @@ void TargetManager::removeTarget(std::string name)
 		if (movingTargets[i].pathTreader->getHost()->getName() == name) {
 			movingTargets[i].pathTreader->getHost()->removeComponent("MovingTargetCollision");
 			movingTargets[i].pathTreader->getHost()->removeComponent("RollNullifier");
-			movingTargets[i].pathTreader->getHost()->removeComponent("PathThreader");
+			movingTargets[i].pathTreader->getHost()->removeComponent("PathTreader");
 			movingTargets.erase(movingTargets.begin() + i);
 			found = true;
 		}

@@ -7,6 +7,8 @@
 #include <Engine/GUI/GUI.h>
 #include <Engine/Rendering/GUIRenderer.h>
 
+#include "Engine/Entity/Transform.h"
+
 #include <Engine/Components/FreeMove.h>
 #include <Engine/Components/Camera.h>
 #include <Game/components/Hover.h>
@@ -53,6 +55,18 @@ EditorState::EditorState()
 	InputHandler ih(Display::get().getWindowPtr());
 
 	ImGui::GetIO().KeyMap[ImGuiKey_Backspace] = ImGuiKey_Backspace;
+
+	freeMove->disableMouse();
+
+	Model* model;
+	model = ModelLoader::loadModel("./Game/assets/lampPlaceholder.fbx");
+	model->setName("lampPlaceholder");
+	Display::get().getRenderer().addRenderingTarget(model);
+
+	lampPlacerholder = new Entity();
+	lampPlacerholder->setModel(model);
+	lampPlacerholder->getTransform()->setScale(0.0f);
+	lampPlacerholder->setName("Placeholder");
 }
 
 EditorState::~EditorState()
@@ -159,7 +173,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (ImGui::Button("Player"))
 		activeWindow[4] = !activeWindow[3];
 	if (ImGui::Button("Editor/Help"))
-		activeWindow[5] = !activeWindow[4];
+		activeWindow[5] = !activeWindow[5];
 	ImGui::NewLine();
 
 	ImGui::End();
@@ -172,7 +186,7 @@ void EditorState::mainWindow(EntityManager & entityManager)
 	if (activeWindow[2])
 		wallWindow(entityManager);
 	if (activeWindow[3])
-		lightWindow();
+		lightWindow(entityManager);
 	if (activeWindow[4])
 		playerWindow(entityManager);
 	if (activeWindow[5])
@@ -188,7 +202,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 	if (ImGui::BeginCombo("Entities", currentItem.c_str())) {
 		for (int i = 0; i < entityManager.getEntitySize(); i++) {
 			bool is_selected = (currentItem == entityManager.getEntity(i)->getName()); // You can store your selection however you want, outside or inside your objects
-			if (entityManager.getEntity(i)->getName().substr(0, 9) != "WallPoint") {
+			if (entityManager.getEntity(i)->getName().substr(0, 9) != "WallPoint" && entityManager.getEntity(i)->getName().substr(0, 11) != "Placeholder") {
 				if (ImGui::Selectable(entityManager.getEntity(i)->getName().c_str(), is_selected)) {
 					currentItem = entityManager.getEntity(i)->getName();
 					currentModel = entityManager.getEntity(i)->getModel()->getName();
@@ -224,6 +238,41 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		currentEntity = entityManager.getEntitySize() - 1;
 		currentIsTarget = false;
 	}
+	
+	if (currentEntity != -1) {
+		if (ImGui::Button("Duplicate Entity")) {
+			Entity* dupeEntity = entityManager.getEntity(currentEntity);
+			Entity* newEntity = new Entity();
+
+			Transform* newTrans = newEntity->getTransform();
+			Transform* dupeTransform = dupeEntity->getTransform();
+
+			newTrans->setPosition(dupeTransform->getPosition());
+			newTrans->setScale(dupeTransform->getScale());
+			newTrans->setRotationQuat(dupeTransform->getRotationQuat());
+
+			if (currentIsTarget) {
+				newEntity->setName("Target " + std::to_string(level.targetManager->getTargetCount()));
+				level.targetManager->addStaticTarget(newEntity, newEntity->getTransform()->getPosition());
+			}
+			else {
+				newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
+				currentIsTarget = false;
+			}
+				
+
+			Model* dupeModel = dupeEntity->getModel();
+			newEntity->setModel(dupeModel);
+			newEntity->getModel()->setName(dupeModel->getName());
+
+			entityManager.addEntity(newEntity);
+
+			currentModel = newEntity->getModel()->getName();
+			currentEntity = entityManager.getEntitySize() - 1;
+			
+		}
+	}
+
 	if (ImGui::Button("Remove Entity")) {
 		if (currentIsTarget) {
 			for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
@@ -258,6 +307,10 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		if (ImGui::DragFloat3("Rotation", &rotation[0], 0.1f))
 			curEntity->getTransform()->setRotation(rotation);
 		if (ImGui::RadioButton("IsTarget", currentIsTarget)) {
+			if (!currentIsTarget)
+				level.targetManager->addStaticTarget(curEntity, curEntity->getTransform()->getPosition());
+			else
+				level.targetManager->removeTarget(curEntity->getName());
 			currentIsTarget = !currentIsTarget;
 		}
 		if (currentIsTarget) {
@@ -266,16 +319,20 @@ void EditorState::entityWindow(EntityManager& entityManager)
 				bool found = false;
 				for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 					if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
-						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+						std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
+						Transform * currEntityTransform = entityManager.getEntity(currentEntity)->getTransform();
+						float timeStamp = glm::length(currEntityTransform->getPosition() - path.back().Position) / 3.0f + path.back().t;
+						level.targetManager->addKeyPoint(entityManager.getEntity(currentEntity), KeyPoint(currEntityTransform->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), timeStamp));
 						found = true;
 					}
 				}
 				if (!found) {
 					for (unsigned int i = 0; i < level.targetManager->getStaticTargets().size(); i++) {
 						if (level.targetManager->getStaticTargets()[i].hoverAnimation->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+							Transform * currEntityTransform = entityManager.getEntity(currentEntity)->getTransform();
 							std::vector<KeyPoint> path;
-							path.push_back(KeyPoint(glm::vec3(0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
-							path.push_back(KeyPoint(glm::vec3(1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
+							path.push_back(KeyPoint(currEntityTransform->getPosition(), glm::vec3(0.0f, 1.0f, 0.0f), 0.0f));
+							path.push_back(KeyPoint(currEntityTransform->getPosition() + glm::vec3(0.0f, 5.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f), 1.0f));
 							level.targetManager->removeTarget(entityManager.getEntity(currentEntity)->getName());
 							level.targetManager->addMovingTarget(entityManager.getEntity(currentEntity), path);
 						}
@@ -301,13 +358,16 @@ void EditorState::entityWindow(EntityManager& entityManager)
 			}
 			for (unsigned int i = 0; i < level.targetManager->getMovingTargets().size(); i++) {
 				if (level.targetManager->getMovingTargets()[i].pathTreader->getHost()->getName() == entityManager.getEntity(currentEntity)->getName()) {
+
 					std::vector<KeyPoint> path = level.targetManager->getMovingTargets()[i].pathTreader->getPath();
 					for (unsigned int j = 0; j < level.targetManager->getMovingTargets()[i].pathTreader->getPath().size(); j++) {
-						if (ImGui::InputFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 2))
+						if (ImGui::DragFloat3(std::string("Path " + std::to_string(j)).c_str(), &path[j].Position[0], 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
 						ImGui::SameLine();
-						if(ImGui::InputFloat(std::string("Path Time " + std::to_string(j)).c_str(), &path[j].t))
+						ImGui::PushItemWidth(50);
+						if(ImGui::DragFloat(std::string(std::string("Time stamp") + std::to_string(j)).c_str(), &path[j].t, 0.1f))
 							level.targetManager->getMovingTargets()[i].pathTreader->setPath(path);
+						ImGui::PopItemWidth();
 					}
 				}
 			}
@@ -315,11 +375,25 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		//Model Info
 		Model* model = curEntity->getModel();
 		ImGui::Text("Model Info");
-		ImGui::InputText("Model Name", &currentModel[0], 64);
+		ImGui::InputText("Model Name", &currentModel[0], 128);
 		if (ImGui::Button("Load Model")) {
-			model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
-			curEntity->setModel(model);
-			curEntity->getModel()->setName(currentModel);
+
+			size_t index = currentModel.find('\0');
+			if(index != std::string::npos)
+				currentModel.erase(index, currentModel.size() - index);
+
+			std::string path = std::string("./Game/assets/") + currentModel + ".fbx";
+			if (!ModelLoader::getModel(path.c_str())) {
+				model = ModelLoader::loadModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
+				Display::get().getRenderer().addRenderingTarget(model);
+				curEntity->setModel(model);
+				curEntity->getModel()->setName(currentModel.c_str());
+			}
+			else {
+				model = ModelLoader::getModel(std::string("./Game/assets/") + currentModel.c_str() + ".fbx");
+				curEntity->setModel(model);
+				curEntity->getModel()->setName(currentModel.c_str());
+			}
 		}
 		ImGui::NewLine();
 
@@ -344,7 +418,12 @@ void EditorState::levelWindow(EntityManager& entityManager)
 
 		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
 		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+		//Get directional light settings
+		this->dirLightDirection = lightManager.getDirectionalLight()->getDirection();
+		this->dirLightColorIntesity = lightManager.getDirectionalLight()->getIntensity();
+
 		Display::get().getRenderer().initInstancing();
+		entityManager.addEntity(lampPlacerholder);
 	}
 	ImGui::End();
 #endif
@@ -360,8 +439,22 @@ void EditorState::playerWindow(EntityManager & entityManager)
 	ImGui::InputFloat3("Overview Offset", &level.player.oversightCamera.offset[0], 2);
 	ImGui::InputFloat("Overview FOV", &level.player.oversightCamera.FOV, 1);
 
+	if (ImGui::Button("Set Overview settings to current camera settings")) {
+		CameraSetting& oc = level.player.oversightCamera;
+		Transform* cameraTransform = this->camera.getTransform();
+		oc.position = cameraTransform->getPosition();
+		oc.direction = cameraTransform->getForward();
+	}
+
 	ImGui::InputFloat3("Arrow Position", &level.player.arrowCamera.position[0], 2);
 	ImGui::InputFloat3("Arrow Direction", &level.player.arrowCamera.direction[0], 2);
+
+	if (ImGui::Button("Set Arrow settings to current camera settings")) {
+		CameraSetting& ac = level.player.arrowCamera;
+		Transform* cameraTransform = this->camera.getTransform();
+		ac.position = cameraTransform->getPosition();
+		ac.direction = cameraTransform->getForward();
+	}
 
 	float optimalTime = level.scoreManager->getOptimalTime();
 	if (ImGui::InputFloat("Optimal Time", &optimalTime, 1, 1, 2))
@@ -375,8 +468,22 @@ void EditorState::wallWindow(EntityManager & entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Wall Window");
+	
+	static float wallHeight = level.levelStructure->getWallHeight();
+	
+
+	if (ImGui::DragFloat("Wall Height:", &wallHeight, 0.1f)) {
+		level.levelStructure->setWallHeight(wallHeight);
+		level.levelStructure->updateBuffers();
+	}
+
+
 	if (ImGui::Button("Add Wall")) {
 		level.levelStructure->addWall(level);
+	}
+	std::string wallTex = level.levelStructure->getTexture();
+	if (ImGui::InputText("Wall Texture", (char*)wallTex.c_str(), wallTex.capacity())) {
+		level.levelStructure->setTexture(wallTex.c_str());
 	}
 	if (ImGui::BeginCombo("Wall Group", currentWall.c_str())) {
 		for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex().size(); i++) {
@@ -390,26 +497,32 @@ void EditorState::wallWindow(EntityManager & entityManager)
 		ImGui::EndCombo();
 	}
 	if (std::stoi(currentWall) != -1) {
+		unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
+		static int InputIndex = 0;
+		int wallCount = level.levelStructure->getWallGroupsIndex()[wallGroupIndex];
+
+		ImGui::InputInt("Input index:", &InputIndex, 1);
+
+		InputIndex = (unsigned)InputIndex % wallCount;
+
 		if (ImGui::Button("Add Point")) {
-			level.levelStructure->addPoint(level, std::stoi(currentWall), glm::vec3(1.0f, 0.0f, 3.0f));
+			level.levelStructure->addPoint(level, std::stoi(currentWall), (unsigned)InputIndex);
 		}
 		if (ImGui::Button("Remove Point")) {
 			int prevSize = level.levelStructure->getWallGroupsIndex().size();
-			level.levelStructure->removePoint(level, std::stoi(currentWall));
+			level.levelStructure->removePoint(level, wallGroupIndex, InputIndex);
 			if (level.levelStructure->getWallGroupsIndex().size() != prevSize)
 				currentWall = "-1";
 		}
 		else {
-
-			unsigned wallGroupIndex = (unsigned)std::stoi(currentWall);
 			unsigned offset = 0;
-			std::vector<int> getWallGroupsIndex = level.levelStructure->getWallGroupsIndex();
-			for (unsigned int i = 0; i < wallGroupIndex; i++)
-				offset += getWallGroupsIndex[i];
 
-			for (unsigned int i = 0; i < level.levelStructure->getWallGroupsIndex()[wallGroupIndex]; i++) {
+			std::vector<int>& wallGroupsIndex = level.levelStructure->getWallGroupsIndex();
+			for (unsigned int i = 0; i < wallGroupIndex; i++)
+				offset += wallGroupsIndex[i];
+			for (unsigned int i = 0; i < wallCount; i++) {
 				glm::vec2 position = glm::vec2(level.levelStructure->getWallPoints()[i + offset].x, level.levelStructure->getWallPoints()[i + offset].z);
-				if (ImGui::InputFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 2)) {
+				if (ImGui::DragFloat2(std::string("Point " + std::to_string(i)).c_str(), &position[0], 0.1f)) {
 					level.levelStructure->editPoint(level, wallGroupIndex, i + offset, glm::vec3(position.x, 0, position.y));
 				}
 			}
@@ -419,10 +532,17 @@ void EditorState::wallWindow(EntityManager & entityManager)
 #endif
 }
 
-void EditorState::lightWindow()
+void EditorState::lightWindow(EntityManager & entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Light Window");
+	ImGui::Text("Directional Light Settings");
+	if (ImGui::DragFloat4("Direction", &this->dirLightDirection[0], 0.1f) ||
+		ImGui::DragFloat4("ColorIntensity", &this->dirLightColorIntesity[0], 0.1f)) {
+		level.lightManager->updateDirectionalLight(this->dirLightDirection, this->dirLightColorIntesity, &level);
+		Display::get().getRenderer().getPipeline()->updateDirectionalLight(&DirectionalLight(this->dirLightDirection, this->dirLightColorIntesity));
+	}
+
 	if (ImGui::Button("Add Light")) {
 		Display::get().getRenderer().getPipeline()->createLight(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), 7);
 	}
@@ -446,12 +566,20 @@ void EditorState::lightWindow()
 			glm::vec3 position = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getPosition();
 			glm::vec4 colour = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getIntensity();
 			int distance = level.lightManager->getPointLights()->at(std::stoi(currentLight))->getDistance();
+
+			for (unsigned int i = 0; i < entityManager.getEntitySize(); i++) {
+				if (entityManager.getEntity(i)->getName().substr(0, 11) == "Placeholder") {
+					entityManager.getEntity(i)->getTransform()->setPosition(position);
+					entityManager.getEntity(i)->getTransform()->setScale(0.1f);
+				}
+			}
+
 			bool change = false;
-			if (ImGui::InputFloat3("Position", &position[0], 2))
+			if (ImGui::DragFloat3("Position", &position[0], 0.1f))
 				change = true;
-			if (ImGui::InputFloat4("Color + Intensity", &colour[0], 2))
+			if (ImGui::DragFloat4("Color + Intensity", &colour[0], 0.1f))
 				change = true;
-			if (ImGui::InputInt("Distance", &distance, 0))
+			if (ImGui::DragInt("Distance", &distance, 1))
 				change = true;
 			if(change)
 				Display::get().getRenderer().getPipeline()->updateLight(std::stoi(currentLight), glm::vec4(position, 1.0f), colour, distance);
@@ -483,10 +611,12 @@ void EditorState::pauseGame(KeyEvent * ev)
 	if (ev->key == GLFW_KEY_F2 && ev->action == GLFW_PRESS) {
 		if (freeMove->mouseIsEnabled()) {
 			freeMove->disableMouse();
+			freeMove->setSpeed(0.0f);
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 		else {
 			freeMove->enableMouse();
+			freeMove->setSpeed(this->camSpeed);
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
