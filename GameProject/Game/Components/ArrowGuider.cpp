@@ -35,6 +35,11 @@ ArrowGuider::ArrowGuider(Entity* parentEntity)
 	this->turnSpeedDeceleration = 3.0f * 0.2f;
 	this->maxSpeedOffset = 1.0f;
 	this->isAccelerating = false;
+
+	sound.loadSound("./Game/assets/sound/Wind.wav");
+	sound.setVolume(0.5);
+	sound.setLoopState(true);
+	SoundManager::get().addSound(&sound, SOUND_EFFECT);
 }
 
 ArrowGuider::~ArrowGuider()
@@ -61,6 +66,8 @@ void ArrowGuider::update(const float& dt)
     float turnFactorsLength = glm::length(turnFactors);
 
     if (isGuiding) {
+		sound.setVolume(movementSpeed / 15);
+
         // Update position storage
         float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * (turnFactorsLength * 3.0f) * this->movementSpeed;
 
@@ -107,7 +114,7 @@ void ArrowGuider::update(const float& dt)
         glm::vec3 newPos = currentPos + transform->getForward() * movementSpeed * dt;
 
         transform->setPosition(newPos);
-    }
+	}
 
 	if (arrowCamera) {
 		float speedOffsetFactor = (this->movementSpeed - this->minSpeed) / (this->maxSpeed - this->minSpeed);
@@ -173,6 +180,8 @@ void ArrowGuider::startGuiding()
 
 	// Subscribe to key events
 	EventBus::get().subscribe(this, &ArrowGuider::handleKeyEvent);
+
+	sound.playSound();
 }
 
 void ArrowGuider::stopGuiding(float flightTime)
@@ -190,6 +199,8 @@ void ArrowGuider::stopGuiding(float flightTime)
     newKeyPoint.t = this->flightTime;
 
     path.back() = newKeyPoint;
+
+	sound.stopSound();
 }
 
 void ArrowGuider::saveKeyPoint(float flightTime)
