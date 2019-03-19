@@ -36,6 +36,7 @@ private:
 
 	Level level;
 	LevelParser levelParser;
+	EntityManager entityManager;
 	TargetManager* targetManager;
 	ScoreManager scoreManager;
 	GameLogic gameLogic;

@@ -4,6 +4,7 @@
 #include "../GUI/GUI.h"
 
 class StateManager;
+
 class State
 {
 public:
@@ -36,11 +37,9 @@ public:
 	void popState(unsigned popAmount = 1);
 
 	StateManager& getStateManager();
-	EntityManager& getEntityManager();
 	GUI& getGUI();
 
 private:
 	StateManager* stateManager;
-	EntityManager entityManager;
 	GUI gui;
 };

@@ -92,6 +92,7 @@
     <ClCompile Include="Game\Components\RollNullifier.cpp" />
     <ClCompile Include="Game\components\ThirdPersonController.cpp" />
     <ClCompile Include="Game\GameLogic.cpp" />
+    <ClCompile Include="Game\GameLogic\LevelPreviewer.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\AimPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\GuidingPhase.cpp" />
     <ClCompile Include="Game\GameLogic\Phases\OverviewPhase.cpp" />
@@ -204,6 +205,7 @@
     <ClInclude Include="Game\components\ThirdPersonController.h" />
     <ClInclude Include="Game\GameLogic.h" />
     <ClInclude Include="Game\GameLogic\GameEvents.h" />
+    <ClInclude Include="Game\GameLogic\LevelPreviewer.h" />
     <ClInclude Include="Game\GameLogic\Phases\AimPhase.h" />
     <ClInclude Include="Game\GameLogic\Phases\GuidingPhase.h" />
     <ClInclude Include="Game\GameLogic\Phases\OverviewPhase.h" />

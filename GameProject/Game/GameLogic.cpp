@@ -1,11 +1,14 @@
 #include "GameLogic.h"
 
+#include <Engine/Rendering/Display.h>
+#include <Engine/Rendering/Renderer.h>
 #include <Engine/Components/Camera.h>
 #include <Engine/Events/EventBus.h>
 #include <Game/GameLogic/Phases/OverviewPhase.h>
 #include <Game/Components/CameraTransition.h>
 
 GameLogic::GameLogic()
+	:phase(nullptr)
 {
 }
 
@@ -13,36 +16,67 @@ void GameLogic::init(Level& level)
 {
 	this->level = level;
 
+	// Get level preview camera component
+	Camera* oldCam = Display::get().getRenderer().getActiveCamera();
+
+	Entity* oldCamEntity = oldCam->getHost();
+
+	Transform* oldCamTransform = oldCamEntity->getTransform();
+
 	// Set up phase transition camera entity
 	phaseTransitionEntity = level.entityManager->addTracedEntity("PhaseTransition");
 
-	new CameraTransition(phaseTransitionEntity);
+	// Transition to overview camera
+	CameraTransition* camTransition = new CameraTransition(phaseTransitionEntity);
 
-	Camera* camera = new Camera(phaseTransitionEntity, "Camera", { 0.0f, 0.5f, -2.0f });
-	camera->init();
+	Transform* newCamTransform = phaseTransitionEntity->getTransform();
 
-	/*
-		Start game in overview phase
-	*/
-	phase = new OverviewPhase(level, phaseTransitionEntity);
+	newCamTransform->setPosition(oldCamTransform->getPosition());
+	newCamTransform->setForward(oldCamTransform->getForward());
 
-	// Handle phase changes
-	EventBus::get().subscribe(this, &GameLogic::changePhaseCallback);
+	oldCam->setHost(phaseTransitionEntity);
+
+	// Remove old camera entity
+	level.entityManager->removeTracedEntity(oldCamEntity->getName());
+
+	CameraSetting overviewCamSettings = level.player.oversightCamera;
+	float transitionLength = glm::length(newCamTransform->getPosition() - overviewCamSettings.position) / 3.0f;
+
+	camTransition->setDestination(overviewCamSettings.position, overviewCamSettings.direction, overviewCamSettings.FOV, transitionLength);
+
+	EventBus::get().subscribe(this, &GameLogic::startOverviewPhase);
 }
 
 GameLogic::~GameLogic()
 {
-	EventBus::get().unsubscribe(this, &GameLogic::changePhaseCallback);
+	EventBus::get().unsubscribe(this, &GameLogic::changePhase);
 
 	delete phase;
 }
 
 void GameLogic::update(const float & dt)
 {
-	this->phase->update(dt);
+	if (phase) {
+		this->phase->update(dt);
+	}
 }
 
-void GameLogic::changePhaseCallback(PhaseChangeEvent * event)
+void GameLogic::startOverviewPhase(CameraTransitionEvent* event)
+{
+	EventBus::get().unsubscribe(this, &GameLogic::startOverviewPhase);
+
+	/*
+		Start game in overview phase
+	*/
+	phase = new OverviewPhase(level, phaseTransitionEntity);
+
+	Display::get().getRenderer().initInstancing();
+
+	// Handle phase changes
+	EventBus::get().subscribe(this, &GameLogic::changePhase);
+}
+
+void GameLogic::changePhase(PhaseChangeEvent * event)
 {
 	Phase* previousPhase = phase;
 
