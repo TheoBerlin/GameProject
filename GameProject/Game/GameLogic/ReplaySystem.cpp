@@ -139,13 +139,21 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
     std::vector<Entity*> entities = level.entityManager->getAll();
 
 	ParticleManager& particleManager = ParticleManager::get();
+	SoundManager& soundManager = SoundManager::get();
 
-    while (replayTime < time && isReplaying) {
-        timeStep = this->collisions[collisionIndex].time - replayTime + 0.001f;
+	unsigned int collisionsToReplay = 0;
 
-        timeStep = (replayTime + timeStep > time) ? time - replayTime + 0.001f : timeStep;
+	// Calculate the amount collisions to replay
+	while (collisionsToReplay < collisions.size() && collisions[collisionsToReplay].time < time) {
+		collisionsToReplay += 1;
+	};
 
+    while (this->collisionIndex < collisionsToReplay) {
+		// Fast forward sounds, do not include the first timestep (0 -> collisions[0].time)
+		soundManager.offsetEffects(timeStep);
 		particleManager.update(timeStep);
+
+        timeStep = this->collisions[collisionIndex].time - replayTime + 0.001f;
 
         for (auto& entity : entities) {
             if (entity != playerEntity) {
@@ -161,6 +169,7 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
 
 	if (timeStep > 0.0f) {
 		particleManager.update(timeStep);
+		soundManager.offsetEffects(timeStep);
 
 		for (auto& entity : entities) {
 			if (entity != playerEntity) {

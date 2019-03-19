@@ -38,7 +38,7 @@ void Settings::writeFile(std::string fileName)
 {
 	jsonFile["MasterVolume"] = SoundManager::get().getMasterVolume();
 	jsonFile["MusicVolume"] = SoundManager::get().getMusicVolume();
-	jsonFile["EffectVolume"] = SoundManager::get().getEffectVolume();
+	jsonFile["EffectVolume"] = SoundManager::get().getEffectsVolume();
 	jsonFile["MiscVolume"] = SoundManager::get().getMiscVolume();
 	jsonFile["ScreenWidth"] = this->screenWidth;
 	jsonFile["ScreenHeight"] = this->screenHeight;
@@ -62,7 +62,7 @@ void Settings::readVolumes()
 		LOG_ERROR("Music Volume has no value");
 	}
 	if (!jsonFile["EffectVolume"].empty()) {
-		SoundManager::get().setEffectVolume(jsonFile["EffectVolume"]);
+		SoundManager::get().setEffectsVolume(jsonFile["EffectVolume"]);
 	}
 	else {
 		LOG_ERROR("Effect Volume has no value");

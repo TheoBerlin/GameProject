@@ -13,6 +13,8 @@ private:
 	float ambientVolume = 1.0f;
 	float miscVolume = 1.0f;
 
+	float effectsMasterPitch = 1.0f;
+
 	SoundManager() = default;
 	SoundManager(const SoundManager& other) = delete;
 public:
@@ -31,12 +33,21 @@ public:
 
 	void setMasterVolume(float volume);
 	float getMasterVolume() const;
+
 	void setMusicVolume(float volume);
 	float getMusicVolume() const;
-	void setEffectVolume(float volume);
-	float getEffectVolume() const;
+
+	void setEffectsVolume(float volume);
+	float getEffectsVolume() const;
+	void setEffectsMasterPitch(float pitch);
+	float getEffectsMasterPitch() const;
+
+	// Fast forward or rewind sound effects
+	void offsetEffects(float seconds);
+
 	void setAmbientVolume(float volume);
 	float getAmbientVolume() const;
+
 	void setMiscVolume(float volume);
 	float getMiscVolume() const;
 };

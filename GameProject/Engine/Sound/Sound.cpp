@@ -13,7 +13,10 @@ Sound::Sound(float pitch, float volume, glm::vec3 position, glm::vec3 velocity, 
 
 	this->volume = volume;
 	AL_CALL(alSourcef(source, AL_GAIN, volume));
+
+	this->localPitch = pitch;
 	AL_CALL(alSourcef(source, AL_PITCH, pitch));
+
 	AL_CALL(alSource3f(source, AL_POSITION, position.x, position.y, position.z));
 	AL_CALL(alSource3f(source, AL_VELOCITY, velocity.x, velocity.y, velocity.z));
 	AL_CALL(alSourcei(source, AL_LOOPING, loop));
@@ -119,6 +122,49 @@ void Sound::stopSound()
 	}
 }
 
+void Sound::offsetPlayTime(float seconds)
+{
+	ALint isPlaying = 0;
+	AL_CALL(alGetSourcei(source, AL_SOURCE_STATE, &isPlaying));
+
+	if (isPlaying != AL_PLAYING) {
+		return;
+	}
+
+	// Get the current play time
+	float currentTime = 0.0f;
+
+	alGetSourcef(source, AL_SEC_OFFSET, &currentTime);
+
+	float newTime = seconds + currentTime;
+
+	// Check if the new time is larger than the length of the sound
+	int byteSize = 1;
+
+	alGetBufferi(buffer, AL_SIZE, &byteSize);
+
+	unsigned int sampleLength = byteSize * 8 / (channels * bitsPerSample);
+
+	float secondLength = (float)sampleLength / (float)freq;
+
+	if (secondLength < newTime) {
+		// The new time is larger than the total sound length
+		// Check if the sound if looping, if not, stop playing the sound
+		ALint loopState = AL_LOOPING;
+		AL_CALL(alGetSourcei(source, AL_LOOPING, &loopState));
+
+		if (loopState == AL_LOOPING) {
+			alSourcef(source, AL_SEC_OFFSET, newTime);
+		} else {
+			this->stopSound();
+		}
+	}
+
+	else {
+		alSourcef(source, AL_SEC_OFFSET, newTime);
+	}
+}
+
 void Sound::setSoundType(SoundType type)
 {
 	this->type = type;
@@ -128,16 +174,18 @@ SoundType Sound::getSoundType() const
 {
 	return type;
 }
+
 void Sound::setPitch(const float pitch)
 {
-	AL_CALL(alSourcef(source, AL_PITCH, pitch));
+	float masterPitch = SoundManager::get().getEffectsMasterPitch();
+	this->localPitch = pitch;
+
+	AL_CALL(alSourcef(source, AL_PITCH, this->localPitch * masterPitch));
 }
 
 float Sound::getPitch() const
 {
-	float ret;
-	AL_CALL(alGetSourcef(source, AL_PITCH, &ret));
-	return ret;
+	return this->localPitch;
 }
 
 void Sound::setVolume(const float volume)
@@ -147,7 +195,7 @@ void Sound::setVolume(const float volume)
 		updateSound(SoundManager::get().getAmbientVolume() * SoundManager::get().getMasterVolume());
 	}
 	else if (type == SOUND_EFFECT) {
-		updateSound(SoundManager::get().getEffectVolume() * SoundManager::get().getMasterVolume());
+		updateSound(SoundManager::get().getEffectsVolume() * SoundManager::get().getMasterVolume());
 	}
 	else if (type == SOUND_MISC) {
 		updateSound(SoundManager::get().getMiscVolume() * SoundManager::get().getMasterVolume());
@@ -161,6 +209,7 @@ float Sound::getVolume() const
 {
 	float ret;
 	AL_CALL(alGetSourcef(source, AL_GAIN, &ret));
+
 	return ret;
 }
 

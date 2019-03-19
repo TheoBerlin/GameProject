@@ -6,12 +6,14 @@
 #include <Engine/Events/EventBus.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Engine/Sound/SoundManager.h>
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Components/TrailEmitter.h>
 #include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/AimPhase.h>
 #include <Utils/Settings.h>
+#include <Utils/Utils.h>
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
@@ -28,7 +30,10 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     flightTime = guidingPhase->getFlightTime();
 
     this->replaySpeedFactor = 1.0f;
+	this->desiredSpeedFactor = 1.0f;
+
     this->isPausing = false;
+	this->isSlowMotion = false;
 
     // Create results window and minimize it
     // Lambda function which executes when retry is pressed
@@ -124,13 +129,15 @@ ReplayPhase::~ReplayPhase()
 
 void ReplayPhase::update(const float& dt)
 {
-    if (isPausing) {
-        // Slow down time if pausing
-        replaySpeedFactor = glm::max(replaySpeedFactor - dt * (1.0f / timeToPause), 0.0f);
-    } else {
-        // Increase speed factor back to 1.0f
-        replaySpeedFactor = glm::min(replaySpeedFactor + dt * (1.0f / timeToPause), 1.0f);
-    }
+	if (desiredSpeedFactor < replaySpeedFactor) {
+        // Slow down time
+        replaySpeedFactor = glm::max(replaySpeedFactor - dt * (1.0f / timeToPause), desiredSpeedFactor);
+	} else {
+        // Increase speed factor
+        replaySpeedFactor = glm::min(replaySpeedFactor + dt * (1.0f / timeToPause), desiredSpeedFactor);
+	}
+
+	SoundManager::get().setEffectsMasterPitch(replaySpeedFactor);
 
     // Make sure the player camera is always updated with dt, regardless of replay speed factor
     float cameraUpdateTime = dt + dt * (1.0f - replaySpeedFactor);
@@ -260,6 +267,7 @@ void ReplayPhase::beginAimTransition()
 	// Remove GUI elements
 	level.gui->removePanel(backPanel);
     level.gui->removePanel(playPauseButton);
+	level.gui->removePanel(slowMotionButton);
 
 	// Begin camera transition to the arrow
 	CameraSetting currentCamSettings;
@@ -367,30 +375,42 @@ void ReplayPhase::setupGUI()
 	// Add the parent panel to level GUI
 	level.gui->addPanel(backPanel);
 
-    // Create play/pause button
+    // Create play/pause and slow motion button
     playPauseButton = new Button();
+	slowMotionButton = new Button();
 
     // Horizontal size
     glm::vec2 playPauseSize = {screenHeight * playPauseSizeFactor * playPauseAspect, screenHeight * playPauseSizeFactor};
 
     playPauseButton->setSize(glm::uvec2((unsigned)playPauseSize.x, (unsigned)playPauseSize.y));
+	slowMotionButton->setSize(playPauseButton->getSize());
 
     // Place the button in the middle of the screen, slightly above the time bar
     glm::uvec2 playPausePos = {(unsigned)screenWidth / 2 - playPauseSize.x / 2, timeBarPos.y + timeBarSize.y * 2};
 
     playPauseButton->setPosition(playPausePos);
+    slowMotionButton->setPosition(playPausePos - glm::uvec2(playPauseButton->getSize().x * 1.5f, 0));
 
     playPauseButton->setNormalColor(timeBarBackColor);
     playPauseButton->setHoverColor(timeBarBackColor * 1.1f);
     playPauseButton->setPressedColor(timeBarFrontColor);
 
+    slowMotionButton->setNormalColor(timeBarBackColor);
+    slowMotionButton->setHoverColor(timeBarBackColor * 1.1f);
+    slowMotionButton->setPressedColor(timeBarFrontColor);
+
     playPauseButton->setCallback([this](){this->handlePlayPause();});
+    slowMotionButton->setCallback([this](){this->handleSlowMotion();});
 
     Texture* playPauseTx = TextureManager::loadTexture("./Game/Assets/buttons/playPause.png");
-
     playPauseButton->setBackgroundTexture(playPauseTx);
 
+	Texture* slowMotionTx = TextureManager::loadTexture("./Game/Assets/buttons/slowMotion.png");
+	slowMotionButton->setBackgroundTexture(slowMotionTx);
+
     level.gui->addPanel(playPauseButton);
+	level.gui->addPanel(slowMotionButton);
+
 	// Add collision marks to bar
 	addCollisionMarks();
 }
@@ -443,7 +463,37 @@ void ReplayPhase::handleTimeBarClick()
 
 void ReplayPhase::handlePlayPause()
 {
+	if (isSlowMotion) {
+		isSlowMotion = false;
+	}
+
+	if (isPausing) {
+		desiredSpeedFactor = 1.0f;
+	}
+
+	else {
+		desiredSpeedFactor = 0.0f;
+	}
+
     this->isPausing = !this->isPausing;
+}
+
+void ReplayPhase::handleSlowMotion()
+{
+	// If playing
+	if (isSlowMotion) {
+		desiredSpeedFactor = 1.0f;
+	}
+
+	else {
+		if (isPausing) {
+			isPausing = false;
+		}
+
+		desiredSpeedFactor = 0.5f;
+	}
+
+	isSlowMotion = !isSlowMotion;
 }
 
 void ReplayPhase::switchCamera()
