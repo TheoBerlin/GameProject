@@ -38,7 +38,6 @@ private:
 
 	LevelParser levelParser;
 	std::vector<std::string> levelInfo;
-	std::vector<std::vector<Panel*>> panelGroups;
 
 	Panel* previewPnl;
 };
