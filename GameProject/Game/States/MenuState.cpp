@@ -318,12 +318,13 @@ void MenuState::initMainMenu()
 	editorBtn->addText("Level Editor", "aldo", glm::vec4(1.0f));
 
 	editorBtn->setCallback([this](void) {
-		this->entityManager.removeEntities();
 
 		if (this->levelPreviewer) {
-			delete this->levelPreviewer;
+			delete levelPreviewer;
 			this->levelPreviewer = nullptr;
 		}
+
+		this->entityManager.removeEntities();
 
 		this->pushState(new EditorState());
 	});

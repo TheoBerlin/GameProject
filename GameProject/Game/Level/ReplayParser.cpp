@@ -105,8 +105,6 @@ bool ReplayParser::readCollisions(const Level& level, const nlohmann::json& repl
 {
     unsigned int collisionCount = replayFile["Collisions"].size();
 
-    collisions.resize(collisionCount);
-
     // Used to translate target name to an entity
     std::vector<Entity*> targetEntities = level.targetManager->getTargetEntities();
 
@@ -133,7 +131,9 @@ bool ReplayParser::readCollisions(const Level& level, const nlohmann::json& repl
         // Time of collision
         float time = replayFile["Collisions"][collisionIndex]["Time"];
 
-        collisions[collisionIndex].event.entity2 = targetEntity;
+        CollisionReplay newCollision;
+
+        newCollision.event.entity2 = targetEntity;
 
         // Identify collision shape 2 (which part of the target that was hit)
         unsigned int shapeCategory = replayFile["Collisions"][collisionIndex]["TargetShape"];
@@ -144,8 +144,10 @@ bool ReplayParser::readCollisions(const Level& level, const nlohmann::json& repl
             targetShape = targetShape->getNext();
         }
 
-        collisions[collisionIndex].event.shape2 = targetShape;
-        collisions[collisionIndex].time = time;
+        newCollision.event.shape2 = targetShape;
+        newCollision.time = time;
+
+        collisions.push_back(newCollision);
     }
 
     return true;
