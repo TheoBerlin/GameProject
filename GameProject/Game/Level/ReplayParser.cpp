@@ -15,9 +15,14 @@ void ReplayParser::writeReplay(const std::string& levelName, const std::vector<C
     writeCollisions(replayFile, collisions);
     writePath(replayFile, path);
 
-    // Create file name, remove .json from level name
-    size_t extensionIndex = levelName.find_last_of('.');
-    std::string replayName = levelName.substr(0, extensionIndex) + "_Replay.json";
+    // Create file name
+    // Insert the file into a replay folder
+    size_t directoryIndex = levelName.find_last_of('\\');
+    std::string replayName = levelName.substr(0, directoryIndex) + "\\Replays\\" + levelName.substr(directoryIndex, std::string::npos);
+
+    // Add _Replay postfix
+    size_t extensionIndex = replayName.find_last_of('.');
+    replayName = replayName.substr(0, extensionIndex) + "_Replay.json";
 
     LOG_INFO("Writing replay file: [%s]", replayName.c_str());
 
@@ -29,9 +34,14 @@ void ReplayParser::writeReplay(const std::string& levelName, const std::vector<C
 
 bool ReplayParser::readReplay(const Level& level, const std::string& levelName, std::vector<CollisionReplay>& collisions, std::vector<KeyPoint>& path)
 {
-    // Get replay's file name using level name, remove .json from level name
-    size_t extensionIndex = levelName.find_last_of('.');
-    std::string replayName = levelName.substr(0, extensionIndex) + "_Replay.json";
+    // Get replay's file name using level name
+    // Read the file from a replay folder
+    size_t directoryIndex = levelName.find_last_of('\\');
+    std::string replayName = levelName.substr(0, directoryIndex) + "/Replays/" + levelName.substr(directoryIndex, std::string::npos);
+
+    // Add postfix
+    size_t extensionIndex = replayName.find_last_of('.');
+    replayName = replayName.substr(0, extensionIndex) + "_Replay.json";
 
     std::ifstream iFile;
 	iFile.open(replayName);

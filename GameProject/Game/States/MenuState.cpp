@@ -134,11 +134,14 @@ void MenuState::initLevelSelect()
 	// Create scroll panel buttons for level and add callbacks for them
 	for (auto entry : levels)
 	{
-		scrollPanel->addItem([this, entry](void) {
-			this->selectedLevel = entry.string();
-			this->updateLevelInfoPanel();
-			this->updateLevelPreview(this->selectedLevel);
-		}, entry.filename().replace_extension("").string());
+		if (entry.has_extension())
+		{
+			scrollPanel->addItem([this, entry](void) {
+				this->selectedLevel = entry.string();
+				this->updateLevelInfoPanel();
+				this->updateLevelPreview(this->selectedLevel);
+			}, entry.filename().replace_extension("").string());
+		}
 	}
 
 	// Set the first level to be the selected one

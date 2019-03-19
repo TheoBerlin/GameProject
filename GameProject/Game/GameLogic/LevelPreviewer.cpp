@@ -86,7 +86,7 @@ void LevelPreviewer::setLevel(const std::string& levelName)
     } else {
         LOG_INFO("Starting previewed level's replay");
 
-        this->replayLength = arrowPath.back().t;
+        this->replayLength = arrowPath.back().t + 1.0f;
 
         // Create replay arrow
         this->replayArrow = this->level.entityManager->addTracedEntity("PreviewReplayArrow");
