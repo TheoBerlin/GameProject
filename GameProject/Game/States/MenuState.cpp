@@ -99,7 +99,7 @@ void MenuState::updateLevelPreview(const std::string& levelName)
 	this->levelPreviewer->setLevel(levelName);
 }
 
-const Level& MenuState::getLevel() const
+Level& MenuState::getLevel()
 {
 	return this->levelPreviewer->getLevel();
 }

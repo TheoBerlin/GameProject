@@ -27,6 +27,7 @@ OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
 		Create arrow entity
 	*/
 	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx", level.collisionHandler);
+	Display::get().getRenderer().addRenderingTarget(model, SHADERS::DEFAULT);
 
     playerArrow = level.entityManager->addTracedEntity("PlayerArrow");
 

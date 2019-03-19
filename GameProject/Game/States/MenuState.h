@@ -24,7 +24,7 @@ public:
 
 	void updateLevelPreview(const std::string& levelName);
 
-	const Level& getLevel() const;
+	Level& getLevel();
 
 private:
 	// Loads levels name from folder to show in scroll panel

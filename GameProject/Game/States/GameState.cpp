@@ -16,7 +16,7 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/States/PauseState.h>
 
-GameState::GameState(const Level& level)
+GameState::GameState(Level& level)
 {
 	this->level = level;
 
@@ -36,6 +36,8 @@ GameState::GameState(const Level& level)
 	levelParser.readMetadata(this->level);
 
 	gameLogic.init(this->level);
+
+	Display::get().getRenderer().initInstancing();
 
 	InputHandler ih(Display::get().getWindowPtr());
 

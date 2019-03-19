@@ -21,7 +21,7 @@ public:
     void render();
     void update(float dt);
 
-    const Level& getLevel() const;
+    Level& getLevel();
 
 private:
     LevelParser levelParser;

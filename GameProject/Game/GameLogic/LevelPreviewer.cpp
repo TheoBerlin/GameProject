@@ -103,7 +103,7 @@ void LevelPreviewer::update(float dt)
 	Display::get().getRenderer().updateShaders(dt);
 }
 
-const Level& LevelPreviewer::getLevel() const
+Level& LevelPreviewer::getLevel()
 {
     return this->level;
 }

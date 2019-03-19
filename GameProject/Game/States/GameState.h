@@ -16,7 +16,7 @@ struct Level;
 class GameState : public State
 {
 public:
-	GameState(const Level& level);
+	GameState(Level& level);
 	virtual ~GameState();
 
 	void start() override;
