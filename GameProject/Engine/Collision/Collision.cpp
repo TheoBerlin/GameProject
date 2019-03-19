@@ -4,7 +4,6 @@
 #include "Engine/Entity/Entity.h"
 #include "Engine/Components/MovingTargetCollision.h"
 #include "Engine/Components/StaticTargetCollision.h"
-#include <Utils/Logger.h>
 
 Collision::Collision()
 {
@@ -25,8 +24,6 @@ void Collision::notifyContact(const CollisionCallbackInfo & info)
 	{
 		const rp3d::ProxyShape * shape1 = info.proxyShape1;
 		const rp3d::ProxyShape * shape2 = info.proxyShape2;
-
-		LOG_ERROR("Player collision, shape 2 has category bits: [%d]", shape2->getCollisionCategoryBits());
 
 		EventBus::get().publish(&PlayerCollisionEvent(entity1, entity2, shape1, shape2));
 	}

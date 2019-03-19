@@ -422,7 +422,7 @@ void Pipeline::setLightManager(LightManager * lm)
 	/*
 		Set up Directional Light
 	*/
-	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), 32, 0); //no idea how to solve the size issue
+	this->uniformBuffers[1]->setSubData((void*)lightManager->getDirectionalLight(), sizeof(DirectionalLight), 0); //no idea how to solve the size issue
 
 	// GL_R32F does nothing if the attachmenttype is depth!
 	this->shadowFbo.attachTexture((GLuint)this->lightManager->getShadowHeight(), (GLuint)this->lightManager->getShadowWidth(), AttachmentType::DEPTH, GL_R32F, GL_R32F, GL_FLOAT);
@@ -451,7 +451,7 @@ void Pipeline::updateDirectionalLight(DirectionalLight * dirlight)
 	/*
 		Set up Directional Light
 	*/
-	this->uniformBuffers[1]->setSubData((void*)dirlight, 32, 0); //no idea how to solve the size issue
+	this->uniformBuffers[1]->setSubData((void*)dirlight, sizeof(DirectionalLight), 0); //no idea how to solve the size issue
 }
 
 void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance)

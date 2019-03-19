@@ -17,6 +17,7 @@
 #include <Utils/Utils.h>
 #include <Utils/Logger.h>
 
+
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
@@ -85,7 +86,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	}
 
     // Remove old arrow entity
-    level.entityManager->removeTracedEntity(oldArrow->getName());
+	level.entityManager->removeTracedEntity(oldArrow->getName());
 
 	// Set up the player camera
 	this->camera = new Camera(replayArrow, "Camera");
@@ -252,6 +253,7 @@ void ReplayPhase::beginAimTransition()
 	this->isPausing = false;
 	this->desiredSpeedFactor = 1.0f;
 	this->replaySpeedFactor = 1.0f;
+	this->desiredSpeedFactor = 1.0f;
 
 	// Remove results GUI if visible
 	if (level.scoreManager->resultsVisible()) {

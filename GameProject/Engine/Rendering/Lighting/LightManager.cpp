@@ -182,13 +182,14 @@ void LightManager::updatePointLight(int index, glm::vec4 position, glm::vec4 int
 void LightManager::calcShadowMatrix(Level* level)
 {
 	glm::vec3 dir = glm::vec3(dirLight->getDirection());
-	dir = {0.0f, -1.0f, 0.1f};
+
+	dir = glm::normalize(dir);
+
 	glm::mat4 shadowView = glm::lookAt(glm::vec3(0.0f), dir, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::vec3 e1 = { shadowView[0].x, shadowView[1].x, shadowView[2].x };
 	glm::vec3 e2 = { shadowView[0].y, shadowView[1].y, shadowView[2].y };
 	glm::vec3 e3 = { shadowView[0].z, shadowView[1].z, shadowView[2].z };
 	Utils::AABB aabb = level->levelStructure->createBoundingBox(e1, e2, e3);
-
 
 	this->orthoWidth = aabb.size.x;
 	this->orthoHeight = aabb.size.y;
