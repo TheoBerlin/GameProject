@@ -48,7 +48,7 @@ uniform bool isGlowing;
 
 float ShadowCalculation(vec4 fragLightSpace)
 {
-    float bias = 0.000002;
+    float bias = dirLight.color_intensity.a;
     // perform perspective divide
     vec3 projCoords = fragLightSpace.xyz / fragLightSpace.w;
     // transform to [0,1] range
@@ -130,7 +130,7 @@ void main()
 		Shadow
 	*/
 	float shadow = ShadowCalculation(fragLightPos);
-    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular) + result) * texColor;
+    vec3 lighting = (ambient + (1.0 - shadow) * (diffuse + specular * diffuse) + result) * texColor;
     lighting += noise * droneColor;
     colorAttachment0 = vec4(lighting, 1.0);
     
