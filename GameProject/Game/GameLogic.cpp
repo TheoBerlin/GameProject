@@ -27,7 +27,7 @@ void GameLogic::init(Level& level)
 	phaseTransitionEntity = level.entityManager->addTracedEntity("PhaseTransition");
 
 	// Transition to overview camera
-	new CameraTransition(phaseTransitionEntity);
+	CameraTransition* camTransition = new CameraTransition(phaseTransitionEntity);
 
 	Transform* newCamTransform = phaseTransitionEntity->getTransform();
 
@@ -39,21 +39,12 @@ void GameLogic::init(Level& level)
 	// Remove old camera entity
 	level.entityManager->removeTracedEntity(oldCamEntity->getName());
 
-	/*
-		Start game in overview phase
-	*/
-	phase = new OverviewPhase(level, phaseTransitionEntity);
-
-	// Handle phase changes
-	EventBus::get().subscribe(this, &GameLogic::changePhase);
-
-
-	/*CameraSetting overviewCamSettings = level.player.oversightCamera;
-	float transitionLength = 1.0f;
+	CameraSetting overviewCamSettings = level.player.oversightCamera;
+	float transitionLength = glm::length(newCamTransform->getPosition() - overviewCamSettings.position) / 3.0f;
 
 	camTransition->setDestination(overviewCamSettings.position, overviewCamSettings.direction, overviewCamSettings.FOV, transitionLength);
 
-	EventBus::get().subscribe(this, &GameLogic::startOverviewPhase);*/
+	EventBus::get().subscribe(this, &GameLogic::startOverviewPhase);
 }
 
 GameLogic::~GameLogic()
@@ -78,6 +69,8 @@ void GameLogic::startOverviewPhase(CameraTransitionEvent* event)
 		Start game in overview phase
 	*/
 	phase = new OverviewPhase(level, phaseTransitionEntity);
+
+	Display::get().getRenderer().initInstancing();
 
 	// Handle phase changes
 	EventBus::get().subscribe(this, &GameLogic::changePhase);

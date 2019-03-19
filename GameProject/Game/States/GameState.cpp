@@ -37,8 +37,6 @@ GameState::GameState(Level& level)
 
 	gameLogic.init(this->level);
 
-	Display::get().getRenderer().initInstancing();
-
 	InputHandler ih(Display::get().getWindowPtr());
 
 	EventBus::get().subscribe(this, &GameState::exitGame);
