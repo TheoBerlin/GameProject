@@ -132,14 +132,14 @@ void Sound::offsetPlayTime(float seconds)
 	}
 
 	// Get the current play time
-	float currentTime;
+	float currentTime = 0.0f;
 
 	alGetSourcef(source, AL_SEC_OFFSET, &currentTime);
 
 	float newTime = seconds + currentTime;
 
 	// Check if the new time is larger than the length of the sound
-	int byteSize;
+	int byteSize = 1;
 
 	alGetBufferi(buffer, AL_SIZE, &byteSize);
 
@@ -150,7 +150,7 @@ void Sound::offsetPlayTime(float seconds)
 	if (secondLength < newTime) {
 		// The new time is larger than the total sound length
 		// Check if the sound if looping, if not, stop playing the sound
-		ALint loopState;
+		ALint loopState = AL_LOOPING;
 		AL_CALL(alGetSourcei(source, AL_LOOPING, &loopState));
 
 		if (loopState == AL_LOOPING) {
