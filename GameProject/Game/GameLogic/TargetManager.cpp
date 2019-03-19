@@ -144,6 +144,25 @@ unsigned TargetManager::getTargetCount()
 	return this->movingTargets.size() + this->staticTargets.size();
 }
 
+std::vector<Entity*> TargetManager::getTargetEntities() const
+{
+	std::vector<Entity*> targetEntities;
+
+	targetEntities.resize(this->movingTargets.size() + this->staticTargets.size());
+
+	// Add static targets
+	for (unsigned int targetIndex = 0; targetIndex < staticTargets.size(); targetIndex += 1) {
+		targetEntities[targetIndex] = staticTargets[targetIndex].hoverAnimation->getHost();
+	}
+
+	// Add moving targets
+	for (unsigned int targetIndex = 0; targetIndex < staticTargets.size(); targetIndex += 1) {
+		targetEntities[targetIndex + staticTargets.size()] = movingTargets[targetIndex].pathTreader->getHost();
+	}
+
+	return targetEntities;
+}
+
 void TargetManager::setupTargetGeneric(Entity* host)
 {
 	host->getTransform()->setScale(0.25f);

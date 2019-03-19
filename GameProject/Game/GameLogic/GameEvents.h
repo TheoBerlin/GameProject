@@ -48,8 +48,8 @@ struct ExitEvent : public Event
 {
 };
 
-struct UpdateScoreEvent : public Event
+struct NewHighscoreEvent : public Event
 {
-	UpdateScoreEvent(int highscore) : highscore{ highscore } {};
+	NewHighscoreEvent(int highscore) : highscore{ highscore } {};
 	int highscore;
 };

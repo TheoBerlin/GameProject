@@ -223,7 +223,7 @@ void MenuState::updateLevelInfoPanel()
 	children[3]->updateText(0, this->levelInfo[2]);
 }
 
-void MenuState::updateScore(UpdateScoreEvent * evnt)
+void MenuState::updateScore(NewHighscoreEvent * evnt)
 {
 	std::vector<Panel*> children = this->previewPnl->getChildren();
 	children[3]->updateText(0, "Highscore:" + std::to_string(evnt->highscore));

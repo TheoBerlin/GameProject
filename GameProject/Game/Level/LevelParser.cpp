@@ -485,6 +485,8 @@ void LevelParser::createCollisionBodies(Level& level)
 
 void LevelParser::readLevel(std::string file, Level& level)
 {
+	level.levelName = file;
+
 	std::ifstream iFile;
 	iFile.open(file);
 	if (iFile.is_open())

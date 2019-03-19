@@ -53,6 +53,8 @@ public:
 	// Returns the number of targets in target manager
 	unsigned getTargetCount();
 
+	std::vector<Entity*> getTargetEntities() const;
+
 private:
 	// Common setup for targets
 	void setupTargetGeneric(Entity* host);
