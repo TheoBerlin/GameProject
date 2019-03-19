@@ -138,7 +138,7 @@ void MenuGUI::createSettingsGUI()
 	});
 	addSettingsSlider(this->settingsGUI, "MUSIC VOLUME", -75, SoundManager::get().getMusicVolume(), [this](float v) {SoundManager::get().setMusicVolume(v); });
 	addSettingsSlider(this->settingsGUI, "AMBIENT VOLUME", -150, SoundManager::get().getAmbientVolume(), [this](float v) {SoundManager::get().setAmbientVolume(v); });
-	addSettingsSlider(this->settingsGUI, "EFFECTS VOLUME", -225, SoundManager::get().getEffectVolume(), [this](float v) {SoundManager::get().setEffectVolume(v); });
+	addSettingsSlider(this->settingsGUI, "EFFECTS VOLUME", -225, SoundManager::get().getEffectsVolume(), [this](float v) {SoundManager::get().setEffectsVolume(v); });
 	addSettingsSlider(this->settingsGUI, "MISC VOLUME", -300, SoundManager::get().getMiscVolume(), [this](float v) {SoundManager::get().setMiscVolume(v); });
 	addToggleButton(this->settingsGUI, "MUTE SOUND", -375, [this]() { this->muteSoundCallback(); });
 	addSettingsSlider(this->settingsGUI, "MOUSE SENSITIVITY", -450, Settings::get().getMouseSensitivity(), [this](float v) { Settings::get().setMouseSensitivity(v); });
