@@ -37,11 +37,12 @@ bool ReplayParser::readReplay(const Level& level, const std::string& levelName, 
     // Get replay's file name using level name
     // Read the file from a replay folder
     size_t directoryIndex = levelName.find_last_of('\\');
-    std::string replayName = levelName.substr(0, directoryIndex) + "/Replays/" + levelName.substr(directoryIndex, std::string::npos);
+    std::string replayName = levelName.substr(0, directoryIndex) + "\\Replays\\" + levelName.substr(directoryIndex, std::string::npos);
 
     // Add postfix
     size_t extensionIndex = replayName.find_last_of('.');
     replayName = replayName.substr(0, extensionIndex) + "_Replay.json";
+
 
     std::ifstream iFile;
 	iFile.open(replayName);
@@ -50,6 +51,8 @@ bool ReplayParser::readReplay(const Level& level, const std::string& levelName, 
         LOG_INFO("No replay exists for level: [%s]", levelName.c_str());
         return false;
     }
+
+    LOG_INFO("Reading replay file: [%s]", replayName.c_str());
 
     nlohmann::json replayFile;
 
@@ -119,10 +122,10 @@ bool ReplayParser::readCollisions(const Level& level, const nlohmann::json& repl
             targetIndex += 1;
         }
 
-        // The hit target was not found
+        // The hit target entity is not a target
         if (targetIndex == targetEntities.size()) {
-            LOG_ERROR("Target [%s] was not found in the replay file of [%s]", level.levelName.c_str());
-            return false;
+            LOG_INFO("Target [%s] not found, assuming it is static geometry", targetName.c_str());
+            continue;
         }
 
         targetEntity = targetEntities[targetIndex];

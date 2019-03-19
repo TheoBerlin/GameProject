@@ -71,7 +71,7 @@ void GameState::start()
 
 void GameState::end()
 {
-	levelParser.writeScore(this->levelJSON, level);
+	levelParser.writeScore(level);
 
 	/*
 		All entities removes themselves from the rendering group of their model

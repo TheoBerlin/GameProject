@@ -31,8 +31,6 @@ private:
 
 	bool hasSubscribedToPause, hasSubscribedToExit;
 
-	std::string levelJSON;
-
 	Level level;
 
 	LevelParser levelParser;

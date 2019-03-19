@@ -571,13 +571,26 @@ void LevelParser::readLevelInfo(std::string file, std::vector<std::string>& info
 	}
 }
 
-void LevelParser::writeScore(std::string file, Level & level)
+void LevelParser::writeScore(Level & level)
 {
+	std::ifstream iFile;
+	iFile.open(level.levelName);
+	if (iFile.is_open())
+	{
+		try {
+			iFile >> jsonFile;
+		}
+		catch (const std::exception e) {
+			LOG_ERROR("Failed to read JSON file with error: %s", e.what());
+			return;
+		}
+	}
+
 	json::json& score = jsonFile["Metadata"]["Highscore"];
 
 	score = level.scoreManager->getHighscore();
 
 	std::ofstream oFile;
-	oFile.open(file);
+	oFile.open(level.levelName);
 	oFile << std::setw(4) << jsonFile << std::endl;
 }

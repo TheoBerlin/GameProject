@@ -47,7 +47,7 @@ public:
 	void readLevel(std::string file, Level& level);
 	void readLevelInfo(std::string file, std::vector<std::string>& info);
 	void writeLevel(std::string file, Level& level);
-	void writeScore(std::string file, Level& level);
+	void writeScore(Level& level);
 
 	void readMetadata(Level& level);
 };
