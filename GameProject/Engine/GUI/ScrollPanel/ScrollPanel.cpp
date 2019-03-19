@@ -79,10 +79,10 @@ void ScrollPanel::MouseClickCallback(MouseClickEvent * evnt)
 		double xpos, ypos;
 		int height = Display::get().getHeight();
 		glfwGetCursorPos(Display::get().getWindowPtr(), &xpos, &ypos);
-		glm::uvec2 gPos = this->list->getGlobalPosition();
+		glm::ivec2 gPos = this->list->getGlobalPosition();
 		// If inside the list
-		if (xpos > gPos.x && xpos < gPos.x + this->list->getSize().x
-			&& height - ypos > gPos.y && height - ypos < gPos.y + this->list->getSize().y)
+		if (xpos > gPos.x && xpos < (unsigned)gPos.x + this->list->getSize().x
+			&& height - ypos > gPos.y && height - ypos < (unsigned)gPos.y + this->list->getSize().y)
 		{
 			// Check which button it is
 			for (unsigned i = 0; i < this->list->getListButtons().size(); i++)

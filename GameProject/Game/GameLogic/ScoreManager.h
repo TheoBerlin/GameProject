@@ -59,7 +59,6 @@ private:
 	Timer* timer;
 
 	// Results panel varibles
-	float timeLeft;
 	bool showGui;
 	bool minimized;
 	Panel* smallPanel;

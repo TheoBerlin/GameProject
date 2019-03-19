@@ -42,6 +42,7 @@ Texture::Texture(const std::string & fileName, unsigned internalFormat, GLenum t
 	this->height = 0;
 	this->format = GL_RGBA;
 	this->internalFormat = internalFormat;
+	this->loaded = false;
 	loadImage(fileName, internalFormat, type);
 }
 

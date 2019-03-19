@@ -10,6 +10,7 @@
 OverviewPhase::OverviewPhase(AimPhase* aimPhase)
     :Phase((Phase*)aimPhase)
 {
+	this->overviewControl = nullptr;
 	this->overviewCamera = nullptr;
     // Remove all arrow components
     playerArrow = aimPhase->getPlayerArrow();
@@ -24,6 +25,7 @@ OverviewPhase::OverviewPhase(AimPhase* aimPhase)
 OverviewPhase::OverviewPhase(const Level& level, Entity* transitionEntity)
     :Phase(level, transitionEntity)
 {
+	this->overviewControl = nullptr;
 	this->overviewCamera = nullptr;
     /*
 		Create arrow entity

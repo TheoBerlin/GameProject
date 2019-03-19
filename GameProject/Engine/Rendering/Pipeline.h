@@ -131,7 +131,6 @@ private:
 	Framebuffer fbo;
 	Framebuffer postProcessFbo;
 	Framebuffer shadowFbo;
-	glm::mat4 lightSpaceMatrix;
 
 	// New rendering draw functions
 	void drawModelPrePassInstanced(Model * model);

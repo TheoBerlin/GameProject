@@ -10,6 +10,10 @@ HelpGUI::HelpGUI()
 {
 	this->gui = nullptr;
 	this->currentGUI = nullptr;
+	this->overviewGUI = nullptr;
+	this->aimGUI = nullptr;
+	this->guidingGUI = nullptr;
+	this->replayGUI = nullptr;
 	this->moveIn = false;
 	this->moveOut = false;
 	EventBus::get().subscribe(this, &HelpGUI::toggleGUI);

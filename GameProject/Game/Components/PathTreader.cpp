@@ -8,8 +8,9 @@
 PathTreader::PathTreader(Entity* host)
     :Component(host, "PathTreader")
 {
+	this->isLooping = false;
 	this->pathTime = 0.f;
-    isTreading = false;
+    this->isTreading = false;
 	this->currentPointIndex = 0;
 }
 
@@ -17,6 +18,7 @@ PathTreader::PathTreader(Entity* host, const std::vector<KeyPoint>& path, bool l
     :Component(host, "PathTreader")
 {
 	this->pathTime = 0.f;
+	this->isLooping = loop;
 	this->currentPointIndex = 0;
     setPath(path, loop);
 

@@ -43,6 +43,7 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	level.scoreManager->start();
 
 	// Create target panel
+	this->targetPnl = nullptr;
 	initTargetPanel();
 
 	level.helpGUI->switchPhase(PHASE::GUIDING);
