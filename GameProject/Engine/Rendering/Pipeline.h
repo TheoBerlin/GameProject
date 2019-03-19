@@ -31,7 +31,9 @@ enum SHADERS {
 	WALL = 2,			//  Requires a third vbo with scale bound to location 7.
 	INFINITY_PLANE = 3,
 	INFINITY_PLANE_PREPASS = 4,	//Used for cutout in depthbuffer 
-	ROOF_PLANE = 5
+	ROOF_PLANE = 5,
+	DRONE_GHOST = 6,
+	NO_SHADER
 };
 
 enum SHADERS_POST_PROCESS {
@@ -55,7 +57,7 @@ public:
 	/*
 		PrePassDepth will stop any draw calls from writing to the depth buffer. Everything drawn in this pass will be used for depth testing
 	*/
-	void prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen = false);
+	void prePassDepthModel(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, bool toScreen = false, SHADERS skip = SHADERS::NO_SHADER);
 
 	/*
 		Draw directly to the screen
@@ -65,7 +67,7 @@ public:
 	/*
 		Draw to framebuffer color texture, nothing will be visible on screen unless you draw the texture to a quad
 	*/
-	Texture* drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets);
+	Texture* drawModelToTexture(const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, SHADERS skip = SHADERS::NO_SHADER);
 
 	Texture* combineTextures(Texture* sceen, Texture* particles);
 
@@ -90,14 +92,14 @@ public:
 	void addUniformBuffer(unsigned bindingPoint, const unsigned shaderID, const char* blockName);
 
 	/*
+		Draw model set separately from the rest.
+	*/
+	void drawModelsWithShader(Texture* preTexture, const std::vector<std::pair<RenderingTarget, SHADERS>>& renderingTargets, SHADERS source, SHADERS target = SHADERS::NO_SHADER);
+
+	/*
 		Draw trail
 	*/
 	void drawTrail();
-
-	/*
-		Draw everything that should glow and blurs it
-	*/
-	void glowPass();
 
 	/*
 		Updates shaders
@@ -109,8 +111,8 @@ public:
 	*/
 	void addCurrentLightManager(LightManager * lm);
 	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
-	void updateLight(int index, glm::vec4 position, glm::vec4 intensity, int distance);
-	void removeLight(int index);
+	void updateLight(unsigned index, glm::vec4 position, glm::vec4 intensity, int distance);
+	void removeLight(unsigned index);
 
 	/*
 		Updates trail shader

@@ -276,24 +276,24 @@ void CollisionHandler::addCollisionToEntity(Entity * entity, const std::vector<S
 
 void CollisionHandler::constructBoundingBox(Model* modelPtr, Vertex* vertices, unsigned int numVertices, const std::string& name, bool makeAABB)
 {
-	OBB boundingBox;
+	Utils::OBB boundingBox;
 	if (makeAABB) {
-		AABB aabb = getAABB(vertices, numVertices);
-		boundingBox = OBB(aabb.first, aabb.second, glm::quat(1.f, 0.f, 0.f, 0.f));
+		Utils::AABB aabb = Utils::getAABB(vertices, numVertices);
+		boundingBox = { aabb.size, aabb.pos, glm::quat(1.f, 0.f, 0.f, 0.f) };
 	}
 	else {
-		boundingBox = getOBB(modelPtr, vertices, numVertices);
+		boundingBox = Utils::getOBB(vertices, numVertices);
 	}
 
 	// Check if it failed to create the bounding box.
-	if (std::get<0>(boundingBox).x == 0 && std::get<0>(boundingBox).y == 0 && std::get<0>(boundingBox).z == 0) return;
+	if (boundingBox.size.x == 0 && boundingBox.size.y == 0 && boundingBox.size.z == 0) return;
 
 	CollisionShapeDrawingData* data = new CollisionShapeDrawingData();
-	glm::vec3 size = std::get<0>(boundingBox)*.5f;
-	size.x = glm::max(size.x, 0.01f);
-	size.y = glm::max(size.y, 0.01f);
-	size.z = glm::max(size.z, 0.01f);
-	constructShape(data, std::get<1>(boundingBox), size, std::get<2>(boundingBox));
+	glm::vec3 scale = boundingBox.size*.5f;
+	scale.x = glm::max(scale.x, 0.01f);
+	scale.y = glm::max(scale.y, 0.01f);
+	scale.z = glm::max(scale.z, 0.01f);
+	constructShape(data, boundingBox.pos, scale, boundingBox.rot);
 	data->name = name;
 	this->shapesMap[modelPtr].push_back(data);
 }
@@ -317,98 +317,6 @@ glm::quat CollisionHandler::toGlmQuat(const rp3d::Quaternion & vec)
 	q.w = vec.w;
 
 	return q;
-}
-
-CollisionHandler::AABB CollisionHandler::getAABB(Vertex * vertices, unsigned int numVertices, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)
-{
-	glm::vec3 min = glm::vec3(10000.0f);
-	glm::vec3 max = glm::vec3(-10000.0f);
-	for (unsigned int i = 0; i < numVertices; i++)
-	{
-		Vertex& vert = vertices[i];
-		float e1dot = glm::dot(e1, vert.Position);
-		float e2dot = glm::dot(e2, vert.Position);
-		float e3dot = glm::dot(e3, vert.Position);
-		min.x = glm::min(min.x, e1dot);
-		min.y = glm::min(min.y, e2dot);
-		min.z = glm::min(min.z, e3dot);
-
-		max.x = glm::max(max.x, e1dot);
-		max.y = glm::max(max.y, e2dot);
-		max.z = glm::max(max.z, e3dot);
-	}
-
-	glm::vec3 pos = e1 * (min.x + (max.x - min.x)*.5f) + e2 * (min.y + (max.y - min.y)*.5f) + e3 * (min.z + (max.z - min.z)*.5f);
-
-	return AABB(glm::max(max - min, 0.01f), pos);
-}
-
-CollisionHandler::OBB CollisionHandler::getOBB(Model* modelPtr, Vertex * vertices, unsigned int numVertices)
-{
-	std::vector<Vertex> verts(vertices, vertices + numVertices);
-
-	// Calculate centroid.
-	glm::vec3 centroid(0.0f);
-	for (Vertex& v : verts)
-		centroid += v.Position;
-	centroid /= (float)numVertices;
-
-	// Distance from centroid to vertex.
-	std::vector<glm::vec3> changeInPos;
-	for (Vertex& v : verts)
-		changeInPos.push_back(v.Position - centroid);
-
-	/* Matrix multiplication for a single element.
-		c[i][j] = (a*b)[i][j]
-	Arguments:
-		m1: matrix a
-		m2: matrix b
-		i: row index
-		j: col index
-	*/
-	auto getElem = [](std::vector<glm::vec3>& m1, std::vector<glm::vec3>& m2, int i, int j)->float {
-		float a = 0.0f;
-		for (unsigned k = 0; k < m1.size(); k++)
-			a += m1[k][i] * m2[k][j];
-		return a;
-	};
-
-	// Calculate the covariance matrix. By multiplying the Nx3 matrix with its transpose from the left we get a 3x3 matrix which will be the covariance matrix after normalization. 
-	glm::mat3 cov;
-	for (unsigned i = 0; i < 3; i++)
-		for (unsigned j = 0; j < 3; j++)
-			cov[j][i] = getElem(changeInPos, changeInPos, i, j) / 3.f; // Multiply by its transpose and divide by the dimension size to normalize it.
-
-	// Calculate the eigenvectors from the covariance matrix. This will also give us the eigenvalues as a byproduct but we will not use them.
-	std::pair<glm::vec3, glm::mat3> jacobiResult = Utils::jacobiMethod(cov);
-
-	glm::vec3 e1 = glm::normalize(jacobiResult.second[0]);
-	glm::vec3 e2 = glm::normalize(jacobiResult.second[1]);
-	glm::vec3 e3 = glm::normalize(jacobiResult.second[2]);
-
-	// Get the AABB in the base [e1 e2 e3].
-	AABB aabb = getAABB(vertices, numVertices, e1, e2, e3);
-
-	// Rotate the x-axis to the first eigenvector.
-	glm::vec3 vx = glm::vec3{ 1.f, 0.f, 0.f };
-	glm::quat rotX = Utils::rotateTo(vx, e1);
-
-	// If the first eigenvector is parallel to the x-axis, do not rotate.
-	float d = glm::dot(vx, e1);
-	if (abs(d) > 0.999f)
-		rotX = glm::quat(1.f, 0.f, 0.f, 0.f);
-		
-	// Rotate the z-axis by the previous rotation and then rotate that vector to the second eigenvector.
-	// This is equivalent to make a roll around the previously calculated axis to match the second and third eigenvector..
-	glm::vec3 vz = glm::normalize(rotX * glm::vec3(0.f, 0.f, 1.f));
-	glm::quat roll = Utils::rotateTo(vz, e3);
-
-	// If the second eigenvector is parallel to the new z-axis, do not rotate.
-	d = glm::dot(e3, vz);
-	if (abs(d) > 0.999f)
-		roll = glm::quat(1.f, 0.f, 0.f, 0.f);
-
-	return OBB(aabb.first, aabb.second, roll * rotX);
 }
 
 void CollisionHandler::constructShape(CollisionShapeDrawingData* data, const glm::vec3 & pos, const glm::vec3 & size, glm::quat rot, CATEGORY cat, const glm::vec3& scale, const glm::vec3& color)

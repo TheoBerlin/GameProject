@@ -23,14 +23,14 @@ Texture & Texture::operator=(const Texture & other)
 	return *this;
 }
 
-Texture::Texture(const std::string & fileName, TextureType texType, unsigned internalFormat)
+Texture::Texture(const std::string & fileName, unsigned internalFormat, GLenum type)
 {
-	loadImage(fileName, texType, internalFormat);
+	loadImage(fileName, internalFormat, type);
 }
 
-Texture::Texture(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, TextureType texType) : id(0)
+Texture::Texture(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type) : id(0)
 {
-	init(data, width, height, internalFormat, format, texType);
+	init(data, width, height, internalFormat, format, type);
 }
 
 Texture::~Texture()
@@ -39,39 +39,40 @@ Texture::~Texture()
 		glDeleteTextures(1, &this->id);
 }
 
-void Texture::reload(const std::string & fileName, TextureType texType, unsigned internalFormat)
+void Texture::reload(const std::string & fileName, unsigned internalFormat, GLenum type)
 {
 	if (this->id != 0)
 		glDeleteTextures(1, &this->id);
-	loadImage(fileName, texType, internalFormat);
+	loadImage(fileName, internalFormat, type);
 }
 
-void Texture::recreate(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, TextureType texType)
+void Texture::recreate(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type)
 {
 	if (this->id != 0)
 		glDeleteTextures(1, &this->id);
-	init(data, width, height, internalFormat, format, texType);
+	init(data, width, height, internalFormat, format, type);
 }
 
-void Texture::update(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, TextureType texType)
-{
-	this->internalFormat = (GLuint)internalFormat;
-	this->format = (GLuint)format;
-	this->type = texType;
-	this->width = width;
-	this->height = height;
-	bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-}
-
-void Texture::resize(unsigned int width, unsigned int height, unsigned internalFormat, unsigned format)
+void Texture::update(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type)
 {
 	this->internalFormat = (GLuint)internalFormat;
 	this->format = (GLuint)format;
 	this->width = width;
 	this->height = height;
+	this->type = type;
 	bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data);
+}
+
+void Texture::resize(unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type)
+{
+	this->internalFormat = (GLuint)internalFormat;
+	this->format = (GLuint)format;
+	this->width = width;
+	this->height = height;
+	this->type = type;
+	bind();
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, NULL);
 }
 
 unsigned int Texture::getWidth() const
@@ -87,16 +88,6 @@ unsigned int Texture::getHeight() const
 GLuint Texture::getID() const
 {
 	return this->id;
-}
-
-TextureType Texture::getType() const
-{
-	return this->type;
-}
-
-void Texture::setType(TextureType type)
-{
-	this->type = type;
 }
 
 std::string Texture::getPath() const
@@ -132,12 +123,12 @@ void Texture::unbind()
 void Texture::copyData(const Texture & other)
 {
 	this->path = other.getPath();
-	this->type = other.getType();
 	this->width = other.getWidth();
 	this->height = other.getHeight();
 	this->internalFormat = other.getInternalFormat();
 	this->format = other.getFormat();
 	this->loaded = other.loaded;
+	this->type = other.type;
 	
 	// Copy texture data
 	size_t size = this->width*this->height * Formats::getTextureFormatChannels(this->format);
@@ -158,7 +149,7 @@ void Texture::copyTextureData(const Texture & other)
 	glCopyImageSubData(other.getID(), GL_TEXTURE_2D, 0, 0, 0, 0, this->id, GL_TEXTURE_2D, 0, 0, 0, 0, other.getWidth(), other.getHeight(), 1);
 }
 
-void Texture::loadImage(const std::string & fileName, TextureType texType, unsigned internalFormat)
+void Texture::loadImage(const std::string & fileName, unsigned internalFormat, GLenum type)
 {
 	this->path = fileName;
 	int width, height, channelCount;
@@ -174,7 +165,7 @@ void Texture::loadImage(const std::string & fileName, TextureType texType, unsig
 
 	this->width = width;
 	this->height = height;
-	init(data, width, height, internalFormat, GL_RGBA, texType);
+	init(data, width, height, internalFormat, GL_RGBA, type);
 
 	// Free image data as OpenGL is storing a copy
 	stbi_image_free(data);
@@ -182,17 +173,17 @@ void Texture::loadImage(const std::string & fileName, TextureType texType, unsig
 	this->loaded = true;
 }
 
-void Texture::init(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, TextureType texType)
+void Texture::init(unsigned char * data, unsigned int width, unsigned int height, unsigned internalFormat, unsigned format, GLenum type)
 {
 	this->internalFormat = (GLuint)internalFormat;
 	this->format = (GLuint)format;
-	this->type = texType;
 	this->width = width;
 	this->height = height;
+	this->type = type;
 	// Use image data to create an OpenGL texture
 	glGenTextures(1, &this->id);
 	bind();
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, data);
 	setParameters();
 
 	this->loaded = true;

@@ -12,6 +12,7 @@
 #include <Engine/GUI/Panel.h>
 
 #include "Game/Components/TrailEmitter.h"
+#include "Game/Components/RollNullifier.h"
 
 GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	:Phase((Phase*)aimPhase),
@@ -27,8 +28,16 @@ GuidingPhase::GuidingPhase(AimPhase* aimPhase)
 	arrowGuider = aimPhase->getArrowGuider();
 	arrowGuider->startGuiding();
 
+	// Set moving targets to be transparent.
+	std::vector<MovingTarget> movingTargets = level.targetManager->getMovingTargets();
+	for (MovingTarget& t : movingTargets) {
+		Entity* e = t.rollNullifier->getHost();
+		e->detachFromModel();
+		e->setModel(ModelLoader::getModel("./Game/assets/droneTargetMoving.fbx"));
+		e->attachToModel();
+	}
+
 	level.targetManager->resetTargets();
-	level.targetManager->pauseMovingTargets();
 
 	/*
 	Do stuff when collision happens
@@ -115,6 +124,15 @@ void GuidingPhase::handleKeyInput(KeyEvent* event)
 
 void GuidingPhase::beginReplayTransition()
 {
+	// Set moving targets to be opaque.
+	std::vector<MovingTarget> movingTargets = level.targetManager->getMovingTargets();
+	for (MovingTarget& t : movingTargets) {
+		Entity* e = t.rollNullifier->getHost();
+		e->detachFromModel();
+		e->setModel(ModelLoader::getModel("./Game/assets/droneTarget.fbx"));
+		e->attachToModel();
+	}
+
 	this->hasCollided = true;
 
     EventBus::get().unsubscribe(this, &GuidingPhase::handleKeyInput);
@@ -152,6 +170,9 @@ void GuidingPhase::beginReplayTransition()
 
     this->transitionBackwards(currentCamSettings, newCamSettings, arrowGuider->getPath());
 
+	//Add Post process effect to transition
+	Display::get().getRenderer().activatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
+
 	EventBus::get().subscribe(this, &GuidingPhase::finishReplayTransition);
 }
 
@@ -160,7 +181,6 @@ void GuidingPhase::finishReplayTransition(CameraTransitionEvent* event)
 	EventBus::get().unsubscribe(this, &GuidingPhase::finishReplayTransition);
 
 	level.collisionHandler->removeCollisionBody(this->playerArrow);
-	level.targetManager->unpauseMovingTargets();
 
 	Phase* guidingPhase = new ReplayPhase(this);
 	changePhase(guidingPhase);
@@ -187,6 +207,9 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 	{
 		level.scoreManager->score();
 		updateTargetPanel();
+
+		if(level.scoreManager->getTargetsHit() == level.targetManager->getTargetCount())
+			beginReplayTransition();
 		break;
 	}
 	case CATEGORY::DRONE_EYE:

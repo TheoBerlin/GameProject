@@ -4,6 +4,7 @@
 #include <Engine/Events/EventBus.h>
 #include <Game/Components/Explosion.h>
 #include <Game/Level/Level.h>
+#include <Engine/Collision/CollisionInfo.h>
 
 ReplaySystem::ReplaySystem()
 	:replayTime(0.0f),
@@ -33,7 +34,7 @@ void ReplaySystem::update(const float& dt)
 		if (explosionComponent) {
 			float elapsedTime = replayTime - collisions[collisionIndex].time;
 
-			dynamic_cast<Explosion*>(explosionComponent)->explode(2.0, elapsedTime);
+			dynamic_cast<Explosion*>(explosionComponent)->explode(2.0, elapsedTime, collisions[collisionIndex].event.shape2->getCollisionCategoryBits() == CATEGORY::DRONE_EYE);
 		}
 
 		collisions[collisionIndex].event.phase = PlayerCollisionEvent::REPLAY_PHASE;

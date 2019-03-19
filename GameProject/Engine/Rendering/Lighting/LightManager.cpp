@@ -3,16 +3,21 @@
 #include "Utils/Logger.h"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <Game/Level/Level.h>
+#include "Engine/Rendering/LineRenderer.h"
+
 LightManager::LightManager()
 {
-	this->shadowReScale = Settings::get().getShadowReScale();
-	this->shadowHeight = Display::get().getHeight();
-	this->shadowWidth = Display::get().getWidth();
-	this->orthoHeight = 80.0f * Display::get().getRatio();
-	this->orthoWidth = 80.0f; //fix this so that the class gets this info relative to input
-	this->shadowPosition = glm::vec3(2.0f, 10.0f, 2.0f);
-}
+	this->shadowResolutionFactor = Settings::get().getShadowResolutionFactor();
+	this->orthoWidth = 0.f;
+	this->orthoHeight = 0.f;
+	this->shadowWidth = Settings::get().getScreenWidth()*this->shadowResolutionFactor;
 
+#ifdef ENABLE_SHADOW_BOX
+	EventBus::get().subscribe(this, &LightManager::toggleDrawing);
+	this->activateShadowBox = false;
+#endif ENABLE_SHADOW_BOX
+}
 
 LightManager::~LightManager()
 {
@@ -22,21 +27,10 @@ LightManager::~LightManager()
 	}
 	pointLights.clear();
 	delete this->dirLight;
-}
 
-void LightManager::setShadowReScale(float reScale)
-{
-	this->shadowReScale = reScale;
-}
-
-float LightManager::getShadowHeightScaled() const
-{
-	return this->shadowHeight * shadowReScale;
-}
-
-float LightManager::getShadowWidthScaled() const
-{
-	return this->shadowWidth * shadowReScale;
+#ifdef ENABLE_SHADOW_BOX
+	EventBus::get().unsubscribe(this, &LightManager::toggleDrawing);
+#endif
 }
 
 PointLight * LightManager::createPointLight(glm::vec4 position, glm::vec4 intensity, int distance)
@@ -74,12 +68,12 @@ void LightManager::removePointLight(int index)
 	}
 }
 
-DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm::vec4 intensity)
+DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm::vec4 intensity, Level* level)
 {
 	if (!dirLightExist) {
 		dirLight = new DirectionalLight(direction, intensity);
 		dirLightExist = true;
-		calcLightMatrix();
+		calcShadowMatrix(level);
 		return dirLight;
 	}
 	else {
@@ -88,20 +82,72 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 	return nullptr;
 }
 
-DirectionalLight * LightManager::getDirectionalLight() const
+DirectionalLight * LightManager::getDirectionalLight()
 {
 	return this->dirLight;
 }
 
-glm::mat4 LightManager::getLightMatrix() const
+glm::mat4 LightManager::getShadowMatrix()
 {
-	return this->lightMatrix;
+	return this->shadowMatrix;
 }
 
-glm::mat4 * LightManager::getLightMatrixPointer()
+glm::mat4 * LightManager::getShadowMatrixPointer()
 {
-	return &this->lightMatrix;
+	return &this->shadowMatrix;
 }
+
+float LightManager::getShadowWidth() const
+{
+	return this->shadowWidth;
+}
+
+float LightManager::getShadowHeight() const
+{
+	return this->shadowWidth * (this->orthoWidth/this->orthoHeight);
+}
+
+#ifdef ENABLE_SHADOW_BOX
+void LightManager::drawDebugBox()
+{
+	if (this->activateShadowBox)
+	{
+		LineRenderer& lineRenderer = Display::get().getLineRenderer();
+		glm::vec3 color(0.f, 0.f, 1.0f);
+		lineRenderer.drawLine(this->shadowBox.tl, this->shadowBox.ftl, color);
+		lineRenderer.drawLine(this->shadowBox.tr, this->shadowBox.ftr, color);
+		lineRenderer.drawLine(this->shadowBox.bl, this->shadowBox.fbl, color);
+		lineRenderer.drawLine(this->shadowBox.br, this->shadowBox.fbr, color);
+
+		lineRenderer.drawLine(this->shadowBox.tl, this->shadowBox.tr, color);
+		lineRenderer.drawLine(this->shadowBox.tr, this->shadowBox.br, color);
+		lineRenderer.drawLine(this->shadowBox.br, this->shadowBox.bl, color);
+		lineRenderer.drawLine(this->shadowBox.bl, this->shadowBox.tl, color);
+
+		lineRenderer.drawLine(this->shadowBox.ftl, this->shadowBox.ftr, color);
+		lineRenderer.drawLine(this->shadowBox.ftr, this->shadowBox.fbr, color);
+		lineRenderer.drawLine(this->shadowBox.fbr, this->shadowBox.fbl, color);
+		lineRenderer.drawLine(this->shadowBox.fbl, this->shadowBox.ftl, color);
+
+		lineRenderer.drawLine(this->shadowBox.p, this->shadowBox.p + this->shadowBox.e1, { 1.f, 0.f, 0.f });
+		lineRenderer.drawLine(this->shadowBox.p, this->shadowBox.p + this->shadowBox.e2, { 0.f, 1.f, 0.f });
+		lineRenderer.drawLine(this->shadowBox.p, this->shadowBox.p + this->shadowBox.e3, { 0.f, 0.f, 1.f });
+	}
+}
+
+void LightManager::toggleDrawing(KeyEvent * evnt)
+{
+	if (evnt->key == GLFW_KEY_F3 && evnt->action == GLFW_PRESS) {
+		this->activateShadowBox = !this->activateShadowBox;
+	}
+}
+#endif
+
+void LightManager::calcShadowProjection(float width, float height, float near, float far)
+{
+	this->shadowProjection = glm::ortho(-((float)width * 0.5f), ((float)width * 0.5f), -((float)height * 0.5f), ((float)height * 0.5f), near, far);
+}
+
 
 void LightManager::updatePointLight(int index, glm::vec4 position, glm::vec4 intensity, int distance)
 {
@@ -110,9 +156,41 @@ void LightManager::updatePointLight(int index, glm::vec4 position, glm::vec4 int
 	pointLights.at(index)->setDistance(distance);
 }
 
-void LightManager::calcLightMatrix()
+void LightManager::calcShadowMatrix(Level* level)
 {
-	glm::mat4 lightProjection = glm::ortho(-((float)orthoWidth / 2.0f), ((float)orthoWidth / 2.0f), -((float)orthoHeight / 2.0f), ((float)orthoHeight / 2.0f), 0.1f, 100.0f);
-	glm::mat4 lightView = glm::lookAt(glm::vec3(shadowPosition), glm::vec3(dirLight->getDirection()), glm::vec3(0.0f, 1.0f, 0.0f));
-	lightMatrix = lightProjection * lightView;
+	glm::vec3 dir = glm::vec3(dirLight->getDirection());
+	dir = {0.0f, -1.0f, 0.1f};
+	glm::mat4 shadowView = glm::lookAt(glm::vec3(0.0f), dir, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::vec3 e1 = { shadowView[0].x, shadowView[1].x, shadowView[2].x };
+	glm::vec3 e2 = { shadowView[0].y, shadowView[1].y, shadowView[2].y };
+	glm::vec3 e3 = { shadowView[0].z, shadowView[1].z, shadowView[2].z };
+	Utils::AABB aabb = level->levelStructure->createBoundingBox(e1, e2, e3);
+
+
+	this->orthoWidth = aabb.size.x;
+	this->orthoHeight = aabb.size.y;
+	calcShadowProjection(aabb.size.x, aabb.size.y, 0.01f,  aabb.size.z);
+
+	glm::vec3 pos = aabb.pos + e3 * aabb.size.z*.5f;
+
+	glm::mat4 translation(1.0f);
+	translation = glm::translate(translation, -pos);
+	this->shadowMatrix = this->shadowProjection * shadowView * translation;
+
+#ifdef ENABLE_SHADOW_BOX
+	this->shadowBox.e1 = e1 * aabb.size.x*.5f;
+	this->shadowBox.e2 = e2 * aabb.size.y*.5f;
+	this->shadowBox.e3 = e3 * aabb.size.z*.5f;
+	this->shadowBox.p = pos;
+
+	this->shadowBox.tl = aabb.pos + e3 * aabb.size.z*.5f - e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
+	this->shadowBox.tr = aabb.pos + e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
+	this->shadowBox.bl = aabb.pos + e3 * aabb.size.z*.5f - e1 * aabb.size.x * .5f + e2 * aabb.size.y*.5f;
+	this->shadowBox.br = aabb.pos + e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f + e2 * aabb.size.y*.5f;
+
+	this->shadowBox.ftl = aabb.pos - e3 * aabb.size.z*.5f - e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
+	this->shadowBox.ftr = aabb.pos - e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f - e2 * aabb.size.y*.5f;
+	this->shadowBox.fbl = aabb.pos - e3 * aabb.size.z*.5f - e1 * aabb.size.x * .5f + e2 * aabb.size.y*.5f;
+	this->shadowBox.fbr = aabb.pos - e3 * aabb.size.z*.5f + e1 * aabb.size.x * .5f + e2 * aabb.size.y*.5f;
+#endif
 }

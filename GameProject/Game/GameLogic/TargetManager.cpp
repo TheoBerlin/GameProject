@@ -67,7 +67,7 @@ void TargetManager::addMovingTarget(Entity* host, const std::vector<KeyPoint>& p
 
 void TargetManager::addKeyPoint(Entity * host, const KeyPoint point)
 {
-	for (int i = 0; i < movingTargets.size(); i++) {
+	for (unsigned int i = 0; i < movingTargets.size(); i++) {
 		if (movingTargets[i].pathTreader->getHost()->getName() == host->getName()) {
 			std::vector<KeyPoint> path = movingTargets[i].pathTreader->getPath();
 			path.push_back(point);
@@ -79,15 +79,16 @@ void TargetManager::addKeyPoint(Entity * host, const KeyPoint point)
 void TargetManager::removeTarget(std::string name)
 {
 	bool found = false;
-	for (int i = 0; i < movingTargets.size() && !found; i++) {
+	for (unsigned int i = 0; i < movingTargets.size() && !found; i++) {
 		if (movingTargets[i].pathTreader->getHost()->getName() == name) {
+			movingTargets[i].pathTreader->getHost()->removeComponent("MovingTargetCollision");
 			movingTargets[i].pathTreader->getHost()->removeComponent("RollNullifier");
 			movingTargets[i].pathTreader->getHost()->removeComponent("PathThreader");
 			movingTargets.erase(movingTargets.begin() + i);
 			found = true;
 		}
 	}
-	for (int i = 0; i < staticTargets.size() && !found; i++) {
+	for (unsigned int i = 0; i < staticTargets.size() && !found; i++) {
 		if (staticTargets[i].hoverAnimation->getHost()->getName() == name) {
 			staticTargets[i].hoverAnimation->getHost()->removeComponent("StaticTargetCollision");
 			staticTargets[i].hoverAnimation->getHost()->removeComponent("Hover");

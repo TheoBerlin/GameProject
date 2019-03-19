@@ -8,6 +8,7 @@
 #include <filesystem>
 
 #include "Game/Level/LevelParser.h"
+#include "Game/GUI/MenuGUI.h"
 
 class MenuState : public State
 {
@@ -28,16 +29,15 @@ private:
 	void updateLevelInfoPanel();
 	// Update score when event is published
 	void updateScore(UpdateScoreEvent * evnt);
-	// Init main menu GUI panels
-	void initMainMenu();
 	// Init level select GUI panels
 	void initLevelSelect();
+
+	MenuGUI menuGUI;
 
 	std::string selectedLevel;
 
 	LevelParser levelParser;
 	std::vector<std::string> levelInfo;
-	std::vector<std::vector<Panel*>> panelGroups;
 
 	Panel* previewPnl;
 };

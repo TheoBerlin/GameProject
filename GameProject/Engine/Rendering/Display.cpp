@@ -9,6 +9,7 @@
 
 #include "Renderer.h"
 #include "GUIRenderer.h"
+#include "LineRenderer.h"
 
 Display & Display::get()
 {
@@ -111,6 +112,11 @@ GUIRenderer & Display::getGUIRenderer()
 	return *this->guiRenderer;
 }
 
+LineRenderer & Display::getLineRenderer()
+{
+	return *this->lineRenderer;
+}
+
 Display::~Display()
 {
 	#ifdef IMGUI
@@ -122,6 +128,7 @@ Display::~Display()
 
 	delete this->renderer;
 	delete this->guiRenderer;
+	delete this->lineRenderer;
 
 	FT_Done_FreeType(this->ftLibrary);
 
@@ -266,4 +273,5 @@ void Display::init(int width, int height, const std::string& title)
 
 	this->renderer = new Renderer();
 	this->guiRenderer = new GUIRenderer();
+	this->lineRenderer = new LineRenderer();
 }

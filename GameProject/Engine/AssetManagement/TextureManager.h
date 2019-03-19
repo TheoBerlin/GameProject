@@ -19,7 +19,7 @@ public:
 	Return:
 		nullptr if not found else a pointer to the texture.
 	*/
-    static Texture* loadTexture(const std::string& fileName, TextureType type = TextureType::TXTYPE_DIFFUSE);
+    static Texture* loadTexture(const std::string& fileName);
 
 	/*
 	Get a stored texture.

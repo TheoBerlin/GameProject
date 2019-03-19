@@ -171,10 +171,7 @@ void ModelLoader::processMaterial(aiMaterial* material, Model* model, aiTextureT
 
         LOG_INFO("Found texture [%s]", convertedString.c_str());
 
-        // Convert aiTextureType to TextureType
-        TextureType txType = convertTextureType(type);
-
-        Texture* texture = TextureManager::loadTexture(directory + convertedString, txType);
+        Texture* texture = TextureManager::loadTexture(directory + convertedString);
 
         newMaterial.textures.push_back(texture);
     }
