@@ -6,8 +6,6 @@
 #include <Game/Level/Level.h>
 #include <Engine/Collision/CollisionInfo.h>
 
-#include <Utils/Logger.h>
-
 ReplaySystem::ReplaySystem()
 	:replayTime(0.0f),
 	isRecording(false),
@@ -35,8 +33,6 @@ void ReplaySystem::update(const float& dt)
 
 		if (explosionComponent) {
 			float elapsedTime = replayTime - collisions[collisionIndex].time;
-
-			LOG_ERROR("REPLAY: [%d]", collisions[collisionIndex].event.shape2->getCollisionCategoryBits());
 
 			dynamic_cast<Explosion*>(explosionComponent)->explode(2.0, elapsedTime, collisions[collisionIndex].event.shape2->getCollisionCategoryBits() == CATEGORY::DRONE_EYE);
 		}
@@ -204,5 +200,4 @@ void ReplaySystem::handlePlayerCollision(PlayerCollisionEvent* event)
 	float timeStamp = recordingTimer.getTime();
 
 	collisions.push_back(CollisionReplay(*event, timeStamp));
-	LOG_INFO("REPLAY SYSTEM, SHAPE 2 CATEGORY BITS: [%d]", collisions.back().event.shape2->getCollisionCategoryBits());
 }

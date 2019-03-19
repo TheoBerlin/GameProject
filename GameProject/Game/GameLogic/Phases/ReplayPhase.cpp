@@ -64,10 +64,6 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     // Lambda function which executes when retry is pressed
     std::function<void()> retry = [this](){beginAimTransition();};
 
-	level.scoreManager->showResults(level, retry);
-
-	level.scoreManager->toggleGuiMinimize();
-
 	// Add path visualizer for debugging
 	if (ENABLE_PATH_VISUALIZERS) {
 		pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
@@ -107,6 +103,9 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	// Reset targets
 	level.targetManager->resetTargets();
 
+	level.scoreManager->showResults(level, retry);
+	level.scoreManager->toggleGuiMinimize();
+
 	// Begin replaying playthrough
 	level.replaySystem->startReplaying();
 
@@ -116,6 +115,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().subscribe(this, &ReplayPhase::handleMouseClick);
+
 }
 
 ReplayPhase::~ReplayPhase()
@@ -195,15 +195,8 @@ PathVisualizer* ReplayPhase::getPathVisualizer() const
 
 void ReplayPhase::handleHighscoreUpdate(NewHighscoreEvent* event)
 {
-	std::vector<CollisionReplay>& collisions = level.replaySystem->getCollisionReplays();
-
-	for (unsigned int i = 0; i < collisions.size(); i += 1) {
-		LOG_ERROR("%d", (int)collisions[i].event.shape2->getCollisionCategoryBits());
-	}
-
 	// Write the replay of the highscore playthrough
 	ReplayParser::writeReplay(level.levelName, level.replaySystem->getCollisionReplays(), pathTreader->getPath());
-
 }
 
 void ReplayPhase::handleKeyInput(KeyEvent* event)
@@ -430,7 +423,7 @@ void ReplayPhase::setupGUI()
 
 void ReplayPhase::addCollisionMarks()
 {
-	std::vector<CollisionReplay> v = level.replaySystem->getCollisionReplays();
+	std::vector<CollisionReplay>& v = level.replaySystem->getCollisionReplays();
 
 	for (auto t : v)
 	{
