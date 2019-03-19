@@ -23,6 +23,7 @@ public:
 	void render() override;
 
 	void updateLevelPreview(const std::string& levelName);
+	void stopPreviewReplay();
 
 	Level& getLevel();
 

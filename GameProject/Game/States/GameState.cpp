@@ -21,13 +21,13 @@ GameState::GameState(Level& level)
 	this->level = level;
 
 	this->level.gui = &this->getGUI();
-	this->level.replaySystem = &this->replaySystem;
 	this->level.scoreManager = &this->scoreManager;
 	this->level.helpGUI = &this->helpGUI;
 
 	this->entityManager = this->level.entityManager;
 	this->targetManager = this->level.targetManager;
 	this->collisionHandler = this->level.collisionHandler;
+	this->replaySystem = this->level.replaySystem;
 	this->levelStructure = this->level.levelStructure;
 	this->lightManager = this->level.lightManager;
 

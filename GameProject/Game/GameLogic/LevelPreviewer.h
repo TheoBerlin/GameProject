@@ -4,6 +4,8 @@
 #include <Engine/Components/Camera.h>
 #include <Engine/Entity/EntityManager.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
+#include <Game/Components/PathTreader.h>
+#include <Game/GameLogic/ReplaySystem.h>
 #include <Game/GameLogic/TargetManager.h>
 #include <Game/Level/LevelParser.h>
 #include <Game/Level/LevelStructure.h>
@@ -23,15 +25,17 @@ public:
 
     Level& getLevel();
 
+    void stopReplaying();
+
 private:
     LevelParser levelParser;
 
-    float elapsedTime, replayLength;
 
     Level level;
 
     // Level systems
     EntityManager* entityManager;
+    ReplaySystem replaySystem;
     LevelStructure levelStructure;
     TargetManager* targetManager;
     CollisionHandler collisionHandler;
@@ -39,4 +43,11 @@ private:
 
     Entity* cameraEntity;
     Camera* camera;
+
+    // Replay
+    float elapsedTime, replayLength;
+    bool replayExists;
+
+    Entity* replayArrow;
+    PathTreader* pathTreader;
 };

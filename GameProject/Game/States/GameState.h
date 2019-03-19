@@ -40,7 +40,7 @@ private:
 	TargetManager* targetManager;
 	GameLogic gameLogic;
 	CollisionHandler* collisionHandler;
-	ReplaySystem replaySystem;
+	ReplaySystem* replaySystem;
 	ScoreManager scoreManager;
 	LevelStructure* levelStructure;
 	LightManager* lightManager;

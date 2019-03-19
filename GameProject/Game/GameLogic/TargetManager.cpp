@@ -156,7 +156,7 @@ std::vector<Entity*> TargetManager::getTargetEntities() const
 	}
 
 	// Add moving targets
-	for (unsigned int targetIndex = 0; targetIndex < staticTargets.size(); targetIndex += 1) {
+	for (unsigned int targetIndex = 0; targetIndex < movingTargets.size(); targetIndex += 1) {
 		targetEntities[targetIndex + staticTargets.size()] = movingTargets[targetIndex].pathTreader->getHost();
 	}
 

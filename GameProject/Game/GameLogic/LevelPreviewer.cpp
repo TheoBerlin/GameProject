@@ -3,6 +3,8 @@
 #include <Engine/Entity/Entity.h>
 #include <Engine/Rendering/Display.h>
 #include <Engine/Rendering/Renderer.h>
+#include <Game/Level/ReplayParser.h>
+#include <Utils/Logger.h>
 
 LevelPreviewer::LevelPreviewer(EntityManager* entityManager)
     :elapsedTime(0.0f),
@@ -12,13 +14,16 @@ LevelPreviewer::LevelPreviewer(EntityManager* entityManager)
     entityManager(entityManager),
     levelStructure(),
     targetManager(),
-    collisionHandler()
+    collisionHandler(),
+    replaySystem(),
+    replayExists(false)
 {
     this->targetManager = new TargetManager();
 
     level.levelName = "";
     level.scoreManager = nullptr;
     level.entityManager = entityManager;
+    level.replaySystem = &replaySystem;
     level.levelStructure = &levelStructure;
     level.targetManager = targetManager;
     level.collisionHandler = &collisionHandler;
@@ -30,6 +35,8 @@ LevelPreviewer::~LevelPreviewer()
 	if (level.levelName != "") {
 		delete targetManager;
 	}
+
+    this->stopReplaying();
 
 	Display::get().getRenderer().clearRenderingTargets();
 
@@ -45,7 +52,6 @@ void LevelPreviewer::setLevel(const std::string& levelName)
     // Renderer setup
     Renderer& renderer = Display::get().getRenderer();
 
-    renderer.initInstancing();
 	renderer.getPipeline()->setLightManager(level.lightManager);
 	renderer.getPipeline()->setWallPoints(level.levelStructure->getWallPoints(), level.levelStructure->getWallGroupsIndex());
 
@@ -68,6 +74,38 @@ void LevelPreviewer::setLevel(const std::string& levelName)
     this->camera->init();
 
     renderer.setActiveCamera(this->camera);
+
+    // Read level replay if there is one
+    std::vector<CollisionReplay> collisions;
+    std::vector<KeyPoint> arrowPath;
+
+    this->replayExists = ReplayParser::readReplay(this->level, levelName, collisions, arrowPath);
+
+    if (!replayExists) {
+        LOG_INFO("No replay exists for the selected level");
+    } else {
+        LOG_INFO("Starting previewed level's replay");
+
+        this->replayLength = arrowPath.back().t;
+
+        // Create replay arrow
+        this->replayArrow = this->level.entityManager->addTracedEntity("PreviewReplayArrow");
+
+        Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx", level.collisionHandler);
+	    Display::get().getRenderer().addRenderingTarget(model, SHADERS::DEFAULT);
+
+        this->replayArrow->setModel(model);
+
+        this->pathTreader = new PathTreader(replayArrow, arrowPath);
+
+        this->replaySystem.setCollisionReplays(collisions);
+
+        // Start the replay
+        this->replaySystem.startReplaying();
+        this->pathTreader->startTreading();
+    }
+
+    renderer.initInstancing();
 }
 
 void LevelPreviewer::render()
@@ -101,9 +139,45 @@ void LevelPreviewer::update(float dt)
 		Update shaders
 	*/
 	Display::get().getRenderer().updateShaders(dt);
+
+    if (!this->replayExists) {
+        return;
+    }
+
+    replaySystem.update(dt);
+
+    // Restart replay if the end has been reached
+    elapsedTime += dt;
+
+    if (elapsedTime > replayLength) {
+        elapsedTime = 0.0f;
+
+        this->targetManager->resetTargets();
+
+        pathTreader->startTreading();
+
+        replaySystem.setReplayTime(this->level, this->pathTreader, this->replayArrow, 0.0f);
+    }
 }
 
 Level& LevelPreviewer::getLevel()
 {
     return this->level;
+}
+
+void LevelPreviewer::stopReplaying()
+{
+    this->replaySystem.stopReplaying();
+
+    if (replayArrow) {
+		bool arrowDeleted = this->entityManager->removeTracedEntity(replayArrow->getName());
+
+        if (!arrowDeleted) {
+            LOG_WARNING("Entity manager failed to delete preview replay arrow: [%s]", replayArrow->getName().c_str());
+        }
+
+		replayArrow = nullptr;
+	}
+
+    this->targetManager->resetTargets();
 }

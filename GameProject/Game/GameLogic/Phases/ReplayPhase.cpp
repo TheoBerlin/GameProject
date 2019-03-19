@@ -69,6 +69,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	//Retrieve trail emitter from playerArrow
 	Entity* oldArrow = guidingPhase->getPlayerArrow();
+
 	if (oldArrow) {
 		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(oldArrow->getComponent("TrailEmitter"));
 		// Detach trail emitter from player arrow

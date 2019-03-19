@@ -99,6 +99,11 @@ void MenuState::updateLevelPreview(const std::string& levelName)
 	this->levelPreviewer->setLevel(levelName);
 }
 
+void MenuState::stopPreviewReplay()
+{
+	this->levelPreviewer->stopReplaying();
+}
+
 Level& MenuState::getLevel()
 {
 	return this->levelPreviewer->getLevel();
@@ -158,6 +163,7 @@ void MenuState::initLevelSelect()
 	playBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	playBtn->addText("Play", "aldo", glm::vec4(1.0f));
 	playBtn->setCallback([this](void) {
+		this->stopPreviewReplay();
 		this->pushState(new GameState(this->getLevel()));
 	});
 	selectPnl->addChild(playBtn);
