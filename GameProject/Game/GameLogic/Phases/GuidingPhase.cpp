@@ -208,7 +208,7 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 		level.scoreManager->score();
 		updateTargetPanel();
 
-		if(level.scoreManager->getTargetsHit() == level.targetManager->getTargetCount())
+		if(level.scoreManager->getTargetsHit() >= level.targetManager->getTargetCount())
 			beginReplayTransition();
 		break;
 	}
@@ -216,6 +216,10 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 	{
 		level.scoreManager->scoreBonus();
 		updateTargetPanel();
+
+		if (level.scoreManager->getTargetsHit() >= level.targetManager->getTargetCount())
+			beginReplayTransition();
+
 		break;
 	}
 	}
