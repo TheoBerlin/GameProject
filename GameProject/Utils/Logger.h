@@ -5,16 +5,29 @@
 #include <memory>
 #include <string>
 
-// Print function for info, warnings and errors.
-#define LOG_INFO(...)				Logger::printInfo(__FILE__, __func__, __LINE__, __VA_ARGS__)
-#define LOG_PRINT(...)				LOG_INFO(__VA_ARGS__)
-#define LOG_WARNING(...)			Logger::printWarning(__FILE__, __func__, __LINE__, __VA_ARGS__)
-#define LOG_ERROR(...)				Logger::printError(__FILE__, __func__, __LINE__, __VA_ARGS__)
-#define LOG_SUCCESS(...)			Logger::printSuccess(__FILE__, __func__, __LINE__, __VA_ARGS__)
+#include <Engine/Config.h>
 
-// Functions to change the console color.
-#define LOG_START_COLOR_PASS(color) Logger::startColorPass(color)
-#define LOG_END_COLOR_PASS()		Logger::endColorPass();
+#ifdef LOG_ENABLE_PRINT
+	// Print function for info, warnings and errors.
+	#define LOG_INFO(...)				Logger::printInfo(__FILE__, __func__, __LINE__, __VA_ARGS__)
+	#define LOG_PRINT(...)				LOG_INFO(__VA_ARGS__)
+	#define LOG_WARNING(...)			Logger::printWarning(__FILE__, __func__, __LINE__, __VA_ARGS__)
+	#define LOG_ERROR(...)				Logger::printError(__FILE__, __func__, __LINE__, __VA_ARGS__)
+	#define LOG_SUCCESS(...)			Logger::printSuccess(__FILE__, __func__, __LINE__, __VA_ARGS__)
+
+	// Functions to change the console color.
+	#define LOG_START_COLOR_PASS(color) Logger::startColorPass(color)
+	#define LOG_END_COLOR_PASS()		Logger::endColorPass();
+#else
+	#define LOG_INFO(...)
+	#define LOG_PRINT(...)
+	#define LOG_WARNING(...)
+	#define LOG_ERROR(...)
+	#define LOG_SUCCESS(...)
+
+	#define LOG_START_COLOR_PASS(color)
+	#define LOG_END_COLOR_PASS()
+#endif
 
 // Restrict printing by only print certain types. 
 #define LOG_SET_FILTER(...)			Logger::setFilter(__VA_ARGS__)

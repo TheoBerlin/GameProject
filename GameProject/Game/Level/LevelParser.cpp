@@ -478,6 +478,18 @@ void LevelParser::readCameraSetting(json::json& file, CameraSetting& camera)
 	camera.direction = glm::normalize(camera.direction);
 }
 
+json::json::value_type LevelParser::readValueGeneric(json::json & file, std::string value)
+{
+	if (!file[value].empty()) {
+		return file[value];
+	}
+	else {
+		LOG_WARNING("Value of %s not found in level!", value.c_str());
+		json::json::value_type v = 0;
+		return v;
+	}
+}
+
 void LevelParser::createCollisionBodies(Level& level)
 {
 	int bodiesNeeded = 0;

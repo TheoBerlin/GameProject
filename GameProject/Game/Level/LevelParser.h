@@ -39,6 +39,7 @@ private:
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 	void readCameraSetting(json::json& file, CameraSetting& camera);
 
+	json::json::value_type readValueGeneric(json::json& file, std::string value);
 	template <class T>
 	T readValue(json::json& file, std::string value);
 
@@ -54,11 +55,5 @@ public:
 template<class T>
 inline T LevelParser::readValue(json::json & file, std::string value)
 {
-	if (!file[value].empty()) {
-		return file[value];
-	}
-	else {
-		printf("Value of %s not found in level!", value.c_str());
-		return T();
-	}
+	return (T)readValueGeneric(file, value);
 }

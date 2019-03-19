@@ -1,6 +1,7 @@
 #include <crtdbg.h>
 
 #include "Utils/Logger.h"
+
 #include "Utils/Settings.h"
 #include "Game/Game.h"
 #include "Engine/AssetManagement/ModelLoader.h"
@@ -19,7 +20,10 @@
 
 int main() {
 	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+
 	Logger::init();
+	//LOG_FILTER_WARNING_ERROR;
+
 	SoundContext::initSoundContext();
 
 	ran.seed(std::random_device()());
