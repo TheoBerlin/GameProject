@@ -13,14 +13,11 @@
 #include "Engine/GUI/ScrollPanel/ScrollPanel.h"
 #include "Engine/GUI/GUIColors.h"
 #include "Game/States/EditorState.h"
+#include "Engine/GUI/SliderPanel.h"
 
 
 MenuState::MenuState() : State()
 {
-	// Create panel groups [0] is main menu, [1] is level select
-	this->panelGroups.push_back(std::vector<Panel*>());
-	this->panelGroups.push_back(std::vector<Panel*>());
-
 	// Default level
 	this->selectedLevel = ".";
 
@@ -32,7 +29,7 @@ MenuState::MenuState() : State()
 	FontManager::addFont("aldoSmall", "./Game/assets/fonts/aldo/aldo.ttf", 20);
 	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
 
-	this->initMainMenu();
+	menuGUI.init(&this->getGUI(), &this->getStateManager());
 	this->initLevelSelect();
 
 	InputHandler ih(Display::get().getWindowPtr());
@@ -45,6 +42,7 @@ MenuState::~MenuState()
 
 void MenuState::start()
 {
+	menuGUI.setStateManager(&this->getStateManager());
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
@@ -74,6 +72,28 @@ void MenuState::render()
 	guiRenderer.draw(this->getGUI());
 }
 
+void MenuState::loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths)
+{
+	for (const auto& entry : std::experimental::filesystem::directory_iterator(dir))
+		paths.push_back(entry.path());
+}
+
+void MenuState::updateLevelInfoPanel()
+{
+	this->levelParser.readLevelInfo(this->selectedLevel, this->levelInfo);
+	std::vector<Panel*> children = this->previewPnl->getChildren();
+	children[0]->updateText(0, this->selectedLevel.substr(this->selectedLevel.rfind("\\") + 1, this->selectedLevel.rfind(".") - this->selectedLevel.rfind("\\") - 1));
+	children[1]->updateText(0, this->levelInfo[0]);
+	children[2]->updateText(0, this->levelInfo[1]);
+	children[3]->updateText(0, this->levelInfo[2]);
+}
+
+void MenuState::updateScore(UpdateScoreEvent * evnt)
+{
+	std::vector<Panel*> children = this->previewPnl->getChildren();
+	children[3]->updateText(0, "Highscore:" + std::to_string(evnt->highscore));
+}
+
 void MenuState::initLevelSelect()
 {
 	std::vector<std::experimental::filesystem::path> levels;
@@ -82,13 +102,19 @@ void MenuState::initLevelSelect()
 	Display& display = Display::get();
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
+	// Create contain panel
+	Panel* container = new Panel();
+	container->setOption(GUI::FIT_X);
+	container->setOption(GUI::FIT_Y);
+	container->setColor({ 1.f, 1.f, 1.f, 0.f });
+	this->getGUI().addPanel(container);
+
 	// Create panel for scroll list and its two buttons
 	Panel* selectPnl = new Panel();
 	selectPnl->setOption(GUI::FLOAT_LEFT);
 	selectPnl->setSize({ 300, display.getHeight() });
 	selectPnl->setColor(PANEL_BACKGROUND_COLOR);
-	this->panelGroups[1].push_back(selectPnl);
-	this->getGUI().addPanel(selectPnl);
+	container->addChild(selectPnl);
 
 	// Create scroll list for level selection
 	ScrollPanel* scrollPanel = new ScrollPanel(200, 300);
@@ -144,10 +170,7 @@ void MenuState::initLevelSelect()
 	backBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	backBtn->addText("Back", "aldo", glm::vec4(1.0f));
 	backBtn->setCallback([this](void) {
-		for (auto p : this->panelGroups[1])
-			p->hide();
-		for (auto p : this->panelGroups[0])
-			p->show();
+		menuGUI.switchGUI(MENU::MAIN);
 	});
 	selectPnl->addChild(backBtn);
 
@@ -159,8 +182,7 @@ void MenuState::initLevelSelect()
 	previewPnl->setOption(GUI::CENTER_Y);
 	previewPnl->setSize({ 500, 500 });
 	previewPnl->setColor(PANEL_BACKGROUND_COLOR);
-	this->panelGroups[1].push_back(previewPnl);
-	this->getGUI().addPanel(previewPnl);
+	container->addChild(previewPnl);
 
 	// Create name for map panel
 	Panel* namePnl = new Panel();
@@ -202,83 +224,5 @@ void MenuState::initLevelSelect()
 	hiScorePnl->setOption(GUI::FLOAT_UP, 200);
 	previewPnl->addChild(hiScorePnl);
 
-	// Hide these panels in the beginning
-	for (auto p : this->panelGroups[1])
-		p->hide();
-}
-
-void MenuState::loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths)
-{
-	for (const auto& entry : std::experimental::filesystem::directory_iterator(dir))
-		paths.push_back(entry.path());
-}
-
-void MenuState::updateLevelInfoPanel()
-{
-	this->levelParser.readLevelInfo(this->selectedLevel, this->levelInfo);
-	std::vector<Panel*> children = this->previewPnl->getChildren();
-	children[0]->updateText(0, this->selectedLevel.substr(this->selectedLevel.rfind("\\") + 1, this->selectedLevel.rfind(".") - this->selectedLevel.rfind("\\") - 1));
-	children[1]->updateText(0, this->levelInfo[0]);
-	children[2]->updateText(0, this->levelInfo[1]);
-	children[3]->updateText(0, this->levelInfo[2]);
-}
-
-void MenuState::updateScore(UpdateScoreEvent * evnt)
-{
-	std::vector<Panel*> children = this->previewPnl->getChildren();
-	children[3]->updateText(0, "Highscore:" + std::to_string(evnt->highscore));
-}
-
-void MenuState::initMainMenu()
-{
-	// Get GUI
-	GUI& gui = this->getGUI();
-
-	// Create title
-	Panel* titlePnl = new Panel();
-	titlePnl->addText("gameNname", "aldoBig", TEXT_COLOR);
-	titlePnl->setOption(GUI::FLOAT_UP, 40);
-	titlePnl->setOption(GUI::CENTER_X);
-	titlePnl->setOption(GUI::SCALE_TO_TEXT_X);
-	titlePnl->setColor({ 0.0f, 0.0f, 0.0f, 0.0f });
-	this->panelGroups[0].push_back(titlePnl);
-	gui.addPanel(titlePnl);
-
-	// Create play button
-	Button* playBtn = new Button();
-	playBtn->setOption(GUI::SCALE_TO_TEXT_X, 5);
-	playBtn->setOption(GUI::SCALE_TO_TEXT_Y, 5);
-	playBtn->setOption(GUI::CENTER_X);
-	playBtn->setOption(GUI::CENTER_Y);
-	playBtn->setOption(GUI::TEXT_CENTER_X);
-	playBtn->setOption(GUI::TEXT_CENTER_Y);
-	playBtn->setHoverColor(BUTTON_HOVER_COLOR);
-	playBtn->setNormalColor(BUTTON_NORMAL_COLOR);
-	playBtn->setPressedColor(BUTTON_PRESS_COLOR);
-	playBtn->addText("Select level", "aldo", glm::vec4(1.0f));
-	playBtn->setCallback([this](void) {
-		for (auto p : this->panelGroups[0])
-			p->hide();
-		for (auto p : this->panelGroups[1])
-			p->show();
-	});
-	this->panelGroups[0].push_back(playBtn);
-	gui.addPanel(playBtn);
-
-	Button* editorBtn = new Button();
-	editorBtn->setOption(GUI::SCALE_TO_TEXT_X, 5);
-	editorBtn->setOption(GUI::SCALE_TO_TEXT_Y, 5);
-	editorBtn->setOption(GUI::CENTER_X);
-	editorBtn->setOption(GUI::CENTER_Y, -100);
-	editorBtn->setOption(GUI::TEXT_CENTER_X);
-	editorBtn->setOption(GUI::TEXT_CENTER_Y);
-	editorBtn->setHoverColor(BUTTON_HOVER_COLOR);
-	editorBtn->setNormalColor(BUTTON_NORMAL_COLOR);
-	editorBtn->setPressedColor(BUTTON_PRESS_COLOR);
-	editorBtn->addText("Level Editor", "aldo", glm::vec4(1.0f));
-	editorBtn->setCallback([this](void) {
-		this->pushState(new EditorState());
-	});
-	this->panelGroups[0].push_back(editorBtn);
-	gui.addPanel(editorBtn);
+	menuGUI.changePanelPointer(MENU::LEVEL_SELECT, container);
 }

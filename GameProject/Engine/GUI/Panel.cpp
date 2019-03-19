@@ -339,7 +339,7 @@ bool Panel::isActive() const
 void Panel::hide()
 {
 	this->shown = false;
-	this->active = false;
+	setActive(false);
 	this->shouldUpdate = true;
 
 	unsigned char data[4];
@@ -354,7 +354,7 @@ void Panel::hide()
 void Panel::show()
 {
 	this->shown = true;
-	this->active = true;
+	setActive(true);
 	this->shouldUpdate = true;
 	this->shouldUpdateOptions = true;
 }
@@ -369,7 +369,7 @@ void Panel::init()
 	this->pos = { 0, 0 };
 	this->size = { 100, 100 };
 	this->color = { 1.0f, 1.0f, 1.0f, 1.0f };
-	this->shouldUpdate = false;
+	this->shouldUpdate = true;
 	this->shouldUpdateOptions = false;
 	this->parent = nullptr;
 	this->active = true;
