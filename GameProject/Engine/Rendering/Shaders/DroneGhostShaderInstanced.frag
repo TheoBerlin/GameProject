@@ -31,7 +31,7 @@ void main()
     // perform perspective divide
     const float distortionStrength = 1.0;
 
-    vec4 distortPoint = fragPos + distortionStrength*normalize(fragNormal);
+    vec4 distortPoint = fragPos + distortionStrength*vec4(normalize(fragNormal), 1.0);
     distortPoint.w = 1.0;
     vec4 fragPosVP = fragVP * distortPoint;
     vec3 projCoords = fragPosVP.xyz / fragPosVP.w;
