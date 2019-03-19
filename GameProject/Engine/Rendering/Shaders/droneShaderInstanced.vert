@@ -21,7 +21,8 @@ out vec4 fragLightPos;
 void main()
 {
     droneColor = color;
-    fragNormal = (transform * vec4(normal, 0.0)).xyz;
+    mat4 m = transpose(inverse(transform));
+    fragNormal = (m * vec4(normal, 0.0)).xyz;
     fragUv = uv;
     fragPos = (transform * vec4(position, 1.0)).xyz;
     fragLightPos = lightMatrix * transform * vec4(position, 1.0);

@@ -80,7 +80,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // combine results
     vec3 ambient  = vec3(0.1) * mat.kd.xyz;
     vec3 diffuse  = light.intensity.xyz * diff * mat.kd.xyz * light.intensity.w;
-    vec3 specular = vec3(1.0) * spec * mat.ks_f.xyz;
+    vec3 specular = spec * mat.ks_f.xyz;
     ambient  *= attenuation;
     diffuse  *= attenuation;
     specular *= attenuation;
@@ -90,12 +90,13 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 
 void main()
 {
+    vec3 normal = normalize(fragNormal);
     vec3 viewDir = normalize(camPos - fragPos);
 
     vec3 result = vec3(0.0f);
 
     for(int i = 0; i < lightBuffer.nrOfPointLights; i++) {
-        result += CalcPointLight(lightBuffer.pointLights[i], fragNormal, fragPos, viewDir);
+        result += CalcPointLight(lightBuffer.pointLights[i], normal, fragPos, viewDir);
     }
 
     vec3 texColor = texture2D(tex, fragUv).rgb;
@@ -107,13 +108,13 @@ void main()
         Diffuse
     */
     //vec3 diffuse = dirLight.color_intensity.rgb  * dirLight.color_intensity.a;
-    float diffuse = max(-dot(normalize(fragNormal), normalize(dirLight.direction.xyz)), 0.0);
+    float diffuse = max(-dot(normal, normalize(dirLight.direction.xyz)), 0.0);
 
     /*
         Specular
     */
     float specular;
-    vec3 lightReflect = normalize(reflect(dirLight.direction.xyz, fragNormal));
+    vec3 lightReflect = normalize(reflect(dirLight.direction.xyz, normal));
     vec3 VertexToEye = normalize(camPos - fragPos);
     float specularFactor = dot(VertexToEye, lightReflect);
         if (specularFactor > 0) {
