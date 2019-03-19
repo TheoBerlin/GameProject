@@ -82,6 +82,22 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 	return nullptr;
 }
 
+void LightManager::updateDirectionalLight(const glm::vec4& direction,const glm::vec4& colorIntensity, Level * level)
+{
+	if (!dirLightExist) {
+		dirLight = new DirectionalLight(direction, colorIntensity);
+		dirLightExist = true;
+		calcShadowMatrix(level);
+
+	}
+	else {
+		dirLight->setIntensity(colorIntensity);
+		dirLight->setDirection(direction);
+		calcShadowMatrix(level);
+	}
+
+}
+
 DirectionalLight * LightManager::getDirectionalLight()
 {
 	return this->dirLight;

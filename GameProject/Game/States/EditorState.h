@@ -34,6 +34,9 @@ private:
 	float camSpeed;
 	FreeMove* freeMove;
 
+	glm::vec4 dirLightDirection;
+	glm::vec4 dirLightColorIntesity;
+
 	Entity* lampPlacerholder;
 
 	Level level;

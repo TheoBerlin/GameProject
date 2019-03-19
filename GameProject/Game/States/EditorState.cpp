@@ -49,8 +49,6 @@ EditorState::EditorState()
 	level.gui = &this->getGUI();
 	level.isEditor = true;
 
-	//lightManager.createDirectionalLight();
-
 	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
@@ -420,6 +418,10 @@ void EditorState::levelWindow(EntityManager& entityManager)
 
 		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
 		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+		//Get directional light settings
+		this->dirLightDirection = lightManager.getDirectionalLight()->getDirection();
+		this->dirLightColorIntesity = lightManager.getDirectionalLight()->getIntensity();
+
 		Display::get().getRenderer().initInstancing();
 		entityManager.addEntity(lampPlacerholder);
 	}
@@ -534,6 +536,13 @@ void EditorState::lightWindow(EntityManager & entityManager)
 {
 #ifdef IMGUI
 	ImGui::Begin("Light Window");
+	ImGui::Text("Directional Light Settings");
+	if (ImGui::DragFloat4("Direction", &this->dirLightDirection[0], 0.1f) ||
+		ImGui::DragFloat4("ColorIntensity", &this->dirLightColorIntesity[0], 0.1f)) {
+		level.lightManager->updateDirectionalLight(this->dirLightDirection, this->dirLightColorIntesity, &level);
+		Display::get().getRenderer().getPipeline()->updateDirectionalLight(&DirectionalLight(this->dirLightDirection, this->dirLightColorIntesity));
+	}
+
 	if (ImGui::Button("Add Light")) {
 		Display::get().getRenderer().getPipeline()->createLight(glm::vec4(0.0f, 0.0f, 0.0f, 1.0f), glm::vec4(1.0f), 7);
 	}
@@ -602,10 +611,12 @@ void EditorState::pauseGame(KeyEvent * ev)
 	if (ev->key == GLFW_KEY_F2 && ev->action == GLFW_PRESS) {
 		if (freeMove->mouseIsEnabled()) {
 			freeMove->disableMouse();
+			freeMove->setSpeed(0.0f);
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		}
 		else {
 			freeMove->enableMouse();
+			freeMove->setSpeed(this->camSpeed);
 			glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
 	}
