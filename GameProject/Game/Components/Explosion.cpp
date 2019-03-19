@@ -7,9 +7,14 @@
 Explosion::Explosion(Entity * host)
 	: Component(host, "Explosion")
 {
-	sound.loadSound("Game/assets/sound/Explosion.wav");
-	sound.setLoopState(false);
-	SoundManager::get().addSound(&sound, SOUND_EFFECT);
+	soundExplosion.loadSound("Game/assets/sound/Explosion.wav");
+	soundExplosion.setLoopState(false);
+	SoundManager::get().addSound(&soundExplosion, SOUND_EFFECT);
+
+	soundEye.loadSound("Game/assets/sound/eyeBreak.wav");
+	soundEye.setLoopState(false);
+	soundEye.setVolume(0.75);
+	SoundManager::get().addSound(&soundEye, SOUND_EFFECT);
 }
 
 Explosion::~Explosion()
@@ -25,7 +30,7 @@ void Explosion::update(const float & dt)
 		debri->emitter->setPosition(debri->position);
 	}
 
-	sound.setPosition(host->getTransform()->getPosition());
+	soundExplosion.setPosition(host->getTransform()->getPosition());
 
 	this->timer += dt;
 	if (this->timer > lifeTime) {
@@ -34,9 +39,9 @@ void Explosion::update(const float & dt)
 	}
 }
 
-void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDebris, float speed, float grav)
+void Explosion::explode(float lifeTime, float timeElapsed, bool eyeHit, unsigned explosionDebris, float speed, float grav)
 {
-	sound.playSound();
+	soundExplosion.playSound();
 
 	this->lifeTime = lifeTime;
 	if (timeElapsed < this->lifeTime) {
@@ -55,6 +60,11 @@ void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDeb
 			createDebri(entityPos, glm::vec3(rx, 1.0f, rz) * rSpeed, gravity, glm::vec3(0.8f), 0.15f, 0.5f);
 		}
 
+		if (eyeHit) {
+			soundEye.playSound();
+			createEyeDebri(entityPos, this->host->getTransform()->getForward() * 2.0f, glm::vec3(0.0f), glm::vec3(0.8, 0.0, 0.0), 0.05f, 1.5f, 0.5f);
+		}
+
 		createDebri(entityPos, glm::vec3(0.0f), glm::vec3(0.0f), glm::vec3(0.1f), 0.35f, 2.0f, 0.25f);
 
 		//If explosion is triggered with rewind the time elapsed has to be accounted for
@@ -62,12 +72,33 @@ void Explosion::explode(float lifeTime, float timeElapsed, unsigned explosionDeb
 
 		this->timer = timeElapsed;
 	}
-
 }
 
 void Explosion::reset()
 {
 	this->removeDebris();
+
+	soundEye.stopSound();
+}
+
+void Explosion::createEyeDebri(const glm::vec3& pos, const glm::vec3& startVelocity, const glm::vec3& startAcceleration, const glm::vec3& color,
+	const float& scale, const float& spread, const float& life)
+{
+	ParticleEmitter* emitter = new ParticleEmitter();
+
+	emitter->setPosition(pos);
+	emitter->setSpread(spread);
+	emitter->setVelocity(startVelocity);
+	emitter->setMaxParticle(30);
+	emitter->setSpawnRate(300);
+	emitter->setStartColour(glm::vec4(color, 1.0f));
+	emitter->setLifeTime(life);
+	emitter->setScale(scale);
+	emitter->setScaleChange(0.1);
+
+	emitter->playEmitter(0.1f);
+
+	ParticleManager::get().addEmitter(emitter);
 }
 
 void Explosion::createDebri(const glm::vec3& pos, const glm::vec3& startVelocity, const glm::vec3& startAcceleration, const glm::vec3& color,
@@ -84,7 +115,7 @@ void Explosion::createDebri(const glm::vec3& pos, const glm::vec3& startVelocity
 	emitter->setPosition(pos);
 	emitter->setSpread(spread);
 	emitter->setAcceleration(startAcceleration);
-	emitter->setMaxParticle(400);
+	emitter->setMaxParticle(100 * life);
 	emitter->setSpawnRate(100);
 	emitter->setStartColour(glm::vec4(color * 0.8f, 1.0f));
 	emitter->setEndColour(glm::vec4(color * 0.2f, 0.5f));

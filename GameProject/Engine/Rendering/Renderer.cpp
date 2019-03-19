@@ -196,7 +196,7 @@ void Renderer::activatePostFilter(SHADERS_POST_PROCESS shader)
 		return;
 	}
 
-	if ((unsigned)shader > (unsigned)0 && (unsigned)shader < this->activePostFilters.size())
+	if ((unsigned)shader > 0 && (unsigned)shader < this->activePostFilters.size())
 		activePostFilters[shader] = true;
 }
 
@@ -207,6 +207,6 @@ void Renderer::deactivatePostFilter(SHADERS_POST_PROCESS shader)
 		return;
 	}
 
-	if((unsigned)shader > (unsigned)0 && (unsigned)shader < this->activePostFilters.size())
+	if((unsigned)shader > 0 && (unsigned)shader < this->activePostFilters.size())
 		activePostFilters[shader] = false;
 }

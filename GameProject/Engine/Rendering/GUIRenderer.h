@@ -45,6 +45,9 @@ private:
 	void initTextRendering();
 
 	void resizeCallback(WindowResizeEvent* evnt);
+	void hideKeyCallback(KeyEvent* evnt);
+
+	bool hidden = false;
 
 	glm::mat4 orthoText;
 	glm::mat4 orthoDisplay;

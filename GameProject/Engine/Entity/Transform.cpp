@@ -14,7 +14,7 @@ void Transform::copy(const Transform & other)
 
 Transform::Transform()
 {
-	rotationQuat = glm::quat_cast(glm::mat4(1.0f));
+	this->rotationQuat = {1.0f, 0.0f, 0.0f, 0.0f};
 
 	this->f = defaultForward;
 	this->r = glm::cross(this->f, GLOBAL_UP_VECTOR);
@@ -179,7 +179,7 @@ void Transform::rotateAxis(const float & radians, const glm::vec3 & axis)
 
 void Transform::setRotation(const glm::vec3 &rotation)
 {
-	this->rotationQuat = glm::quat_cast(glm::mat4(1.0f));
+	this->rotationQuat = {1.0f, 0.0f, 0.0f, 0.0f};
 
 	this->f = rotationQuat * defaultForward;
 	this->r = rotationQuat * glm::cross(defaultForward, GLOBAL_UP_VECTOR);
@@ -237,10 +237,11 @@ void Transform::setScale(const float& scale)
 void Transform::setForward(const glm::vec3 & forward)
 {
 	glm::vec3 normForward = glm::normalize(forward);
+
 	// Create rotation quaternion based on new forward
 	// Beware of the cases where the new forward vector is parallell to the old one
 	float cosAngle = glm::dot(normForward, this->f);
-	glm::quat rotQuat = glm::quat_cast(glm::mat4(1));
+	glm::quat rotQuat = {1.0f, 0.0f, 0.0f, 0.0f};
 
 	if (cosAngle >= 1.0f - FLT_EPSILON * 10.0f) {
 		// The new forward is identical to the old one, do nothing
@@ -253,7 +254,16 @@ void Transform::setForward(const glm::vec3 & forward)
 	}
 	else {
 		// Calculate rotation quaternion
-		glm::vec3 axis = glm::normalize(glm::cross(this->f, normForward));
+		glm::vec3 axis = glm::cross(this->f, normForward);
+
+		float axisLength = glm::length(axis);
+
+		if (axisLength < FLT_EPSILON) {
+			return;
+		}
+
+		axis = axis/axisLength;
+
 		float angle = std::acosf(cosAngle);
 
 		rotQuat = glm::angleAxis(angle, axis);
@@ -271,18 +281,18 @@ void Transform::rotate(const float yaw, const float pitch, const float roll)
 {
 	// Apply yaw
 	glm::quat yawQuat = glm::angleAxis(yaw, GLOBAL_UP_VECTOR);
-	this->f = glm::normalize(yawQuat * this->f);
-	this->r = glm::normalize(yawQuat * this->r);
+	this->f = yawQuat * this->f;
+	this->r = yawQuat * this->r;
 
 	// Apply pitch
 	glm::quat pitchQuat = glm::angleAxis(pitch, this->r);
-	this->f = glm::normalize(pitchQuat * this->f);
+	this->f = pitchQuat * this->f;
 	this->u = glm::cross(this->r, this->f);
 
 	// Apply roll
 	glm::quat rollQuat = glm::angleAxis(roll, this->f);
-	this->r = glm::normalize(rollQuat * this->r);
-	this->u = glm::normalize(rollQuat * this->u);
+	this->r = rollQuat * this->r;
+	this->u = rollQuat * this->u;
 
 	rotationQuat = rollQuat * pitchQuat * yawQuat * rotationQuat;
 
@@ -295,8 +305,8 @@ void Transform::resetRoll()
 
 	glm::quat rollQuat = glm::angleAxis(-roll, this->f);
 
-	this->r = glm::normalize(rollQuat * this->r);
-	this->u = glm::normalize(rollQuat * this->u);
+	this->r = rollQuat * this->r;
+	this->u = rollQuat * this->u;
 
 	rotationQuat = rollQuat * rotationQuat;
 

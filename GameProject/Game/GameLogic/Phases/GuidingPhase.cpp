@@ -63,7 +63,20 @@ void GuidingPhase::update(const float& dt)
 {
     flightTimer += dt;
 
-	if (this->playerArrow->getTransform()->getPosition().y > level.levelStructure->getWallHeight() && !this->hasCollided)
+	ParticleManager::get().update(dt);
+
+	// Update entities.
+	level.entityManager->update(dt);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(dt);
+
+	if (!this->hasCollided && this->playerArrow->getTransform()->getPosition().y > level.levelStructure->getWallHeight())
 		beginReplayTransition();
 }
 
@@ -179,6 +192,7 @@ void GuidingPhase::playerCollisionCallback(PlayerCollisionEvent * ev)
 	flightTime = flightTimer;
 
 	arrowGuider->saveKeyPoint(flightTime);
+
 	// Check if the arrow hit static geometry
 	unsigned int category = ev->shape2->getCollisionCategoryBits();
 
