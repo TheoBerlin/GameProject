@@ -3,7 +3,9 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <vector>
+#include <unordered_map>
 
+class Entity;
 struct Vertex;
 class Octree
 {
@@ -62,7 +64,9 @@ public:
 	*/
 	std::vector<Node*>& getNodes();
 
-	Shape* addShape(Vertex* vertices, unsigned numVertices);
+	Shape* createShape(Vertex* vertices, unsigned numVertices, unsigned char* indices, unsigned numIndices);
+
+	void addShapeToEntity(Entity* entity, Shape* shape);
 
 	/*
 	---------------------- UTILS ------------------------
@@ -74,7 +78,8 @@ private:
 	void makeNodes(Node* node, unsigned int currLevel, unsigned int maxLevel);
 	void deleteNode(Node* node);
 
-	Node* root;					// Structure of the octree.
-	std::vector<Shape*> shapes;	// Each node can have a referance to a shape. Each shape has vertices.
-	
+	Node* root;											// Structure of the octree.
+	// Key: pointer to the shape
+	std::unordered_map<unsigned int, Shape*> shapes;	// Each node can have a referance to a shape. Each shape has vertices.
+	std::unordered_map <Entity*, Node*> entitesMap;
 };

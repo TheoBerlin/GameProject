@@ -1,6 +1,7 @@
 #include "Octree.h"
 
 #include "../Rendering/GLAbstraction/RenderingResources.h"
+#include "../Entity/Entity.h"
 #include <Utils/Utils.h>
 
 Octree::Octree()
@@ -12,8 +13,8 @@ Octree::~Octree()
 {
 	deleteNode(this->root);
 
-	for (Shape* shape : this->shapes)
-		delete shape;
+	for (auto& shape : this->shapes)
+		delete shape.second;
 	this->shapes.clear();
 }
 
@@ -29,13 +30,45 @@ std::vector<Octree::Node*>& Octree::getNodes()
 	return this->root->children;
 }
 
-Octree::Shape * Octree::addShape(Vertex * vertices, unsigned numVertices)
+Octree::Shape * Octree::createShape(Vertex * vertices, unsigned numVertices, unsigned char* indices, unsigned numIndices)
 {
 	Shape* shape = new Shape();
 	shape->obb = makeOBB(vertices, numVertices);
-	// TODO: Make shape a separate class. 
-	this->shapes.push_back(shape);
+	// TODO: Add to a node.
+
+	// Add list of triangles
+	const unsigned numTriangles = numIndices / 3;
+	shape->triangles = std::vector<Triangle>(numTriangles);
+	for (unsigned i = 0; i < numTriangles; i++) {
+		unsigned index = i * 3;
+		shape->triangles[i].v1 = vertices[indices[index + 0]].Position;
+		shape->triangles[i].v2 = vertices[indices[index + 1]].Position;
+		shape->triangles[i].v3 = vertices[indices[index + 2]].Position;
+	}
+
+	// Add shape to list of shapes.
+	unsigned int key = (unsigned int)shape;
+	this->shapes[key] = shape;
+
 	return shape;
+}
+
+void Octree::addShapeToEntity(Entity * entity, Shape * shape)
+{
+	Node* node = nullptr;
+	
+	// If entity is not in the octree, add it, else fetch it.
+	if (entitesMap.find(entity) == entitesMap.end()) {
+		node = new Node();
+		entitesMap[entity] = node;
+	}
+	else {
+		node = entitesMap[entity];
+	}
+	node->shapes.push_back(shape);
+
+	// TODO: The transform need to be updated when entity moves!
+	node->transform = entity->getTransform()->getMatrix();
 }
 
 Octree::AABB Octree::makeAABB(Vertex * vertices, unsigned int numVertices, glm::vec3 e1, glm::vec3 e2, glm::vec3 e3)

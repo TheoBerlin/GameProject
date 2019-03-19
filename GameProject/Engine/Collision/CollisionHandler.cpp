@@ -34,7 +34,7 @@ CollisionHandler::CollisionHandler()
 	this->drawCollisionShapes = false;
 #endif
 
-	this->octree.constructOctreeTree({ 0.f, 0.f, 0.f }, { 20.f, 20.f, 20.f });
+	this->octree.constructOctreeTree({ 0.f, 0.f, 0.f }, { 20.f, 20.f, 20.f }, 4);
 }
 
 CollisionHandler::~CollisionHandler()
