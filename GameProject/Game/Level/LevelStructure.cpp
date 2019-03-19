@@ -20,6 +20,7 @@ LevelStructure::LevelStructure()
 {
 	this->height = 5.f;
 	spawnedPoints = 0;
+	textureFile = "wallTex";
 }
 
 
@@ -125,29 +126,12 @@ void LevelStructure::addWall(Level & level) {
 	mesh->updateInstancingData(&mats[0][0], mats.size() * sizeof(glm::mat4), 0, 3);
 }
 
-void LevelStructure::removePoint(Level & level, int wallGroupIndex)
+glm::vec2 LevelStructure::calcWallTransform(const glm::vec3 & p1, const glm::vec3 & p2, Transform * trans)
 {
-	if (wallGroupsIndex[wallGroupIndex] > 2) {
-		int first = 0;
-		int removePoint = wallGroupsIndex[wallGroupIndex] - 1;
-		for (int i = 0; i < wallGroupIndex; i++) {
-			first += wallGroupsIndex[i];
-			removePoint += wallGroupsIndex[i];
-		}
-		int last = removePoint - 1;
-
-		Model* model = this->quad;
-		Mesh* mesh = model->getMesh(0);
-
-		Entity* entity = wallEntites[last];
-		Transform* trans = entity->getTransform();
-
-		glm::vec3 p1(wallPoints[last].x, 0.0, wallPoints[last].z);
-		glm::vec3 p2(wallPoints[first].x, 0.0, wallPoints[first].z);
-
-		glm::vec3 width = p2 - p1;
-
+	glm::vec3 width = p2 - p1;
+	if (glm::length(width) > 0.0f) {
 		float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
+
 		if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
 			angle = -angle;
 		trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
@@ -155,16 +139,82 @@ void LevelStructure::removePoint(Level & level, int wallGroupIndex)
 		float dist = glm::length(width);
 		glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
 		trans->setScale(scale);
-		trans->setPosition(p1);
 
-		for (int j = 0; j < level.entityManager->getEntitySize(); j++) {
-			if (wallEntites[removePoint] == level.entityManager->getEntity(j))
-				level.entityManager->removeEntity(j);
+		trans->setPosition(p1);
+	} else {
+		LOG_ERROR("Wall Width is equal to 0, point to avoid this");
+	}
+	return width;
+}
+
+void LevelStructure::addWallCollision(Entity * entity, CollisionHandler* ch)
+{
+	if (entity) {
+		Transform* trans = entity->getTransform();
+		glm::vec3 scale = trans->getScale();
+		Model* model = entity->getModel();
+		Mesh* mesh = model->getMesh(0);
+
+		if (model) {
+			std::vector<Vertex> vertex(mesh->getVerticies().size());
+			unsigned index = 0;
+			for (Vertex& v : mesh->getVerticies())
+			{
+				vertex[index++].Position = scale * v.Position;
+			}
+
+			// Add collision
+			ch->constructBoundingBox(model, &vertex[0], vertex.size(), "");
+			trans->setScale(glm::vec3(1.f, 1.f, 1.f));
+			ch->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), this->wallEntites.size());
+			trans->setScale(scale);
+		}
+	}
+}
+
+void LevelStructure::setTexture(std::string fileName) {
+	textureFile = fileName;
+}
+
+std::string LevelStructure::getTexture() const {
+	return textureFile;
+}
+
+
+void LevelStructure::removePoint(Level & level, int wallGroupIndex, unsigned pointIndex)
+{
+	if (wallGroupsIndex[wallGroupIndex] > 2) {
+
+		int offset = 0;
+		for (int i = 0; i < wallGroupIndex; i++) {
+			offset += wallGroupsIndex[i];
 		}
 
-		wallPoints.erase(wallPoints.begin() + removePoint);
-		scales.erase(scales.begin() + removePoint);
-		wallEntites.erase(wallEntites.begin() + removePoint);
+		int prev = (((pointIndex - offset - 1) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
+		int next = (((pointIndex - offset + 1) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
+
+		//Update transform of entity before removed
+		Entity* entity = wallEntites[prev];
+		Transform* trans = entity->getTransform();
+
+		glm::vec3 p1(wallPoints[prev].x, 0.0, wallPoints[prev].z);
+		glm::vec3 p2(wallPoints[next].x, 0.0, wallPoints[next].z);
+
+		glm::vec2 width = this->calcWallTransform(p1, p2, trans);
+
+		//Update scale of point before removed
+		this->scales[prev] = glm::vec2(glm::length(width), this->height);
+
+		//Erase point
+		int wallToBeRemoved = (((pointIndex - offset) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
+		for (int j = 0; j < level.entityManager->getEntitySize(); j++) {
+			if (wallEntites[wallToBeRemoved] == level.entityManager->getEntity(j))
+				level.entityManager->removeEntity(j);
+		}
+		
+		wallPoints.erase(wallPoints.begin() + wallToBeRemoved);
+		scales.erase(scales.begin() + wallToBeRemoved);
+		wallEntites.erase(wallEntites.begin() + wallToBeRemoved);
 		wallGroupsIndex[wallGroupIndex]--;
 
 		updateBuffers();
@@ -191,76 +241,48 @@ void LevelStructure::removePoint(Level & level, int wallGroupIndex)
 	}
 }
 
-void LevelStructure::addPoint(Level & level, int wallGroupIndex, glm::vec3 point)
+void LevelStructure::addPoint(Level & level, int wallGroupIndex, unsigned pointIndex)
 {
-	int first = 0;
-	int last = wallGroupsIndex[wallGroupIndex];
+	int offset = 0;
 	for (int i = 0; i < wallGroupIndex; i++) {
-		first += wallGroupsIndex[i];
-		last += wallGroupsIndex[i];
+		offset += wallGroupsIndex[i];
 	}
 
+	int prev = (((pointIndex - offset) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
+	int next = (((pointIndex - offset + 1) + wallGroupsIndex[wallGroupIndex]) % wallGroupsIndex[wallGroupIndex]) + offset;
+
 	Model* model = this->quad;
-	Mesh* mesh = model->getMesh(0);
 
 	Entity* entity = level.entityManager->addTracedEntity("WallPoint" + std::to_string(spawnedPoints));
 	Transform* trans = entity->getTransform();
 
-	glm::vec3 p1 = point;
-	glm::vec3 p2(wallPoints[first].x, 0.0, wallPoints[first].z);
+	glm::vec3 p1(wallPoints[prev].x - 1, 0.0, wallPoints[prev].z - 1);
+	glm::vec3 p2(wallPoints[next].x, 0.0, wallPoints[next].z);
 
-	glm::vec3 width = p2 - p1;
-
-	float angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
-	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
-		angle = -angle;
-	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
-
-	float dist = glm::length(width);
-	glm::vec3 scale = glm::vec3(dist, this->height, 1.0f);
-	trans->setScale(scale);
-
-	trans->setPosition(p1);
+	glm::vec2 width = calcWallTransform(p1, p2, trans);
 
 	entity->setModel(model);
 
-	this->scales.insert(scales.begin() + last, glm::vec2(glm::length(width), this->height));
+	//Add wall collision
+	this->addWallCollision(entity, level.collisionHandler);
 
-	std::vector<Vertex> vertex(mesh->getVerticies().size());
-	unsigned index = 0;
-	for (Vertex& v : mesh->getVerticies())
-	{
-		vertex[index++].Position = scale * v.Position;
-	}
-
+	// Save scale
+	this->scales.insert(scales.begin() + next, glm::vec2(glm::length(width), this->height));
 	// Save upper wall points
-	this->wallPoints.insert(wallPoints.begin() + last, { p1.x, this->height, p1.z });
-
-	// Add collision
-	level.collisionHandler->constructBoundingBox(model, &vertex[0], vertex.size(), "");
-	trans->setScale(glm::vec3(1.f, 1.f, 1.f));
-	level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC, false, glm::quat(1.f, 0.f, 0.f, 0.f), this->wallEntites.size());
-	trans->setScale(scale);
-
+	this->wallPoints.insert(wallPoints.begin() + next, { p1.x, this->height, p1.z });
 	// Save entity pointer
-	this->wallEntites.insert(wallEntites.begin() + last, entity);
+	this->wallEntites.insert(wallEntites.begin() + next, entity);
 
-	//Update the point before our new one
-	entity = wallEntites[last - 1];
+	//Update transform for point before the newly added point
+	entity = wallEntites[prev];
 	trans = entity->getTransform();
 
-	p2 = glm::vec3(wallPoints[last - 1].x, 0, wallPoints[last - 1].z);
+	p2 = glm::vec3(wallPoints[prev].x, 0, wallPoints[prev].z);
 
-	width = p1 - p2;
+	width = calcWallTransform(p2, p1, trans);
 
-	angle = acosf(glm::dot(glm::normalize(width), { 1.0f, 0.0f, 0.0f }));
-	if (glm::dot(glm::normalize(width), { 0.0f, 0.0f, -1.0f }) < 0.0f)
-		angle = -angle;
-	trans->setRotation(glm::vec3(angle, 0.0f, 0.0f));
-
-	dist = glm::length(width);
-	scale = glm::vec3(dist, this->height, 1.0f);
-	trans->setScale(scale);
+	// Update scale of next
+	this->scales[prev] = glm::vec2(glm::length(width), this->height);
 
 	wallGroupsIndex[wallGroupIndex] += 1;
 
@@ -342,6 +364,11 @@ std::vector<int>& LevelStructure::getWallGroupsIndex()
 	return this->wallGroupsIndex;
 }
 
+void LevelStructure::setWallHeight(float height)
+{
+	this->height = height;
+}
+
 float LevelStructure::getWallHeight() const
 {
 	return this->height;
@@ -385,10 +412,10 @@ Model * LevelStructure::createQuad()
 
 	Material mat;
 	float f = 0.5f;
-	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/wallTex.png");
+	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/" + textureFile + ".png");
 	mat.textures.push_back(tex);
 	mat.Kd = glm::vec4(0.7f, 0.7f, 0.6f, 1.0f);
-	mat.Ks_factor = glm::vec4(1.0f, 1.0f, 1.0f, 10.0f);
+	mat.Ks_factor = glm::vec4(1.0f, 1.0f, 1.0f, 50.0f);
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
@@ -522,6 +549,9 @@ void LevelStructure::updateBuffers()
 {
 	std::vector<glm::mat4> mats;
 	for (unsigned i = 0; i < this->wallEntites.size(); i++) {
+		glm::vec3 scale = this->wallEntites[i]->getTransform()->getScale();
+		this->wallEntites[i]->getTransform()->setScale({ scale.x, this->height, scale.z });
+
 		mats.push_back(this->wallEntites[i]->getTransform()->getMatrix());
 	}
 

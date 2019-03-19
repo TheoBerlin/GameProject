@@ -21,6 +21,7 @@ public:
 	unsigned int getNrOfPointLights() const;
 
 	DirectionalLight * createDirectionalLight(glm::vec4 direction, glm::vec4 intensity, Level* level);
+	void updateDirectionalLight(const glm::vec4& direction, const glm::vec4& colorIntensity, Level* level);
 	DirectionalLight * getDirectionalLight();
 	glm::mat4 getShadowMatrix();
 	glm::mat4 * getShadowMatrixPointer();

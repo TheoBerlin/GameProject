@@ -31,7 +31,7 @@ public:
 
 	static float getTime();
 
-private:
+protected:
 	static float time;
 	Camera** camera;
 	Framebuffer* shadowBuffer;

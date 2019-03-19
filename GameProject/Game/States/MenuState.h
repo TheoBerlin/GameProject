@@ -9,6 +9,7 @@
 
 #include <Game/GameLogic/LevelPreviewer.h>
 #include "Game/Level/LevelParser.h"
+#include "Game/GUI/MenuGUI.h"
 
 class MenuState : public State
 {
@@ -41,11 +42,12 @@ private:
 
 	EntityManager entityManager;
 
+	MenuGUI menuGUI;
+
 	std::string selectedLevel;
 
 	LevelParser levelParser;
 	std::vector<std::string> levelInfo;
-	std::vector<std::vector<Panel*>> panelGroups;
 
 	Panel* previewPnl;
 

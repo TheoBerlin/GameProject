@@ -19,13 +19,13 @@ private:
 	json::json jsonFile;
 
 	void readEntityTargets(Level& level);
-	void readEntityBoxes(Level& level);
+	void readEntityProps(Level& level);
 	void readEntityWalls(Level& level);
 	void readEntityFloor(Level& level);
 	void readPlayer(Level& level);
 	void readLights(Level& level);
 
-	void writeEntityBoxes(Level& level);
+	void writeEntityProps(Level& level);
 	void writeEntityTargets(Level& level);
 	void writePlayer(Level& level);
 	void writeWalls(Level& level);
@@ -38,6 +38,7 @@ private:
 	void readPath(json::json& file, Entity* entity, std::vector<KeyPoint>& path);
 	void readCameraSetting(json::json& file, CameraSetting& camera);
 
+	json::json::value_type readValueGeneric(json::json& file, std::string value);
 	template <class T>
 	T readValue(json::json& file, std::string value);
 
@@ -55,11 +56,5 @@ public:
 template<class T>
 inline T LevelParser::readValue(json::json & file, std::string value)
 {
-	if (!file[value].empty()) {
-		return file[value];
-	}
-	else {
-		printf("Value of %s not found in level!", value.c_str());
-		return T();
-	}
+	return (T)readValueGeneric(file, value);
 }

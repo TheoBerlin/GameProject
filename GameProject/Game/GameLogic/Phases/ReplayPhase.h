@@ -34,7 +34,9 @@ private:
     void setupGUI();
 	void addCollisionMarks();
 
-	void handleTimeBarClick();
+    void handleTimeBarClick();
+    void handlePlayPause();
+	void handleSlowMotion();
 
 	void switchCamera();
 
@@ -59,19 +61,38 @@ private:
 	// Total flight time retrieved from guiding phase
 	float flightTime, replayTime;
 
-	// GUI data
-	unsigned int screenWidth, screenHeight;
-	// Background time bar
-	Button* timeBarBack;
-	// Foreground time bar, displays played time
-	Panel* timeBarFront;
+    // [0,1], determines the update rate of the replay
+    float replaySpeedFactor;
+	float desiredSpeedFactor;
+
+	// Used to determine desired replay speed
+    bool isPausing;
+	bool isSlowMotion;
+
+    // When pausing, slow down time gradually rather than instantly stopping time
+    const float timeToPause = 0.8f;
+
+    // GUI data
+    unsigned int screenWidth, screenHeight;
+    // Background time bar
+    Button* timeBarBack;
+    // Foreground time bar, displays played time
+    Panel* timeBarFront;
 	// Background panel that holds the button and the other panel for optimization
 	Panel* backPanel;
 
-	// Time bar position and size factors, relative to screen size
-	const float timeBarSidePadding = 1.0f / 20.0f;
-	const float timeBarBottomPadding = 1.0f / 20.0f;
-	const float timeBarHeightFactor = 1.0f / 40.0f;
+    Button* playPauseButton;
+	Button* slowMotionButton;
+
+    // Relative to screen height
+    const float playPauseSizeFactor = 1.0f / 16.0f;
+    // Width / height
+    const float playPauseAspect = 1.0f;
+
+    // Time bar position and size factors, relative to screen size
+    const float timeBarSidePadding = 1.0f/20.0f;
+    const float timeBarBottomPadding = 1.0f/20.0f;
+    const float timeBarHeightFactor = 1.0f/40.0f;
 
 	// Time bar visuals
 	const glm::vec4 timeBarBackColor = { 0.9686f, 0.7725f, 0.2039f, 1.0f };

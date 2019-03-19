@@ -28,6 +28,7 @@ LevelPreviewer::LevelPreviewer(EntityManager* entityManager)
     level.targetManager = targetManager;
     level.collisionHandler = &collisionHandler;
     level.lightManager = &lightManager;
+    level.helpGUI = nullptr;
 }
 
 LevelPreviewer::~LevelPreviewer()

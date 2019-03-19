@@ -9,7 +9,7 @@
 #include <Game/GameLogic/ScoreManager.h>
 #include <Game/Level/LevelStructure.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
-#include <Game/HelpGUI.h>
+#include <Game/GUI/HelpGUI.h>
 #include <glm/glm.hpp>
 
 struct CameraSetting {

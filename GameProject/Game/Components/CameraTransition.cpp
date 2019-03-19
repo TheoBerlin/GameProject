@@ -22,6 +22,7 @@ CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const 
 
 CameraTransition::~CameraTransition()
 {
+	EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
 }
 
 void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
@@ -37,6 +38,8 @@ void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& 
 
 void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
+	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+
     if (!this->commonSetup(path, newFOV)) {
         return;
     }
@@ -56,11 +59,18 @@ void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec
 
 void CameraTransition::setBackwardsPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
+	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+
     this->interpForward = false;
 
     this->endForward = newForward;
 
     this->commonSetup(path, newFOV);
+}
+
+void CameraTransition::skipTransition()
+{
+	this->transitionTime = path.back().t - 0.15f;
 }
 
 void CameraTransition::update(const float& dt)
@@ -77,7 +87,8 @@ void CameraTransition::update(const float& dt)
         // Transition is finished
         isTransitioning = false;
 
-        glm::vec3 forward = transform->getForward();
+		// Unsubscribe handle key
+		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
 
         // Publish camera transition event
         EventBus::get().publish(&CameraTransitionEvent(host));
@@ -156,6 +167,16 @@ bool CameraTransition::commonSetup(const std::vector<KeyPoint>& path, float newF
     }
 
     return true;
+}
+
+void CameraTransition::handleKey(KeyEvent * ev)
+{
+	if (ev->action == GLFW_PRESS && ev->key == GLFW_KEY_SPACE) {
+		// Unsubscribe event
+		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
+
+		this->skipTransition();
+	}
 }
 
 void CameraTransition::catmullRomMove()

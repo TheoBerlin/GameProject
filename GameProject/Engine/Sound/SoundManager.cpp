@@ -61,7 +61,8 @@ glm::vec3 SoundManager::getListenerOrientation() const
 
 void SoundManager::setMasterVolume(float volume)
 {
-	this->masterVolume = glm::clamp(volume, 0.0f, 1.0f);;
+	this->masterVolume = glm::clamp(volume, 0.0f, 1.0f);
+
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		switch (sounds[i]->getSoundType()) {
 		case(SOUND_MUSIC): sounds[i]->updateSound(masterVolume * musicVolume); break;
@@ -80,6 +81,7 @@ float SoundManager::getMasterVolume() const
 void SoundManager::setMusicVolume(float volume)
 {
 	musicVolume = glm::clamp(volume, 0.0f, 1.0f);
+
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_MUSIC)
 			sounds[i]->updateSound(masterVolume * musicVolume);
@@ -91,23 +93,52 @@ float SoundManager::getMusicVolume() const
 	return musicVolume;
 }
 
-void SoundManager::setEffectVolume(float volume)
+void SoundManager::setEffectsVolume(float volume)
 {
-	effectVolume = glm::clamp(volume, 0.0f, 1.0f);;
+	effectVolume = glm::clamp(volume, 0.0f, 1.0f);
+
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_EFFECT)
 			sounds[i]->updateSound(masterVolume * effectVolume);
 	}
 }
 
-float SoundManager::getEffectVolume() const
+float SoundManager::getEffectsVolume() const
 {
 	return effectVolume;
 }
 
+void SoundManager::setEffectsMasterPitch(float pitch)
+{
+	effectsMasterPitch = glm::max(pitch, 0.0f);
+
+	for (unsigned int i = 0; i < sounds.size(); i++) {
+		if (sounds[i]->getSoundType() == SOUND_EFFECT) {
+			float localPitch = sounds[i]->getPitch();
+
+			// Sound::setPitch has the sound update itself with the master pitch
+			sounds[i]->setPitch(localPitch);
+		}
+	}
+}
+
+float SoundManager::getEffectsMasterPitch() const
+{
+	return this->effectsMasterPitch;
+}
+
+void SoundManager::offsetEffects(float seconds)
+{
+	for (unsigned int i = 0; i < sounds.size(); i++) {
+		if (sounds[i]->getSoundType() == SOUND_EFFECT)
+			sounds[i]->offsetPlayTime(seconds);
+	}
+}
+
 void SoundManager::setAmbientVolume(float volume)
 {
-	ambientVolume = glm::clamp(volume, 0.0f, 1.0f);;
+	ambientVolume = glm::clamp(volume, 0.0f, 1.0f);
+
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_AMBIENT)
 			sounds[i]->updateSound(masterVolume * ambientVolume);
@@ -121,7 +152,8 @@ float SoundManager::getAmbientVolume() const
 
 void SoundManager::setMiscVolume(float volume)
 {
-	miscVolume = glm::clamp(volume, 0.0f, 1.0f);;
+	miscVolume = glm::clamp(volume, 0.0f, 1.0f);
+
 	for (unsigned int i = 0; i < sounds.size(); i++) {
 		if (sounds[i]->getSoundType() == SOUND_MISC)
 			sounds[i]->updateSound(masterVolume * miscVolume);

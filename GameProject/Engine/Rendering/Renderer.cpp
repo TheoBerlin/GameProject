@@ -44,6 +44,7 @@ void Renderer::initInstancing()
 		Initilize colors vertexBuffer for collision color changing
 	*/
 	Model* model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+
 	AttributeLayout layout;
 	layout.push(3, 1); // vec3 color which can be changed seperately for each entity;
 	std::vector<glm::vec3> colors;
@@ -51,6 +52,13 @@ void Renderer::initInstancing()
 		colors.push_back(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	if(colors.size() > 0)
+		model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
+
+	/*
+		Initilize colors vertexBuffer for collision color changing
+	*/
+	model = ModelLoader::loadModel("./Game/assets/droneTargetMoving.fbx");
+	if (colors.size() > 0)
 		model->initInstancing(0, (void*)&colors[0][0], colors.size() * sizeof(glm::vec3), layout);
 }
 
@@ -69,19 +77,24 @@ void Renderer::drawAllInstanced()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/*
-	Calulate shadow depth
+		Calulate shadow depth
 	*/
 	this->pipeline.calcDirLightDepthInstanced(this->renderingTargets);
 
 	/*
 		Z-prepass stage
 	*/
-	this->pipeline.prePassDepthModel(this->renderingTargets);
+	this->pipeline.prePassDepthModel(this->renderingTargets, false, SHADERS::DRONE_GHOST);
 
 	/*
 		Drawing stage with pre existing depth buffer to texture
 	*/
-	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets);
+	this->postProcessTexture = this->pipeline.drawModelToTexture(this->renderingTargets, SHADERS::DRONE_GHOST);
+
+	/*
+		Draw drones
+	*/
+	this->pipeline.drawModelsWithShader(this->postProcessTexture, this->renderingTargets, SHADERS::DRONE_GHOST);
 
 	/*
 		Draw trail
@@ -106,8 +119,6 @@ void Renderer::drawAllInstanced()
 		Combine scene texture with glow texture
 	*/
 	Texture* combinedTex = pipeline.combineTextures(postProcessTexture, blurTexture);
-
-
 
 	/*
 		Go through post process effects then draw texture to screen
@@ -183,7 +194,7 @@ void Renderer::activatePostFilter(SHADERS_POST_PROCESS shader)
 		return;
 	}
 
-	if ((unsigned)shader > (unsigned)0 && (unsigned)shader < this->activePostFilters.size())
+	if ((unsigned)shader > 0 && (unsigned)shader < this->activePostFilters.size())
 		activePostFilters[shader] = true;
 }
 
@@ -194,6 +205,6 @@ void Renderer::deactivatePostFilter(SHADERS_POST_PROCESS shader)
 		return;
 	}
 
-	if((unsigned)shader > (unsigned)0 && (unsigned)shader < this->activePostFilters.size())
+	if((unsigned)shader > 0 && (unsigned)shader < this->activePostFilters.size())
 		activePostFilters[shader] = false;
 }

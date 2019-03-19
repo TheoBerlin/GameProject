@@ -30,6 +30,9 @@ AimPhase::AimPhase(OverviewPhase* overviewPhase)
 AimPhase::AimPhase(ReplayPhase* replayPhase)
 	:Phase((Phase*)replayPhase)
 {
+	//Turn off post process effect if active
+	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
+
 	// Remove path visualizers
 	PathVisualizer* pathVisualizer = replayPhase->getPathVisualizer();
 
@@ -73,7 +76,18 @@ AimPhase::~AimPhase()
 
 void AimPhase::update(const float & dt)
 {
+    ParticleManager::get().update(dt);
 
+	// Update entities.
+	level.entityManager->update(dt);
+
+	Display& display = Display::get();
+	Renderer& renderer = display.getRenderer();
+
+	/*
+		Update shaders
+	*/
+	renderer.updateShaders(dt);
 }
 
 Entity* AimPhase::getPlayerArrow() const
@@ -98,7 +112,7 @@ void AimPhase::commonSetup()
 	/*
 		Add arrowguider to entity
 	*/
-	arrowGuider = new ArrowGuider(playerArrow, arrowCamSettings.offset, arrowCamSettings.FOV, 3.0f);
+	arrowGuider = new ArrowGuider(playerArrow);
 	new TrailEmitter(playerArrow);
 
 	/*
@@ -111,8 +125,8 @@ void AimPhase::commonSetup()
 	arrowCam->init();
 
     // Smoothen the forward redirects
-    float maxAngle = glm::quarter_pi<float>() / 3.5f;
-    float angleCorrectionFactor = 4.5f;
+    float maxAngle = glm::quarter_pi<float>() / 3.9f;
+    float angleCorrectionFactor = 5.5f;
 
     new CameraDrift(playerArrow, angleCorrectionFactor, maxAngle);
 

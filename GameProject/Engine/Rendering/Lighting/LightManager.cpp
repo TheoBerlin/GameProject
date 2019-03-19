@@ -10,8 +10,8 @@ LightManager::LightManager()
 	:dirLight(nullptr)
 {
 	this->shadowResolutionFactor = Settings::get().getShadowResolutionFactor();
-	this->orthoWidth = 0.f;
-	this->orthoHeight = 0.f;
+	this->orthoWidth = 1.f;
+	this->orthoHeight = 1.f;
 	this->shadowWidth = Settings::get().getScreenWidth()*this->shadowResolutionFactor;
 
 #ifdef ENABLE_SHADOW_BOX
@@ -87,6 +87,22 @@ DirectionalLight * LightManager::createDirectionalLight(glm::vec4 direction, glm
 		LOG_WARNING("DirectionalLight already exist for this LightManager");
 	}
 	return nullptr;
+}
+
+void LightManager::updateDirectionalLight(const glm::vec4& direction,const glm::vec4& colorIntensity, Level * level)
+{
+	if (!dirLightExist) {
+		dirLight = new DirectionalLight(direction, colorIntensity);
+		dirLightExist = true;
+		calcShadowMatrix(level);
+
+	}
+	else {
+		dirLight->setIntensity(colorIntensity);
+		dirLight->setDirection(direction);
+		calcShadowMatrix(level);
+	}
+
 }
 
 DirectionalLight * LightManager::getDirectionalLight()

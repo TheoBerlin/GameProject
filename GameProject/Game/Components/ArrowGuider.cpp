@@ -1,20 +1,27 @@
 #include "ArrowGuider.h"
 
 #include <Engine/Entity/Entity.h>
+#include <Game/Components/ArrowConfig.h>
 #include <Utils/Logger.h>
 
-ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float minFOV, float movementSpeed, float maxTurnSpeed)
+ArrowGuider::ArrowGuider(Entity* parentEntity)
     :Component(parentEntity, "ArrowGuider"),
-    minCamOffset(minCamOffset),
     isGuiding(false),
     isAiming(false),
-    movementSpeed(movementSpeed),
-    maxTurnSpeed(maxTurnSpeed),
+    minCamOffset(Arrow::minCamOffset),
+    maxCamOffset(Arrow::maxCamOffset),
+    movementSpeed(Arrow::minSpeed),
+    minSpeed(Arrow::minSpeed),
+    maxSpeed(Arrow::maxSpeed),
+    minFOV(Arrow::minFOV),
+    maxFOV(Arrow::maxFOV),
+    turnSpeed(Arrow::minTurnSpeed),
+    minTurnSpeed(Arrow::minTurnSpeed),
+    maxTurnSpeed(Arrow::maxTurnSpeed),
     turnFactors(glm::vec2(0.0f,0.0f)),
     posStoreTimer(0.0f),
     arrowCamera(nullptr),
-    flightTime(0.0f),
-    minFOV(minFOV)
+    flightTime(0.0f)
 {
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution
@@ -24,18 +31,21 @@ ArrowGuider::ArrowGuider(Entity* parentEntity, glm::vec3 minCamOffset, float min
     currentPitch = 0.0f;
 
 	// Set up for acceleration variables
-	this->maxCamOffset = glm::vec3(0.0f, 0.3f, -1.0f);
 	this->acceleration = 3.0f;
 	this->turnSpeedDeceleration = 3.0f * 0.2f;
-	this->maxSpeedIncrease = 10.0f;
-	this->minSpeedDecrease = movementSpeed;
 	this->maxSpeedOffset = 1.0f;
 	this->isAccelerating = false;
+
+	sound.loadSound("./Game/assets/sound/Wind.wav");
+	sound.setVolume(0.5);
+	sound.setLoopState(true);
+	SoundManager::get().addSound(&sound, SOUND_EFFECT);
 }
 
 ArrowGuider::~ArrowGuider()
 {
     EventBus::get().unsubscribe(this, &ArrowGuider::handleWindowResize);
+
     if (isGuiding) {
         EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
 		EventBus::get().unsubscribe(this, &ArrowGuider::handleKeyEvent);
@@ -56,6 +66,8 @@ void ArrowGuider::update(const float& dt)
     float turnFactorsLength = glm::length(turnFactors);
 
     if (isGuiding) {
+		sound.setVolume(movementSpeed / 15);
+
         // Update position storage
         float desiredFrequency = minStoreFrequency + (maxStoreFrequency - minStoreFrequency) * (turnFactorsLength * 3.0f) * this->movementSpeed;
 
@@ -87,21 +99,14 @@ void ArrowGuider::update(const float& dt)
             allowKeypointOverride = true;
         }
 
-		if (this->isAccelerating) {
-			if (this->movementSpeed < this->maxSpeedIncrease) {
-				this->movementSpeed += acceleration * dt;
-				this->maxTurnSpeed += this->turnSpeedDeceleration * dt;
-			}
-			else
-				this->movementSpeed = this->maxSpeedIncrease;
+		if (this->isAccelerating && this->movementSpeed < this->maxSpeed) {
+            this->movementSpeed = glm::min(maxSpeed, movementSpeed + acceleration * dt);
+            this->turnSpeed = glm::min(maxTurnSpeed, turnSpeed + this->turnSpeedDeceleration * dt);
 		}
-		else {
-			if (this->movementSpeed > this->minSpeedDecrease) {
-				this->movementSpeed -= acceleration * dt;
-				this->maxTurnSpeed -= this->turnSpeedDeceleration * dt;
-			}
-			else
-				this->movementSpeed = this->minSpeedDecrease;
+
+		else if (!this->isAccelerating && this->movementSpeed > this->minSpeed) {
+            this->movementSpeed = glm::max(minSpeed, movementSpeed - acceleration * dt);
+            this->turnSpeed = glm::max(minTurnSpeed, turnSpeed - this->turnSpeedDeceleration * dt);
 		}
 
         // Update arrow position
@@ -109,11 +114,11 @@ void ArrowGuider::update(const float& dt)
         glm::vec3 newPos = currentPos + transform->getForward() * movementSpeed * dt;
 
         transform->setPosition(newPos);
-    }
-
+	}
 
 	if (arrowCamera) {
-		float speedOffsetFactor = (this->movementSpeed - this->minSpeedDecrease) / (this->maxSpeedIncrease - this->minSpeedDecrease);
+		float speedOffsetFactor = (this->movementSpeed - this->minSpeed) / (this->maxSpeed - this->minSpeed);
+
 		this->updateCamera(dt, turnFactorsLength + speedOffsetFactor);
 	}
 }
@@ -139,7 +144,6 @@ void ArrowGuider::startAiming()
 
     // Subscribe to mouse movement for guiding
     EventBus::get().subscribe(this, &ArrowGuider::handleMouseMove);
-
 }
 
 void ArrowGuider::stopAiming()
@@ -176,6 +180,8 @@ void ArrowGuider::startGuiding()
 
 	// Subscribe to key events
 	EventBus::get().subscribe(this, &ArrowGuider::handleKeyEvent);
+
+	sound.playSound();
 }
 
 void ArrowGuider::stopGuiding(float flightTime)
@@ -193,6 +199,8 @@ void ArrowGuider::stopGuiding(float flightTime)
     newKeyPoint.t = this->flightTime;
 
     path.back() = newKeyPoint;
+
+	sound.stopSound();
 }
 
 void ArrowGuider::saveKeyPoint(float flightTime)
@@ -290,8 +298,8 @@ void ArrowGuider::applyTurn(const float& dt)
 
     // Rotations measured in radians, kept within [-maxTurnSpeed, maxTurnSpeed]
     //glm::vec2 yawPitch;
-    float yaw = -turnFactors.x * maxTurnSpeed * dt;
-    float pitch = -turnFactors.y * maxTurnSpeed * dt;
+    float yaw = -turnFactors.x * turnSpeed * dt;
+    float pitch = -turnFactors.y * turnSpeed * dt;
 
     // Limit pitch
     float newPitch = currentPitch + pitch;

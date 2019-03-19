@@ -20,7 +20,6 @@ public:
 	virtual void update(const float& dt);
 
 private:
-	void startOverviewPhase(CameraTransitionEvent* event);
 	void changePhase(PhaseChangeEvent * event);
 
 	// Used for camera transitions

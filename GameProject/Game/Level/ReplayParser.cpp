@@ -82,6 +82,8 @@ void ReplayParser::writeCollisions(nlohmann::json& replayFile, const std::vector
         // Extract name of hit target
         std::string targetName = collisions[collisionIndex].event.entity2->getName();
 
+        LOG_ERROR("SHAPE 2 COLLISION BITS: [%d]", collisions[collisionIndex].event.shape2->getCollisionCategoryBits());
+
         replayFile["Collisions"][collisionIndex]["Target"] = targetName;
         replayFile["Collisions"][collisionIndex]["TargetShape"] = collisions[collisionIndex].event.shape2->getCollisionCategoryBits();
         replayFile["Collisions"][collisionIndex]["Time"] = collisions[collisionIndex].time;

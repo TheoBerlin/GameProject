@@ -214,6 +214,7 @@ void Display::init(int width, int height, const std::string& title)
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Modern opengl
+	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 	this->window = glfwCreateWindow(this->width, this->height, this->title.c_str(), NULL, NULL);
 	if (this->window == NULL)
