@@ -173,6 +173,7 @@
     "Target": [
         {
             "Name": "Target1",
+            "Path": null,
             "Position": [
                 -1.5,
                 2.4868764877319336,
@@ -191,6 +192,7 @@
         },
         {
             "Name": "Target2",
+            "Path": null,
             "Position": [
                 2.5,
                 2.891511917114258,
