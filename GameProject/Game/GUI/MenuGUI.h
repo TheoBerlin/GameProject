@@ -5,7 +5,9 @@
 
 class GUI;
 class Panel;
+class Button;
 class StateManager;
+struct KeyEvent;
 
 enum MENU
 {
@@ -40,7 +42,7 @@ private:
 	void createSettingsGUI();
 
 	// Creates a main menu button
-	void addMainMenuButton(Panel* parent, std::string text, int offset, const std::function<void()>& func);
+	Button* addMainMenuButton(Panel* parent, std::string text, int offset, const std::function<void()>& func);
 	// Creates a settings slider
 	void addSettingsSlider(Panel* parent, std::string text, int offset, float startFactor, const std::function<void(float)>& func);
 	// Creates a settings button
@@ -51,6 +53,9 @@ private:
 	// Callback to save sound settings
 	void saveSoundSettings();
 
+	// Callback to hide editor button
+	void hideEditorCallback(KeyEvent* e);
+
 	GUI* gui;
 	StateManager* stateManager;
 
@@ -58,6 +63,7 @@ private:
 	Panel* mainMenuGUI;
 	Panel* levelSelectGUI;
 	Panel* settingsGUI;
+	Button* editorBtn;
 
 	bool muteSound;
 };

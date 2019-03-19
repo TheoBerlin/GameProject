@@ -10,14 +10,19 @@
 #include "Engine/States/StateManager.h"
 #include "Game/States/EditorState.h"
 
+#include "Engine/Events/EventBus.h"
+
 MenuGUI::MenuGUI()
 {
 	this->currentGUI = nullptr;
 	this->muteSound = false;
+
+	EventBus::get().subscribe(this, &MenuGUI::hideEditorCallback);
 }
 
 MenuGUI::~MenuGUI()
 {
+	EventBus::get().unsubscribe(this, &MenuGUI::hideEditorCallback);
 }
 
 void MenuGUI::init(GUI * gui, StateManager* stateManager)
@@ -100,7 +105,8 @@ void MenuGUI::createMainMenuGUI()
 
 	addMainMenuButton(this->mainMenuGUI, "SELECT LEVEL", 0, [this]() { this->activateGUI(this->levelSelectGUI); });
 	addMainMenuButton(this->mainMenuGUI, "SETTINGS", -100, [this]() { this->activateGUI(this->settingsGUI); });
-	addMainMenuButton(this->mainMenuGUI, "EDITOR", -200, [this]() { this->stateManager->push(new EditorState()); });
+	this->editorBtn = addMainMenuButton(this->mainMenuGUI, "EDITOR", -200, [this]() { this->stateManager->push(new EditorState()); });
+	this->editorBtn->hide();
 
 	this->mainMenuGUI->hide();
 }
@@ -158,7 +164,7 @@ void MenuGUI::createSettingsGUI()
 	this->settingsGUI->hide();
 }
 
-void MenuGUI::addMainMenuButton(Panel* parent, std::string text, int offset, const std::function<void()>& func)
+Button* MenuGUI::addMainMenuButton(Panel* parent, std::string text, int offset, const std::function<void()>& func)
 {
 	// Create play button
 	Button* btn = new Button();
@@ -174,6 +180,8 @@ void MenuGUI::addMainMenuButton(Panel* parent, std::string text, int offset, con
 	btn->addText(text, "aldo", glm::vec4(1.0f));
 	btn->setCallback(func);
 	parent->addChild(btn);
+
+	return btn;
 }
 
 void MenuGUI::addSettingsSlider(Panel * parent, std::string text, int offset, float startFactor, const std::function<void(float)>& func)
@@ -234,4 +242,15 @@ void MenuGUI::muteSoundCallback()
 void MenuGUI::saveSoundSettings()
 {
 	Settings::get().writeFile();
+}
+
+void MenuGUI::hideEditorCallback(KeyEvent * e)
+{
+	if (e->action == GLFW_PRESS && e->key == GLFW_KEY_F11)
+	{
+		if (this->editorBtn->isShown())
+			this->editorBtn->hide();
+		else
+			this->editorBtn->show();
+	}
 }
