@@ -15,70 +15,94 @@ DeathAnimation::~DeathAnimation()
 void DeathAnimation::update(const float & dt)
 {
 	if (this->currentTime < this->totalTime) {
-		if (shake(dt)) {
-			fall(dt);
+		this->currentTime += dt;
+
+		if (currentTime < shakeTime) {
+			shake();
+		}
+
+		else if (currentTime < totalTime) {
+			fall();
+		}
+
+		else {
+			host->getPausedTransform()->translate({ 0.f, -100.f, 0.f });
+			this->currentTime = this->totalTime;
 		}
 	}
 }
 
-void DeathAnimation::play(float totalTime, float gravity, float totalAngle, const glm::vec3& pushDir, float pushSpeed)
+void DeathAnimation::play(float totalTime)
 {
 	this->host->pauseModelTransform();
 
 	this->totalTime = totalTime;
 	this->currentTime = 0.f;
-	this->shakeTimer = 0.f;
 	this->pushDir = pushDir;
 	this->pushSpeed = pushSpeed;
 	this->gravity = gravity;
-	this->totalAngle = totalAngle;
+	this->totalShakeTranslation = {0.0f, 0.0f, 0.0f};
+	this->totalShakeRotation = {0.0f, 0.0f, 0.0f};
+	this->totalFallTranslation = {0.0f, 0.0f, 0.0f};
+	this->totalFallRotation = {0.0f, 0.0f, 0.0f};
 }
 
 void DeathAnimation::reset()
 {
 	this->host->unpauseModelTransform();
-	this->shakeTimer = 0.f;
-	this->currentTime = 0.f;
+	this->currentTime = 0.0f;
+	this->totalTime = 0.0f;
+	this->totalShakeTranslation = {0.0f, 0.0f, 0.0f};
+	this->totalShakeRotation = {0.0f, 0.0f, 0.0f};
+	this->totalFallTranslation = {0.0f, 0.0f, 0.0f};
+	this->totalFallRotation = {0.0f, 0.0f, 0.0f};
 }
 
-bool DeathAnimation::shake(float dt)
+void DeathAnimation::shake()
 {
-	shakeTimer += dt;
-	const float shakeTime = 0.5f;
-	if (shakeTimer <= shakeTime) {
-		// Translate
-		float translationFactor = Utils::map(0.f, shakeTime*shakeTime, shakeTimer*shakeTimer, 0.05f, 0.2f);
-		glm::vec3 translation = translationFactor * glm::vec3(0.f, 0.1f, 0.f);
+	// Translate
+	float translationFactor = Utils::map(0.f, shakeTime*shakeTime, currentTime * currentTime, 0.0f, 1.0f);
 
-		// Apply transformations
-		Transform* transform = this->host->getPausedTransform();
+	glm::vec3 translation = translationFactor * maxShakeTranslation;
 
-		transform->translate(translation);
-
-		float frequency = Utils::map(0.f, shakeTime, shakeTimer, 30.f, 60.f);
-		float amplitude = Utils::map(0.f, shakeTime, shakeTimer, 3.f, 5.f);
-
-		float x = cos(shakeTimer*frequency)*amplitude*dt;
-		float z = sin(shakeTimer*frequency)*amplitude*dt;
-		transform->rotate(x, 0.f, z);
-		return false;
-	}
-
-	return true;
-}
-
-void DeathAnimation::fall(float dt)
-{
-	const glm::vec3 gravityVec = { 0.f, this->gravity, 0.f };
-
+	// Apply transformations
 	Transform* transform = this->host->getPausedTransform();
-	transform->translate(this->pushDir*dt*this->pushSpeed + dt * gravityVec);
 
-	transform->rotate(0.f, this->totalAngle*dt, 0.f);
-	this->currentTime += dt;
+	transform->translate(translation - totalShakeTranslation);
 
-	if (this->currentTime >= this->totalTime) {
-		transform->setPosition({ 0.f, -100.f, 0.f });
-		this->currentTime = this->totalTime;
-	}
+	totalShakeTranslation = translation;
+
+	float frequency = Utils::map(0.f, shakeTime, currentTime, 20.f, 40.f);
+	float amplitude = Utils::map(0.f, shakeTime, currentTime, 0.f, glm::half_pi<float>() / 8.0f);
+
+	glm::vec3 rotation;
+
+	rotation.x = cosf(currentTime * frequency) * amplitude;
+	rotation.y = 0.0f;
+	rotation.z = sinf(currentTime * frequency) * amplitude;
+
+	transform->rotate(rotation - totalShakeRotation);
+
+	totalShakeRotation = rotation;
+}
+
+void DeathAnimation::fall()
+{
+	Transform* transform = this->host->getPausedTransform();
+
+	float animationFactor = Utils::map(this->shakeTime, this->totalTime, currentTime, 0.0f, 1.0f);
+
+	// Translate
+	glm::vec3 translation = maxFallTranslation * animationFactor;
+
+	transform->translate(translation - totalFallTranslation);
+
+	totalFallTranslation = translation;
+
+	// Rotate
+	glm::vec3 rotation = maxFallRotation * animationFactor;
+
+	transform->rotate(rotation.x - totalFallRotation.x, rotation.y - totalFallRotation.y, rotation.z - totalFallRotation.z);
+
+	totalFallRotation = rotation;
 }

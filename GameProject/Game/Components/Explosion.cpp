@@ -72,7 +72,6 @@ void Explosion::explode(float lifeTime, float timeElapsed, bool eyeHit, unsigned
 
 		this->timer = timeElapsed;
 	}
-
 }
 
 void Explosion::reset()

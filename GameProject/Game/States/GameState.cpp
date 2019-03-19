@@ -112,24 +112,6 @@ void GameState::update(const float dt)
 
 	// Update gamelogic
 	this->gameLogic.update(dt);
-
-	// Update entities.
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
-
-	ParticleManager::get().update(dt);
-
-	for (unsigned int i = 0; i < entities.size(); i += 1) {
-		entities[i]->update(dt);
-	}
-
-	Display& display = Display::get();
-	Renderer& renderer = display.getRenderer();
-
-	/*
-		Update shaders
-	*/
-	renderer.updateShaders(dt);
 }
 
 void GameState::updateLogic(const float dt)
