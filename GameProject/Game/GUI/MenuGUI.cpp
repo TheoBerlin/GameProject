@@ -96,7 +96,7 @@ void MenuGUI::createMainMenuGUI()
 
 	// Create title
 	Panel* titlePnl = new Panel();
-	titlePnl->addText("gameNname", "aldoBig", TEXT_COLOR);
+	titlePnl->addText("DRONE STRIKE", "aldoBig", TEXT_COLOR);
 	titlePnl->setOption(GUI::FLOAT_UP, 40);
 	titlePnl->setOption(GUI::CENTER_X);
 	titlePnl->setOption(GUI::SCALE_TO_TEXT_X);
