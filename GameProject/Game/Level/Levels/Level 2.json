@@ -13,8 +13,10 @@
             0.00019999999494757503
         ]
     },
+    "Floor": null,
     "Metadata": {
-        "OptimalTime": 0.0
+        "Highscore": 57,
+        "OptimalTime": 10.0
     },
     "Player": {
         "ArrowCamera": {
@@ -142,6 +144,7 @@
     "Target": [
         {
             "Name": "Target1",
+            "Path": null,
             "Position": [
                 0.0,
                 1.336836576461792,
@@ -160,6 +163,7 @@
         },
         {
             "Name": "Target2",
+            "Path": null,
             "Position": [
                 2.0,
                 1.2132573127746582,
@@ -178,6 +182,7 @@
         },
         {
             "Name": "Target3",
+            "Path": null,
             "Position": [
                 -2.0,
                 1.1698588132858276,
@@ -196,6 +201,7 @@
         },
         {
             "Name": "Target4",
+            "Path": null,
             "Position": [
                 -1.0,
                 1.1709997653961182,
@@ -214,6 +220,7 @@
         },
         {
             "Name": "Target5",
+            "Path": null,
             "Position": [
                 -3.0,
                 1.306105375289917,

@@ -13,7 +13,9 @@
             1.0
         ]
     },
+    "Floor": null,
     "Metadata": {
+        "Highscore": 21,
         "OptimalTime": 8.0
     },
     "Player": {
@@ -279,6 +281,7 @@
     "Target": [
         {
             "Name": "Target1",
+            "Path": null,
             "Position": [
                 16.399999618530273,
                 2.773312568664551,
