@@ -24,7 +24,9 @@ Mesh::Mesh(std::vector<Vertex>* vertices, std::vector<unsigned int>* vertexIndic
 Mesh::Mesh(const void * data, size_t dataSize, const void * indices, size_t indicesSize, AttributeLayout layout, GLenum usage)
 {
 	this->vertices = nullptr;
+	this->vertexIndices = nullptr;
 	this->parentModel = nullptr;
+	this->materialIndex = 0;
 	// Load mesh to GPU.
 	this->vao = new VertexArray();
 	this->vao->bind();

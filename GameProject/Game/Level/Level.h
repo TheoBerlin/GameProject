@@ -28,7 +28,7 @@ struct Level {
 	bool isEditor = false;
 	EntityManager* entityManager = nullptr;
 	TargetManager* targetManager = nullptr;
-	Player player;
+	Player player = Player();
 	GUI* gui = nullptr;
 	CollisionHandler* collisionHandler = nullptr;
 	ReplaySystem* replaySystem = nullptr;

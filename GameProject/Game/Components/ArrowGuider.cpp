@@ -22,7 +22,8 @@ ArrowGuider::ArrowGuider(Entity* parentEntity)
 	posStoreTimer(0.0f),
 	arrowCamera(nullptr),
 	flightTime(0.0f),
-	direction(glm::vec3(1.f))
+	direction(glm::vec3(1.f)),
+	posStoreFrequency(0.f)
 {
     // Window resolution (in one axis) is used to separate mouse movement
     // from the window resolution

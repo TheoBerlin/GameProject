@@ -18,6 +18,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
+	this->pathVisualizer = nullptr;
 	this->freeMove = nullptr;
 	this->freeCam = nullptr;
 	//Remove Post process effect to transition

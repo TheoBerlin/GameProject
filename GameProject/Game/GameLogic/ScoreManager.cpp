@@ -10,6 +10,8 @@
 
 ScoreManager::ScoreManager()
 {
+	this->counting = false;
+	this->targetsHit = 0;
 	this->highscore = 0;
 	this->totalTime = 0.0f;
 	this->totalScore = 0;
@@ -17,6 +19,9 @@ ScoreManager::ScoreManager()
 	this->timer = new Timer();
 	this->newHighscore = false;
 	this->minimized = true;
+	this->showGui = false;
+	this->smallPanel = nullptr;
+	this->bigPanel = nullptr;
 }
 
 

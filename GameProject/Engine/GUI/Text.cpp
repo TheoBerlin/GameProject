@@ -9,6 +9,8 @@ Text::Text() : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)
 	this->width = 0;
 	this->height = 0;
 	this->line = 0;
+	this->bearingY = 0;
+	this->str = "";
 }
 
 Text::Text(const std::string & str, Font * font) : color(0.0f, 0.0f, 0.0f, 1.0f), shouldUpdate(false)

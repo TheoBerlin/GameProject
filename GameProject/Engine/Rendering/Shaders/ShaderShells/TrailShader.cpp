@@ -10,20 +10,20 @@ TrailShader::TrailShader(Camera ** camera)
 {
 	this->horizontal = false;
 	this->camera = camera;
-	this->pointCount = pointCount;
+	this->pointCount = 0;
 
 	AttributeLayout trailLayout;
 	trailLayout.push(4, 0, 4); // vec4 previous
 	trailLayout.push(4, 8, 4); // vec4 current
 
-	mesh = new Mesh(NULL, 0, NULL, 0, trailLayout, GL_DYNAMIC_DRAW);
+	this->mesh = new Mesh(NULL, 0, NULL, 0, trailLayout, GL_DYNAMIC_DRAW);
 
 	AttributeLayout alphaWidthLayout;
 	alphaWidthLayout.push(1); // float alpha
 	alphaWidthLayout.push(1); // vec4 width
 	alphaWidthLayout.push(3); // upVector alpha
 
-	mesh->addBuffer(NULL, 0, alphaWidthLayout, GL_DYNAMIC_DRAW);
+	this->mesh->addBuffer(NULL, 0, alphaWidthLayout, GL_DYNAMIC_DRAW);
 
 }
 

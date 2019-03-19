@@ -7,7 +7,9 @@
 
 Renderer::Renderer()
 {
+	this->tex = nullptr;
 	this->particleManager = nullptr;
+	this->postProcessTexture = nullptr;
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
