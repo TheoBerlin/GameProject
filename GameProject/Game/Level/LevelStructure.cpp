@@ -415,7 +415,7 @@ Model * LevelStructure::createQuad()
 	Texture* tex = TextureManager::loadTexture("./Game/assets/textures/" + textureFile + ".png");
 	mat.textures.push_back(tex);
 	mat.Kd = glm::vec4(0.7f, 0.7f, 0.6f, 1.0f);
-	mat.Ks_factor = glm::vec4(1.0f, 1.0f, 1.0f, 10.0f);
+	mat.Ks_factor = glm::vec4(1.0f, 1.0f, 1.0f, 50.0f);
 	quad->addMaterial(mat);
 
 	ModelLoader::addModel("wall", quad);
