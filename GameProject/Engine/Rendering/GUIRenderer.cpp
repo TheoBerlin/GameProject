@@ -11,6 +11,7 @@ GUIRenderer::GUIRenderer()
 	this->panelShader = new Shader("./Engine/Rendering/Shaders/PanelShader.vert", "./Engine/Rendering/Shaders/PanelShader.frag");
 	initTextRendering();
 	EventBus::get().subscribe(this, &GUIRenderer::resizeCallback);
+	EventBus::get().subscribe(this, &GUIRenderer::hideKeyCallback);
 }
 
 GUIRenderer::~GUIRenderer()
@@ -22,20 +23,24 @@ GUIRenderer::~GUIRenderer()
 	delete this->whiteOnePixTexture;
 
 	EventBus::get().unsubscribe(this, &GUIRenderer::resizeCallback);
+	EventBus::get().unsubscribe(this, &GUIRenderer::hideKeyCallback);
 }
 
 void GUIRenderer::draw(GUI & gui)
 {
 	prepareTextRendering();
 	std::vector<Panel*>& panelList = gui.getPanelList();
-	for (Panel* panel : panelList)
+	if (!this->hidden)
 	{
-		// Rebake panels
-		panel->rebake();
+		for (Panel* panel : panelList)
+		{
+			// Rebake panels
+			panel->rebake();
 
-		// Draw baked texture.
-		this->orthoText = this->orthoDisplay;
-		drawBaked(panel);
+			// Draw baked texture.
+			this->orthoText = this->orthoDisplay;
+			drawBaked(panel);
+		}
 	}
 }
 
@@ -221,4 +226,12 @@ void GUIRenderer::initTextRendering()
 void GUIRenderer::resizeCallback(WindowResizeEvent * evnt)
 {
 	this->orthoDisplay = glm::ortho(0.0f, (float)evnt->width, 0.0f, (float)evnt->height);
+}
+
+void GUIRenderer::hideKeyCallback(KeyEvent * evnt)
+{
+	if (evnt->action == GLFW_PRESS && evnt->key == GLFW_KEY_F10)
+	{
+		this->hidden = !this->hidden;
+	}
 }
