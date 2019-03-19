@@ -271,5 +271,8 @@ bool Sound::getSourceRelative() const
 
 void Sound::updateSound(float volume)
 {
-	AL_CALL(alSourcef(source, AL_GAIN, this->volume * volume));
+	ALboolean hasSource = false;
+	AL_CALL(hasSource = alIsSource(source));
+	if (hasSource)
+		AL_CALL(alSourcef(source, AL_GAIN, this->volume * volume));
 }
