@@ -3,6 +3,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include <random>
 
+// Enable logging.
+#define LOG_ENABLE_PRINT
+
 // Debug openGL
 #define GL_DEBUG_LAYER
 
