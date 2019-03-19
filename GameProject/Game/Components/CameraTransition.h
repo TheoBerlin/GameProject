@@ -38,6 +38,8 @@ private:
 
     glm::vec3 defaultForward;
 
+	bool skippingEnabled;
+
     float beginFOV, endFOV;
 
     Camera* entityCam;

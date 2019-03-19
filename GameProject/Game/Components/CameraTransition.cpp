@@ -12,6 +12,7 @@ CameraTransition::CameraTransition(Entity* host)
     :Component(host, "CameraTransition"),
     isTransitioning(false)
 {
+	this->skippingEnabled = false;
 }
 
 CameraTransition::CameraTransition(Entity* host, const glm::vec3& newPos, const glm::vec3& newForward, float newFOV, float transitionLength)
@@ -38,7 +39,10 @@ void CameraTransition::setDestination(const glm::vec3& newPos, const glm::vec3& 
 
 void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
-	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+	if(!this->skippingEnabled) {
+		EventBus::get().subscribe(this, &CameraTransition::handleKey);
+		this->skippingEnabled = true;
+	}
 
     if (!this->commonSetup(path, newFOV)) {
         return;
@@ -59,7 +63,10 @@ void CameraTransition::setPath(const std::vector<KeyPoint>& path, const glm::vec
 
 void CameraTransition::setBackwardsPath(const std::vector<KeyPoint>& path, const glm::vec3& newForward, float newFOV)
 {
-	EventBus::get().subscribe(this, &CameraTransition::handleKey);
+	if (!this->skippingEnabled) {
+		EventBus::get().subscribe(this, &CameraTransition::handleKey);
+		this->skippingEnabled = true;
+	}
 
     this->interpForward = false;
 
@@ -89,6 +96,7 @@ void CameraTransition::update(const float& dt)
 
 		// Unsubscribe handle key
 		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
+		this->skippingEnabled = false;
 
         // Publish camera transition event
         EventBus::get().publish(&CameraTransitionEvent(host));
@@ -174,7 +182,7 @@ void CameraTransition::handleKey(KeyEvent * ev)
 	if (ev->action == GLFW_PRESS && ev->key == GLFW_KEY_SPACE) {
 		// Unsubscribe event
 		EventBus::get().unsubscribe(this, &CameraTransition::handleKey);
-
+		this->skippingEnabled = false;
 		this->skipTransition();
 	}
 }
