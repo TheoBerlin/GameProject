@@ -14,8 +14,9 @@
 #include "Engine/GUI/GUIColors.h"
 #include "Game/States/EditorState.h"
 
-
-MenuState::MenuState() : State()
+MenuState::MenuState()
+	:State(),
+	levelPreviewer(nullptr)
 {
 	// Create panel groups [0] is main menu, [1] is level select
 	this->panelGroups.push_back(std::vector<Panel*>());
@@ -41,13 +42,21 @@ MenuState::MenuState() : State()
 
 MenuState::~MenuState()
 {
+	if (levelPreviewer) {
+		delete levelPreviewer;
+
+		levelPreviewer = nullptr;
+	}
+
+	TextureManager::unloadAllTextures();
 }
 
 void MenuState::start()
 {
+	this->updateLevelPreview(this->selectedLevel);
+
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
 }
 
 void MenuState::end()
@@ -56,6 +65,7 @@ void MenuState::end()
 
 void MenuState::update(const float dt)
 {
+	levelPreviewer->update(dt);
 }
 
 void MenuState::updateLogic(const float dt)
@@ -66,12 +76,32 @@ void MenuState::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	levelPreviewer->render();
+
 	glDisable(GL_DEPTH_TEST);
 	Display& display = Display::get();
 
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.draw(this->getGUI());
+}
+
+void MenuState::updateLevelPreview(const std::string& levelName)
+{
+	if (this->levelPreviewer) {
+		delete levelPreviewer;
+	}
+
+	this->entityManager.removeEntities();
+
+	this->levelPreviewer = new LevelPreviewer(&this->entityManager);
+
+	this->levelPreviewer->setLevel(levelName);
+}
+
+Level& MenuState::getLevel()
+{
+	return this->levelPreviewer->getLevel();
 }
 
 void MenuState::initLevelSelect()
@@ -102,6 +132,7 @@ void MenuState::initLevelSelect()
 		scrollPanel->addItem([this, entry](void) {
 			this->selectedLevel = entry.string();
 			this->updateLevelInfoPanel();
+			this->updateLevelPreview(this->selectedLevel);
 		}, entry.filename().replace_extension("").string());
 	}
 
@@ -127,7 +158,7 @@ void MenuState::initLevelSelect()
 	playBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	playBtn->addText("Play", "aldo", glm::vec4(1.0f));
 	playBtn->setCallback([this](void) {
-		this->pushState(new GameState(this->selectedLevel));
+		this->pushState(new GameState(this->getLevel()));
 	});
 	selectPnl->addChild(playBtn);
 
@@ -276,9 +307,18 @@ void MenuState::initMainMenu()
 	editorBtn->setNormalColor(BUTTON_NORMAL_COLOR);
 	editorBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	editorBtn->addText("Level Editor", "aldo", glm::vec4(1.0f));
+
 	editorBtn->setCallback([this](void) {
+		this->entityManager.removeEntities();
+
+		if (this->levelPreviewer) {
+			delete this->levelPreviewer;
+			this->levelPreviewer = nullptr;
+		}
+
 		this->pushState(new EditorState());
 	});
+
 	this->panelGroups[0].push_back(editorBtn);
 	gui.addPanel(editorBtn);
 }

@@ -107,7 +107,7 @@ public:
 	/*
 		Functions for updating bufferdata for the light	
 	*/
-	void addCurrentLightManager(LightManager * lm);
+	void setLightManager(LightManager * lm);
 	void createLight(glm::vec4 position, glm::vec4 intensity, int distance);
 	void updateLight(unsigned index, glm::vec4 position, glm::vec4 intensity, int distance);
 	void removeLight(unsigned index);

@@ -7,6 +7,7 @@
 
 #include <filesystem>
 
+#include <Game/GameLogic/LevelPreviewer.h>
 #include "Game/Level/LevelParser.h"
 
 class MenuState : public State
@@ -21,6 +22,10 @@ public:
 	void updateLogic(const float dt) override;
 	void render() override;
 
+	void updateLevelPreview(const std::string& levelName);
+
+	Level& getLevel();
+
 private:
 	// Loads levels name from folder to show in scroll panel
 	void loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths);
@@ -33,6 +38,8 @@ private:
 	// Init level select GUI panels
 	void initLevelSelect();
 
+	EntityManager entityManager;
+
 	std::string selectedLevel;
 
 	LevelParser levelParser;
@@ -40,4 +47,6 @@ private:
 	std::vector<std::vector<Panel*>> panelGroups;
 
 	Panel* previewPnl;
+
+	LevelPreviewer* levelPreviewer;
 };

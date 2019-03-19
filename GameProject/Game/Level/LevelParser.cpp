@@ -341,6 +341,7 @@ void LevelParser::readLights(Level & level)
 	glm::vec4 direction;
 	glm::vec4 intensity;
 	int distance;
+
 	for (int i = 0; i < lightSize; i++) {
 		json::json& light = jsonFile["PointLights"][i];
 		readVec4(light["Position"], position);
@@ -500,7 +501,9 @@ void LevelParser::readLevel(std::string file, Level& level)
 		}
 
 		// Read metadata
-		readMetadata(level);
+		if (level.scoreManager != nullptr) {
+			readMetadata(level);
+		}
 
 		// Create collision bodies to collisionHandler
 		createCollisionBodies(level);

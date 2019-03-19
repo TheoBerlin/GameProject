@@ -37,4 +37,3 @@ private:
 	Framebuffer* shadowBuffer;
 	glm::mat4* lightSpaceMatrix;
 };
-

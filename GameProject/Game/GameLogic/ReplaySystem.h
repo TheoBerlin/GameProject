@@ -36,6 +36,8 @@ public:
     // Rewind or fast forward a level to its state at a given time
     void setReplayTime(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time);
 
+    void setCollisionReplays(const std::vector<CollisionReplay>& collisions);
+
 	// Get collision replay vector
 	std::vector<CollisionReplay>& getCollisionReplays();
 
