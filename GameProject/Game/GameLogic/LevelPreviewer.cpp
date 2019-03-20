@@ -50,6 +50,9 @@ void LevelPreviewer::setLevel(const std::string& levelName)
     // Read level
     levelParser.readLevel(levelName, this->level);
 
+    // Start moving targets
+    level.targetManager->resetTargets();
+
     // Renderer setup
     Renderer& renderer = Display::get().getRenderer();
 
