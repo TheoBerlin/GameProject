@@ -9,7 +9,7 @@
 
 IGame::IGame()
 {
-	Display::get().init(Settings::get().getScreenWidth(), Settings::get().getScreenHeight(), DEFAULT_TITLE);
+	Display::get().init(Settings::get().getScreenWidth(), Settings::get().getScreenHeight(), DEFAULT_TITLE, Settings::get().getFullscreen());
 }
 
 IGame::~IGame()

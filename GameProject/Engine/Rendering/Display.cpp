@@ -62,6 +62,15 @@ void Display::setTitleSuffix(const std::string & suffix)
 	glfwSetWindowTitle(this->window, (this->title + suffix).c_str());
 }
 
+void Display::toggleFullscreen()
+{
+	this->fullscreen = !this->fullscreen;
+	if (this->fullscreen)
+		glfwSetWindowMonitor(this->window, glfwGetWindowMonitor(this->window), 0, 0, this->width, this->height, 0);
+	else
+		glfwSetWindowMonitor(this->window, NULL, 0, 0, this->width, this->height, 0);
+}
+
 int Display::getWidth() const
 {
 	return this->width;
@@ -195,8 +204,9 @@ void Display::glDebugOutput(GLenum source, GLenum type, GLuint id, GLenum severi
 	LOG_END_COLOR_PASS();
 }
 
-void Display::init(int width, int height, const std::string& title)
+void Display::init(int width, int height, const std::string& title, bool fullscreen)
 {
+	this->fullscreen = fullscreen;
 	this->width = width;
 	this->height = height;
 	this->title = title;
@@ -216,7 +226,12 @@ void Display::init(int width, int height, const std::string& title)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // Modern opengl
 	glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
-	this->window = glfwCreateWindow(this->width, this->height, this->title.c_str(), NULL, NULL);
+	this->window = nullptr;
+	if (this->fullscreen)
+		this->window = glfwCreateWindow(this->width, this->height, this->title.c_str(), glfwGetPrimaryMonitor(), NULL);
+	else
+		this->window = glfwCreateWindow(this->width, this->height, this->title.c_str(), NULL, NULL);
+
 	if (this->window == NULL)
 	{
 		LOG_ERROR("Failed to create GLFW window!");

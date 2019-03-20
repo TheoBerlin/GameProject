@@ -50,6 +50,8 @@ private:
 
 	// Button callback for mute sound
 	void muteSoundCallback();
+	// Fullscreen callback
+	void fullscreenCallback();
 	// Callback to save sound settings
 	void saveSoundSettings();
 
