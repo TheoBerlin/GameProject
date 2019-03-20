@@ -144,7 +144,7 @@ void MenuGUI::createSettingsGUI()
 	addSettingsSlider(this->settingsGUI, "MISC VOLUME", -300, SoundManager::get().getMiscVolume(), [this](float v) {SoundManager::get().setMiscVolume(v); });
 	addToggleButton(this->settingsGUI, "MUTE SOUND", -375, [this]() { this->muteSoundCallback(); });
 	addSettingsSlider(this->settingsGUI, "MOUSE SENSITIVITY", -450, Settings::get().getMouseSensitivity(), [this](float v) { Settings::get().setMouseSensitivity(v); });
-	addToggleButton(this->settingsGUI, "FULLSCREEN", -525, [this]() { Settings::get().setFullscreen(!Settings::get().getFullscreen()); });
+	addToggleButton(this->settingsGUI, "FULLSCREEN", -525, [this]() { this->fullscreenCallback(); });
 
 	// Create text 
 	Panel* txt = new Panel();
@@ -238,7 +238,7 @@ void MenuGUI::addToggleButton(Panel * parent, std::string text, int offset, cons
 	btn->setNormalColor(Settings::get().getFullscreen() ? BUTTON_PRESS_COLOR : BUTTON_NORMAL_COLOR);
 	btn->setHoverColor(BUTTON_HOVER_COLOR);
 	btn->setPressedColor(BUTTON_PRESS_COLOR);
-	btn->setCallback([this, func, btn]() { func(); btn->setNormalColor(Settings::get().getFullscreen() ? BUTTON_PRESS_COLOR : BUTTON_NORMAL_COLOR); });
+	btn->setCallback(func);
 	parent->addChild(btn);
 }
 
@@ -250,6 +250,13 @@ void MenuGUI::muteSoundCallback()
 	sp->setSliderFactor(this->muteSound ? 0.f : 0.5f);
 	Button* btn = dynamic_cast<Button*>(this->settingsGUI->getChildren()[11]);
 	btn->setNormalColor(this->muteSound ? BUTTON_PRESS_COLOR : BUTTON_NORMAL_COLOR);
+}
+
+void MenuGUI::fullscreenCallback()
+{
+	Settings::get().setFullscreen(!Settings::get().getFullscreen());
+	Button* btn = dynamic_cast<Button*>(this->settingsGUI->getChildren()[15]);
+	btn->setNormalColor(Settings::get().getFullscreen() ? BUTTON_PRESS_COLOR : BUTTON_NORMAL_COLOR);
 }
 
 void MenuGUI::saveSoundSettings()
