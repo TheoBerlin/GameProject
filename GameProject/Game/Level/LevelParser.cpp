@@ -364,14 +364,12 @@ void LevelParser::writeLight(Level & level)
 		light[i]["Distance"] = level.lightManager->getPointLights()->at(i)->getDistance();
 	}
 
-	if (!level.lightManager) {
+	if (level.lightManager) {
 		glm::vec4 direction = level.lightManager->getDirectionalLight()->getDirection();
 		glm::vec4 intesity = level.lightManager->getDirectionalLight()->getIntensity();
 	
-
-	jsonFile["DirectionalLight"]["Direction"] = { direction.x, direction.y, direction.z, direction.w };
-	jsonFile["DirectionalLight"]["Intensity"] = { intesity.x, intesity.y, intesity.z, intesity.w };
-
+		jsonFile["DirectionalLight"]["Direction"] = { direction.x, direction.y, direction.z, direction.w };
+		jsonFile["DirectionalLight"]["Intensity"] = { intesity.x, intesity.y, intesity.z, intesity.w };
 	}
 }
 
