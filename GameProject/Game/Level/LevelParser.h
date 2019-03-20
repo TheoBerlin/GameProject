@@ -21,7 +21,6 @@ private:
 	void readEntityTargets(Level& level);
 	void readEntityProps(Level& level);
 	void readEntityWalls(Level& level);
-	void readEntityFloor(Level& level);
 	void readPlayer(Level& level);
 	void readMetadata(Level& level);
 	void readLights(Level& level);

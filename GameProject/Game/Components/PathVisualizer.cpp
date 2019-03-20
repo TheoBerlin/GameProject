@@ -1,5 +1,8 @@
 #include "PathVisualizer.h"
 
+#include "Engine/Rendering/Display.h"
+#include "Engine/Rendering/Renderer.h"
+
 #include <Utils/Logger.h>
 
 PathVisualizer::PathVisualizer(Entity* host, EntityManager* em)
@@ -23,7 +26,8 @@ void PathVisualizer::addPath(const std::vector<KeyPoint>& path)
     pathCount += 1;
 
     pointCount.push_back(path.size());
-
+	Model * model = ModelLoader::loadModel("./Game/assets/grayBox.fbx");
+	Display::get().getRenderer().addRenderingTarget(model, SHADERS::DEFAULT, false);
     // Add an entity for each key point in the path
     for (unsigned int i = 0; i < path.size(); i += 1) {
         std::string entityName = "Path" + std::to_string(pathCount - 1) + "Point" + std::to_string(i);
@@ -32,10 +36,13 @@ void PathVisualizer::addPath(const std::vector<KeyPoint>& path)
 
         // Set visualizer transform and model
         visualizer->getTransform()->setPosition(path.at(i).Position);
+        visualizer->getTransform()->setForward(this->host->getTransform()->getForward());
 	    visualizer->getTransform()->setScale(glm::vec3(0.1f, 0.1f, 0.1f));
-
-	    visualizer->setModel(ModelLoader::loadModel("./Game/assets/Cube.fbx"));
+		
+	    visualizer->setModel(model);
+		
     }
+	model->initInstancing();
 }
 
 void PathVisualizer::removeVisualizers()
