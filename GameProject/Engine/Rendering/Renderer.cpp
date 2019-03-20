@@ -34,11 +34,11 @@ Camera * Renderer::getActiveCamera()
 
 void Renderer::initInstancing()
 {
-	std::vector<Model*> models = ModelLoader::getModels();
+	//std::vector<Model*> models = ModelLoader::getModels();
 
-	for (Model* model : models) {
-		model->initInstancing();
-	}
+	//for (Model* model : models) {
+	//	model->initInstancing();
+	//}
 
 	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
 	this->addRenderingTarget(model, SHADERS::DEFAULT);
@@ -182,11 +182,29 @@ void Renderer::addRenderingTarget(Model * model, SHADERS shader, bool castShadow
 	rt.castShadow = castShadow;
 	rt.visible = visible;
 
-	if (model) {
+	bool renderTargetAlreadyExists = false;
+	bool modelAlreadyLoaded = false;
+
+	for (std::pair<RenderingTarget, SHADERS> pair : this->renderingTargets) {
+		if (model == pair.first.model) {
+			modelAlreadyLoaded = true;
+			if (shader == pair.second)
+				renderTargetAlreadyExists = true;
+		}
+
+	}
+	
+	if (!modelAlreadyLoaded) {
+		model->initInstancing();
+	}
+
+	if (!renderTargetAlreadyExists) {
 		rt.model = model;
 
 		this->renderingTargets.push_back(std::make_pair(rt, shader));
 	}
+
+	
 }
 
 void Renderer::activatePostFilter(SHADERS_POST_PROCESS shader)

@@ -78,6 +78,8 @@ EditorState::~EditorState()
 
 	// Delete all loaded models
 	ModelLoader::unloadAllModels();
+
+	delete this->lampPlacerholder;
 }
 
 void EditorState::start()
@@ -232,6 +234,7 @@ void EditorState::entityWindow(EntityManager& entityManager)
 		newEntity->setName("Entity" + std::to_string(entityManager.getEntitySize()));
 		Model* model = ModelLoader::loadModel("./Game/assets/Cube.fbx");
 		newEntity->setModel(model);
+		Display::get().getRenderer().addRenderingTarget(model);
 		newEntity->getModel()->setName("Cube");
 		entityManager.addEntity(newEntity);
 		currentModel = newEntity->getModel()->getName();
