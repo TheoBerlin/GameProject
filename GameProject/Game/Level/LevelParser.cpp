@@ -194,36 +194,6 @@ void LevelParser::readEntityWalls(Level& level)
 	}
 }
 
-void LevelParser::readEntityFloor(Level& level)
-{
-	Model *model = nullptr;
-
-	//Get the size of the target entities
-	int targetSize = jsonFile["Floor"].size();
-
-	if (targetSize != 0) {
-		model = ModelLoader::loadModel("./Game/assets/floor.fbx", level.collisionHandler);
-		Display::get().getRenderer().addRenderingTarget(model);
-	}
-
-	Entity* entity;
-	glm::vec3 position;
-
-	json::json& floor = jsonFile["Floor"];
-
-	if (!floor.empty()) {
-		entity = level.entityManager->addEntity();
-
-		if (!floor["Position"].empty()) {
-			readVec3(floor["Position"], position);
-		}
-
-		entity->getTransform()->setPosition(position);
-		entity->setModel(model);
-		level.collisionHandler->addCollisionToEntity(entity, CATEGORY::STATIC);
-	}
-}
-
 void LevelParser::readPlayer(Level& level)
 {
 	json::json& player = jsonFile["Player"];
@@ -577,7 +547,6 @@ void LevelParser::readLevel(std::string file, Level& level)
 		readEntityTargets(level);
 		readEntityProps(level);
 		readEntityWalls(level);
-		readEntityFloor(level);
 		readPlayer(level);
 		readLights(level);
 	}
