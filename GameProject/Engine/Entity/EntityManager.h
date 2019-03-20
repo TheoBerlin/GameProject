@@ -18,9 +18,9 @@ public:
 	void removeEntity(unsigned int index);
 	Entity* getEntity(unsigned int index);
 	int getEntitySize() const;
-	Entity* addTracedEntity(const std::string & name); //Used for entites that we want to track, and do changes to during runtime.
-	Entity* getTracedEntity(const std::string & name);
-	bool removeTracedEntity(const std::string & name);
+	Entity* addTracedEntity(const std::string& name); //Used for entites that we want to track, and do changes to during runtime.
+	Entity* getTracedEntity(const std::string& name);
+	bool removeTracedEntity(const std::string& name);
 	std::vector<Entity*>& getAll();
 
 	void removeEntities();

@@ -46,10 +46,8 @@ ArrowGuider::~ArrowGuider()
 {
     EventBus::get().unsubscribe(this, &ArrowGuider::handleWindowResize);
 
-    if (isGuiding) {
-        EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
-		EventBus::get().unsubscribe(this, &ArrowGuider::handleKeyEvent);
-    }
+    EventBus::get().unsubscribe(this, &ArrowGuider::handleMouseMove);
+    EventBus::get().unsubscribe(this, &ArrowGuider::handleKeyEvent);
 }
 
 void ArrowGuider::update(const float& dt)

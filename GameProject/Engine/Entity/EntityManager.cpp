@@ -61,9 +61,10 @@ int EntityManager::getEntitySize() const
 	return entities.size();
 }
 
-Entity * EntityManager::addTracedEntity(const std::string & name)
+Entity * EntityManager::addTracedEntity(const std::string& name)
 {
 	auto trace = this->tracedEntities.find(name);
+
 	if (trace == this->tracedEntities.end()) {
 
 		Entity* newEntity = addEntity();
@@ -76,12 +77,10 @@ Entity * EntityManager::addTracedEntity(const std::string & name)
 	else {
 		return this->entities[trace->second];
 	}
-
-
 }
 
 // Returns nullptr if entity dosen't exist
-Entity * EntityManager::getTracedEntity(const std::string & name)
+Entity * EntityManager::getTracedEntity(const std::string& name)
 {
 	auto trace = this->tracedEntities.find(name);
 	if (trace == this->tracedEntities.end()) {
@@ -92,7 +91,7 @@ Entity * EntityManager::getTracedEntity(const std::string & name)
 	}
 }
 
-bool EntityManager::removeTracedEntity(const std::string & name)
+bool EntityManager::removeTracedEntity(const std::string& name)
 {
 	auto trace = this->tracedEntities.find(name);
 
