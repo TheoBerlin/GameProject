@@ -26,6 +26,7 @@ bool Settings::readFile(std::string fileName)
 	readScreenHeight();
 	readMouseSensitivity();
 	readShadowResolutionFactor();
+	readFullscreen();
 
 	if (iFile.is_open()) {
 		iFile.close();
@@ -43,6 +44,7 @@ void Settings::writeFile(std::string fileName)
 	jsonFile["ScreenWidth"] = this->screenWidth;
 	jsonFile["ScreenHeight"] = this->screenHeight;
 	jsonFile["MouseSensitivity"] = this->mouseSensitivity;
+	jsonFile["Fullscreen"] = this->fullscreen;
 	std::ofstream oStream(fileName);
 	oStream << std::setw(4) << jsonFile << std::endl;
 }
@@ -118,6 +120,17 @@ void Settings::readShadowResolutionFactor()
 	}
 }
 
+void Settings::readFullscreen()
+{
+	json::json& jsonFullscreen = jsonFile["Fullscreen"];
+	if (!jsonFullscreen.empty()) {
+		this->fullscreen = jsonFullscreen;
+	}
+	else {
+		LOG_ERROR("Fullscreen has no value");
+	}
+}
+
 Settings& Settings::get()
 {
 	static Settings instance;
@@ -145,6 +158,16 @@ int Settings::getScreenWidth()
 int Settings::getScreenHeight()
 {
 	return this->screenHeight;
+}
+
+bool Settings::getFullscreen()
+{
+	return this->fullscreen;
+}
+
+void Settings::setFullscreen(bool fullscreen)
+{
+	this->fullscreen = fullscreen;
 }
 
 void Settings::setResolution(int width, int height)

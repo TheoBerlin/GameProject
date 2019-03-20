@@ -16,6 +16,7 @@ private:
 	bool changed = false;
 	int screenWidth;
 	int screenHeight;
+	bool fullscreen;
 	float mouseSensitivity;
 	float shadowResolutionFactor;
 
@@ -25,6 +26,7 @@ private:
 	void readScreenHeight();
 	void readMouseSensitivity();
 	void readShadowResolutionFactor();
+	void readFullscreen();
 
 	json::json jsonFile;
 
@@ -38,6 +40,8 @@ public:
 	void readVolumes();
 	int getScreenWidth();
 	int getScreenHeight();
+	bool getFullscreen();
+	void setFullscreen(bool fullscreen);
 	void setResolution(int width, int height);
 	float getMouseSensitivity();
 	void setMouseSensitivity(const float mouseSensitivity);

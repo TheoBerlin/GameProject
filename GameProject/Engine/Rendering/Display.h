@@ -15,7 +15,7 @@ class Display
 {
 public:
 	static Display& get();
-	void init(int width, int height, const std::string& title);
+	void init(int width, int height, const std::string& title, bool fullscreen = false);
 
 	void updateView(int width, int height);
 
@@ -25,6 +25,8 @@ public:
 
 	void setTitle(const std::string& title);
 	void setTitleSuffix(const std::string& suffix);
+
+	void toggleFullscreen();
 
 	int getWidth() const;
 	int getHeight() const;
@@ -54,6 +56,7 @@ private:
 	std::string title;
 	int width;
 	int height;
+	bool fullscreen;
 
 	FT_Library ftLibrary;
 

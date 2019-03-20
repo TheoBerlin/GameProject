@@ -1,9 +1,10 @@
 {
     "EffectVolume": 0.9950000047683716,
-    "MasterVolume": 0.7699999809265137,
-    "MiscVolume": 0.9399999976158142,
+    "Fullscreen": false,
+    "MasterVolume": 0.5,
+    "MiscVolume": 0.33000001311302185,
     "MouseSensitivity": 0.4099999964237213,
-    "MusicVolume": 0.004999999888241291,
+    "MusicVolume": 0.02500000037252903,
     "ScreenHeight": 757,
     "ScreenWidth": 1280,
     "ShadowResolutionFactor": 2.0
