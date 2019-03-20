@@ -364,6 +364,7 @@ void LevelParser::writeLight(Level & level)
 		light[i]["Distance"] = level.lightManager->getPointLights()->at(i)->getDistance();
 	}
 
+	//check if light manager exists before writing to it
 	if (level.lightManager) {
 		glm::vec4 direction = level.lightManager->getDirectionalLight()->getDirection();
 		glm::vec4 intesity = level.lightManager->getDirectionalLight()->getIntensity();
