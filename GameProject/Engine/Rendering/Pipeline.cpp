@@ -451,7 +451,7 @@ void Pipeline::updateDirectionalLight(DirectionalLight * dirlight)
 	/*
 		Set up Directional Light
 	*/
-	this->uniformBuffers[1]->setSubData((void*)dirlight, sizeof(DirectionalLight), 0); //no idea how to solve the size issue
+	this->uniformBuffers[1]->setSubData((void*)dirlight, sizeof(DirectionalLight), 0);
 }
 
 void Pipeline::createLight(glm::vec4 position, glm::vec4 intensity, int distance)
