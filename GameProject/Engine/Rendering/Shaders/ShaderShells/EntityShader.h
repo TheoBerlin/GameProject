@@ -37,4 +37,3 @@ protected:
 	Framebuffer* shadowBuffer;
 	glm::mat4* lightSpaceMatrix;
 };
-

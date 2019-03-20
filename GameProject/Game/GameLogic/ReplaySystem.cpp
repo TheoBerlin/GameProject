@@ -184,6 +184,11 @@ void ReplaySystem::setReplayTime(Level& level, PathTreader* replayArrow, Entity*
     arrowTransform->setForward(arrowForward);
 }
 
+void ReplaySystem::setCollisionReplays(const std::vector<CollisionReplay>& collisions)
+{
+	this->collisions = collisions;
+}
+
 std::vector<CollisionReplay>& ReplaySystem::getCollisionReplays()
 {
 	return this->collisions;

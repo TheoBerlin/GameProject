@@ -9,6 +9,7 @@ struct Level;
 
 struct CollisionReplay {
     CollisionReplay(PlayerCollisionEvent event, float time) : event(event), time(time) {};
+    CollisionReplay() : event(PlayerCollisionEvent(nullptr, nullptr, nullptr, nullptr)), time(0.0f) {};
 
     PlayerCollisionEvent event;
     float time;
@@ -34,6 +35,8 @@ public:
 
     // Rewind or fast forward a level to its state at a given time
     void setReplayTime(Level& level, PathTreader* replayArrow, Entity* playerEntity, const float time);
+
+    void setCollisionReplays(const std::vector<CollisionReplay>& collisions);
 
 	// Get collision replay vector
 	std::vector<CollisionReplay>& getCollisionReplays();

@@ -15,8 +15,9 @@
 #include "Game/States/EditorState.h"
 #include "Engine/GUI/SliderPanel.h"
 
-
-MenuState::MenuState() : State()
+MenuState::MenuState()
+	:State(),
+	levelPreviewer(nullptr)
 {
 	// Default level
 	this->selectedLevel = ".";
@@ -30,22 +31,45 @@ MenuState::MenuState() : State()
 	FontManager::addFont("aldoBig", "./Game/assets/fonts/aldo/aldo.ttf", 150);
 
 	menuGUI.init(&this->getGUI(), &this->getStateManager());
+
+	Button* editorBtn = menuGUI.getEditorBtn();
+
+	editorBtn->setCallback([this](){
+		if (this->levelPreviewer) {
+			delete levelPreviewer;
+			this->levelPreviewer = nullptr;
+		}
+
+		this->entityManager.removeEntities();
+
+		this->pushState(new EditorState());
+	});
+
 	this->initLevelSelect();
 
 	InputHandler ih(Display::get().getWindowPtr());
-	EventBus::get().subscribe(this, &MenuState::updateScore);;
+	EventBus::get().subscribe(this, &MenuState::updateScore);
 }
 
 MenuState::~MenuState()
 {
+	if (levelPreviewer) {
+		delete levelPreviewer;
+
+		levelPreviewer = nullptr;
+	}
+
+	TextureManager::unloadAllTextures();
 }
 
 void MenuState::start()
 {
+	this->updateLevelPreview(this->selectedLevel);
+
 	menuGUI.setStateManager(&this->getStateManager());
+
 	// Unlock cursor
 	glfwSetInputMode(Display::get().getWindowPtr(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-
 }
 
 void MenuState::end()
@@ -54,6 +78,7 @@ void MenuState::end()
 
 void MenuState::update(const float dt)
 {
+	levelPreviewer->update(dt);
 }
 
 void MenuState::updateLogic(const float dt)
@@ -64,12 +89,37 @@ void MenuState::render()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 
+	levelPreviewer->render();
+
 	glDisable(GL_DEPTH_TEST);
 	Display& display = Display::get();
 
 	GUIRenderer& guiRenderer = display.getGUIRenderer();
 
 	guiRenderer.draw(this->getGUI());
+}
+
+void MenuState::updateLevelPreview(const std::string& levelName)
+{
+	if (this->levelPreviewer) {
+		delete levelPreviewer;
+	}
+
+	this->entityManager.removeEntities();
+
+	this->levelPreviewer = new LevelPreviewer(&this->entityManager);
+
+	this->levelPreviewer->setLevel(levelName);
+}
+
+void MenuState::stopPreviewReplay()
+{
+	this->levelPreviewer->stopReplaying();
+}
+
+Level& MenuState::getLevel()
+{
+	return this->levelPreviewer->getLevel();
 }
 
 void MenuState::loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths)
@@ -86,12 +136,6 @@ void MenuState::updateLevelInfoPanel()
 	children[1]->updateText(0, this->levelInfo[0]);
 	children[2]->updateText(0, this->levelInfo[1]);
 	children[3]->updateText(0, this->levelInfo[2]);
-}
-
-void MenuState::updateScore(UpdateScoreEvent * evnt)
-{
-	std::vector<Panel*> children = this->previewPnl->getChildren();
-	children[3]->updateText(0, "Highscore:" + std::to_string(evnt->highscore));
 }
 
 void MenuState::initLevelSelect()
@@ -125,10 +169,14 @@ void MenuState::initLevelSelect()
 	// Create scroll panel buttons for level and add callbacks for them
 	for (auto entry : levels)
 	{
-		scrollPanel->addItem([this, entry](void) {
-			this->selectedLevel = entry.string();
-			this->updateLevelInfoPanel();
-		}, entry.filename().replace_extension("").string());
+		if (entry.has_extension())
+		{
+			scrollPanel->addItem([this, entry](void) {
+				this->selectedLevel = entry.string();
+				this->updateLevelInfoPanel();
+				this->updateLevelPreview(this->selectedLevel);
+			}, entry.filename().replace_extension("").string());
+		}
 	}
 
 	// Set the first level to be the selected one
@@ -153,7 +201,8 @@ void MenuState::initLevelSelect()
 	playBtn->setPressedColor(BUTTON_PRESS_COLOR);
 	playBtn->addText("Play", "aldo", glm::vec4(1.0f));
 	playBtn->setCallback([this](void) {
-		this->pushState(new GameState(this->selectedLevel));
+		this->stopPreviewReplay();
+		this->pushState(new GameState(this->getLevel()));
 	});
 	selectPnl->addChild(playBtn);
 
@@ -223,6 +272,12 @@ void MenuState::initLevelSelect()
 	hiScorePnl->setOption(GUI::FLOAT_LEFT, 20);
 	hiScorePnl->setOption(GUI::FLOAT_UP, 200);
 	previewPnl->addChild(hiScorePnl);
-
+	
 	menuGUI.changePanelPointer(MENU::LEVEL_SELECT, container);
+}
+
+void MenuState::updateScore(NewHighscoreEvent * evnt)
+{
+	std::vector<Panel*> children = this->previewPnl->getChildren();
+	children[3]->updateText(0, "Highscore:" + std::to_string(evnt->highscore));
 }

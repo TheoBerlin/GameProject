@@ -20,7 +20,7 @@ public:
 	virtual void update(const float& dt);
 
 private:
-	void changePhaseCallback(PhaseChangeEvent * event);
+	void changePhase(PhaseChangeEvent * event);
 
 	// Used for camera transitions
 	Entity* phaseTransitionEntity;

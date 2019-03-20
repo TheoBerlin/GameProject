@@ -25,6 +25,7 @@ struct Player {
 };
 
 struct Level {
+	std::string levelName;
 	bool isEditor = false;
 	EntityManager* entityManager;
 	TargetManager* targetManager;

@@ -50,7 +50,7 @@ public:
 	unsigned getRenderingGroupIndex();
 
 	void setName(const std::string& name);
-	const std::string getName();
+	const std::string& getName();
 	Transform* getTransform();
 	Transform* getPausedTransform();
 

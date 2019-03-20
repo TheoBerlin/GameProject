@@ -7,6 +7,7 @@
 #include "Engine/Rendering/LineRenderer.h"
 
 LightManager::LightManager()
+	:dirLight(nullptr)
 {
 	this->shadowResolutionFactor = Settings::get().getShadowResolutionFactor();
 	this->orthoWidth = 1.f;
@@ -25,8 +26,14 @@ LightManager::~LightManager()
 		delete pointLights[i];
 		pointLights[i] = nullptr;
 	}
+
 	pointLights.clear();
-	delete this->dirLight;
+
+	if (this->dirLight != nullptr) {
+		delete this->dirLight;
+
+		this->dirLight = nullptr;
+	}
 
 #ifdef ENABLE_SHADOW_BOX
 	EventBus::get().unsubscribe(this, &LightManager::toggleDrawing);

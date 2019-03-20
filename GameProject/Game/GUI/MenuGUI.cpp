@@ -78,6 +78,11 @@ void MenuGUI::setStateManager(StateManager * stateManager)
 	this->stateManager = stateManager;
 }
 
+Button* MenuGUI::getEditorBtn()
+{
+	return this->editorBtn;
+}
+
 void MenuGUI::activateGUI(Panel * p)
 {
 	if (this->currentGUI)

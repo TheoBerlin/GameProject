@@ -10,16 +10,20 @@
 #include <Game/Components/ArrowGuider.h>
 #include <Game/Components/PathVisualizer.h>
 #include <Game/Components/TrailEmitter.h>
-#include <Game/GameLogic/Phases/GuidingPhase.h>
 #include <Game/GameLogic/Phases/AimPhase.h>
+#include <Game/GameLogic/Phases/GuidingPhase.h>
+#include <Game/Level/ReplayParser.h>
 #include <Utils/Settings.h>
 #include <Utils/Utils.h>
+#include <Utils/Logger.h>
 
 
 ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	:Phase((Phase*)guidingPhase),
 	replayTime(0.0f)
 {
+	EventBus::get().subscribe(this, &ReplayPhase::handleHighscoreUpdate);
+
 	//Remove Post process effect to transition
 	Display::get().getRenderer().deactivatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
 
@@ -28,25 +32,10 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
     // Create replay time bar
     setupGUI();
 
-    flightTime = guidingPhase->getFlightTime();
-
-    this->replaySpeedFactor = 1.0f;
+	this->replaySpeedFactor = 1.0f;
 	this->desiredSpeedFactor = 1.0f;
-
     this->isPausing = false;
 	this->isSlowMotion = false;
-
-    // Create results window and minimize it
-    // Lambda function which executes when retry is pressed
-    std::function<void()> retry = [this](){
-		//Activate post process effect when retrying
-		Display::get().getRenderer().activatePostFilter(SHADERS_POST_PROCESS::REWIND_FILTER);
-		beginAimTransition();
-	};
-
-	level.scoreManager->showResults(level, retry);
-
-	level.scoreManager->toggleGuiMinimize();
 
 	/*
 		Create replay arrow
@@ -72,6 +61,10 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	pathTreader = new PathTreader(replayArrow, oldArrowGuider->getPath());
 	pathTreader->startTreading();
 
+    // Create results window and minimize it
+    // Lambda function which executes when retry is pressed
+    std::function<void()> retry = [this](){beginAimTransition();};
+
 	// Add path visualizer for debugging
 	if (ENABLE_PATH_VISUALIZERS) {
 		pathVisualizer = new PathVisualizer(replayArrow, level.entityManager);
@@ -80,6 +73,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	//Retrieve trail emitter from playerArrow
 	Entity* oldArrow = guidingPhase->getPlayerArrow();
+
 	if (oldArrow) {
 		TrailEmitter* trailEmitter = dynamic_cast<TrailEmitter*>(oldArrow->getComponent("TrailEmitter"));
 		// Detach trail emitter from player arrow
@@ -110,6 +104,9 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 	// Reset targets
 	level.targetManager->resetTargets();
 
+	level.scoreManager->showResults(level, retry);
+	level.scoreManager->toggleGuiMinimize();
+
 	// Begin replaying playthrough
 	level.replaySystem->startReplaying();
 
@@ -119,6 +116,7 @@ ReplayPhase::ReplayPhase(GuidingPhase* guidingPhase)
 
 	EventBus::get().subscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().subscribe(this, &ReplayPhase::handleMouseClick);
+
 }
 
 ReplayPhase::~ReplayPhase()
@@ -126,6 +124,7 @@ ReplayPhase::~ReplayPhase()
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleKeyInput);
 	EventBus::get().unsubscribe(this, &ReplayPhase::finishAimTransition);
 	EventBus::get().unsubscribe(this, &ReplayPhase::handleMouseClick);
+	EventBus::get().unsubscribe(this, &ReplayPhase::handleHighscoreUpdate);
 }
 
 void ReplayPhase::update(const float& dt)
@@ -195,6 +194,12 @@ PathVisualizer* ReplayPhase::getPathVisualizer() const
 	return pathVisualizer;
 }
 
+void ReplayPhase::handleHighscoreUpdate(NewHighscoreEvent* event)
+{
+	// Write the replay of the highscore playthrough
+	ReplayParser::writeReplay(level.levelName, level.replaySystem->getCollisionReplays(), pathTreader->getPath());
+}
+
 void ReplayPhase::handleKeyInput(KeyEvent* event)
 {
 	if (event->action != GLFW_PRESS) {
@@ -246,6 +251,7 @@ void ReplayPhase::beginAimTransition()
 
 	// Reset time speed
 	this->isPausing = false;
+	this->desiredSpeedFactor = 1.0f;
 	this->replaySpeedFactor = 1.0f;
 	this->desiredSpeedFactor = 1.0f;
 
@@ -419,7 +425,7 @@ void ReplayPhase::setupGUI()
 
 void ReplayPhase::addCollisionMarks()
 {
-	std::vector<CollisionReplay> v = level.replaySystem->getCollisionReplays();
+	std::vector<CollisionReplay>& v = level.replaySystem->getCollisionReplays();
 
 	for (auto t : v)
 	{

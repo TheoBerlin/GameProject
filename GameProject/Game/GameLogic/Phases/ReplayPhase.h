@@ -24,6 +24,7 @@ public:
 	PathVisualizer* getPathVisualizer() const;
 
 private:
+	void handleHighscoreUpdate(NewHighscoreEvent* event);
 	void handleKeyInput(KeyEvent* event);
 	void handleMouseClick(MouseClickEvent* event);
 

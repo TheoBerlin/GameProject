@@ -40,13 +40,11 @@ void Renderer::initInstancing()
 	//	model->initInstancing();
 	//}
 
-	Model * model = ModelLoader::loadModel("./Game/assets/Arrow.fbx");
-	this->addRenderingTarget(model, SHADERS::DEFAULT);
-
 	/*
 		Initilize colors vertexBuffer for collision color changing
 	*/
-	model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+	Model* model = ModelLoader::loadModel("./Game/assets/droneTarget.fbx");
+
 	AttributeLayout layout;
 	layout.push(3, 1); // vec3 color which can be changed seperately for each entity;
 	std::vector<glm::vec3> colors;

@@ -158,12 +158,12 @@ void Entity::attachToModel()
 		this->renderingGroupIndex = this->model->addEntity(this);
 }
 
-void Entity::setName(const std::string & name)
+void Entity::setName(const std::string& name)
 {
 	this->name = name;
 }
 
-const std::string Entity::getName()
+const std::string& Entity::getName()
 {
 	return this->name;
 }

@@ -11,11 +11,12 @@
 #include <Game/Level/LevelStructure.h>
 #include <Engine/Rendering/Lighting/LightManager.h>
 
+struct Level;
 
 class GameState : public State
 {
 public:
-	GameState(const std::string& levelJSON);
+	GameState(Level& level);
 	virtual ~GameState();
 
 	void start() override;
@@ -23,23 +24,23 @@ public:
 	void update(const float dt) override;
 	void updateLogic(const float dt) override;
 	void render() override;
+
 private:
 	void pauseGame(PauseEvent * ev);
 	void exitGame(ExitEvent* ev);
 
 	bool hasSubscribedToPause, hasSubscribedToExit;
 
-	std::string levelJSON;
-
 	Level level;
 
 	LevelParser levelParser;
+	EntityManager* entityManager;
 	TargetManager* targetManager;
 	GameLogic gameLogic;
-	CollisionHandler collisionHandler;
-	ReplaySystem replaySystem;
+	CollisionHandler* collisionHandler;
+	ReplaySystem* replaySystem;
 	ScoreManager scoreManager;
-	LevelStructure levelStructure;
-	LightManager lightManager;
+	LevelStructure* levelStructure;
+	LightManager* lightManager;
 	HelpGUI helpGUI;
 };

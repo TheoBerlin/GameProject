@@ -416,7 +416,7 @@ void Pipeline::calcDirLightDepthInstanced(const std::vector<std::pair<RenderingT
 	Display::get().updateView(displayWidth, displayHeight);
 }
 
-void Pipeline::addCurrentLightManager(LightManager * lm)
+void Pipeline::setLightManager(LightManager * lm)
 {
 	this->lightManager = lm;
 	/*

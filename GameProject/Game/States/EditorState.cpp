@@ -23,8 +23,6 @@ EditorState::EditorState()
 {
 	targetManager = new TargetManager();
 
-	EntityManager* entityManager = &this->getEntityManager();
-
 	// Set up the player camera
 	Transform* camTransform = camera.getTransform();
 
@@ -40,7 +38,7 @@ EditorState::EditorState()
 
 	Display::get().getRenderer().setActiveCamera(c);
 
-	level.entityManager = entityManager;
+	level.entityManager = &this->entityManager;
 	level.targetManager = targetManager;
 	level.scoreManager = &this->scoreManager;
 	level.collisionHandler = &this->collisionHandler;
@@ -49,7 +47,7 @@ EditorState::EditorState()
 	level.gui = &this->getGUI();
 	level.isEditor = true;
 
-	Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+	Display::get().getRenderer().getPipeline()->setLightManager(level.lightManager);
 
 	EventBus::get().subscribe(this, &EditorState::pauseGame);
 	InputHandler ih(Display::get().getWindowPtr());
@@ -87,8 +85,7 @@ void EditorState::start()
 	/*
 	All entities in this state puts themselves in the rendering group of their model
 	*/
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->attachToModel();
 }
@@ -98,8 +95,7 @@ void EditorState::end()
 	/*
 	All entities removes themselves from the rendering group of their model
 	*/
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager.getAll();
 	for (Entity* entity : entities)
 		entity->detachFromModel();
 }
@@ -110,8 +106,7 @@ void EditorState::update(const float dt)
 	camera.update(dt);
 
 	// Update entities.
-	EntityManager& entityManager = this->getEntityManager();
-	std::vector<Entity*>& entities = entityManager.getAll();
+	std::vector<Entity*>& entities = this->entityManager.getAll();
 
 	for (unsigned int i = 0; i < entities.size(); i++) {
 		entities[i]->update(dt);
@@ -126,7 +121,7 @@ void EditorState::update(const float dt)
 void EditorState::render()
 {
 	/*
-EntityManager& entityManager = this->getEntityManager();
+EntityManager& entityManager = this->entityManager;
 std::vector<Entity*>& entities = entityManager.getAll();
 */
 	Display& display = Display::get();
@@ -420,7 +415,7 @@ void EditorState::levelWindow(EntityManager& entityManager)
 		freeMove->disableMouse();
 
 		levelParser.readLevel(std::string("./Game/Level/Levels/") + levelName.c_str() + ".json", level);
-		Display::get().getRenderer().getPipeline()->addCurrentLightManager(level.lightManager);
+		Display::get().getRenderer().getPipeline()->setLightManager(level.lightManager);
 		//Get directional light settings
 		this->dirLightDirection = lightManager.getDirectionalLight()->getDirection();
 		this->dirLightColorIntesity = lightManager.getDirectionalLight()->getIntensity();

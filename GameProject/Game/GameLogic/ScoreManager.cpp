@@ -146,12 +146,12 @@ void ScoreManager::showResults(Level& level, const std::function<void()>& retry)
 	bigPanel->addChild(miniBtn);
 
 	if (level.targetManager->getTargetCount() == this->targetsHit) {
-
 		if (this->totalScore > this->highscore) {
 			this->highscore = this->totalScore;
-			EventBus::get().publish(&UpdateScoreEvent(highscore));
+			EventBus::get().publish(&NewHighscoreEvent(highscore));
 			this->newHighscore = true;
 		}
+
 		// Add text - Title
 		bigPanel->addText("SCORE", "aldo", textColor);
 		unsigned width = bigPanel->getText(0)->getWidth();

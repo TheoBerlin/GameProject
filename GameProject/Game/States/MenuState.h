@@ -7,6 +7,7 @@
 
 #include <filesystem>
 
+#include <Game/GameLogic/LevelPreviewer.h>
 #include "Game/Level/LevelParser.h"
 #include "Game/GUI/MenuGUI.h"
 
@@ -22,15 +23,24 @@ public:
 	void updateLogic(const float dt) override;
 	void render() override;
 
+	void updateLevelPreview(const std::string& levelName);
+	void stopPreviewReplay();
+
+	Level& getLevel();
+
 private:
 	// Loads levels name from folder to show in scroll panel
 	void loadLevelPaths(std::string dir, std::vector<std::experimental::filesystem::path>& paths);
 	// Callback for scroll panel button press to update info panel
 	void updateLevelInfoPanel();
 	// Update score when event is published
-	void updateScore(UpdateScoreEvent * evnt);
+	void updateScore(NewHighscoreEvent * evnt);
+	// Init main menu GUI panels
+	void initMainMenu();
 	// Init level select GUI panels
 	void initLevelSelect();
+
+	EntityManager entityManager;
 
 	MenuGUI menuGUI;
 
@@ -40,4 +50,6 @@ private:
 	std::vector<std::string> levelInfo;
 
 	Panel* previewPnl;
+
+	LevelPreviewer* levelPreviewer;
 };

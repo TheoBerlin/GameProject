@@ -31,6 +31,8 @@ public:
 
 	void setStateManager(StateManager* stateManager);
 
+	Button* getEditorBtn();
+
 private:
 	void activateGUI(Panel* p);
 
