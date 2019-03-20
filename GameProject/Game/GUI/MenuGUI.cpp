@@ -11,6 +11,7 @@
 #include "Game/States/EditorState.h"
 
 #include "Engine/Events/EventBus.h"
+#include "Engine/Rendering/Display.h"
 
 MenuGUI::MenuGUI()
 {
@@ -105,7 +106,8 @@ void MenuGUI::createMainMenuGUI()
 
 	addMainMenuButton(this->mainMenuGUI, "SELECT LEVEL", 0, [this]() { this->activateGUI(this->levelSelectGUI); });
 	addMainMenuButton(this->mainMenuGUI, "SETTINGS", -100, [this]() { this->activateGUI(this->settingsGUI); });
-	this->editorBtn = addMainMenuButton(this->mainMenuGUI, "EDITOR", -200, [this]() { this->stateManager->push(new EditorState()); });
+	addMainMenuButton(this->mainMenuGUI, "EXIT", -200, [this]() { this->stateManager->pop(); });
+	this->editorBtn = addMainMenuButton(this->mainMenuGUI, "EDITOR", -300, [this]() { this->stateManager->push(new EditorState()); });
 	this->editorBtn->hide();
 
 	this->mainMenuGUI->hide();
@@ -142,6 +144,17 @@ void MenuGUI::createSettingsGUI()
 	addSettingsSlider(this->settingsGUI, "MISC VOLUME", -300, SoundManager::get().getMiscVolume(), [this](float v) {SoundManager::get().setMiscVolume(v); });
 	addToggleButton(this->settingsGUI, "MUTE SOUND", -375, [this]() { this->muteSoundCallback(); });
 	addSettingsSlider(this->settingsGUI, "MOUSE SENSITIVITY", -450, Settings::get().getMouseSensitivity(), [this](float v) { Settings::get().setMouseSensitivity(v); });
+	addToggleButton(this->settingsGUI, "FULLSCREEN", -525, [this]() { Settings::get().setFullscreen(!Settings::get().getFullscreen()); });
+
+	// Create text 
+	Panel* txt = new Panel();
+	txt->setOption(GUI::CENTER_X, -200);
+	txt->setOption(GUI::CENTER_Y, -575 + 300);
+	txt->setOption(GUI::SCALE_TO_TEXT_X, 5);
+	txt->setOption(GUI::SCALE_TO_TEXT_Y, 5);
+	txt->setColor(PANEL_BACKGROUND_COLOR);
+	txt->addText("(REQUIRES RESTART)", "aldo", TEXT_COLOR);
+	this->settingsGUI->addChild(txt);
 
 	// Add back button
 	Button* backBtn = new Button();
@@ -189,7 +202,7 @@ void MenuGUI::addSettingsSlider(Panel * parent, std::string text, int offset, fl
 	// Create text 
 	Panel* txt = new Panel();
 	txt->setOption(GUI::CENTER_X, -200);
-	txt->setOption(GUI::CENTER_Y, offset + 200);
+	txt->setOption(GUI::CENTER_Y, offset + 300);
 	txt->setOption(GUI::SCALE_TO_TEXT_X, 5);
 	txt->setOption(GUI::SCALE_TO_TEXT_Y, 5);
 	txt->setColor(PANEL_BACKGROUND_COLOR);
@@ -199,7 +212,7 @@ void MenuGUI::addSettingsSlider(Panel * parent, std::string text, int offset, fl
 	// Create slider 
 	SliderPanel* slider = new SliderPanel();
 	slider->setOption(GUI::CENTER_X, 100);
-	slider->setOption(GUI::CENTER_Y, offset + 200);
+	slider->setOption(GUI::CENTER_Y, offset + 300);
 	slider->setSliderCallback(func);
 	slider->setSliderFactor(startFactor);
 	parent->addChild(slider);
@@ -210,7 +223,7 @@ void MenuGUI::addToggleButton(Panel * parent, std::string text, int offset, cons
 	// Create text 
 	Panel* txt = new Panel();
 	txt->setOption(GUI::CENTER_X, -200);
-	txt->setOption(GUI::CENTER_Y, offset + 200);
+	txt->setOption(GUI::CENTER_Y, offset + 300);
 	txt->setOption(GUI::SCALE_TO_TEXT_X, 5);
 	txt->setOption(GUI::SCALE_TO_TEXT_Y, 5);
 	txt->setColor(PANEL_BACKGROUND_COLOR);
@@ -220,12 +233,12 @@ void MenuGUI::addToggleButton(Panel * parent, std::string text, int offset, cons
 	// Create button
 	Button* btn = new Button();
 	btn->setOption(GUI::CENTER_X, 100);
-	btn->setOption(GUI::CENTER_Y, offset + 200);
+	btn->setOption(GUI::CENTER_Y, offset + 300);
 	btn->setSize({ 50, 50, });
-	btn->setNormalColor(BUTTON_NORMAL_COLOR);
+	btn->setNormalColor(Settings::get().getFullscreen() ? BUTTON_PRESS_COLOR : BUTTON_NORMAL_COLOR);
 	btn->setHoverColor(BUTTON_HOVER_COLOR);
 	btn->setPressedColor(BUTTON_PRESS_COLOR);
-	btn->setCallback(func);
+	btn->setCallback([this, func, btn]() { func(); btn->setNormalColor(Settings::get().getFullscreen() ? BUTTON_PRESS_COLOR : BUTTON_NORMAL_COLOR); });
 	parent->addChild(btn);
 }
 
