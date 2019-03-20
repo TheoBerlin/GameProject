@@ -13,7 +13,9 @@
             0.0020000000949949026
         ]
     },
+    "Floor": null,
     "Metadata": {
+        "Highscore": 0,
         "OptimalTime": 10.0
     },
     "Player": {
@@ -89,6 +91,7 @@
     "Target": [
         {
             "Name": "Target1",
+            "Path": null,
             "Position": [
                 0.0,
                 1.9432419538497925,
@@ -107,6 +110,7 @@
         },
         {
             "Name": "Target2",
+            "Path": null,
             "Position": [
                 2.0,
                 1.5542304515838623,
@@ -125,6 +129,7 @@
         },
         {
             "Name": "Target3",
+            "Path": null,
             "Position": [
                 -2.0,
                 1.4355669021606445,
@@ -143,6 +148,7 @@
         },
         {
             "Name": "Target4",
+            "Path": null,
             "Position": [
                 -1.0,
                 2.0847349166870117,
@@ -161,6 +167,7 @@
         },
         {
             "Name": "Target5",
+            "Path": null,
             "Position": [
                 1.2000000476837158,
                 1.6116943359375,
