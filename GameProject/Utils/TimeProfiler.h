@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Timer.h"
+#include <string>
 
 class TimeProfiler
 {

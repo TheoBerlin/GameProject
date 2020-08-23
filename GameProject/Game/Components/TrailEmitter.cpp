@@ -19,7 +19,7 @@ TrailEmitter::TrailEmitter(Entity * host) : Component(host, "TrailEmitter")
 	this->startingAlpha = 0.5f;
 
 	this->timer = 0.0f;
-	this->trailDuration = 6.0f;
+	this->trailDuration = 20.0f;
 }
 
 TrailEmitter::~TrailEmitter()

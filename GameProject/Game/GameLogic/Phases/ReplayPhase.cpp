@@ -498,7 +498,7 @@ void ReplayPhase::handleSlowMotion()
 			isPausing = false;
 		}
 
-		desiredSpeedFactor = 0.5f;
+		desiredSpeedFactor = 4.0f;
 	}
 
 	isSlowMotion = !isSlowMotion;
