@@ -9,7 +9,7 @@ namespace Arrow {
 
     const float minFOV = 75.0f, maxFOV = 90.0f;
 
-    const float minSpeed = 3.2f, maxSpeed = 5.0f;
+    const float minSpeed = 4.0f, maxSpeed = 8.0f;
 
     const float minTurnSpeed = glm::half_pi<float>() * 1.1f, maxTurnSpeed = glm::half_pi<float>() * 1.6f;
 }

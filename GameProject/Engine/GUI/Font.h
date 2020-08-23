@@ -3,6 +3,7 @@
 #include "../Rendering/GLAbstraction/Shader.h"
 #include "../Rendering/GLAbstraction/Texture.h"
 #include "../Rendering/Display.h"
+#include <memory>
 
 class Font
 {
